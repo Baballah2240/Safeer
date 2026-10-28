@@ -1,0 +1,14 @@
+node_modules/
+.qa/
+runtime/
+releases/
+archives/
+.env
+.env.*
+!.env.example
+*.log
+*.sqlite
+*.sqlite-*
+*.pfx
+*.pem
+*.key
