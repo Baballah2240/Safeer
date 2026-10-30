@@ -1,6 +1,6 @@
 # Safeer / Sudan Transport
 
-Section 01 foundation for a multi-company Sudan passenger-transport marketplace. Updated 2026-10-30, version 0.2.0. The product name remains Safeer. This independent project does not change Stocrant or Qatar School Time Table.
+Section 01 foundation for a multi-company Sudan passenger-transport marketplace. Updated 2026-10-30, version 0.2.1. The product name remains Safeer. This independent project does not change Stocrant or Qatar School Time Table.
 
 **Continuation starts at [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md). Section 02 requires explicit owner approval.**
 
@@ -13,6 +13,8 @@ Guest booking must be available without a passenger account. The real booking mo
 ## What currently works
 
 A fictional-data, single-seat passenger prototype: sample trips, seat selection, unpaid reference/print view, company example policies, timestamp-based expiry/cancellation and Arabic/English responsive layouts. Its company selector is a demo switch, not access control. All browser data resets on refresh and is not shared between devices.
+
+The passenger form also asks whether the passenger has luggage. Select Has luggage and describe the bags/colour/identifying details (1-300 trimmed characters); the saved declaration appears with the passenger and on the printable unpaid reference. Select No luggage to clear the description. This is a declaration only; station luggage registration/tracking remains future work.
 
 Section 01 also supplies PostgreSQL migration tooling, a private namespace/ledger baseline, a static asset build, a prototype liveness endpoint and the full architecture/schema/roadmap/archive documentation. The web server does not connect to a database. Target Next.js/NestJS/Flutter applications, real accounts, secure company isolation, durable booking, payments, tickets, luggage and boarding are not implemented yet.
 

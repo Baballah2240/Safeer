@@ -6,6 +6,8 @@ Target: PostgreSQL 18. The migration runner creates private `safeer_meta.schema_
 
 The browser prototype still uses memory and never connects to this database. Native disposable test results and exact commands are recorded in [CURRENT_STATE.md](CURRENT_STATE.md) and the [Section 01 archive](archive/SECTION_01_FOUNDATION.md). No persistent school/restaurant/production database is used.
 
+The 0.2.1 prototype adds in-memory reservation fields `hasLuggage` (boolean) and `luggageDescription` (trimmed text, required at 1-300 characters when true, empty when false). No SQL migration or luggage record is created. In Section 09 persist the equivalent `has_luggage` / `luggage_description` declaration on each booking passenger, with an invariant enforcing the same rules; existing historical data needs an explicit migration policy. Section 11 registration remains a separate verified record linked to that passenger.
+
 ## Naming, keys and ownership for future migrations
 
 - UUID surrogate IDs. Each company-owned table has non-null company_id, FK companies(id), and UNIQUE(company_id,id). Child references to private parents use `(company_id,parent_id) -> parent(company_id,id)`; checking only a UUID is insufficient to prevent cross-company links.

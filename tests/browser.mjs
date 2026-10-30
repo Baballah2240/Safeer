@@ -6,7 +6,7 @@ import {startServer} from '../server.mjs';
 import {chrome} from './support/chrome.mjs';
 
 const app = await startServer({port: 0, built: process.env.SAFEER_BROWSER_BUILT === '1'});
-const shots = resolve('.qa/section-01'); mkdirSync(shots, {recursive: true});
+const shots = resolve('.qa/luggage-addendum'); mkdirSync(shots, {recursive: true});
 let browser;
 try {
   browser = await chrome(mkdtempSync(join(tmpdir(), 'safeer-s01-')));
@@ -24,14 +24,34 @@ try {
   await click('[data-nav=passengers]');
   assert.equal(await evaluate('document.querySelectorAll("[data-seat]").length'), 40);
   await click('[data-seat="1"]');
+  assert.equal(await evaluate('document.querySelector("[name=hasLuggage]").value'), 'no');
+  assert.equal(await evaluate('getComputedStyle(document.querySelector("#luggage-details")).display'), 'none');
+  await evaluate('(()=>{const field=document.querySelector("[name=hasLuggage]");field.value="yes";field.dispatchEvent(new Event("change"));document.querySelector("#reservation-form").requestSubmit();})()');
+  assert.equal(await evaluate('document.querySelector("[name=luggageDescription]").validity.valueMissing'), true);
+  assert.equal(await evaluate('document.querySelector("#reference-dialog").open'), false);
+  const description='<img src=x onerror=alert(1)> Blue suitcase\nRed strap';
+  await evaluate(`(()=>{const field=document.querySelector('[name=luggageDescription]');field.value=${JSON.stringify(description)};field.dispatchEvent(new Event('input'));})()`);
+  await click('[data-seat="4"]');
+  assert.equal(await evaluate('document.querySelector("[name=luggageDescription]").value'), description);
+  await click('#language-button');
+  assert.ok(await evaluate('document.querySelector("#luggage-details").textContent.includes("وصف الأمتعة")'));
+  assert.equal(await evaluate('document.querySelector("[name=luggageDescription]").value'), description);
+  await click('#language-button'); await click('[data-seat="1"]');
   await evaluate('(()=>{const field=document.querySelector("[name=passengerName]");field.value="<b>Invented passenger</b>";field.dispatchEvent(new Event("input",{bubbles:true}));document.querySelector("#reservation-form").requestSubmit();})()');
   await until('document.querySelector("#reference-dialog").open');
   assert.ok(await evaluate('document.querySelector(".reference-sheet").textContent.includes("UNPAID")'));
   assert.equal(await evaluate('document.querySelector(".reference-sheet dd b")'), null);
+  assert.ok((await evaluate('document.querySelector(".reference-sheet").textContent')).includes(description));
+  assert.equal(await evaluate('document.querySelector(".reference-sheet dd img")'), null);
+  await shot('reference-luggage-en');
   await send('Emulation.setEmulatedMedia', {media: 'print'});
   assert.equal(await evaluate('getComputedStyle(document.querySelector("#app")).display'), 'none');
   await send('Emulation.setEmulatedMedia', {media: 'screen'});
   await click('[data-close]');
+  assert.equal(await evaluate('document.querySelector("[name=hasLuggage]").value'), 'no');
+  assert.equal(await evaluate('document.querySelector("[name=luggageDescription]").value'), '');
+  assert.ok((await evaluate('document.querySelector(".passenger-luggage").textContent')).includes(description));
+  assert.equal(await evaluate('document.querySelector(".passenger-luggage img")'), null);
   assert.equal(await evaluate('document.querySelectorAll("[data-seat]")[0].disabled'), true);
   await evaluate('window.confirm=()=>false'); await click('[data-cancel]');
   assert.equal(await evaluate('document.querySelectorAll("[data-seat]")[0].disabled'), true, 'Cancellation must require confirmation');
@@ -40,20 +60,41 @@ try {
   await click('[data-nav=settings]');
   await evaluate('document.querySelector("[name=holdMinutes]").value="5";document.querySelector("#policy-form").requestSubmit()');
   await click('[data-nav=passengers]'); await click('[data-seat="4"]');
+  await evaluate('(()=>{const choice=document.querySelector("[name=hasLuggage]"),field=document.querySelector("[name=luggageDescription]");choice.value="yes";choice.dispatchEvent(new Event("change"));field.value="Discarded draft";field.dispatchEvent(new Event("input"));choice.value="no";choice.dispatchEvent(new Event("change"));})()');
+  assert.equal(await evaluate('document.querySelector("[name=luggageDescription]").disabled'), true);
+  assert.equal(await evaluate('document.querySelector("[name=luggageDescription]").value'), '');
   await evaluate('document.querySelector("#reservation-form").requestSubmit()');
-  await until('document.querySelector("#reference-dialog").open'); await click('[data-close]');
+  await until('document.querySelector("#reference-dialog").open');
+  assert.ok(await evaluate('document.querySelector(".reference-sheet").textContent.includes("No luggage")'));
+  assert.equal(await evaluate('document.querySelector(".reference-sheet").textContent.includes("Discarded draft")'), false);
+  await click('[data-close]');
   await evaluate('window.dispatchEvent(new Event("pagehide"));window.__now=Date.now()+300001;Date.now=()=>window.__now;window.dispatchEvent(new Event("pageshow"));');
   await until('!document.querySelectorAll("[data-seat]")[3].disabled');
   assert.ok(await evaluate('Boolean(document.querySelector(".status.expired"))'));
+  await evaluate('(()=>{const choice=document.querySelector("[name=hasLuggage]"),field=document.querySelector("[name=luggageDescription]");choice.value="yes";choice.dispatchEvent(new Event("change"));field.value="Private demo draft";field.dispatchEvent(new Event("input"));})()');
   await evaluate('(()=>{const field=document.querySelector("#company-select");field.value="coast-demo";field.dispatchEvent(new Event("change"));})()');
   assert.equal(await evaluate('document.querySelectorAll("[data-reference]").length'), 0);
   assert.equal(await evaluate('document.querySelector("[name=passengerName]").value'), 'Demo passenger');
+  assert.equal(await evaluate('document.querySelector("[name=hasLuggage]").value'), 'no');
+  assert.equal(await evaluate('document.querySelector("[name=luggageDescription]").value'), '');
+  assert.equal(await evaluate('document.querySelector("#app").textContent.includes("Blue suitcase")'), false);
   await click('#language-button');
   assert.equal(await evaluate('document.documentElement.dir'), 'rtl');
-  await click('[data-seat="1"]'); await evaluate('document.querySelector("#reservation-form").requestSubmit()');
+  await click('[data-seat="1"]');
+  await evaluate('(()=>{const choice=document.querySelector("[name=hasLuggage]"),field=document.querySelector("[name=luggageDescription]");choice.value="yes";choice.dispatchEvent(new Event("change"));field.value="حقيبة زرقاء بحزام أحمر "+"س".repeat(270);field.dispatchEvent(new Event("input"));})()');
+  for (const [width,height] of [[1920,1080],[1366,768],[390,844]]) {
+    await send('Emulation.setDeviceMetricsOverride', {width,height,deviceScaleFactor:1,mobile:width<700});
+    assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth+2'));
+    assert.equal(await evaluate('document.querySelector("[name=luggageDescription]").maxLength'),300);
+  }
+  await evaluate('document.querySelector("#luggage-details").scrollIntoView({block:"center"})');
+  await shot('form-luggage-mobile-ar');
+  await evaluate('document.querySelector("#reservation-form").requestSubmit()');
   await until('document.querySelector("#reference-dialog").open');
   assert.equal(await evaluate('document.querySelector("#reference-title").textContent'), 'مرجع الحجز');
   assert.ok(await evaluate('document.querySelector(".reference-sheet").textContent.includes("بورتسودان")'));
+  assert.ok(await evaluate('document.querySelector(".reference-sheet").textContent.includes("حقيبة زرقاء بحزام أحمر")'));
+  assert.ok(await evaluate('document.querySelector(".reference-sheet").textContent.includes("وصف الأمتعة")'));
   await shot('reference-ar'); await click('[data-close]');
   for (const [width, height] of [[1920,1080],[1366,768],[390,844]]) {
     await send('Emulation.setDeviceMetricsOverride', {width, height, deviceScaleFactor: 1, mobile: width < 700});
@@ -62,5 +103,5 @@ try {
   await shot('passenger-mobile-ar');
   await click('[data-nav=overview]'); await shot('overview-mobile-ar');
   assert.deepEqual(await evaluate('window.__errors'), []);
-  console.log('Section 01 browser checks passed: passenger-only UI, reservations/print escaping, confirmation, expiry/BFCache, company demo scoping, Arabic reference and desktop/mobile layouts.');
+  console.log('Passenger browser checks passed: luggage choice/required description, draft retention/reset, text escaping/print, no-luggage booking, company demo scoping, expiry, Arabic reference and desktop/mobile layouts.');
 } finally { await browser?.close(); await app.close(); }

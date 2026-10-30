@@ -21,6 +21,8 @@ If commit fails, no paid ticket may exist. If the response is lost after commit,
 
 ## Luggage
 
+The local passenger form now collects a yes/no declaration before reservation. Yes requires 1-300 trimmed characters describing the bags, colour and identifying details; no clears it. Keep the declaration on the reservation, passenger list and unpaid reference. Drafts survive seat/trip/language re-rendering and clear after successful reservation or company change. These are passenger-supplied details, not registered luggage, a paid allowance or a tag.
+
 Register against a booking passenger/trip -> create unique tag/opaque QR -> verify tagging -> load -> in transit -> unload -> verify collection. Record each transition with actor/station/time. Exceptions and their resolution form separate events so the lifecycle history is preserved. Tag replacements reference the original; they do not create a second unlinked luggage record.
 
 Paid tickets authorize travel according to policy; luggage registration/loading/collection does not change ticket payment state. Excess-luggage fees, allowance, collection verification, missed bags and incident handling require operational approval before Section 11 implementation.

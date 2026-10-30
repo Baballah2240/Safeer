@@ -2,6 +2,8 @@
 
 Updated 2026-10-30. Section 01 handover status and test evidence are maintained in [CURRENT_STATE.md](CURRENT_STATE.md). **Do not begin Section 02 automatically.**
 
+0.2.1 owner-requested prototype addendum: luggage choice/description in the reservation, passenger list and unpaid reference. It is not completion of Section 09 or 11; station luggage registration, tags, tracking and fees remain in their scheduled sections.
+
 | Section | Scope | Dependencies | Status |
 | --- | --- | --- | --- |
 | 01 | Project inspection, architecture, database/migration foundation, conventions, documentation/archive | Existing 0.1 prototype | Complete; handover/archive evidence in CURRENT_STATE |

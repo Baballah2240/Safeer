@@ -40,6 +40,7 @@ These are approved target invariants unless marked as an open policy. The curren
 
 ## Passenger luggage
 
+- At reservation entry ask each traveler whether they have luggage. When yes, require a plain-text description trimmed to 1-300 characters; when no, clear the description. Treat this as an unverified passenger declaration, separate from staff registration and any allowance or fee. The 0.2.1 local prototype implements this declaration for its single passenger only and displays it on the unpaid reference. Full group-passenger persistence belongs to Section 09, with station registration in Section 11.
 - Luggage is linked to a booking passenger, booking, ticket when issued, trip/bus snapshot and owning company. Do not create an unrelated shipping module.
 - Capture identification/tag numbers, category, quantity, weight, description, handling instructions and relevant passenger/contact links. Read contact information through authorized linked records; avoid uncontrolled PII copies.
 - Lifecycle: registered -> tagged -> loaded -> in_transit -> unloaded -> collected. Exception reports are separate auditable events, preserving the prior lifecycle state and resolution; do not lose the loaded/collected history by overwriting it.

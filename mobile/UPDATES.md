@@ -1,5 +1,11 @@
 # Safeer mobile status
 
+## 0.2.1 - 2026-10-30, luggage declaration
+
+- The shared responsive reservation form asks whether the passenger has luggage and requires a description when yes (maximum 300 trimmed characters).
+- Declaration and description appear with the passenger and on the printable unpaid reference in Arabic/English. Drafts survive seat/language changes, clear when switched to no, and reset after reservation or company change.
+- This remains a browser-memory prototype, without luggage tags/tracking/fees or a native app build.
+
 ## 0.2.0 - 2026-10-30, Section 01
 
 - Release 1 now covers passenger transport and linked passenger luggage; freight is archived/deferred.

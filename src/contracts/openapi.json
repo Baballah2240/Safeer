@@ -1,6 +1,6 @@
 {
   "openapi": "3.1.0",
-  "info": {"title": "Safeer Section 01 liveness API", "version": "0.2.0", "description": "Only the local prototype liveness endpoint is implemented. No authentication or business APIs exist yet."},
+  "info": {"title": "Safeer Section 01 liveness API", "version": "0.2.1", "description": "Only the local prototype liveness endpoint is implemented. No authentication or business APIs exist yet."},
   "paths": {
     "/api/v1/health": {
       "get": {

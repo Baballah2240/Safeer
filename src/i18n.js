@@ -98,7 +98,15 @@ export const arabic = {
   "This seat is unavailable. Choose another.": "هذا المقعد غير متاح. اختر مقعداً آخر.",
   "Reservation not found in this company.": "الحجز غير موجود في هذه الشركة.",
   "Only an active reservation can be cancelled.": "يمكن إلغاء الحجز النشط فقط.",
-  "Choose a whole number from 5 to 1440 minutes.": "اختر عدداً صحيحاً بين ٥ و١٤٤٠ دقيقة."
+  "Choose a whole number from 5 to 1440 minutes.": "اختر عدداً صحيحاً بين ٥ و١٤٤٠ دقيقة.",
+  "Does the passenger have luggage?": "هل لدى الراكب أمتعة؟",
+  "No luggage": "بدون أمتعة",
+  "Has luggage": "لديه أمتعة",
+  "Luggage": "الأمتعة",
+  "Luggage description": "وصف الأمتعة",
+  "Describe the bags, colour and any identifying details. Maximum 300 characters.": "صف الحقائب ولونها وأي علامات مميزة، بحد أقصى ٣٠٠ حرف.",
+  "Choose whether the passenger has luggage.": "حدد ما إذا كان لدى الراكب أمتعة.",
+  "Describe the luggage using 1 to 300 characters.": "أدخل وصفاً للأمتعة من حرف واحد إلى ٣٠٠ حرف."
 };
 
 export function translate(value, language) {

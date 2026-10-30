@@ -37,3 +37,9 @@ Node 24, pinned pg client, optional local PostgreSQL 18 for migrations and Chrom
 Read CURRENT_STATE.md, reproduce npm ci/test/build and the documented PostgreSQL/browser checks. Source ZIPs/checksums are in ignored archives/; numbered documentation remains in Git. The verified old freight prototype is preserved separately. The final section archive records the exact checkpoint commit and payload hashes in its manifest.
 
 **Next section: 02 - Authentication, users, roles and permissions, only after explicit owner approval. Stop here after this section passes, is documented and archived.**
+
+## Owner-requested addendum - 0.2.1 luggage declaration
+
+After the Section 01 handover the owner requested a luggage choice and description for the passenger (D16). Added only this declaration to the local prototype: boolean `hasLuggage`, conditional trimmed `luggageDescription` (1-300 characters), bilingual form/list/reference and escaped plain-text print output. Draft reset/retention avoids carrying luggage to another passenger/company. Existing rows without fields display no luggage. No business tables, APIs, station registration, tags, fees or tracking were added; Section 02 remains unapproved.
+
+Changed groups: app/domain/translations/styles, version/lock/liveness contract, domain/browser regression, mobile notes and relevant master/roadmap/schema/rules/architecture/continuation records. Nine unit/integration tests, source and built browser regression (including Arabic/mobile luggage views), build and docs checks passed. Database code/migrations are unchanged; the prior seven native checks were not rerun. Original checkpoint/evidence is retained. Follow-up source checkpoint: `archives/Safeer-0.2.1-luggage-2026-10-30.zip`; hashes and exact commit are verified at handover.

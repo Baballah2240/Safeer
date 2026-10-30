@@ -47,3 +47,27 @@ test('cancellation releases only the intended active seat and malformed reservat
   for(const seat of [0,41,1.5,'1'])assert.throws(()=>reserveSeat(state,'nile-demo',{...passenger,seat},now));
   for(const passengerName of ['',null,'x'.repeat(81)])assert.throws(()=>reserveSeat(state,'nile-demo',{...passenger,passengerName},now));
 });
+
+test('luggage declarations require a bounded description only when luggage is selected, before allocating a seat', () => {
+  const state=createDemo(now), count=state.reservations.length;
+  for(const luggageDescription of ['', '   ', null, {}, 'x'.repeat(301)]) {
+    assert.throws(()=>reserveSeat(state,'nile-demo',{...passenger,hasLuggage:true,luggageDescription},now),/Describe the luggage/);
+  }
+  for(const hasLuggage of ['yes', 1, null]) {
+    assert.throws(()=>reserveSeat(state,'nile-demo',{...passenger,hasLuggage},now),/whether the passenger/);
+  }
+  assert.equal(state.reservations.length,count);
+  assert.equal(occupiedSeats(state,'nile-01',now).has(1),false);
+  const row=reserveSeat(state,'nile-demo',{...passenger,hasLuggage:true,luggageDescription:'  حقيبة زرقاء <b>Demo</b>\nحزام أحمر  '},now);
+  assert.equal(row.hasLuggage,true);
+  assert.equal(row.luggageDescription,'حقيبة زرقاء <b>Demo</b>\nحزام أحمر');
+  const maximum=reserveSeat(state,'nile-demo',{...passenger,seat:4,hasLuggage:true,luggageDescription:'x'.repeat(300)},now);
+  assert.equal(maximum.luggageDescription.length,300);
+  const without=reserveSeat(state,'nile-demo',{...passenger,seat:6,hasLuggage:false,luggageDescription:'old draft'},now);
+  assert.equal(without.hasLuggage,false); assert.equal(without.luggageDescription,'');
+  const legacy=reserveSeat(state,'nile-demo',{...passenger,seat:9},now);
+  assert.equal(legacy.hasLuggage,false); assert.equal(legacy.luggageDescription,'');
+  cancelReservation(state,'nile-demo',row.id,now);
+  assert.equal(row.luggageDescription,'حقيبة زرقاء <b>Demo</b>\nحزام أحمر');
+  assert.equal(workspaceFor(state,'coast-demo').reservations.some(item=>item.id===row.id),false);
+});

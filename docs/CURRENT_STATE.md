@@ -1,10 +1,12 @@
 # Current state - read this first
 
-Updated: 2026-10-30. Project: Safeer / Sudan Transport, version 0.2.0.
+Updated: 2026-10-30. Project: Safeer / Sudan Transport, version 0.2.1.
 
 ## Current section and gate
 
 **Section 01 complete: tested and documented, with a source checkpoint ZIP generated/verified at handover.** Section 02 is not authorized. Do not create authentication features or move to another section automatically.
+
+Owner-requested follow-up D16: the local passenger form now collects a luggage yes/no declaration, with a required plain-text description when yes (1-300 trimmed characters). It appears beneath the passenger name in reservations and on the printable unpaid reference. This is not station luggage registration/tracking or approval for Section 02/11. The 0.2.1 checkpoint is separate from the preserved original Section 01 archive.
 
 ## Completed source work
 
@@ -13,6 +15,7 @@ Updated: 2026-10-30. Project: Safeer / Sudan Transport, version 0.2.0.
 - Verified an archive of the old 16-file prototype, then removed active freight/parcels code, fixtures, navigation and tests.
 - Preserved the fictional passenger example: trip/seat selection, unpaid reference/print view, timestamp expiry, cancellation and company demo scoping.
 - Extracted translations/design tokens, added cancellation confirmation and fixed expiry timer restoration after page hide/show.
+- Added bilingual luggage declaration/description, domain validation and escaped list/reference output. Drafts survive seat/trip/language re-renders, clear on no, and reset after successful reservation/company change.
 - Added a single asset allowlist, a static build and versioned prototype liveness contract.
 - Added a pinned PostgreSQL client, transactional/checksummed migration runner and namespace-only baseline.
 - Documented the complete target architecture, entities/constraints/indexes, module boundaries, roles, workflows, exact roadmap and continuation/archive conventions.
@@ -34,10 +37,10 @@ No real accounts/sessions, company security/RLS, Next.js/NestJS apps, Flutter cl
 
 - Before edits: 6 baseline tests passed.
 - Dependency reproduction: npm ci --offline completed successfully from the lockfile.
-- Final unit/integration checks: **8 passed**, including migration filename/URL safeguards and liveness/contract/private-file boundaries.
-- Native database integration: 7 passed, including migration CLI, rollback, drift, concurrency and constraints.
+- Current unit/integration checks: **9 passed**, including luggage validation, migration filename/URL safeguards and liveness/contract/private-file boundaries. Original Section 01 checkpoint had eight tests.
+- Native database integration: 7 passed at the original Section 01 checkpoint, including migration CLI, rollback, drift, concurrency and constraints. Not rerun for the 0.2.1 UI/in-memory change; database code and migrations are unchanged.
 - Static build: 8 public assets built successfully.
-- Browser regression: **passed on source and built assets**, covering passenger-only navigation, escaped unpaid reference/print, cancellation confirmation, expiry after page restoration, company fixture scoping, Arabic print and 1920x1080/1366x768/390x844 layouts.
+- Browser regression: **passed on source and built assets**, covering luggage visibility/required description, draft retention/reset, no-luggage booking, escaped passenger list/unpaid reference/print, cancellation confirmation, expiry after page restoration, company fixture scoping, Arabic print and 1920x1080/1366x768/390x844 layouts. Current screenshots: ignored `.qa/luggage-addendum/`; original screenshots preserved in `.qa/section-01/`.
 - Documentation: **10 mandatory continuation/archive documents checked**, local links valid in **21 Markdown files**.
 - Syntax: **16 JavaScript files parsed**. Static build: **8 assets** and SHA-256 manifest.
 - Dependency audit: **zero known advisories reported** for the pinned client dependency tree on 2026-10-30.

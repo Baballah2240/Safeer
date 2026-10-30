@@ -2,6 +2,8 @@
 
 Updated: 2026-10-30. Current authorization: **Section 01 only**. Start continuation with [CURRENT_STATE.md](CURRENT_STATE.md). The owner's [master instructions](decisions/MASTER_INSTRUCTIONS_2026-10-30.md) are the governing plan; [DECISIONS.md](DECISIONS.md) records changes from the earlier prototype.
 
+Owner-authorized 0.2.1 follow-up: collect and display a passenger luggage yes/no declaration and required description in the local prototype. This scoped change (D16) does not begin authentication or full station luggage management.
+
 ## Vision and approved business model
 
 A reliable Sudan intercity passenger-transport platform: one central marketplace, individual public company booking pages, and independent private company management systems. Approved operators publish trips and fares. Passengers may book as guests; a passenger account is never mandatory. Company staff run stations, buses, passenger/luggage operations and finances within their own authorized scope.

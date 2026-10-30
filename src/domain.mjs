@@ -29,16 +29,20 @@ export function occupiedSeats(state, tripId, now = Date.now()) {
   return new Set([...trip.blockedSeats, ...state.reservations.filter(row => row.tripId === tripId && row.status === 'reserved' && row.expiresAt > now).map(row => row.seat)]);
 }
 
-export function reserveSeat(state, companyId, {tripId, seat, passengerName}, now = Date.now()) {
+export function reserveSeat(state, companyId, {tripId, seat, passengerName, hasLuggage = false, luggageDescription = ''}, now = Date.now()) {
   const company = companyFor(state, companyId);
   const trip = state.trips.find(row => row.id === tripId && row.companyId === companyId);
   if (!trip) throw Error('Trip not found in this company.');
   if (trip.departureAt <= now) throw Error('This trip has departed.');
   if (typeof passengerName !== 'string' || !passengerName.trim() || passengerName.trim().length > 80) throw Error('Enter a demo passenger name, up to 80 characters.');
+  if (typeof hasLuggage !== 'boolean') throw Error('Choose whether the passenger has luggage.');
+  if (hasLuggage && (typeof luggageDescription !== 'string' || !luggageDescription.trim() || luggageDescription.trim().length > 300)) {
+    throw Error('Describe the luggage using 1 to 300 characters.');
+  }
   if (!Number.isInteger(seat) || seat < 1 || seat > trip.capacity) throw Error('Choose a valid seat.');
   expireReservations(state, now);
   if (occupiedSeats(state, tripId, now).has(seat)) throw Error('This seat is unavailable. Choose another.');
-  const reservation = {id: crypto.randomUUID(), reference: reference('SF'), companyId, tripId, seat, passengerName: passengerName.trim(), status: 'reserved', createdAt: now, expiresAt: Math.min(now + company.holdMinutes * 60000, trip.departureAt)};
+  const reservation = {id: crypto.randomUUID(), reference: reference('SF'), companyId, tripId, seat, passengerName: passengerName.trim(), hasLuggage, luggageDescription: hasLuggage ? luggageDescription.trim() : '', status: 'reserved', createdAt: now, expiresAt: Math.min(now + company.holdMinutes * 60000, trip.departureAt)};
   state.reservations.unshift(reservation);
   return reservation;
 }

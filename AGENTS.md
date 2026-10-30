@@ -10,5 +10,6 @@
 - Keep responsive web/mobile-facing code together in src/. Record mobile-facing changes in mobile/UPDATES.md; no native mobile build is requested yet.
 - Use invented demonstration data only. Do not store passenger IDs, real customer data, tokens or credentials in fixtures or source control.
 - Work one numbered section at a time. Current authorization is SECTION 01 only. Do not start SECTION 02 without explicit owner approval, even after Section 01 passes.
+- Owner-authorized follow-up: the passenger prototype collects a luggage yes/no declaration and required description (1-300 trimmed characters when yes). This does not authorize full Section 11 operations or Section 02; see D16 in docs/DECISIONS.md.
 - Update docs/PROJECT_MASTER.md, DEVELOPMENT_ROADMAP.md, DATABASE_SCHEMA.md, BUSINESS_RULES.md, SYSTEM_ARCHITECTURE.md, CHANGELOG.md, CURRENT_STATE.md, DECISIONS.md and the relevant docs/archive/SECTION_*.md at each section handover.
 - Validate relevant domain behavior with npm test, the build and affected browser checks. Apply/test executable migrations on an isolated PostgreSQL instance; do not claim proposed tables or future access controls are implemented.

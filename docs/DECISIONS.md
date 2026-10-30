@@ -25,3 +25,7 @@ Source: [Master development instructions](decisions/MASTER_INSTRUCTIONS_2026-10-
 ## Decision changes
 
 Record the old decision, owner instruction, reason, affected modules/data, compatibility impact and required tests before implementing a change. Financial rules, tenancy, ticket validity, support access and public/private data boundaries must never change silently.
+
+## 2026-10-30 - passenger luggage declaration addendum
+
+D16: The owner explicitly requested a luggage yes/no choice and description for the passenger. Extend only the existing local passenger prototype: default to no luggage; when yes, require a plain-text description trimmed to 1-300 characters. Keep the declaration with the reservation and display it in the passenger list and printable unpaid reference. Clear it for the next reservation and on company changes. Existing example rows without these fields display no luggage. Test required/invalid descriptions, Arabic/English layouts, draft preservation, escaping and company/reset behavior. This is a declaration, not station registration, tags, verified weight, charges or tracking; those remain Section 11. No business tables or APIs are added, and Section 02 remains unapproved.
