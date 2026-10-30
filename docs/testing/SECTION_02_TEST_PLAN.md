@@ -25,3 +25,8 @@ The local-launch check must confirm loopback listeners, private runtime ACLs, ge
 
 
 0.3.1 verification: 13 unit/server checks and 19 native PostgreSQL/identity checks passed; build, documentation links and offline locked install passed. Real source and built Chrome checks passed for Super Administrator owner/company role edits, restricted support UI, and Arabic/English at 1920x1080, 1366x768 and 390x844 with no uncaught browser errors. Follow-up checkpoint: `archives/Safeer-0.3.1-role-editing-2026-10-30.zip` (generated from the committed source, credentials/runtime excluded).
+
+
+## 0.3.2 - Connected workspace layout
+
+Verify overview task shortcuts; user role labels/links after assignment; current-page user search; role search, zero results and scope filters; support account restrictions; modal Escape dismissal; Arabic/English round-trip navigation between staff and passenger views. Capture all five staff screens in both languages at 1920x1080, 1366x768 and 390x844, with overflow and uncaught-error checks. Retain real sign-in, credentials, role editing, password, sessions, expired-form and XSS workflows.

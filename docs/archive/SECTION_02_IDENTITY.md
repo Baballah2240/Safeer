@@ -33,3 +33,11 @@ Owner-authorized D20 follow-up: Super Administrators can edit names, permissions
 
 
 0.3.1 verification: 13 unit/server checks and 19 native PostgreSQL/identity checks passed; build, documentation links and offline locked install passed. Real source and built Chrome checks passed for Super Administrator owner/company role edits, restricted support UI, and Arabic/English at 1920x1080, 1366x768 and 390x844 with no uncaught browser errors. Follow-up checkpoint: `archives/Safeer-0.3.1-role-editing-2026-10-30.zip` (generated from the committed source, credentials/runtime excluded).
+
+
+## 0.3.2 - Connected workspace layout
+
+D21 follow-up checkpoint: archives/Safeer-0.3.2-workspace-2026-10-30.zip, generated from committed source with hashes/CRC verification. The layout connects existing identity workflows and the fictional passenger preview; it does not implement company membership or live booking/payment modules.
+
+
+0.3.2 validation: 13 unit/server checks, TypeScript/API/public build and documentation links passed. Source and built staff browser workflows passed across 30 layouts each (five screens, Arabic/English, three viewports). Search/scope filters, role links, Super Administrator edits, restricted support views, session/password workflows, keyboard dismissal and language-preserving round trips passed with no uncaught errors. Passenger source/built reservation, luggage, escaping and printing regressions passed. No schema or authorization changes required repeating migrations.

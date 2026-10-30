@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Safeer local identity API",
-    "version": "0.3.1",
+    "version": "0.3.2",
     "description": "Section 02 implemented operations only. Loopback development HTTP; no company memberships, business operations, remote deployment or mobile bearer authentication."
   },
   "servers": [

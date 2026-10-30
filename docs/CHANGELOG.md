@@ -65,3 +65,8 @@ This is still a local fictional-data prototype plus verified migration/architect
 ## 0.1.0 - 2026-10-28 - exploratory prototype
 
 Added independent Safeer local passenger/freight demonstration, company-specific example hold policies, Arabic/English layout, unpaid reservation print view, cargo request example and six tests. No database/accounts/real payments. Its mixed freight scope is superseded by the 2026-10-30 master plan.
+
+
+## 0.3.2 - Connected workspace layout
+
+Simplified the responsive staff shell and account overview; added permission-aware shortcuts, user-role links, current-page search, role scope filters and result counts. Unified passenger styling, replaced outdated no-sign-in copy and freight-related journey text, and preserved language across staff/passenger links. No backend authorization or schema change.

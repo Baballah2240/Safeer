@@ -25,6 +25,9 @@ try{
     await send('Emulation.setDeviceMetricsOverride',{width:1366,height:900,deviceScaleFactor:1,mobile:false});
     await send('Page.navigate',{url:web.origin+'/staff'});
     await signIn('owner@safeer.local',f.password);
+    assert.equal(await evaluate('document.querySelectorAll(".staff-summary article").length'),3);
+    assert.equal(await evaluate('document.querySelectorAll(".staff-shortcuts button").length'),4);
+    await click('.staff-shortcuts [data-tab=users]');await until('Boolean(document.querySelector("[data-create-user]"))');
     await tab('users','[data-create-user]');await click('[data-create-user]');
     await fill('#staff-dialog [name=displayName]','Fictional <img src=x onerror="window.__xss=true">');
     await fill('#staff-dialog [name=login]','browser-staff@safeer.local');await fill('#staff-dialog [name=currentPassword]',f.password);await submit('#staff-dialog form');
@@ -38,6 +41,14 @@ try{
     await click(`[data-assign-user="${user.id}"]`);await until('Boolean(document.querySelector("#staff-dialog input[name=roleIds]"))');
     await evaluate(`document.querySelector('#staff-dialog input[value="00000000-0000-4000-8000-000000000002"]').checked=true`);
     await fill('#staff-dialog [name=currentPassword]',f.password);await submit('#staff-dialog form');await until('!document.querySelector("#staff-dialog").open');
+    await fill('#staff-search','browser-staff@safeer.local');
+    assert.equal(await evaluate('document.querySelectorAll(".staff-record:not([hidden])").length'),1);
+    assert.ok(await evaluate('document.querySelector(".staff-record:not([hidden]) .staff-role-link").textContent.includes("support")'));
+    await click('.staff-record:not([hidden]) .staff-role-link');await until('Boolean(document.querySelector("#staff-scope"))');
+    await evaluate('(()=>{const n=document.querySelector("#staff-scope");n.value="company";n.dispatchEvent(new Event("change"));})()');
+    assert.equal(await evaluate('document.querySelectorAll(".staff-record:not([hidden])").length'),1);
+    await fill('#staff-search','no such role');assert.equal(await evaluate('document.querySelectorAll(".staff-record:not([hidden])").length'),0);
+    await fill('#staff-search','');await evaluate('(()=>{const n=document.querySelector("#staff-scope");n.value="all";n.dispatchEvent(new Event("change"));})()');
     await tab('roles','[data-create-role]');
     assert.equal(await evaluate('document.querySelectorAll("[data-edit-role]").length'),8);
     for(const [id,name] of [['00000000-0000-4000-8000-000000000001','Platform owner'],['00000000-0000-4000-8000-000000000003','Company team administrator']]){
@@ -62,13 +73,25 @@ try{
     await signIn('owner@safeer.local',f.password);await tab('roles','[data-create-role]');
     for(const lang of ['en','ar']){
       if(await evaluate('document.documentElement.lang')!==lang)await click('#staff-language');
-      for(const [width,height] of [[1920,1080],[1366,768],[390,844]]){
-        await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width<700});
-        assert.ok(await evaluate(`document.documentElement.scrollWidth<=${width+2}&&innerWidth<=${width+2}`));await shot(`roles-${lang}-${width}`);
+      assert.equal(await evaluate('new URL(document.querySelector(".staff-preview").href).searchParams.get("lang")'),lang);
+      for(const [name,ready] of [['profile','#change-password'],['users','[data-create-user]'],['roles','[data-create-role]'],['sessions','[data-revoke]'],['audit','.staff-table']]){
+        await tab(name,ready);
+        for(const [width,height] of [[1920,1080],[1366,768],[390,844]]){
+          await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width<700});
+          assert.ok(await evaluate(`document.documentElement.scrollWidth<=${width+2}&&innerWidth<=${width+2}`),name+' '+lang+' '+width);await shot(`${name}-${lang}-${width}`);
+        }
       }
     }
+    await click('.staff-preview');await until('Boolean(document.querySelector("#app .metrics"))');
+    assert.equal(await evaluate('document.documentElement.lang'),'ar');
+    await click('a[href^="/staff"]');await until('Boolean(document.querySelector("#change-password"))');
+    assert.equal(await evaluate('document.documentElement.lang'),'ar');
+    await tab('roles','[data-create-role]');
     await click('[data-create-role]');await until('Boolean(document.querySelector("#staff-dialog form"))');assert.ok(await evaluate('document.querySelector("#staff-dialog").getBoundingClientRect().width<=innerWidth'));
-    await shot('role-editor-ar-mobile');await click('[data-dialog-cancel]');
+    await shot('role-editor-ar-mobile');
+    await send('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
+    await send('Input.dispatchKeyEvent',{type:'keyUp',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
+    await until('!document.querySelector("#staff-dialog").open');
     if(await evaluate('document.documentElement.lang')!=='en')await click('#staff-language');
     await tab('users','[data-create-user]');await click('[data-create-user]');
     await fill('#staff-dialog [name=displayName]','Expired request');await fill('#staff-dialog [name=login]','expired@safeer.local');await fill('#staff-dialog [name=currentPassword]',f.password);
@@ -77,6 +100,6 @@ try{
     await submit('#staff-dialog form');await until('Boolean(document.querySelector("#staff-login"))');
     assert.equal((await f.migration.query("SELECT count(*)::int AS n FROM safeer.users WHERE normalized_login='expired@safeer.local'")).rows[0].n,0);
     assert.deepEqual(await evaluate('window.__errors'),[]);
-    console.log(`Section 02 ${built?'built':'source'} browser checks passed: real sign-in, one-time credentials, role assignment/create/edit, password change, restricted support UI, session revocation, expired modal recovery, escaped names and six EN/AR desktop/mobile layouts.`);
+    console.log(`Safeer ${built?'built':'source'} browser checks passed: sign-in, overview shortcuts, user-role links, search/scope filters, role editing, password changes, support restrictions, sessions, expired modal recovery, escaped names, keyboard dialog dismissal, language-preserving round trip and 30 EN/AR staff layouts.`);
   },{webOrigin:web.origin});
 }finally{await browser?.close();await web.close();}

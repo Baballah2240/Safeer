@@ -52,3 +52,8 @@ Section 02 ends at the verified identity handover. Section 03 requires explicit 
 ## 0.3.1 - Super Administrator role editing
 
 Owner-authorized D20 follow-up: Super Administrators can edit names, permissions and status of all eight built-in role templates and custom platform roles. Reserved owner codes/scopes remain immutable, owner authority always includes the permission catalog, and disabling the last active owner is rejected atomically. Other administrators remain restricted. Company/resource assignment remains deferred to Section 03; no schema migration or company access is added. The role editor supports Arabic/English and mobile layouts.
+
+
+## 0.3.2 - Connected workspace layout
+
+Owner-authorized D21 follow-up improves the implemented staff/passenger workspace: shared navy/teal styling, sidebar, account overview, permission-aware shortcuts, user-role navigation and language-preserving links. Business modules remain at their existing stage.

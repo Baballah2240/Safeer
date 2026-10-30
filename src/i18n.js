@@ -1,4 +1,12 @@
 export const arabic = {
+  "Passenger transport workspace": "مساحة عمل نقل الركاب",
+  "Browse sample trips, choose a seat and review the reservation.": "تصفح الرحلات التجريبية واختر مقعداً وراجع الحجز.",
+  "Fictional reservations reset on refresh. Staff accounts are managed separately in Staff access.": "الحجوزات التجريبية تمسح عند التحديث. تدار حسابات الموظفين بصورة منفصلة من دخول الموظفين.",
+  "Local staff sign-in and role management are available in Staff access.": "تسجيل دخول الموظفين وإدارة الأدوار متاحان محلياً عبر دخول الموظفين.",
+  "Company staff confirm offline payment before issuing a final ticket and receipt.": "يؤكد موظفو الشركة الدفع خارج التطبيق قبل إصدار التذكرة النهائية والإيصال.",
+  "Staff and permissions": "الموظفون والصلاحيات",
+  "Manage staff accounts": "إدارة حسابات الموظفين",
+  "Open the local staff workspace to manage accounts, roles and sign-in sessions.": "افتح مساحة عمل الموظفين المحلية لإدارة الحسابات والأدوار وجلسات الدخول.",
   "Staff access": "دخول الموظفين",
   "Khartoum": "الخرطوم",
   "Atbara": "عطبرة",
