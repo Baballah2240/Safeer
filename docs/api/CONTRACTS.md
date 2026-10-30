@@ -1,6 +1,6 @@
 # Implemented API contracts
 
-Canonical OpenAPI 3.1: [src/contracts/openapi.json](../../src/contracts/openapi.json), version 0.3.0. It records only implemented operations, request fields, cookies/CSRF, envelopes and response schemas. Requests are strict JSON with an 8 KiB limit. Responses use {data: ...} or {error:{code,message}}; no SQL, token or password details are logged in errors. Successful one-time credential responses are explicit exceptions intended only for the authorized administrator.
+Canonical OpenAPI 3.1: [src/contracts/openapi.json](../../src/contracts/openapi.json), version 0.3.1. It records only implemented operations, request fields, cookies/CSRF, envelopes and response schemas. Requests are strict JSON with an 8 KiB limit. Responses use {data: ...} or {error:{code,message}}; no SQL, token or password details are logged in errors. Successful one-time credential responses are explicit exceptions intended only for the authorized administrator.
 
 ## Section 02 routes
 
@@ -18,7 +18,7 @@ Canonical OpenAPI 3.1: [src/contracts/openapi.json](../../src/contracts/openapi.
 | POST | /identity/users/{id}/password | users.manage, current password/version, another user; one-time temporary password |
 | PUT | /identity/users/{id}/roles | platform_roles.assign, current password/version, active platform roles and delegation/owner rules |
 | GET, POST | /identity/roles | roles.read or roles.manage; create requires current password and permission subset |
-| PATCH | /identity/roles/{id} | roles.manage, current password/version; protected owner and non-platform templates cannot be edited |
+| PATCH | /identity/roles/{id} | roles.manage, current password/version; Super Administrators can edit every scope; owner authority persists independently of editable grants; last-owner protection applies |
 | GET | /identity/permissions | roles.read; implemented identity catalog only |
 | GET | /identity/audit | audit.read; latest 100 identity events without credential payloads |
 

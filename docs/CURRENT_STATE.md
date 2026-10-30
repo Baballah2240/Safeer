@@ -1,6 +1,6 @@
 # Current state - read this first
 
-Updated: 2026-10-30. Safeer / Sudan Transport, version 0.3.0.
+Updated: 2026-10-30. Safeer / Sudan Transport, version 0.3.1.
 
 ## Current section and gate
 
@@ -50,3 +50,11 @@ Real passenger data, multi-seat/guest-mobile bookings, station money/tickets, re
 ## Exact next task after handover
 
 Stop and wait for Section 03 approval: companies, branches, stations and company isolation. Then add company/membership/resource tables, scoped roles and support grants, composite same-company FKs, runtime RLS and cross-company/resource tests. Do not add booking/payment modules early. Read the master plan, decisions, this file and Section 02 archive before continuing.
+
+
+## 0.3.1 - Super Administrator role editing
+
+Owner-authorized D20 follow-up: Super Administrators can edit names, permissions and status of all eight built-in role templates and custom platform roles. Reserved owner codes/scopes remain immutable, owner authority always includes the permission catalog, and disabling the last active owner is rejected atomically. Other administrators remain restricted. Company/resource assignment remains deferred to Section 03; no schema migration or company access is added. The role editor supports Arabic/English and mobile layouts.
+
+
+0.3.1 verification: 13 unit/server checks and 19 native PostgreSQL/identity checks passed; build, documentation links and offline locked install passed. Real source and built Chrome checks passed for Super Administrator owner/company role edits, restricted support UI, and Arabic/English at 1920x1080, 1366x768 and 390x844 with no uncaught browser errors. Follow-up checkpoint: `archives/Safeer-0.3.1-role-editing-2026-10-30.zip` (generated from the committed source, credentials/runtime excluded).

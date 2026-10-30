@@ -133,3 +133,8 @@ Payment confirmation locks the booking and allocations, reads a fresh database c
 Use append-only sequential `0001_name.sql` files. The runner normalizes CRLF, hashes contents, checks applied names/versions/checksums, obtains a transaction-level advisory lock, and commits all pending files with their ledger rows atomically. SQL files must not contain their own transaction control or nontransactional statements. Drift/unknown history fails closed. No automatic down-migrations or edits to applied files; use reviewed forward corrections. Keep schema-owner and application credentials separate.
 
 See [database operations](database/MIGRATIONS.md) for local commands, test setup, upgrade/backfill and recovery requirements.
+
+
+## 0.3.1 - Super Administrator role editing
+
+Owner-authorized D20 follow-up: Super Administrators can edit names, permissions and status of all eight built-in role templates and custom platform roles. Reserved owner codes/scopes remain immutable, owner authority always includes the permission catalog, and disabling the last active owner is rejected atomically. Other administrators remain restricted. Company/resource assignment remains deferred to Section 03; no schema migration or company access is added. The role editor supports Arabic/English and mobile layouts.

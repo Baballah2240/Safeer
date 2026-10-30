@@ -6,7 +6,7 @@ These are approved target invariants unless marked as an open policy. The curren
 
 - Staff sign in through the local identity service; this does not turn the passenger demo into real shared inventory or grant a company membership.
 - Temporary passwords must be changed before other authenticated operations. Password resets and account disabling revoke sessions; role changes are effective on the next authorization check.
-- Every privileged account/role change requires current-password reauthentication and explicit server permission. Prevent self-escalation, protect the owner template and keep at least one active protected owner, even under concurrent changes.
+- Every privileged account/role change requires current-password reauthentication and explicit server permission. Prevent self-escalation, reserve owner and non-platform template edits to Super Administrators and keep at least one active protected owner, even under concurrent changes.
 - Company, branch, station and trip templates cannot be assigned globally. Company/resource access begins only after Section 03 membership/scope checks exist. Platform support has no default financial authority.
 - Preserve identity audit/history; never log password, cookie, CSRF or request payload secrets. Recovery is a privileged local operation, never an unauthenticated web endpoint.
 
@@ -61,3 +61,8 @@ These are approved target invariants unless marked as an open policy. The curren
 - A booking reference alone must not reveal passenger data. Use a high-entropy guest capability stored as a hash, or verified contact recovery; optional passenger accounts do not remove the guest option.
 - QR payloads are opaque, purpose-scoped identifiers. Boarding revalidates paid/nonvoid ticket, company, assigned trip and boarding status. Repeated scans are idempotent and cannot board twice.
 - Driver views contain only assigned trips and necessary manifest details. Offline scans/sales are not promised until a tested conflict/reconciliation policy exists.
+
+
+## 0.3.1 - Super Administrator role editing
+
+Owner-authorized D20 follow-up: Super Administrators can edit names, permissions and status of all eight built-in role templates and custom platform roles. Reserved owner codes/scopes remain immutable, owner authority always includes the permission catalog, and disabling the last active owner is rejected atomically. Other administrators remain restricted. Company/resource assignment remains deferred to Section 03; no schema migration or company access is added. The role editor supports Arabic/English and mobile layouts.

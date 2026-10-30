@@ -38,7 +38,17 @@ try{
     await click(`[data-assign-user="${user.id}"]`);await until('Boolean(document.querySelector("#staff-dialog input[name=roleIds]"))');
     await evaluate(`document.querySelector('#staff-dialog input[value="00000000-0000-4000-8000-000000000002"]').checked=true`);
     await fill('#staff-dialog [name=currentPassword]',f.password);await submit('#staff-dialog form');await until('!document.querySelector("#staff-dialog").open');
-    await tab('roles','[data-create-role]');await click('[data-create-role]');await until('Boolean(document.querySelector("#staff-dialog [name=displayName]"))');
+    await tab('roles','[data-create-role]');
+    assert.equal(await evaluate('document.querySelectorAll("[data-edit-role]").length'),8);
+    for(const [id,name] of [['00000000-0000-4000-8000-000000000001','Platform owner'],['00000000-0000-4000-8000-000000000003','Company team administrator']]){
+      await click(`[data-edit-role="${id}"]`);await until('Boolean(document.querySelector("#staff-dialog [name=displayName]"))');
+      if(id.endsWith('1'))assert.equal(await evaluate('document.querySelector("#staff-dialog [name=active]").disabled'),true);
+      await fill('#staff-dialog [name=displayName]',name);
+      await evaluate('document.querySelectorAll("#staff-dialog [name=permissions]").forEach(n=>n.checked=false)');
+      await fill('#staff-dialog [name=currentPassword]',f.password);await submit('#staff-dialog form');
+      await until(`!document.querySelector("#staff-dialog").open&&document.querySelector(".staff-main").textContent.includes(${JSON.stringify(name)})`);
+    }
+    await click('[data-create-role]');await until('Boolean(document.querySelector("#staff-dialog [name=displayName]"))');
     await fill('#staff-dialog [name=displayName]','Audit reader');await evaluate(`document.querySelector('#staff-dialog input[value="identity.audit.read"]').checked=true`);
     await fill('#staff-dialog [name=currentPassword]',f.password);await submit('#staff-dialog form');await until('!document.querySelector("#staff-dialog").open&&document.querySelector(".staff-main").textContent.includes("Audit reader")');
     const role=(await f.admin.request('identity/roles')).data.items.find(r=>r.displayName==='Audit reader');
@@ -47,6 +57,7 @@ try{
     assert.equal(await evaluate('document.querySelector("[data-tab=users]")'),null);
     const newPassword=randomBytes(24).toString('hex');await fill('#change-password [name=currentPassword]',temporaryPassword);await fill('[name=newPassword]',newPassword);await fill('[name=confirmPassword]',newPassword);await submit('#change-password');await until('Boolean(document.querySelector("[data-tab=users]"))');
     await tab('users','.staff-record');assert.equal(await evaluate('document.querySelector("[data-create-user]")'),null);assert.equal(await evaluate('document.querySelector("[data-tab=audit]")'),null);
+    await tab('roles','.staff-record');assert.equal(await evaluate('document.querySelector("[data-edit-role]")'),null);
     await tab('sessions','[data-revoke]');await click('[data-revoke]');await until('Boolean(document.querySelector("#staff-login"))');
     await signIn('owner@safeer.local',f.password);await tab('roles','[data-create-role]');
     for(const lang of ['en','ar']){

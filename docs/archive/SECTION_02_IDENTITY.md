@@ -4,7 +4,7 @@ Date: 2026-10-30. Authorization: the owner's "next" after the explicit Section 0
 
 ## Scope and implementation
 
-Added the NestJS/TypeScript identity module, PostgreSQL repositories and restricted runtime grants. Staff UI at /staff covers real local sign-in/out, mandatory temporary-password change, user administration, configurable platform roles/permissions, session ownership/revocation and recent identity audit. Eight role templates are seeded; non-platform assignments are rejected until company/resource membership exists in Section 03. The protected owner template and last active owner cannot be removed through concurrent mutations.
+Added the NestJS/TypeScript identity module, PostgreSQL repositories and restricted runtime grants. Staff UI at /staff covers real local sign-in/out, mandatory temporary-password change, user administration, configurable platform roles/permissions, session ownership/revocation and recent identity audit. Eight role templates are seeded; non-platform assignments are rejected until company/resource membership exists in Section 03. Follow-up 0.3.1 permits Super Administrator edits of every role template; reserved authority and the last active owner remain protected under concurrent mutations.
 
 Passwords use salted scrypt and bounded asynchronous work. Sessions are opaque, hashed in the database, idle/absolute expiring and revocable; permissions and credentials are rechecked server-side. Privileged mutations reauthenticate and reauthorize, enforce versions, require exact Origin/CSRF and write credential-free audit. Runtime credentials cannot create schema objects, update/delete audit or alter the catalog. Local tooling supports one-time bootstrap, persistent private Windows PostgreSQL and privileged audited owner recovery.
 
@@ -25,3 +25,11 @@ Source checkpoint: ignored archives/Safeer-0.3.0-Section-02-2026-10-30.zip with 
 ## Next section
 
 Stop after Section 02 and wait for explicit approval for Section 03: companies, branches, stations, membership and company isolation. Do not implement later business modules automatically.
+
+
+## 0.3.1 - Super Administrator role editing
+
+Owner-authorized D20 follow-up: Super Administrators can edit names, permissions and status of all eight built-in role templates and custom platform roles. Reserved owner codes/scopes remain immutable, owner authority always includes the permission catalog, and disabling the last active owner is rejected atomically. Other administrators remain restricted. Company/resource assignment remains deferred to Section 03; no schema migration or company access is added. The role editor supports Arabic/English and mobile layouts.
+
+
+0.3.1 verification: 13 unit/server checks and 19 native PostgreSQL/identity checks passed; build, documentation links and offline locked install passed. Real source and built Chrome checks passed for Super Administrator owner/company role edits, restricted support UI, and Arabic/English at 1920x1080, 1366x768 and 390x844 with no uncaught browser errors. Follow-up checkpoint: `archives/Safeer-0.3.1-role-editing-2026-10-30.zip` (generated from the committed source, credentials/runtime excluded).

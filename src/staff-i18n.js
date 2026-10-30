@@ -1,4 +1,5 @@
 const ar={
+  'Super Administrator always retains full access and must remain active.':'يحتفظ المسؤول الأعلى دائماً بكامل الصلاحيات ويجب أن يبقى نشطاً.',
   'Staff access':'دخول الموظفين','Local identity workspace':'مساحة الهوية المحلية','Passenger preview':'معاينة حجوزات الركاب',
   'Sign in':'تسجيل الدخول','Sign out':'تسجيل الخروج','Email':'البريد الإلكتروني','Password':'كلمة المرور',
   'Your profile':'ملفك الشخصي','Users':'المستخدمون','Roles & permissions':'الأدوار والصلاحيات','Active sessions':'الجلسات النشطة','Audit history':'سجل التدقيق',

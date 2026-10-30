@@ -1,5 +1,10 @@
 # Changelog
 
+
+## 0.3.1 - Super Administrator role editing
+
+Owner-authorized D20 follow-up: Super Administrators can edit names, permissions and status of all eight built-in role templates and custom platform roles. Reserved owner codes/scopes remain immutable, owner authority always includes the permission catalog, and disabling the last active owner is rejected atomically. Other administrators remain restricted. Company/resource assignment remains deferred to Section 03; no schema migration or company access is added. The role editor supports Arabic/English and mobile layouts.
+
 ## 0.3.0 - 2026-10-30 - SECTION 02 identity
 
 - Owner explicitly approved Section 02. Add pinned NestJS 12.3.2/TypeScript 6.0.3 identity backend, strict compilation and PostgreSQL identity repositories; no unrelated project changes.

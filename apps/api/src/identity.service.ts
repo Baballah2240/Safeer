@@ -24,10 +24,13 @@ export class IdentityService implements OnModuleInit {
     const u=result.rows[0];if(!u)fail('UNAUTHENTICATED',401,'Sign in to continue.');
     if(u.must_change_password&&!allowChange)fail('PASSWORD_CHANGE_REQUIRED',403,'Change your temporary password first.');
     const roles=(await c.query(`SELECT r.id,r.code,r.display_name AS "displayName",r.scope FROM safeer.platform_user_roles a JOIN safeer.roles r ON r.id=a.role_id WHERE a.user_id=$1 AND r.active ORDER BY r.code`,[u.id])).rows;
-    const permissions=(await c.query(`SELECT DISTINCT p.permission_code FROM safeer.platform_user_roles a JOIN safeer.roles r ON r.id=a.role_id JOIN safeer.role_permissions p ON p.role_id=r.id WHERE a.user_id=$1 AND r.active ORDER BY p.permission_code`,[u.id])).rows.map(r=>r.permission_code as string);
+    const superAdministrator=roles.some(r=>r.code===OWNER);
+    const permissions=superAdministrator
+      ?(await c.query('SELECT code FROM safeer.permissions ORDER BY code')).rows.map(r=>r.code as string)
+      :(await c.query(`SELECT DISTINCT p.permission_code FROM safeer.platform_user_roles a JOIN safeer.roles r ON r.id=a.role_id JOIN safeer.role_permissions p ON p.role_id=r.id WHERE a.user_id=$1 AND r.active ORDER BY p.permission_code`,[u.id])).rows.map(r=>r.permission_code as string);
     if(permission&&!permissions.includes(permission))fail('FORBIDDEN',403,'Your account does not have this permission.');
     await c.query('UPDATE safeer.sessions SET last_seen_at=clock_timestamp() WHERE id=$1',[u.session_id]);
-    return {id:u.id,login:u.normalized_login,displayName:u.display_name,mustChangePassword:u.must_change_password,version:u.version,sessionId:u.session_id,roles,permissions,superAdministrator:roles.some(r=>r.code===OWNER)};
+    return {id:u.id,login:u.normalized_login,displayName:u.display_name,mustChangePassword:u.must_change_password,version:u.version,sessionId:u.session_id,roles,permissions,superAdministrator};
   }
   async session(token:string){return this.db.transaction(async c=>({...(await this.principal(c,token,undefined,true)),csrfToken:csrf(token)}),false);}
   private async checkPassword(id:string,value:unknown,encoded:string){
@@ -189,8 +192,8 @@ export class IdentityService implements OnModuleInit {
       const roleId=id||randomUUID();
       if(id){
         const r=(await c.query('SELECT * FROM safeer.roles WHERE id=$1',[id])).rows[0];if(!r)fail('NOT_FOUND',404);
-        if(r.code===OWNER)fail('PROTECTED_OWNER',403,'The protected super administrator template cannot be edited.');
-        if(r.scope!=='platform')fail('SCOPE_DEFERRED',409,'Company and resource role management starts in Section 03.');
+        if(!p.superAdministrator&&r.code===OWNER)fail('PROTECTED_OWNER',403,'Only a super administrator can edit this role.');
+        if(!p.superAdministrator&&r.scope!=='platform')fail('FORBIDDEN',403,'Only a super administrator can edit company and resource templates.');
         const result=await c.query('UPDATE safeer.roles SET display_name=$1,active=$2,version=version+1 WHERE id=$3 AND version=$4 RETURNING id',[name,data.active,id,v]);
         if(!result.rowCount)fail('STALE_VERSION',409,'This record changed. Refresh and try again.');
       }else{
@@ -199,6 +202,7 @@ export class IdentityService implements OnModuleInit {
       }
       await c.query('DELETE FROM safeer.role_permissions WHERE role_id=$1',[roleId]);
       for(const code of permissions)await c.query('INSERT INTO safeer.role_permissions(role_id,permission_code) VALUES($1,$2)',[roleId,code]);
+      await this.lastOwner(c);
       await this.audit(c,p.id,id?'role.updated':'role.created',roleId);return {id:roleId};
     });
   }

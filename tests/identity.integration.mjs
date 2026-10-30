@@ -51,15 +51,28 @@ test('login uses generic errors for unknown/disabled users and durable throttlin
   assert.equal((await a.signIn('missing@safeer.local','A fictional wrong password')).status,429);
   assert.equal((await f.migration.query('SELECT count(*)::int AS n FROM safeer.auth_throttles')).rows[0].n>0,true);
 }));
-test('last-owner, protected template and company scope safeguards reject bypasses',async()=>identityFixture(async f=>{
+test('super administrators edit every role without losing authority or removing the last owner',async()=>identityFixture(async f=>{
   const me=(await f.admin.request('auth/me')).data;
   assert.equal((await f.admin.request('identity/users/'+me.id,'PATCH',{displayName:'Owner',active:false,version:me.version,currentPassword:f.password})).error.code,'LAST_OWNER');
   assert.equal((await assign(f,me,[])).error.code,'LAST_OWNER');
-  assert.equal((await f.admin.request('identity/roles/'+ownerRole,'PATCH',{displayName:'Owner',active:false,permissions:[],version:1,currentPassword:f.password})).error.code,'PROTECTED_OWNER');
+  assert.equal((await f.admin.request('identity/roles/'+ownerRole,'PATCH',{displayName:'Owner',active:false,permissions:[],version:1,currentPassword:f.password})).error.code,'LAST_OWNER');
+  let roles=(await f.admin.request('identity/roles')).data.items;
+  assert.equal(roles.find(r=>r.id===ownerRole).version,1,'failed edits roll back');
+  for(const role of roles){
+    const edit={displayName:'Updated '+role.code,active:true,permissions:[],version:role.version,currentPassword:f.password};
+    assert.equal((await f.admin.request('identity/roles/'+role.id,'PATCH',edit)).status,200,role.code);
+    assert.equal((await f.admin.request('identity/roles/'+role.id,'PATCH',edit)).error.code,'STALE_VERSION');
+  }
+  const after=(await f.admin.request('auth/me')).data;
+  assert.equal(after.superAdministrator,true);
+  assert.equal(after.permissions.length,6,'owner authority survives clearing its editable grants');
+  roles=(await f.admin.request('identity/roles')).data.items;
+  assert.ok(roles.every(r=>r.version===2&&r.permissions.length===0&&r.displayName.startsWith('Updated ')));
+  assert.equal((await f.admin.request('identity/audit')).data.items.filter(r=>r.action==='role.updated').length,8);
   const staff=await create(f);
   assert.equal((await assign(f,staff.user,[companyRole])).error.code,'INVALID_ROLE_SCOPE');
   await assert.rejects(f.api.db.pool.query('INSERT INTO safeer.platform_user_roles(user_id,role_id) VALUES($1,$2)',[staff.user.id,companyRole]),e=>e.code==='23503');
-  assert.equal((await f.admin.request('identity/roles/'+companyRole,'PATCH',{displayName:'Company role',active:true,permissions:[],version:1,currentPassword:f.password})).error.code,'SCOPE_DEFERRED');
+  assert.equal((await f.admin.request('identity/roles/'+companyRole,'PATCH',{displayName:'Company role',active:false,permissions:[],version:2,currentPassword:f.password})).status,200);
 }));
 test('configurable role changes apply immediately and delegated administrators cannot escalate',async()=>identityFixture(async f=>{
   const created=await create(f),role=(await f.admin.request('identity/roles','POST',{displayName:'Identity reader',permissions:['identity.roles.read'],currentPassword:f.password})).data;
@@ -71,6 +84,11 @@ test('configurable role changes apply immediately and delegated administrators c
   const changed=(await f.admin.request('identity/roles')).data.items.find(x=>x.id===r.id);
   await f.admin.request('identity/roles/'+r.id,'PATCH',{displayName:r.displayName,permissions:['identity.roles.read','identity.roles.manage'],active:true,version:changed.version,currentPassword:f.password});
   assert.equal((await user.request('identity/roles','POST',{displayName:'Escalation',permissions:['identity.users.manage'],currentPassword:pass})).error.code,'PRIVILEGE_ESCALATION');
+  for(const id of [ownerRole,companyRole]){
+    const target=(await f.admin.request('identity/roles')).data.items.find(r=>r.id===id);
+    const result=await user.request('identity/roles/'+id,'PATCH',{displayName:'Forbidden change',permissions:[],active:true,version:target.version,currentPassword:pass});
+    assert.equal(result.error.code,id===ownerRole?'PROTECTED_OWNER':'FORBIDDEN');
+  }
 }));
 test('support has no mutation/financial access; stale edits and duplicate logins are safe',async()=>identityFixture(async f=>{
   const created=await create(f);assert.equal((await assign(f,created.user,[supportRole])).status,200);const {user,pass}=await readyStaff(f,created);

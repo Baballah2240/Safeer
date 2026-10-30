@@ -1,5 +1,10 @@
 # Section 02 acceptance tests
 
+
+## 0.3.1 - Super Administrator role editing
+
+Owner-authorized D20 follow-up: Super Administrators can edit names, permissions and status of all eight built-in role templates and custom platform roles. Reserved owner codes/scopes remain immutable, owner authority always includes the permission catalog, and disabling the last active owner is rejected atomically. Other administrators remain restricted. Company/resource assignment remains deferred to Section 03; no schema migration or company access is added. The role editor supports Arabic/English and mobile layouts.
+
 Run from Safeer:
 
 - `npm test`: prototype/luggage regression, identity input validation, salted scrypt/correct-wrong-password behavior, bounded hash capacity, opaque cookie/CSRF handling and server asset/liveness restrictions.
@@ -17,3 +22,6 @@ Cover first-use restrictions, cookie flags and secret hashing; current/wrong/exp
 Browser checks exercise real sign-in and generated credentials, user creation and HTML escaping, role assignment/create/edit, temporary-password change, restricted support menus, current-session revocation, account switching, expired-session recovery during an open form and EN/AR 1920x1080, 1366x768 and 390x844 layouts. Screenshots are taken after one-time secrets are dismissed, never while a temporary password is visible. Translations/role editors and all error displays use escaped text.
 
 The local-launch check must confirm loopback listeners, private runtime ACLs, generated first-login credentials, persistence across stop/restart, graceful owned-process shutdown and absence of credentials/runtime files from source/archive. No production database, real passenger data or live account is used. Remote HTTPS, MFA, mobile keychain/bearer flows, company memberships/RLS and business operations are not acceptance claims for Section 02.
+
+
+0.3.1 verification: 13 unit/server checks and 19 native PostgreSQL/identity checks passed; build, documentation links and offline locked install passed. Real source and built Chrome checks passed for Super Administrator owner/company role edits, restricted support UI, and Arabic/English at 1920x1080, 1366x768 and 390x844 with no uncaught browser errors. Follow-up checkpoint: `archives/Safeer-0.3.1-role-editing-2026-10-30.zip` (generated from the committed source, credentials/runtime excluded).

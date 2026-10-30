@@ -24,6 +24,8 @@ Source: [Master development instructions](decisions/MASTER_INSTRUCTIONS_2026-10-
 
 ## Decision changes
 
+D20 (2026-10-30): The owner requests Super Administrator editing of every role. Supersede D18's immutable owner template and the restriction on editing non-platform templates: authenticated Super Administrators may edit every role's name, permission list and active status, with reauthentication, optimistic versions and audit. Stable role codes/scopes remain immutable. Super Administrator authority derives from active assignment to the reserved platform role and always includes the permission catalog, independent of its editable permission list. Reject changes removing the last active owner, including global owner-role deactivation. Other administrators cannot edit the owner or non-platform templates. Non-platform assignments and company membership remain Section 03. Test all scopes, self-permission changes, rollback, delegation and real role-editor saves.
+
 Record the old decision, owner instruction, reason, affected modules/data, compatibility impact and required tests before implementing a change. Financial rules, tenancy, ticket validity, support access and public/private data boundaries must never change silently.
 
 ## 2026-10-30 - Section 02 approval and identity boundary

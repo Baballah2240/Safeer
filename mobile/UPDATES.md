@@ -26,3 +26,8 @@
 - Web and future mobile-facing code live together in `src/`.
 - No Android/iOS project, native app, installable APK, app-store release, OTP service or real staff/passenger authentication exists yet.
 - All data is fictional, kept in the browser's memory and reset on refresh. Do not use real customer information.
+
+
+## 0.3.1 - Super Administrator role editing
+
+Owner-authorized D20 follow-up: Super Administrators can edit names, permissions and status of all eight built-in role templates and custom platform roles. Reserved owner codes/scopes remain immutable, owner authority always includes the permission catalog, and disabling the last active owner is rejected atomically. Other administrators remain restricted. Company/resource assignment remains deferred to Section 03; no schema migration or company access is added. The role editor supports Arabic/English and mobile layouts.

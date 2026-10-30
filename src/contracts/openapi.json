@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Safeer local identity API",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "description": "Section 02 implemented operations only. Loopback development HTTP; no company memberships, business operations, remote deployment or mobile bearer authentication."
   },
   "servers": [
@@ -2041,7 +2041,7 @@
     },
     "/api/v1/identity/roles/{id}": {
       "patch": {
-        "summary": "Edit active platform roles except protected super administrator",
+        "summary": "Edit role names, permissions and status; Super Administrators can edit every scope",
         "security": [
           {
             "cookieSession": []
@@ -2220,7 +2220,8 @@
               }
             }
           }
-        }
+        },
+        "description": "Super Administrator authority is retained independently of editable grants. The last active owner cannot be removed. Codes and scopes are immutable; company assignment remains deferred."
       }
     },
     "/api/v1/identity/permissions": {

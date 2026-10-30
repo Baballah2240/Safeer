@@ -1,6 +1,6 @@
 # Safeer / Sudan Transport
 
-Version 0.3.0, Section 02: local authentication, users, roles and permissions. This independent Sudan passenger-transport project does not modify Stocrant or the school application.
+Version 0.3.1, Section 02: local authentication, users, roles and permissions. This independent Sudan passenger-transport project does not modify Stocrant or the school application.
 
 Start continuation at [CURRENT_STATE](docs/CURRENT_STATE.md). Section 03 requires explicit approval after the Section 02 handover.
 

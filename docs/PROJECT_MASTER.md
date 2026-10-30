@@ -47,3 +47,8 @@ Approved initial roles: platform super administrator, platform support administr
 8. Test, fix, document and archive before handing off. Do not mark proposed schema or target frameworks as implemented.
 
 Section 02 ends at the verified identity handover. Section 03 requires explicit owner approval. No production deployment, school-app changes, restaurant/mobile changes, real passenger data or external service enrollment is authorized by this section.
+
+
+## 0.3.1 - Super Administrator role editing
+
+Owner-authorized D20 follow-up: Super Administrators can edit names, permissions and status of all eight built-in role templates and custom platform roles. Reserved owner codes/scopes remain immutable, owner authority always includes the permission catalog, and disabling the last active owner is rejected atomically. Other administrators remain restricted. Company/resource assignment remains deferred to Section 03; no schema migration or company access is added. The role editor supports Arabic/English and mobile layouts.
