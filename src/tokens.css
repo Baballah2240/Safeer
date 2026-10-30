@@ -1,0 +1,15 @@
+/* Shared visual vocabulary. Future clients consume equivalent documented tokens. */
+:root {
+  --ink: #172e3c;
+  --muted: #6d7c87;
+  --accent: #086d77;
+  --border: #e5eaed;
+  --paper: #fff;
+  --warning: #d59d37;
+  --page: #f4f6f8;
+  font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+  color: #243644;
+  background: var(--page);
+  font-synthesis: none;
+  color-scheme: light;
+}

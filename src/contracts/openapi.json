@@ -1,0 +1,19 @@
+{
+  "openapi": "3.1.0",
+  "info": {"title": "Safeer Section 01 liveness API", "version": "0.2.0", "description": "Only the local prototype liveness endpoint is implemented. No authentication or business APIs exist yet."},
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "operationId": "getPrototypeHealth",
+        "summary": "Local prototype liveness, not production or database readiness",
+        "responses": {
+          "200": {
+            "description": "Prototype process is running; database is not connected to the web application.",
+            "content": {"application/json": {"schema": {"type": "object", "required": ["data"], "additionalProperties": false, "properties": {"data": {"type": "object", "required": ["service", "version", "mode", "database"], "additionalProperties": false, "properties": {"service": {"const": "safeer"}, "version": {"type": "string"}, "mode": {"const": "local-prototype"}, "database": {"const": "not-connected"}}}}}}}
+          },
+          "403": {"description": "Nonlocal Host header rejected; text/plain error."}
+        }
+      }
+    }
+  }
+}

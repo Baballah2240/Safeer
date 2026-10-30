@@ -1,18 +1,13 @@
 import {createServer} from 'node:http';
 import {readFile} from 'node:fs/promises';
+import {readFileSync} from 'node:fs';
 import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
+import {publicAssets} from './config/assets.mjs';
 
-const files = {
-  '/': ['index.html', 'text/html'],
-  '/src/app.js': ['src/app.js', 'text/javascript'],
-  '/src/domain.mjs': ['src/domain.mjs', 'text/javascript'],
-  '/src/demo.mjs': ['src/demo.mjs', 'text/javascript'],
-  '/src/styles.css': ['src/styles.css', 'text/css'],
-  '/src/brand.svg': ['src/brand.svg', 'image/svg+xml'],
-};
+const {version} = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
 
-export async function startServer({port = 4320} = {}) {
+export async function startServer({port = 4320, built = false} = {}) {
   if (!Number.isInteger(port) || port < 0 || port > 65535) throw Error('Choose a valid local port.');
   const server = createServer(async (request, response) => {
     response.setHeader('X-Content-Type-Options', 'nosniff');
@@ -27,11 +22,16 @@ export async function startServer({port = 4320} = {}) {
     }
     try {
       const path = new URL(request.url, 'http://127.0.0.1').pathname;
-      if (!Object.hasOwn(files, path)) {
+      if (path === '/api/v1/health') {
+        response.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
+        response.end(request.method === 'HEAD' ? undefined : JSON.stringify({data: {service: 'safeer', version, mode: 'local-prototype', database: 'not-connected'}}));
+        return;
+      }
+      if (!Object.hasOwn(publicAssets, path)) {
         response.writeHead(404); response.end('Not found'); return;
       }
-      const [file, type] = files[path];
-      const content = await readFile(new URL(file, import.meta.url));
+      const [file, type] = publicAssets[path];
+      const content = await readFile(new URL((built ? 'dist/' : '') + file, import.meta.url));
       response.writeHead(200, {'Content-Type': type + (type === 'image/svg+xml' ? '' : '; charset=utf-8')});
       response.end(request.method === 'HEAD' ? undefined : content);
     } catch {
@@ -43,7 +43,7 @@ export async function startServer({port = 4320} = {}) {
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
-  startServer({port: Number(process.env.SAFEER_PORT ?? 4320)}).then(app => {
+  startServer({port: Number(process.env.SAFEER_PORT ?? 4320), built: process.argv.includes('--built')}).then(app => {
     console.log(`Safeer local prototype: ${app.origin}`);
     const shutdown = () => app.close().then(() => process.exit(0));
     process.once('SIGINT', shutdown); process.once('SIGTERM', shutdown);

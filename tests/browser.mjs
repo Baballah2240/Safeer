@@ -1,0 +1,66 @@
+import assert from 'node:assert/strict';
+import {mkdtempSync, mkdirSync, writeFileSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join, resolve} from 'node:path';
+import {startServer} from '../server.mjs';
+import {chrome} from './support/chrome.mjs';
+
+const app = await startServer({port: 0, built: process.env.SAFEER_BROWSER_BUILT === '1'});
+const shots = resolve('.qa/section-01'); mkdirSync(shots, {recursive: true});
+let browser;
+try {
+  browser = await chrome(mkdtempSync(join(tmpdir(), 'safeer-s01-')));
+  const {send, evaluate, until} = browser;
+  await send('Page.enable');
+  await send('Page.addScriptToEvaluateOnNewDocument', {source: 'window.__errors=[];window.addEventListener("error",event=>window.__errors.push(event.message));window.confirm=()=>true;'});
+  const click = selector => evaluate(`document.querySelector(${JSON.stringify(selector)}).click()`);
+  const shot = async name => writeFileSync(join(shots, name + '.png'), Buffer.from((await send('Page.captureScreenshot', {format: 'png'})).data, 'base64'));
+  await send('Emulation.setDeviceMetricsOverride', {width: 1366, height: 900, deviceScaleFactor: 1, mobile: false});
+  await send('Page.navigate', {url: app.origin});
+  await until('Boolean(document.querySelector(".metrics"))');
+  assert.equal(await evaluate('Boolean(document.querySelector("[data-nav=freight],#freight-form"))'), false);
+  assert.equal(await evaluate('document.querySelectorAll(".metric").length'), 4);
+  await shot('overview-en');
+  await click('[data-nav=passengers]');
+  assert.equal(await evaluate('document.querySelectorAll("[data-seat]").length'), 40);
+  await click('[data-seat="1"]');
+  await evaluate('(()=>{const field=document.querySelector("[name=passengerName]");field.value="<b>Invented passenger</b>";field.dispatchEvent(new Event("input",{bubbles:true}));document.querySelector("#reservation-form").requestSubmit();})()');
+  await until('document.querySelector("#reference-dialog").open');
+  assert.ok(await evaluate('document.querySelector(".reference-sheet").textContent.includes("UNPAID")'));
+  assert.equal(await evaluate('document.querySelector(".reference-sheet dd b")'), null);
+  await send('Emulation.setEmulatedMedia', {media: 'print'});
+  assert.equal(await evaluate('getComputedStyle(document.querySelector("#app")).display'), 'none');
+  await send('Emulation.setEmulatedMedia', {media: 'screen'});
+  await click('[data-close]');
+  assert.equal(await evaluate('document.querySelectorAll("[data-seat]")[0].disabled'), true);
+  await evaluate('window.confirm=()=>false'); await click('[data-cancel]');
+  assert.equal(await evaluate('document.querySelectorAll("[data-seat]")[0].disabled'), true, 'Cancellation must require confirmation');
+  await evaluate('window.confirm=()=>true'); await click('[data-cancel]');
+  assert.equal(await evaluate('document.querySelectorAll("[data-seat]")[0].disabled'), false);
+  await click('[data-nav=settings]');
+  await evaluate('document.querySelector("[name=holdMinutes]").value="5";document.querySelector("#policy-form").requestSubmit()');
+  await click('[data-nav=passengers]'); await click('[data-seat="4"]');
+  await evaluate('document.querySelector("#reservation-form").requestSubmit()');
+  await until('document.querySelector("#reference-dialog").open'); await click('[data-close]');
+  await evaluate('window.dispatchEvent(new Event("pagehide"));window.__now=Date.now()+300001;Date.now=()=>window.__now;window.dispatchEvent(new Event("pageshow"));');
+  await until('!document.querySelectorAll("[data-seat]")[3].disabled');
+  assert.ok(await evaluate('Boolean(document.querySelector(".status.expired"))'));
+  await evaluate('(()=>{const field=document.querySelector("#company-select");field.value="coast-demo";field.dispatchEvent(new Event("change"));})()');
+  assert.equal(await evaluate('document.querySelectorAll("[data-reference]").length'), 0);
+  assert.equal(await evaluate('document.querySelector("[name=passengerName]").value'), 'Demo passenger');
+  await click('#language-button');
+  assert.equal(await evaluate('document.documentElement.dir'), 'rtl');
+  await click('[data-seat="1"]'); await evaluate('document.querySelector("#reservation-form").requestSubmit()');
+  await until('document.querySelector("#reference-dialog").open');
+  assert.equal(await evaluate('document.querySelector("#reference-title").textContent'), 'مرجع الحجز');
+  assert.ok(await evaluate('document.querySelector(".reference-sheet").textContent.includes("بورتسودان")'));
+  await shot('reference-ar'); await click('[data-close]');
+  for (const [width, height] of [[1920,1080],[1366,768],[390,844]]) {
+    await send('Emulation.setDeviceMetricsOverride', {width, height, deviceScaleFactor: 1, mobile: width < 700});
+    assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth+2'));
+  }
+  await shot('passenger-mobile-ar');
+  await click('[data-nav=overview]'); await shot('overview-mobile-ar');
+  assert.deepEqual(await evaluate('window.__errors'), []);
+  console.log('Section 01 browser checks passed: passenger-only UI, reservations/print escaping, confirmation, expiry/BFCache, company demo scoping, Arabic reference and desktop/mobile layouts.');
+} finally { await browser?.close(); await app.close(); }

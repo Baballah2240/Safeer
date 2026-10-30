@@ -3,6 +3,7 @@ node_modules/
 runtime/
 releases/
 archives/
+dist/
 .env
 .env.*
 !.env.example

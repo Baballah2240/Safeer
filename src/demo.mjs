@@ -1,9 +1,9 @@
-// Fictional operators, prices, inventory and customers. These are not real services.
+// Fictional operators, prices, inventory and passengers. These are not real services.
 export function createDemo(now = Date.now()) {
   return {
     companies: [
       {id: 'nile-demo', name: 'Nile Demo Transport', nameAr: 'النيل للنقل - تجريبي', holdMinutes: 30},
-      {id: 'coast-demo', name: 'Coast Demo Logistics', nameAr: 'الساحل للنقل - تجريبي', holdMinutes: 45},
+      {id: 'coast-demo', name: 'Coast Demo Transport', nameAr: 'الساحل للنقل - تجريبي', holdMinutes: 45},
     ],
     trips: [
       {id: 'nile-01', companyId: 'nile-demo', from: 'Khartoum', to: 'Atbara', departureAt: now + 86400000, capacity: 40, vehicle: 'DEMO BUS 01', fare: 25000, currency: 'SDG', blockedSeats: [2, 3, 7, 12, 18]},
@@ -12,10 +12,6 @@ export function createDemo(now = Date.now()) {
     ],
     reservations: [
       {id: 'sample-reservation', reference: 'DEMO-SF-0001', companyId: 'nile-demo', tripId: 'nile-01', passengerName: 'Demo passenger', seat: 5, status: 'reserved', createdAt: now, expiresAt: now + 1800000},
-    ],
-    freightRequests: [
-      {id: 'sample-freight-a', reference: 'DEMO-CG-0001', companyId: 'nile-demo', customerName: 'Demo customer A', from: 'Khartoum', to: 'Atbara', category: 'General goods', packages: 4, weightKg: 120, status: 'requested', createdAt: now},
-      {id: 'sample-freight-b', reference: 'DEMO-CG-0002', companyId: 'coast-demo', customerName: 'Demo customer B', from: 'Port Sudan', to: 'Atbara', category: 'Parcels', packages: 2, weightKg: 18, status: 'requested', createdAt: now},
     ],
   };
 }

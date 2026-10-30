@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {createDemo} from '../src/demo.mjs';
-import {workspaceFor, reserveSeat, occupiedSeats, expireReservations, cancelReservation, setHoldMinutes, requestFreight} from '../src/domain.mjs';
+import {workspaceFor, reserveSeat, occupiedSeats, expireReservations, cancelReservation, setHoldMinutes} from '../src/domain.mjs';
 
 const now = Date.parse('2026-10-28T08:00:00Z');
 const passenger = {tripId:'nile-01', seat:1, passengerName:'Invented passenger'};
@@ -20,7 +20,7 @@ test('unpaid reservations use company policy, prevent duplicate seats and releas
 test('company workspaces and mutations cannot accidentally address another company records', () => {
   const state=createDemo(now), own=workspaceFor(state,'coast-demo');
   assert.ok(own.trips.every(row=>row.companyId==='coast-demo'));
-  assert.equal(own.reservations.length,0); assert.equal(own.freightRequests.length,1);
+  assert.equal(own.reservations.length,0); assert.equal(Object.hasOwn(own,'freightRequests'),false);
   assert.throws(()=>reserveSeat(state,'coast-demo',passenger,now),/this company/);
   assert.throws(()=>cancelReservation(state,'coast-demo','sample-reservation',now),/this company/);
   assert.throws(()=>workspaceFor(state,'unknown'),/Choose a company/);
@@ -46,13 +46,4 @@ test('cancellation releases only the intended active seat and malformed reservat
   assert.throws(()=>cancelReservation(state,'nile-demo',row.id,now),/active/);
   for(const seat of [0,41,1.5,'1'])assert.throws(()=>reserveSeat(state,'nile-demo',{...passenger,seat},now));
   for(const passengerName of ['',null,'x'.repeat(81)])assert.throws(()=>reserveSeat(state,'nile-demo',{...passenger,passengerName},now));
-});
-
-test('freight requests belong to one company and validate routes, quantities and weight', () => {
-  const state=createDemo(now), values={customerName:'Invented shipper',from:'Khartoum',to:'Atbara',category:'Parcels',packages:3,weightKg:12.5};
-  const row=requestFreight(state,'coast-demo',values,now);
-  assert.equal(row.status,'requested'); assert.equal(row.companyId,'coast-demo'); assert.equal(row.weightKg,12.5);
-  assert.equal(workspaceFor(state,'nile-demo').freightRequests.length,1);
-  assert.equal(workspaceFor(state,'coast-demo').freightRequests.length,2);
-  for(const change of [{to:'Khartoum'},{from:'unknown'},{packages:0},{packages:1.5},{weightKg:NaN},{weightKg:-1},{category:'unknown'},{customerName:''}])assert.throws(()=>requestFreight(state,'nile-demo',{...values,...change},now));
 });

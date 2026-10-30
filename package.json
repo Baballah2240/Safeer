@@ -1,13 +1,26 @@
 {
   "name": "safeer",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
-  "description": "Local concept for Sudan passenger reservations and freight operations",
-  "engines": { "node": ">=24" },
+  "description": "Section 01 foundation for the Sudan passenger transportation platform",
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "start": "node server.mjs",
-    "test": "node --test tests/*.test.mjs"
+    "test": "node --test tests/*.test.mjs",
+    "build": "node scripts/build.mjs",
+    "start:built": "node server.mjs --built",
+    "db:migrate": "node database/migrate.mjs up",
+    "db:status": "node database/migrate.mjs status",
+    "test:db": "node --test tests/database.integration.mjs",
+    "test:browser": "node tests/browser.mjs",
+    "check:docs": "node scripts/check-docs.mjs",
+    "check": "npm test && npm run build && npm run check:docs"
   },
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "dependencies": {
+    "pg": "8.23.1"
+  }
 }
