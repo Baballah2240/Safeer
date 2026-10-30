@@ -2,9 +2,19 @@
 
 ## Implemented Section 01 objects
 
-Target: PostgreSQL 18. The migration runner creates private `safeer_meta.schema_migrations(version integer PK, name text UNIQUE, checksum text, applied_at timestamptz)`. Migration `0001_foundation.sql` creates the private `safeer` application namespace. PUBLIC receives no namespace/ledger access. **No company, user, reservation, financial, luggage or other business table exists yet.**
+PostgreSQL 18. The migration runner creates private `safeer_meta.schema_migrations(version integer PK, name text UNIQUE, checksum text, applied_at timestamptz)`. Migration `0001_foundation.sql` creates the private `safeer` namespace. PUBLIC receives no namespace/ledger access. Section 02 adds identity objects below; no company, reservation, financial or registered luggage table exists yet.
 
-The browser prototype still uses memory and never connects to this database. Native disposable test results and exact commands are recorded in [CURRENT_STATE.md](CURRENT_STATE.md) and the [Section 01 archive](archive/SECTION_01_FOUNDATION.md). No persistent school/restaurant/production database is used.
+The passenger prototype still uses memory. Staff access uses the identity service and a limited PostgreSQL runtime login. Native tests use disposable databases; the optional local launcher creates a separate persistent development database under ignored `runtime/`. No school, restaurant or production database is used.
+
+## Implemented Section 02 objects
+
+Migration [0002_identity.sql](../database/migrations/0002_identity.sql) creates eight identity tables: users, sessions, roles, permissions, role_permissions, platform_user_roles, identity_audit and auth_throttles. Users have normalized unique email login, salted scrypt hash, active/temporary-password flags, optimistic version and credential version. Sessions have only token hashes, credential version, absolute expiry, last activity and revocation; idle expiry is checked at request time. No plaintext password or session token is persisted in the database.
+
+Eight built-in role templates and six implemented identity permissions are seeded. Only platform-scope roles can be assigned here: a composite role/scope FK plus a platform-only check rejects company/branch/station/trip assignments. Company memberships/custom company roles/support grants remain Section 03, and later permission catalogs are not seeded as fake working grants.
+
+The global identity mutation advisory lock `(94106,2)` serializes authorization-sensitive changes, with a shared lock for reads. It makes last-active-owner checks and reauthorization atomic across sessions/role changes. Login limits use hashed keys and database reset instants. Identity audit contains UUID actor/target, action and timestamp only; the runtime role cannot update/delete audit records or mutate the permission catalog. This is identity consistency, not a business inventory/tenant isolation implementation.
+
+[runtime-grants.mjs](../database/runtime-grants.mjs) grants only the DML needed by this module. The API refuses superuser/BYPASSRLS or schema-CREATE connections; the local developer launcher uses separate migration-owner and runtime credentials. RLS for company resources belongs to Section 03.
 
 The 0.2.1 prototype adds in-memory reservation fields `hasLuggage` (boolean) and `luggageDescription` (trimmed text, required at 1-300 characters when true, empty when false). No SQL migration or luggage record is created. In Section 09 persist the equivalent `has_luggage` / `luggage_description` declaration on each booking passenger, with an invariant enforcing the same rules; existing historical data needs an explicit migration policy. Section 11 registration remains a separate verified record linked to that passenger.
 
@@ -16,7 +26,7 @@ The 0.2.1 prototype adds in-memory reservation fields `hasLuggage` (boolean) and
 - Amounts use bigint minor units, currency_code and immutable exponent/price snapshots. API amounts are integer strings. Quantities/weights use suitable checked integer/numeric fields, not formatted text.
 - FK delete defaults are RESTRICT; cascades are allowed only for documented nonhistorical child/config records. Index referencing FK columns and tenant/time access paths. Unique constraints are authoritative, not pre-insert UI checks.
 
-All tables below are **proposed module contracts**, not migrations already applied. Each owning section must refine DDL, add its own migration, constraint tests, scoped repositories and authorization/RLS tests before enabling use.
+The catalog below remains the full target contract. The eight Section 02 tables listed above are implemented; company-role/membership rows marked 02/03 and all later business tables remain proposed. Their owning sections add migrations, constraints, repositories and authorization/RLS tests before use. Actual Section 02 DDL is authoritative where the earlier catalog is abbreviated.
 
 ## Complete planned entity catalog
 

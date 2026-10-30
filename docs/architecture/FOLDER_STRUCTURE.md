@@ -1,6 +1,6 @@
 # Folder structure and staged transition
 
-## Actual Section 01 source
+## Preserved Section 01 source (with Section 02 additions below)
 
 ```text
 Safeer/
@@ -38,8 +38,16 @@ No empty fake application modules or placeholder controllers are created. The co
 
 ## Target repository layout
 
-When the owning sections begin, add `apps/api` (NestJS modular monolith/worker entry point), `apps/web` (Next.js route areas), `apps/passenger-mobile` and `apps/driver-mobile` (Flutter). Keep shared API/localization/design sources under root `src/shared`/`src/contracts`, generated client artifacts in the owning clients, and the single SQL migration history under `database/`.
+`apps/api` is now implemented for identity. Add `apps/web` (Next.js route areas), `apps/passenger-mobile` and `apps/driver-mobile` (Flutter) only in their owning sections. Keep shared API/localization/design sources under root `src/shared`/`src/contracts`, generated client artifacts in the owning clients, and the single SQL migration history under `database/`.
 
 Move the current UI into a clearly marked prototype/reference area only when a working framework replacement is available. Until then `npm start` remains usable. Do not copy in-memory booking rules into a production controller or remove working UI before its replacement passes regression checks.
 
 Use module-local domain/application/infrastructure/delivery layers. Shared libraries contain stable primitives, not an unbounded utility module or a second financial business model. No cross-project runtime dependency on Stocrant or school-display is allowed.
+
+## Actual Section 02 additions
+
+apps/api/src contains the NestJS identity module: app/main/admin, database, security and identity service; apps/api/tsconfig.json compiles only these sources to ignored dist/api. The existing public server remains the allowlisted frontend/proxy. staff.html and src/staff.js, staff-i18n.js and staff.css provide the working staff client. There is no Next.js or Flutter shell yet.
+
+The 0002 identity migration remains in database/migrations alongside the original checksum-stable baseline. runtime-grants, grant-runtime and recover-owner are local developer/owner commands. scripts/local.mjs owns the optional private Windows PostgreSQL development process and restricted runtime configuration. tests/support/identity-db.mjs supplies disposable real PostgreSQL fixtures shared by HTTP/browser tests.
+
+runtime/ contains the ignored persistent development database, private connection settings and first-login text; never treat it as source/build cache. The optional pinned Windows PostgreSQL binary stays in node_modules and is excluded from archives.

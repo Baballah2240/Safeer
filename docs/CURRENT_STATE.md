@@ -1,55 +1,52 @@
 # Current state - read this first
 
-Updated: 2026-10-30. Project: Safeer / Sudan Transport, version 0.2.1.
+Updated: 2026-10-30. Safeer / Sudan Transport, version 0.3.0.
 
 ## Current section and gate
 
-**Section 01 complete: tested and documented, with a source checkpoint ZIP generated/verified at handover.** Section 02 is not authorized. Do not create authentication features or move to another section automatically.
+The owner explicitly approved Section 02 (authentication, users, roles and permissions) by answering "next". Section 02 is complete: tested and documented, with a verified exact-commit source checkpoint generated at handover. Do not begin Section 03 without explicit approval.
 
-Owner-requested follow-up D16: the local passenger form now collects a luggage yes/no declaration, with a required plain-text description when yes (1-300 trimmed characters). It appears beneath the passenger name in reservations and on the printable unpaid reference. This is not station luggage registration/tracking or approval for Section 02/11. The 0.2.1 checkpoint is separate from the preserved original Section 01 archive.
+## What works
 
-## Completed source work
+- NestJS 12.3.2 / TypeScript 6.0.3 local identity API and bilingual staff interface at /staff.
+- PostgreSQL users, hashed/revocable sessions, eight built-in role templates, six implemented identity permissions, configurable platform roles and immutable identity audit.
+- Sign-in/out, mandatory temporary-password change, own session list/revocation, user creation/edit/disable/password reset, platform role assignment/create/edit and recent audit view, subject to server permissions/current-password checks.
+- Scrypt hashes; strict input validation; same-origin/CSRF protection; durable login/reauthentication limits; bounded hashing; absolute/idle session expiry; immediate grant/account revocation; expected-version edits; last-owner protection under a transaction lock.
+- One-time generated local owner bootstrap and privileged local owner recovery. No fixed account password or unauthenticated web bootstrap.
+- Private persistent Windows development PostgreSQL launcher: npm run local. Migration owner and restricted API DB credentials are separate; ignored runtime/ is limited to the current Windows user/SYSTEM.
+- Preserved passenger/luggage example, Arabic/English views, unpaid reference/print, expiry/cancellation. It remains fictional and separate from staff identity.
 
-- Inspected the complete 0.1.0 source and passed its six baseline tests.
-- Recorded the new master plan and superseding decisions before scope changes.
-- Verified an archive of the old 16-file prototype, then removed active freight/parcels code, fixtures, navigation and tests.
-- Preserved the fictional passenger example: trip/seat selection, unpaid reference/print view, timestamp expiry, cancellation and company demo scoping.
-- Extracted translations/design tokens, added cancellation confirmation and fixed expiry timer restoration after page hide/show.
-- Added bilingual luggage declaration/description, domain validation and escaped list/reference output. Drafts survive seat/trip/language re-renders, clear on no, and reset after successful reservation/company change.
-- Added a single asset allowlist, a static build and versioned prototype liveness contract.
-- Added a pinned PostgreSQL client, transactional/checksummed migration runner and namespace-only baseline.
-- Documented the complete target architecture, entities/constraints/indexes, module boundaries, roles, workflows, exact roadmap and continuation/archive conventions.
+## How to run
 
-## What works versus what does not exist
+Install Node 24+ and run npm ci, then npm run local from this folder on Windows. Open http://127.0.0.1:4320/staff. On the first fresh startup, fictional owner@safeer.local and a generated temporary password are saved privately to runtime/first-login.txt. Change it at first sign-in; do not put this file into Git, an archive or customer handover. Stopping the launcher stops the PostgreSQL process it started while preserving data for the next launch.
 
-`npm start` serves the local prototype on 127.0.0.1:4320; it resets on refresh and is not shared between tabs/devices. The company selector only switches fictional fixtures. Guest full-name/mobile validation and atomic multiple-seat bookings remain future requirements; the retained demo is name-only/single-seat.
-
-No real accounts/sessions, company security/RLS, Next.js/NestJS apps, Flutter clients, durable business tables, station payments, official tickets/receipts, luggage/boarding or production hosting exist. The target stack is selected and staged; it is not claimed installed or deployed. No critical production workflow is being represented by a fake success screen.
+npm start alone still serves the passenger prototype without identity. For existing PostgreSQL, use [IDENTITY_SETUP](database/IDENTITY_SETUP.md). Ports 4320/4321 and the private DB port are loopback only. No remote deployment is configured.
 
 ## Database status
 
-- Executable migration: 0001_foundation.sql. Runner owns safeer_meta.schema_migrations; migration creates private safeer namespace only.
-- Native PostgreSQL 18.4 integration run: **7 passed**, no skips. Fresh per-test databases were dropped and the disposable cluster stopped.
-- No persistent application/production database has been provisioned or migrated. The browser server reports database not-connected.
-- No business tables or tenant/RLS policies are implemented. See DATABASE_SCHEMA.md for their planned owning sections.
+Migrations 0001_foundation.sql and 0002_identity.sql are executable. Eight identity tables exist; the migration ledger is separate. Runtime grants allow only required identity DML, cannot update/delete audit or alter the permission catalog, and cannot create schema objects. No company/membership, branch/station, booking, payment, registered luggage or boarding table exists.
 
-## Latest verification status
+Company/branch/station/trip roles are templates only and cannot be assigned globally. Scoped company roles, memberships, support grants and RLS begin in Section 03. Platform support defaults to identity users/roles read only and has no financial authority.
 
-- Before edits: 6 baseline tests passed.
-- Dependency reproduction: npm ci --offline completed successfully from the lockfile.
-- Current unit/integration checks: **9 passed**, including luggage validation, migration filename/URL safeguards and liveness/contract/private-file boundaries. Original Section 01 checkpoint had eight tests.
-- Native database integration: 7 passed at the original Section 01 checkpoint, including migration CLI, rollback, drift, concurrency and constraints. Not rerun for the 0.2.1 UI/in-memory change; database code and migrations are unchanged.
-- Static build: 8 public assets built successfully.
-- Browser regression: **passed on source and built assets**, covering luggage visibility/required description, draft retention/reset, no-luggage booking, escaped passenger list/unpaid reference/print, cancellation confirmation, expiry after page restoration, company fixture scoping, Arabic print and 1920x1080/1366x768/390x844 layouts. Current screenshots: ignored `.qa/luggage-addendum/`; original screenshots preserved in `.qa/section-01/`.
-- Documentation: **10 mandatory continuation/archive documents checked**, local links valid in **21 Markdown files**.
-- Syntax: **16 JavaScript files parsed**. Static build: **8 assets** and SHA-256 manifest.
-- Dependency audit: **zero known advisories reported** for the pinned client dependency tree on 2026-10-30.
-- Patch hygiene and source ZIP CRC/per-file SHA-256 verification are part of the final checkpoint handover; receipts remain under ignored archives/ and .qa/.
+## Verification status
 
-## Known limitations and issues
+- Dependency reproduction: npm ci --offline --ignore-scripts passed from the lockfile; 123 packages installed.
+- Current unit/security suite: 13 passed, including password salts/work limits, cookies/CSRF, private assets and malformed request-target recovery, plus retained passenger/luggage regression.
+- Native PostgreSQL migration/identity suite: 19 passed with no skips, using disposable databases and real restricted runtime roles. Covers transactional migrations, scope/FKs, session rotation/expiry/revocation, Origin/CSRF, durable throttling, current-password checks, delegated permissions, owner-template/last-owner concurrency, audit and owner recovery.
+- Strict TypeScript API build and 12 public assets passed; no native mobile application was built.
+- Staff browser workflows passed on source and built assets: real login, one-time credentials, users, role assignment/create/edit, temporary-password change, support restrictions, session revocation, account switching, expired-form recovery, escaped names and EN/AR at 1920x1080, 1366x768 and 390x844. Screenshots never include temporary passwords.
+- Passenger/luggage browser checks passed on both source and built assets.
+- Windows local launcher: restricted current-user/SYSTEM ACL verified; one account/eight templates and first-login details survived two supervised restarts; owned database/web/API processes stopped cleanly. The persistence test fixed repeated ACL hardening so already-private ACLs are verified instead of rewritten.
+- Documentation: 11 mandatory records and links across 24 Markdown files passed.
+- Runtime dependency audit: zero known advisories reported on 2026-10-30. This is not a production security certification.
+- Source patch hygiene passed. Final ZIP CRC/per-file SHA-256, exact commit and exclusions are verified at checkpoint generation under ignored archives/.
 
-No unresolved critical/high defect is known in the completed Section 01 foundation. The in-memory demo cannot provide real tenant security, shared availability or paid documents and must not accept actual passenger data. Production cancellation/refund/late-payment policy, luggage allowance/collection checks, data retention and offline behavior require decisions in their owning sections. Framework/client setup is intentionally staged rather than installed unused. GitHub delivery is verified separately from local source/build/archive checks; a push does not deploy or install anything.
+## Remaining boundaries
 
-## Exact next task
+This is local development authentication. HTTPS/proxy trust, email/SMS reset, MFA, Flutter token/keychain delivery and final production/load/security audit are not enabled. Local HTTP cookies intentionally omit Secure and must not be used remotely. Company access does not exist yet: a template or demo selector grants no company membership.
 
-**Stop and wait for explicit owner approval for Section 02: Authentication, users, roles and permissions.** Once approved, scaffold the selected NestJS/TypeScript identity backend, connect the reviewed migration history, add identity migrations, revocable sessions, role/permission primitives and authorization tests. Company resources/tenant policies follow in Section 03; do not implement later booking modules early. Read the master plan, this file and Section 01 archive before continuing.
+Real passenger data, multi-seat/guest-mobile bookings, station money/tickets, registered luggage/tags/tracking, boarding and production hosting remain later sections. The passenger example resets on refresh. No Stocrant or school files change for this work.
+
+## Exact next task after handover
+
+Stop and wait for Section 03 approval: companies, branches, stations and company isolation. Then add company/membership/resource tables, scoped roles and support grants, composite same-company FKs, runtime RLS and cross-company/resource tests. Do not add booking/payment modules early. Read the master plan, decisions, this file and Section 02 archive before continuing.

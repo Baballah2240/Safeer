@@ -2,6 +2,12 @@
 
 ## Present executable architecture
 
+Section 02 adds `apps/api/src/`, compiled to `dist/api/`: a NestJS 12.3.2/TypeScript 6.0.3 modular identity backend, PostgreSQL repositories, password/session primitives and versioned HTTP controllers. `/staff` is a working bilingual staff UI; the existing server proxies `/api/v1/` to the explicitly configured loopback API. Cookies stay same-origin. No backend credentials or service source files enter the public asset allowlist.
+
+`npm run local` builds both parts, starts a private local PostgreSQL development cluster on Windows, applies the reviewed migration history using its owner, grants the separate runtime role, and runs the identity API/web server. Runtime data/credentials and first-login details stay under ignored, access-restricted `runtime/`. The API refuses elevated/DDL-capable DB credentials. Normal PostgreSQL installations can use the manual setup documented in [IDENTITY_SETUP](database/IDENTITY_SETUP.md).
+
+The paragraphs describing Section 01 below apply to `npm start` without an identity API configured and to the separate fictional passenger example; they do not describe the new staff route.
+
 `server.mjs` binds to loopback, serves an explicit asset allowlist and exposes `GET /api/v1/health`. The health response describes a **local prototype**, not production readiness or a database connection. `src/` contains the retained passenger demo, separate translations, shared visual tokens and pure in-memory example rules. The PostgreSQL migration CLI is an independent developer tool and is never exposed as an HTTP endpoint. The web process does not connect to PostgreSQL in this section.
 
 The old freight prototype was archived before removal. The current browser's demo company selector, in-memory inventory and name-only single-seat booking must never be reused as production authorization or concurrency control.
@@ -25,7 +31,7 @@ flowchart LR
   Worker --> Storage[Private S3-compatible documents]
 ```
 
-These services are **planned**, not running. Start with one backend codebase and database; a separately running worker may use the same modules. No microservices or independent financial databases are required. Cache misses, delayed jobs and WebSocket disconnects must not compromise database correctness.
+Only the identity module is implemented so far; company/business modules, Next.js, Flutter, Redis workers, S3 and notifications remain planned. Start with one backend codebase and database; a separately running worker may use the same modules. No microservices or independent financial databases are required. Cache misses, delayed jobs and WebSocket disconnects must not compromise database correctness.
 
 ## Frontends and shared contracts
 

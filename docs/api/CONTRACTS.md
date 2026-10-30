@@ -1,23 +1,35 @@
-# API contracts
+# Implemented API contracts
 
-The canonical implemented contract is [src/contracts/openapi.json](../../src/contracts/openapi.json). Only `GET /api/v1/health` exists. It returns `{data:{service,version,mode,database}}`, with mode local-prototype and database not-connected. This endpoint checks liveness only. Static and unsupported-route errors currently use the prototype's plain-text responses; no business error contract is claimed implemented.
+Canonical OpenAPI 3.1: [src/contracts/openapi.json](../../src/contracts/openapi.json), version 0.3.0. It records only implemented operations, request fields, cookies/CSRF, envelopes and response schemas. Requests are strict JSON with an 8 KiB limit. Responses use {data: ...} or {error:{code,message}}; no SQL, token or password details are logged in errors. Successful one-time credential responses are explicit exceptions intended only for the authorized administrator.
 
-## Conventions for the NestJS API
+## Section 02 routes
 
-Introduce validated versioned DTOs, stable permission names and a consistent `{data,meta}` success / `{error:{code,message,details},requestId}` error envelope when the backend begins. No SQL details, credentials or other-company existence leaks in responses. Money amounts are integer strings with currency/exponent. Timestamps are ISO instants plus explicit local trip timezone. All lists are paginated and company/resource-scoped unless a documented public projection.
-
-Mutating booking/payment endpoints require an idempotency key and canonical request hash. Keys are scoped to the authenticated principal or guest capability and owning company/operation. A repeated key with different input is a conflict. A response timeout must be recoverable without a duplicate charge or allocation.
-
-## Planned route families - not implemented endpoints
-
-| Owner | Future family | Boundary |
+| Method | Path under /api/v1 | Rule |
 | --- | --- | --- |
-| 02 | /api/v1/auth, user/session/permission operations | Authentication and revocation; no public tenant selection |
-| 03-06 | /api/v1/company/* | Verified membership + permission + company/branch/station scope |
-| 07 | /api/v1/public/companies, trips, company pages | Approved/published safe projections only |
-| 08-09 | /api/v1/public/holds, bookings, retrieval | Guest capability/contact verification, rate limits, atomic server authority |
-| 10 | /api/v1/station/* | Assigned station/counter/session + payment/ticket permissions |
-| 11-12 | luggage, tags, manifest, boarding operations | Passenger/trip ownership and assigned-role checks |
-| 13-14 | finance, platform, notifications/reporting | Explicit finance/global/support-grant permissions |
+| GET | /health | Public local process/database mode; not production readiness |
+| POST | /auth/login | Exact local Origin, valid credentials, persistent throttling; HttpOnly session cookie |
+| GET | /auth/me | Valid active session; own principal/effective permissions and CSRF |
+| POST | /auth/logout | Own session plus Origin/CSRF; revoke and clear cookie |
+| POST | /auth/password | Current/new password plus Origin/CSRF; revoke old sessions and rotate current cookie |
+| GET | /auth/sessions | Own active sessions only |
+| DELETE | /auth/sessions/{id} | Own session only plus Origin/CSRF |
+| GET, POST | /identity/users | users.read or users.manage; create requires current password |
+| PATCH | /identity/users/{id} | users.manage, current password, expected version and owner safeguards |
+| POST | /identity/users/{id}/password | users.manage, current password/version, another user; one-time temporary password |
+| PUT | /identity/users/{id}/roles | platform_roles.assign, current password/version, active platform roles and delegation/owner rules |
+| GET, POST | /identity/roles | roles.read or roles.manage; create requires current password and permission subset |
+| PATCH | /identity/roles/{id} | roles.manage, current password/version; protected owner and non-platform templates cannot be edited |
+| GET | /identity/permissions | roles.read; implemented identity catalog only |
+| GET | /identity/audit | audit.read; latest 100 identity events without credential payloads |
 
-Do not add these paths to the executable OpenAPI file until implemented and tested. Event names/payload versions are documented alongside their owning modules; outbox delivery is at least once. WebSocket clients must authorize subscriptions and re-fetch after reconnect rather than treating events as final seat/payment truth.
+Permission names above are prefixed identity. GET users returns up to 50 items and nextCursor; pass after=<UUID> for the next page. Roles are bounded to 200 total including templates; creation is rejected at that cap. Audit is explicitly the recent 100 entries, not a complete export. A user without platform roles still has own profile/password/session operations; it has no company membership or global management access.
+
+POST operations return 201; reads/PATCH/PUT/DELETE return 200. Common errors include 400 invalid input, 401 inactive/revoked/expired credentials, 403 missing permission/CSRF/Origin/current-password/protected owner, 409 stale/duplicate/last-owner/scope conflicts, 413 oversized body, 415 non-JSON writes and 429 rate/capacity limits. The local proxy returns 503 when identity is unavailable. Local-only cookies intentionally omit Secure and cannot be treated as production remote cookie configuration.
+
+No bootstrap, registration, password-reset email/SMS, company selector, tenant membership or financial authority is exposed through a public shortcut. The public prototype liveness reports local-prototype/not-connected when no identity API is configured; the identity process reports local-identity/connected.
+
+## Later route families - not implemented
+
+Company operations need verified membership plus company/branch/station/trip scope in Section 03. Marketplace projections need approved/publication filters; guest holds/bookings need verified capabilities and atomic server inventory in Sections 07-09. Station payment/tickets, luggage/boarding and finance/support-grant operations follow their scheduled sections. No such paths enter this executable contract until implemented and tested.
+
+Future booking/payment writes require scoped idempotency keys/request hashes; cache and event delivery cannot authorize money or seats. Flutter bearer/secure-storage contracts, request IDs/observability and WebSocket authentication will be added with their owning modules. The current cookie implementation is for the local browser staff interface only.

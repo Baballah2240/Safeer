@@ -2,6 +2,14 @@
 
 These are approved target invariants unless marked as an open policy. The current prototype demonstrates only basic single-seat holds/cancellation; it does not implement real guest booking, payments, tickets, luggage or boarding.
 
+## Identity and authorization - Section 02
+
+- Staff sign in through the local identity service; this does not turn the passenger demo into real shared inventory or grant a company membership.
+- Temporary passwords must be changed before other authenticated operations. Password resets and account disabling revoke sessions; role changes are effective on the next authorization check.
+- Every privileged account/role change requires current-password reauthentication and explicit server permission. Prevent self-escalation, protect the owner template and keep at least one active protected owner, even under concurrent changes.
+- Company, branch, station and trip templates cannot be assigned globally. Company/resource access begins only after Section 03 membership/scope checks exist. Platform support has no default financial authority.
+- Preserve identity audit/history; never log password, cookie, CSRF or request payload secrets. Recovery is a privileged local operation, never an unauthenticated web endpoint.
+
 ## Reservations and seat availability
 
 - Guest booking must be available without an account. Obtain agreed passenger full names and mobile contact details, with a separate booking-passenger record per traveler. Children/group handling and retention policy must be specified before collection.

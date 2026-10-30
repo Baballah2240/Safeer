@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.3.0 - 2026-10-30 - SECTION 02 identity
+
+- Owner explicitly approved Section 02. Add pinned NestJS 12.3.2/TypeScript 6.0.3 identity backend, strict compilation and PostgreSQL identity repositories; no unrelated project changes.
+- Add migration 0002_identity: users/sessions, eight role templates, six implemented permissions, platform assignments, credential-free append-only audit and persistent authentication limits. Keep migration 0001 checksum unchanged.
+- Add limited-runtime grants/startup rejection of elevated/owner/membership database connections, one-time generated bootstrap, privileged audited owner recovery and access-restricted persistent Windows local launcher.
+- Add /staff sign-in/profile/password/sessions, user creation/edit/disable/reset/platform assignments, role creation/edit and recent audit UI. Include Arabic/English, mobile layouts, one-time secret handling and plain-text output escaping.
+- Use bounded salted scrypt, opaque hashed sessions, idle/absolute expiry, password/session rotation, exact Origin/HMAC CSRF, reauthentication, optimistic versions, live permissions and transaction-locked last-owner protection.
+- Preserve the public fictional passenger/luggage prototype; add a staff link and same-origin API proxy. No company/business API, remote HTTPS, MFA or native mobile authentication is added.
+- Add native API/security/browser regressions, complete implemented OpenAPI contract, identity setup/recovery/test guide and mandatory continuation/section archive records.
+- Findings fixed: old migration tests assumed one migration; role editors load asynchronously; account switching retained the previous tab; refreshed tabs/expired forms now clear stale state and secrets safely.
+- Verification: 13 unit/security tests, 19 native migration/identity tests, source/built staff and passenger browser workflows, strict build, 11 required docs/24 Markdown files, offline lockfile reproduction, zero known runtime dependency advisories and two persistent local restarts passed. Exact commit and ZIP hashes are recorded in the checkpoint manifest.
+
 ## 0.2.1 - 2026-10-30 - owner-requested luggage declaration
 
 - Added a luggage yes/no choice and conditional required description (1-300 trimmed characters) to the existing passenger prototype.

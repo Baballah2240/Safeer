@@ -1,4 +1,5 @@
 export const arabic = {
+  "Staff access": "دخول الموظفين",
   "Khartoum": "الخرطوم",
   "Atbara": "عطبرة",
   "Port Sudan": "بورتسودان",

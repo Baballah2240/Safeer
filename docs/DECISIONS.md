@@ -26,6 +26,14 @@ Source: [Master development instructions](decisions/MASTER_INSTRUCTIONS_2026-10-
 
 Record the old decision, owner instruction, reason, affected modules/data, compatibility impact and required tests before implementing a change. Financial rules, tenancy, ticket validity, support access and public/private data boundaries must never change silently.
 
+## 2026-10-30 - Section 02 approval and identity boundary
+
+D17: The owner answered "next" after being offered Section 02 explicitly. This supersedes the previous Section 02 approval gate only. Implement the NestJS/TypeScript identity backend, durable PostgreSQL identities/sessions/role templates/permissions/audit and a bilingual local staff interface. Company membership, scoped company role assignment and tenant business resources remain Section 03; non-platform templates must not confer global access. Stop before Section 03 after verification and a separate checkpoint.
+
+D18: Use asynchronous scrypt password hashes (N=32768, r=8, p=3, random salts), bounded password work, opaque hashed/revocable cookie sessions, same-origin CSRF protection and explicit reauthentication for privileged changes. No fixed default password, JWT in local storage or unauthenticated bootstrap HTTP route. Preserve the protected super-administrator template and last active owner under a shared transaction lock. Identity audit records contain IDs/actions, never passwords, tokens or full request bodies.
+
+D19: Keep the working passenger example public and clearly fictional. Add staff access as a separate route backed by the local identity service, not a fake permission overlay on demo bookings. A Windows-only optional pinned PostgreSQL binary provides an ignored persistent local development cluster; normal API operation also accepts an explicitly configured loopback PostgreSQL runtime role. Migration owner and limited runtime credentials are separate. Local HTTP cookies are a loopback development exception; remote hosting/mobile token delivery are not enabled by this section.
+
 ## 2026-10-30 - passenger luggage declaration addendum
 
 D16: The owner explicitly requested a luggage yes/no choice and description for the passenger. Extend only the existing local passenger prototype: default to no luggage; when yes, require a plain-text description trimmed to 1-300 characters. Keep the declaration with the reservation and display it in the passenger list and printable unpaid reference. Clear it for the next reservation and on company changes. Existing example rows without these fields display no luggage. Test required/invalid descriptions, Arabic/English layouts, draft preservation, escaping and company/reset behavior. This is a declaration, not station registration, tags, verified weight, charges or tracking; those remain Section 11. No business tables or APIs are added, and Section 02 remains unapproved.

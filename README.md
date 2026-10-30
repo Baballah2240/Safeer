@@ -1,64 +1,45 @@
 # Safeer / Sudan Transport
 
-Section 01 foundation for a multi-company Sudan passenger-transport marketplace. Updated 2026-10-30, version 0.2.1. The product name remains Safeer. This independent project does not change Stocrant or Qatar School Time Table.
+Version 0.3.0, Section 02: local authentication, users, roles and permissions. This independent Sudan passenger-transport project does not modify Stocrant or the school application.
 
-**Continuation starts at [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md). Section 02 requires explicit owner approval.**
+Start continuation at [CURRENT_STATE](docs/CURRENT_STATE.md). Section 03 requires explicit approval after the Section 02 handover.
 
-## Approved release scope
+## Run locally on Windows
 
-One central marketplace, individual public company pages and private company operations. Passenger transport, station payments, official tickets/receipts, passenger luggage and boarding are in scope. Freight/parcels/cargo delivery are deferred; the superseded prototype is safely archived.
+Install Node 24+, then from this folder:
 
-Guest booking must be available without a passenger account. The real booking module will collect full names/mobile details and support multiple passengers/seats. Station staff confirm offline payment before official tickets and receipts. No online payment gateway is required.
+    npm.cmd ci
+    npm.cmd run local
 
-## What currently works
+Open http://127.0.0.1:4320/staff. On a fresh local database, the fictional first owner is owner@safeer.local. Its generated temporary password is saved privately to runtime/first-login.txt; change it at first sign-in. No fixed default password exists. Do not commit, archive or share runtime/.
 
-A fictional-data, single-seat passenger prototype: sample trips, seat selection, unpaid reference/print view, company example policies, timestamp-based expiry/cancellation and Arabic/English responsive layouts. Its company selector is a demo switch, not access control. All browser data resets on refresh and is not shared between devices.
+The launcher creates a persistent private PostgreSQL development database, applies migrations with a separate owner, uses a limited API runtime login and starts loopback web/API servers. Ctrl+C stops processes started by it while preserving data. For existing PostgreSQL, custom ports, bootstrap, privileged owner recovery and backup boundaries see [IDENTITY_SETUP](docs/database/IDENTITY_SETUP.md).
 
-The passenger form also asks whether the passenger has luggage. Select Has luggage and describe the bags/colour/identifying details (1-300 trimmed characters); the saved declaration appears with the passenger and on the printable unpaid reference. Select No luggage to clear the description. This is a declaration only; station luggage registration/tracking remains future work.
+## Implemented staff identity
 
-Section 01 also supplies PostgreSQL migration tooling, a private namespace/ledger baseline, a static asset build, a prototype liveness endpoint and the full architecture/schema/roadmap/archive documentation. The web server does not connect to a database. Target Next.js/NestJS/Flutter applications, real accounts, secure company isolation, durable booking, payments, tickets, luggage and boarding are not implemented yet.
+- Real NestJS/TypeScript backend, PostgreSQL identity/session/role/permission/audit storage and bilingual responsive staff UI.
+- Sign-in/out, mandatory temporary-password change, active-session list/revocation and password reset by authorized administrators.
+- User creation/edit/deactivation, platform role assignment and configurable platform roles/permissions; protected owner/last-owner rules and audited privileged changes.
+- Adaptive salted scrypt, bounded hashing, durable throttling, strict inputs, opaque hashed sessions, expiry/revocation, Origin/CSRF protection and same-origin HttpOnly cookies.
+- Eight built-in templates. Only platform roles can be assigned in Section 02; company/branch/station/trip membership is Section 03. Support has no default finance access.
 
-## Run locally
+This is local development, not remote production deployment. Loopback HTTP cookies intentionally omit Secure. HTTPS/proxy trust, MFA, email/SMS reset delivery, mobile token/keychain flows and final load/security auditing require further work before remote use.
 
-Requires Node.js 24. From this folder:
+## Preserved passenger example
 
-```powershell
-npm.cmd ci
-npm.cmd start
-```
+The public example at http://127.0.0.1:4320 still supports fictional sample trips, one seat/name per reservation, company example hold policies, expiry/cancellation and printable unpaid references. It includes a luggage yes/no declaration and a required description when yes (1-300 trimmed characters). All passenger example data resets on refresh and is not shared between users/devices. The company selector is not authentication or tenant security.
 
-Open http://127.0.0.1:4320. Stop with Ctrl+C. SAFEER_PORT may select another local port. Use invented data only; displayed companies/fares/availability are not real services.
+npm start serves this example alone without identity. The staff route displays a service-unavailable message until the identity service is running; it does not fake sign-in.
 
-```powershell
-npm.cmd test
-npm.cmd run build
-npm.cmd run check:docs
-npm.cmd run test:browser
-npm.cmd run start:built
-```
+## Approved release model and remaining sections
 
-Chrome is required for browser checks; CHROME_EXE can specify it. Stop the source server before using start:built on the same port. This build produces local prototype assets, not a production marketplace or mobile binary.
+One central marketplace, company public booking pages and independent private operations. Release 1 is passenger transport and linked passenger luggage; freight/parcels are deferred. Real bookings must support guest full-name/mobile entry and multiple passengers/seats. Authorized station employees confirm offline payment before official tickets/receipts. These business modules, company RLS/memberships, Next.js and Flutter clients are not implemented yet; follow the [15-section roadmap](docs/DEVELOPMENT_ROADMAP.md).
 
-## Database foundation
+## Checks and records
 
-PostgreSQL 18 is selected. The pinned pg client is used by developer migration tools; no unused ORM/framework is installed. See [migration operations](docs/database/MIGRATIONS.md) for local SAFEER_DATABASE_URL configuration and the separate disposable SAFEER_TEST_DATABASE_URL required by npm run test:db. Never use real company, school or restaurant databases for tests.
+- npm test / npm run build / npm run check:docs
+- npm run test:db / npm run test:identity on disposable loopback PostgreSQL only
+- npm run test:identity:browser and npm run test:browser; SAFEER_BROWSER_BUILT=1 selects built assets
+- npm audit --omit=dev
 
-Only 0001_foundation.sql exists: private application namespace plus the runner's checksum ledger. Business entities/indexes/tenant policies are designed in [DATABASE_SCHEMA.md](docs/DATABASE_SCHEMA.md), not created prematurely. Native PostgreSQL verification results are recorded in CURRENT_STATE; no permanent application database has been provisioned.
-
-## Project map and records
-
-- [PROJECT_MASTER.md](docs/PROJECT_MASTER.md): vision and implemented-versus-target architecture.
-- [DEVELOPMENT_ROADMAP.md](docs/DEVELOPMENT_ROADMAP.md): exact 15-section order and dependencies.
-- [SYSTEM_ARCHITECTURE.md](docs/SYSTEM_ARCHITECTURE.md), [folder structure](docs/architecture/FOLDER_STRUCTURE.md) and [inspection](docs/architecture/INSPECTION.md).
-- [BUSINESS_RULES.md](docs/BUSINESS_RULES.md), [access control](docs/security/ACCESS_CONTROL.md) and [API contracts](docs/api/CONTRACTS.md).
-- [DECISIONS.md](docs/DECISIONS.md), [CHANGELOG.md](docs/CHANGELOG.md) and [section archive](docs/archive/SECTION_01_FOUNDATION.md).
-
-src/ holds the retained prototype, shared translations/tokens and versioned contract source. database/ holds the one migration history; config/ and scripts/ provide build/tooling boundaries. mobile/UPDATES.md records native-client status. No native app, database backup, credential, .env or downloaded dependency is included in source control.
-
-Verified source ZIPs and checksums live in ignored archives/. See [archive guidance](docs/archive/README.md). Keep business data backups separate from source checkpoints.
-
-## العربية
-
-الخطة المعتمدة الآن هي منصة لنقل الركاب في السودان: سوق مركزي، وصفحات للشركات، وأنظمة إدارة مستقلة للشركات. الإصدار الأول يشمل الركاب وأمتعتهم، ولا يشمل شحن الطرود أو البضائع. الحجز كزائر متاح في التصميم المعتمد، وتصدر التذكرة الرسمية والإيصال بعد تأكيد الدفع بالمحطة.
-
-هذا القسم هو الأساس المعماري والتوثيق وأدوات ترحيل قاعدة البيانات فقط. النموذج الحالي محلي وتجريبي، وليس نظام حجوزات أو دفع فعلياً. ابدأ المتابعة من docs/CURRENT_STATE.md. لا يبدأ القسم ٠٢ قبل موافقة صريحة.
+Read [database/schema](docs/DATABASE_SCHEMA.md), [security](docs/security/ACCESS_CONTROL.md), [Section 02 tests](docs/testing/SECTION_02_TEST_PLAN.md), [API contracts](docs/api/CONTRACTS.md), [decisions](docs/DECISIONS.md) and [archive records](docs/archive/README.md). Source ZIPs/checksums exclude credentials, databases, native binary caches, node_modules and temporary profiles. Source copies do not include your registered users; database backups are separate.

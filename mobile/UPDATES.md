@@ -1,5 +1,12 @@
 # Safeer mobile status
 
+## 0.3.0 - 2026-10-30, Section 02 local identity
+
+- Add a responsive Arabic/English staff sign-in and identity administration interface, separate from the fictional passenger/luggage example.
+- Real PostgreSQL identities, temporary-password change, revocable cookie sessions, platform users/roles/permissions and identity audit are enforced by the NestJS API. No permission is granted by a client company selector.
+- Seed all eight role templates; company/resource assignments are unavailable until Section 03 membership/scope enforcement exists. Support defaults to identity user/role read only.
+- Web clients use same-origin HttpOnly cookies and CSRF; no session token is stored in local storage. Native Flutter apps and secure mobile bearer/keychain handling are not implemented or built in this section.
+
 ## 0.2.1 - 2026-10-30, luggage declaration
 
 - The shared responsive reservation form asks whether the passenger has luggage and requires a description when yes (maximum 300 trimmed characters).

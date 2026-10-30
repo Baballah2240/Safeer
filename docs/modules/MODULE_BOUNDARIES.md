@@ -1,6 +1,6 @@
 # Module boundaries
 
-This is the complete target map. The only implemented services today are local prototype asset/liveness delivery and developer migration/build tooling. The matrix does not declare business modules complete.
+This is the complete target map. Section 02 implements local identity credentials/sessions, global role templates, platform permission assignment/user administration and immutable identity audit, alongside prototype asset delivery and migration/build tooling. Company memberships and company/resource role assignment stay in Section 03. The matrix does not declare later business modules complete.
 
 | Module | Owns | Allowed collaboration | Section |
 | --- | --- | --- | --- |

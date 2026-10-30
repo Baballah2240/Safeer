@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "target": "ES2023", "module": "NodeNext", "moduleResolution": "NodeNext",
+    "strict": true, "experimentalDecorators": true, "emitDecoratorMetadata": true,
+    "esModuleInterop": true, "skipLibCheck": true, "noEmitOnError": true,
+    "rootDir": "src", "outDir": "../../dist/api", "types": ["node"]
+  },
+  "include": ["src/**/*.ts"]
+}

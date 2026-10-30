@@ -1,0 +1,33 @@
+const ar={
+  'Staff access':'دخول الموظفين','Local identity workspace':'مساحة الهوية المحلية','Passenger preview':'معاينة حجوزات الركاب',
+  'Sign in':'تسجيل الدخول','Sign out':'تسجيل الخروج','Email':'البريد الإلكتروني','Password':'كلمة المرور',
+  'Your profile':'ملفك الشخصي','Users':'المستخدمون','Roles & permissions':'الأدوار والصلاحيات','Active sessions':'الجلسات النشطة','Audit history':'سجل التدقيق',
+  'Local development only. Company access is added in Section 03.':'للتطوير المحلي فقط. ستضاف صلاحيات الشركات في القسم ٠٣.',
+  'Loading…':'جارٍ التحميل…','Refresh':'تحديث','Close':'إغلاق','Cancel':'إلغاء','Save':'حفظ','Create user':'إنشاء مستخدم',
+  'Display name':'الاسم المعروض','Active':'نشط','Inactive':'غير نشط','Edit user':'تعديل المستخدم','Reset password':'إعادة تعيين كلمة المرور',
+  'Platform roles':'أدوار المنصة','Assign roles':'تعيين الأدوار','No roles assigned':'لم تعين أدوار بعد','Create role':'إنشاء دور','Edit role':'تعديل الدور',
+  'Permissions':'الصلاحيات','Scope':'النطاق','Company/resource templates become assignable in Section 03.':'ستتاح أدوار الشركات والفروع والمحطات والرحلات للتعيين في القسم ٠٣.',
+  'Current password':'كلمة المرور الحالية','New password':'كلمة المرور الجديدة','Confirm new password':'تأكيد كلمة المرور الجديدة','Change password':'تغيير كلمة المرور',
+  'Change your temporary password to continue.':'غيّر كلمة المرور المؤقتة للمتابعة.','Use 14 to 128 characters. Other sessions will be signed out.':'استخدم من ١٤ إلى ١٢٨ حرفاً. سيتم إنهاء الجلسات الأخرى.',
+  'Password confirmation does not match.':'تأكيد كلمة المرور غير مطابق.','Re-enter your password to authorize this change.':'أعد إدخال كلمة مرورك للسماح بهذا التغيير.',
+  'Temporary password — shown once':'كلمة مرور مؤقتة — تظهر مرة واحدة','Share it privately. The user must change it at first sign-in.':'شاركها بشكل خاص. يجب على المستخدم تغييرها عند تسجيل الدخول لأول مرة.',
+  'Save these details before closing. They cannot be retrieved later.':'احفظ هذه البيانات قبل الإغلاق. لن يمكن استرجاعها لاحقاً.',
+  'First page':'الصفحة الأولى','Next page':'الصفحة التالية','No records to show.':'لا توجد سجلات للعرض.','Current session':'الجلسة الحالية','Revoke session':'إنهاء الجلسة',
+  'Signed in':'تم تسجيل الدخول','Last active':'آخر نشاط','Expires':'تنتهي','Event':'الحدث','Actor ID':'معرف المنفذ','Target ID':'معرف السجل',
+  'Latest 100 identity events. Credentials are never logged.':'آخر ١٠٠ حدث للهوية. لا تُسجّل كلمات المرور أو رموز الجلسات.',
+  'Platform super administrator':'المسؤول الأعلى للمنصة','Platform support administrator':'مسؤول دعم المنصة','Company administrator':'مسؤول الشركة','Branch manager':'مدير الفرع','Station manager':'مدير المحطة','Ticketing employee':'موظف التذاكر','Boarding employee':'موظف الصعود','Driver':'السائق',
+  'platform':'المنصة','company':'الشركة','branch':'الفرع','station':'المحطة','trip':'الرحلة',
+  'identity.users.read':'عرض مستخدمي المنصة','identity.users.manage':'إدارة مستخدمي المنصة','identity.roles.read':'عرض الأدوار والصلاحيات','identity.roles.manage':'إدارة أدوار المنصة','identity.platform_roles.assign':'تعيين أدوار المنصة','identity.audit.read':'عرض تدقيق الهوية',
+  'UNAUTHENTICATED':'سجّل الدخول للمتابعة.','FORBIDDEN':'لا يملك حسابك هذه الصلاحية.','INVALID_CREDENTIALS':'لم يتم قبول البريد الإلكتروني أو كلمة المرور.',
+  'IDENTITY_UNAVAILABLE':'شغّل npm run local من مجلد Safeer لبدء خدمة الهوية المحلية.','INVALID_INPUT':'تحقق من البيانات المدخلة.','INVALID_PASSWORD':'استخدم كلمة مرور من ١٤ إلى ١٢٨ حرفاً.',
+  'PASSWORD_CHANGE_REQUIRED':'غيّر كلمة المرور المؤقتة أولاً.','REAUTHENTICATION_FAILED':'لم يتم قبول كلمة مرورك الحالية.','PASSWORD_UNCHANGED':'اختر كلمة مرور مختلفة.',
+  'RATE_LIMITED':'محاولات كثيرة. حاول لاحقاً.','BUSY':'يرجى الانتظار والمحاولة مرة أخرى.','STALE_VERSION':'تم تعديل السجل. حدّث الصفحة وأعد المحاولة.',
+  'LAST_OWNER':'يجب الإبقاء على مسؤول أعلى نشط واحد على الأقل.','PROTECTED_OWNER':'لا يمكن إجراء هذا التغيير على المسؤول الأعلى المحمي.',
+  'PRIVILEGE_ESCALATION':'لا يمكنك منح صلاحيات لا تملكها.','INVALID_ROLE_SCOPE':'يمكن تعيين أدوار المنصة النشطة فقط في هذا القسم.',
+  'SCOPE_DEFERRED':'تبدأ إدارة أدوار الشركات والموارد في القسم ٠٣.','DUPLICATE_LOGIN':'هذا البريد الإلكتروني مستخدم بالفعل.',
+  'CSRF_REJECTED':'حدّث صفحة الموظفين وأعد المحاولة.','SESSION_LIMIT':'أغلق جلسة حالية قبل فتح جلسة أخرى.','INTERNAL_ERROR':'تعذر إكمال الطلب.','INVALID_REQUEST':'الطلب غير صالح.',
+  'REQUEST_FAILED':'تعذر الاتصال بخدمة الهوية المحلية.','Password changed.':'تم تغيير كلمة المرور.','Saved.':'تم الحفظ.','Session revoked.':'تم إنهاء الجلسة.'
+};
+const errors={UNAUTHENTICATED:'Sign in to continue.',FORBIDDEN:'Your account does not have this permission.',INVALID_CREDENTIALS:'The email or password was not accepted.',IDENTITY_UNAVAILABLE:'Run npm run local from Safeer to start the local identity service.',INVALID_INPUT:'Check the entered information.',INVALID_PASSWORD:'Use a password of 14 to 128 characters.',PASSWORD_CHANGE_REQUIRED:'Change your temporary password first.',REAUTHENTICATION_FAILED:'Your current password was not accepted.',PASSWORD_UNCHANGED:'Choose a different password.',RATE_LIMITED:'Too many attempts. Try again later.',BUSY:'Please wait and try again.',STALE_VERSION:'This record changed. Refresh and try again.',LAST_OWNER:'Keep at least one active super administrator.',PROTECTED_OWNER:'This change is not permitted for the protected super administrator.',PRIVILEGE_ESCALATION:'You cannot grant permissions you do not hold.',INVALID_ROLE_SCOPE:'Only active platform roles can be assigned in this section.',SCOPE_DEFERRED:'Company and resource roles start in Section 03.',DUPLICATE_LOGIN:'That login is already in use.',CSRF_REJECTED:'Refresh the staff page and try again.',SESSION_LIMIT:'Close an existing session before opening another.',REQUEST_FAILED:'Could not connect to the local identity service.',INTERNAL_ERROR:'The request could not be completed.',INVALID_REQUEST:'The request is not valid.'};
+const labels={'identity.users.read':'View platform users','identity.users.manage':'Manage platform users','identity.roles.read':'View roles and permissions','identity.roles.manage':'Manage platform roles','identity.platform_roles.assign':'Assign platform roles','identity.audit.read':'View identity audit'};
+export const staffText=(key,language)=>language==='ar'?(ar[key]||key):(labels[key]||errors[key]||key);

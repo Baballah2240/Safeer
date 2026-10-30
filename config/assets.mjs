@@ -8,4 +8,8 @@ export const publicAssets = {
   '/src/styles.css': ['src/styles.css', 'text/css'],
   '/src/tokens.css': ['src/tokens.css', 'text/css'],
   '/src/brand.svg': ['src/brand.svg', 'image/svg+xml'],
+  '/staff': ['staff.html', 'text/html'],
+  '/src/staff.js': ['src/staff.js', 'text/javascript'],
+  '/src/staff-i18n.js': ['src/staff-i18n.js', 'text/javascript'],
+  '/src/staff.css': ['src/staff.css', 'text/css'],
 };

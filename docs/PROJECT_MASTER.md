@@ -1,6 +1,6 @@
 # Safeer / Sudan Transport - project master
 
-Updated: 2026-10-30. Current authorization: **Section 01 only**. Start continuation with [CURRENT_STATE.md](CURRENT_STATE.md). The owner's [master instructions](decisions/MASTER_INSTRUCTIONS_2026-10-30.md) are the governing plan; [DECISIONS.md](DECISIONS.md) records changes from the earlier prototype.
+Updated: 2026-10-30. Current authorization: **Section 02 only**, approved by the owner's "next". Start continuation with [CURRENT_STATE.md](CURRENT_STATE.md). The owner's [master instructions](decisions/MASTER_INSTRUCTIONS_2026-10-30.md) are the governing plan; [DECISIONS.md](DECISIONS.md) records scope decisions. Stop before Section 03 after the Section 02 handover.
 
 Owner-authorized 0.2.1 follow-up: collect and display a passenger luggage yes/no declaration and required description in the local prototype. This scoped change (D16) does not begin authentication or full station luggage management.
 
@@ -18,16 +18,16 @@ An expired hold does not authorize payment or boarding. One booking initially be
 
 ## Architecture: target versus current source
 
-| Layer | Target decision | Implemented in Section 01 |
+| Layer | Target decision | Implemented now (Sections 01-02) |
 | --- | --- | --- |
 | Public marketplace, company pages, dashboards, station PWA | Next.js/React with TypeScript | Existing responsive JavaScript prototype retained, freight removed; no Next.js app installed |
 | Passenger and driver apps | Flutter/Dart clients | Contracts/design sharing strategy documented; no native project or build |
-| Backend | NestJS/TypeScript modular monolith, versioned APIs | Local Node asset server plus explicit liveness endpoint; no business API |
-| Durable data | PostgreSQL 18, explicit SQL migrations | Migration runner, checksum ledger, private namespace and native integration tests |
+| Backend | NestJS/TypeScript modular monolith, versioned APIs | Section 02 NestJS identity API, same-origin local proxy and separate public passenger example |
+| Durable data | PostgreSQL 18, explicit SQL migrations | Migration runner plus durable identity/session/role/audit tables; no passenger business tables |
 | Jobs/cache/events | Redis, idempotent workers and WebSocket availability updates | Interfaces and consistency requirements documented; services not installed |
 | Documents/storage/notifications | S3-compatible private storage, FCM where applicable | Ownership, outbox and access requirements documented; no accounts or integrations |
 
-Node 24 is retained. Framework versions are to be pinned and tested when their section begins. Installing unused frameworks or fake controllers in this section would add maintenance without completed workflows. The existing passenger demo is a design/reference aid, not a secure marketplace.
+Node 24 is retained. NestJS 12.3.2 and TypeScript 6.0.3 are pinned for the implemented identity module. Next.js/Flutter/Redis remain staged for their owning sections. The passenger demo remains a design/reference aid, separate from the real staff identity interface at `/staff`.
 
 ## Modules and roles
 
@@ -46,4 +46,4 @@ Approved initial roles: platform super administrator, platform support administr
 7. Support Arabic/English, RTL/LTR, accessible controls, low-bandwidth clients and clear errors. Do not promise offline seat sales until conflict policy is implemented and tested.
 8. Test, fix, document and archive before handing off. Do not mark proposed schema or target frameworks as implemented.
 
-Section 01 ends at the verified foundation handover. Section 02 requires explicit owner approval. No production deployment, school-app changes, restaurant/mobile changes, real passenger data or external service enrollment is authorized by this section.
+Section 02 ends at the verified identity handover. Section 03 requires explicit owner approval. No production deployment, school-app changes, restaurant/mobile changes, real passenger data or external service enrollment is authorized by this section.

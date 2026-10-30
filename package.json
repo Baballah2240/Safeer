@@ -1,26 +1,48 @@
 {
   "name": "safeer",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
-  "description": "Section 01 foundation for the Sudan passenger transportation platform",
+  "description": "Section 02 local identity and passenger prototype for Safeer",
   "engines": {
     "node": ">=24"
   },
   "scripts": {
     "start": "node server.mjs",
-    "test": "node --test tests/*.test.mjs",
-    "build": "node scripts/build.mjs",
+    "test": "npm run build:api && node --test tests/*.test.mjs",
+    "build": "npm run build:api && node scripts/build.mjs",
     "start:built": "node server.mjs --built",
     "db:migrate": "node database/migrate.mjs up",
     "db:status": "node database/migrate.mjs status",
     "test:db": "node --test tests/database.integration.mjs",
     "test:browser": "node tests/browser.mjs",
     "check:docs": "node scripts/check-docs.mjs",
-    "check": "npm test && npm run build && npm run check:docs"
+    "check": "npm test && npm run build && npm run check:docs",
+    "build:api": "tsc -p apps/api/tsconfig.json",
+    "identity:start": "node dist/api/main.js",
+    "identity:bootstrap": "node dist/api/admin.js bootstrap",
+    "local": "npm run build && node scripts/local.mjs",
+    "test:identity": "node --test tests/identity.integration.mjs",
+    "test:identity:browser": "node tests/identity.browser.mjs",
+    "identity:recover": "node database/recover-owner.mjs",
+    "identity:grant": "node database/grant-runtime.mjs"
   },
   "license": "UNLICENSED",
   "dependencies": {
-    "pg": "8.23.1"
+    "@nestjs/common": "12.3.2",
+    "@nestjs/core": "12.3.2",
+    "@nestjs/platform-express": "12.3.2",
+    "pg": "8.23.1",
+    "reflect-metadata": "0.2.2",
+    "rxjs": "7.8.2"
+  },
+  "devDependencies": {
+    "@types/express": "5.0.6",
+    "@types/node": "24.0.14",
+    "@types/pg": "8.23.1",
+    "typescript": "6.0.3"
+  },
+  "optionalDependencies": {
+    "@embedded-postgres/windows-x64": "18.4.0-beta.17"
   }
 }

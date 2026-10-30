@@ -1,13 +1,13 @@
 # Development roadmap
 
-Updated 2026-10-30. Section 01 handover status and test evidence are maintained in [CURRENT_STATE.md](CURRENT_STATE.md). **Do not begin Section 02 automatically.**
+Updated 2026-10-30. Section 02 was explicitly approved by the owner's "next". Handover status and test evidence are maintained in [CURRENT_STATE.md](CURRENT_STATE.md). **Do not begin Section 03 automatically.**
 
 0.2.1 owner-requested prototype addendum: luggage choice/description in the reservation, passenger list and unpaid reference. It is not completion of Section 09 or 11; station luggage registration, tags, tracking and fees remain in their scheduled sections.
 
 | Section | Scope | Dependencies | Status |
 | --- | --- | --- | --- |
 | 01 | Project inspection, architecture, database/migration foundation, conventions, documentation/archive | Existing 0.1 prototype | Complete; handover/archive evidence in CURRENT_STATE |
-| 02 | Authentication, users, roles, permissions, session lifecycle, authorization/audit foundation | 01 + explicit approval | Not started |
+| 02 | Authentication, users, roles, permissions, session lifecycle, authorization/audit foundation | 01 + explicit approval | Complete; tested/documented, verified checkpoint at handover |
 | 03 | Companies, branches, stations, company isolation, support-access grants | 02 | Not started |
 | 04 | Cities, routes, destinations, ordered route stops | 03 | Not started |
 | 05 | Bus fleet, immutable seat-layout versions, drivers | 03-04 | Not started |
@@ -37,8 +37,8 @@ Within Section 02, scaffold the selected NestJS/TypeScript backend, connect the 
 - No critical/high-priority defects in the completed scope; limitations described without hiding failures.
 - Relevant mandatory docs, changelog, module notes and numbered archive entry updated.
 - Source checkpoint/archive checksum verified; no secrets, runtime databases or credentials committed.
-- Explicit owner approval before Section 02. For subsequent sections, follow the owner's section approval/execution instruction; never cross an incomplete gate.
+- Explicit owner approval before Section 03 and later sections; never cross an incomplete gate.
 
 ## Known gaps, not completed features
 
-The current prototype has no authentication, tenant security, durable bookings, actual guest-mobile validation, multi-seat transactions, payment/ticket/luggage/boarding business APIs or native mobile apps. These are scheduled work, not working production capabilities. Database migration infrastructure is deliberately separate from the browser demo, which still resets on refresh.
+The staff interface now has real local PostgreSQL authentication and platform authorization. Company memberships/tenant security, durable bookings, actual guest-mobile validation, multi-seat transactions, payment/ticket/luggage/boarding APIs and native apps remain scheduled work. The separate passenger demo still resets on refresh and never inherits company access from a staff role.

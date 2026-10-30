@@ -2,7 +2,7 @@
 
 ## Local tooling
 
-`npm ci` installs the pinned `pg` client used only by migration/testing tools in Section 01. The browser server does not open a database connection. Use a separate local PostgreSQL 18 database and migration owner; do not point tests at real company, school or restaurant data.
+`npm ci` installs the pinned PostgreSQL client and Section 02 API tooling. The identity API uses a separate restricted PostgreSQL login; the public passenger example remains in memory. Use a separate local PostgreSQL 18 database and migration owner; do not point tests at real company, school or restaurant data. See [IDENTITY_SETUP](IDENTITY_SETUP.md) for the private local launcher, runtime grants and owner recovery.
 
 Set `SAFEER_DATABASE_URL` in your shell or secure local environment to a loopback PostgreSQL database. `.env.example` documents the name; the application deliberately does not load or publish `.env` files automatically. Do not paste credentials into chat or commit them.
 

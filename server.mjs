@@ -1,4 +1,4 @@
-import {createServer} from 'node:http';
+import {createServer,request as upstreamRequest} from 'node:http';
 import {readFile} from 'node:fs/promises';
 import {readFileSync} from 'node:fs';
 import {resolve} from 'node:path';
@@ -7,7 +7,7 @@ import {publicAssets} from './config/assets.mjs';
 
 const {version} = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
 
-export async function startServer({port = 4320, built = false} = {}) {
+export async function startServer({port = 4320, built = false, identityApiUrl} = {}) {
   if (!Number.isInteger(port) || port < 0 || port > 65535) throw Error('Choose a valid local port.');
   const server = createServer(async (request, response) => {
     response.setHeader('X-Content-Type-Options', 'nosniff');
@@ -17,11 +17,32 @@ export async function startServer({port = 4320, built = false} = {}) {
     if (request.headers.host !== `127.0.0.1:${server.address().port}`) {
       response.writeHead(403); response.end('Open the local 127.0.0.1 address.'); return;
     }
+    let path;
+    try{
+      if(!request.url?.startsWith('/')||request.url.startsWith('//')||request.url.includes('\\'))throw Error('Invalid request target');
+      path=new URL(request.url,'http://127.0.0.1').pathname;
+    }catch{response.writeHead(400);response.end('Invalid request target');return;}
+    const apiUrl=(typeof identityApiUrl==='function'?identityApiUrl():identityApiUrl)||process.env.SAFEER_AUTH_API_URL;
+    if(path.startsWith('/api/v1/')&&apiUrl){
+      let target;
+      try{target=new URL(apiUrl);if(target.protocol!=='http:'||target.hostname!=='127.0.0.1'||target.username||target.password||target.pathname!=='/'||target.search||target.hash)throw Error();}
+      catch{response.writeHead(503,{'Content-Type':'application/json'});response.end(JSON.stringify({error:{code:'IDENTITY_UNAVAILABLE',message:'Review the local identity API configuration.'}}));return;}
+      if(Number(request.headers['content-length']||0)>8192){response.writeHead(413);response.end('Request too large');return;}
+      const upstream=upstreamRequest({hostname:target.hostname,port:target.port,method:request.method,path:request.url,headers:{...request.headers,host:target.host}},incoming=>{
+        response.writeHead(incoming.statusCode,incoming.headers);incoming.pipe(response);
+      });
+      upstream.setTimeout(10000,()=>upstream.destroy());
+      upstream.on('error',()=>{if(!response.headersSent){response.writeHead(503,{'Content-Type':'application/json'});response.end(JSON.stringify({error:{code:'IDENTITY_UNAVAILABLE',message:'Start the local identity service.'}}));}else response.destroy();});
+      let size=0;request.on('data',chunk=>{size+=chunk.length;if(size>8192){upstream.destroy();request.unpipe(upstream);if(!response.headersSent){response.writeHead(413);response.end('Request too large');}}});
+      request.on('aborted',()=>upstream.destroy());request.pipe(upstream);return;
+    }
+    if(path.startsWith('/api/v1/auth')||path.startsWith('/api/v1/identity')){
+      response.writeHead(503,{'Content-Type':'application/json'});response.end(JSON.stringify({error:{code:'IDENTITY_UNAVAILABLE',message:'Run npm run local to start the local identity service.'}}));return;
+    }
     if (!['GET', 'HEAD'].includes(request.method)) {
       response.writeHead(405, {Allow: 'GET, HEAD'}); response.end('This prototype has no write API.'); return;
     }
     try {
-      const path = new URL(request.url, 'http://127.0.0.1').pathname;
       if (path === '/api/v1/health') {
         response.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
         response.end(request.method === 'HEAD' ? undefined : JSON.stringify({data: {service: 'safeer', version, mode: 'local-prototype', database: 'not-connected'}}));
