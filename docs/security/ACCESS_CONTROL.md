@@ -1,6 +1,6 @@
 # Security and access-control design
 
-**Status:** Section 02 implements local identity/platform authorization. Company memberships, scoped company roles, business RLS policies and authenticated company APIs remain Section 03 or later. The separate passenger prototype remains fictional; its company switch is not a security control.
+**Status:** Section 02 implements local identity/platform authorization. Section 03 implements company memberships, scoped roles, tenant RLS and authenticated company APIs. The separate passenger prototype remains fictional; its company switch is not a security control.
 
 ## Implemented identity protections
 
@@ -27,7 +27,7 @@ No unauthenticated HTTP bootstrap or public password-reset shortcut exists. The 
 | Boarding employee | Assigned trips/station | Ticket/luggage verification and boarding, no general finance authority |
 | Driver | Assigned trips | Necessary manifest/seat and trip-event information only |
 
-The implemented catalog has six `identity.*` capabilities for users, roles, platform assignments and audit. Owner has all six; support defaults to identity users/roles read only. Company/branch/station/trip templates have no global identity grants and cannot be assigned before Section 03. Business capabilities such as `booking.create`, `payment.confirm`, `ticket.issue`, `cash.reconcile`, `luggage.register` and `boarding.verify` remain design identifiers, combined with validated resource ownership in their owning sections.
+The implemented catalog has six `identity.*` and nine `company.*` capabilities. Super Admin has the full catalog; support defaults to identity users/roles read only. Company/branch/station/trip templates have no global identity grants and cannot be assigned through platform assignments; company/branch/station roles use Section 03 memberships and trip roles wait for actual trips. Business capabilities such as `booking.create`, `payment.confirm`, `ticket.issue`, `cash.reconcile`, `luggage.register` and `boarding.verify` remain design identifiers, combined with validated resource ownership in their owning sections.
 
 ## Enforcement requirements for Sections 02-03
 
@@ -52,3 +52,16 @@ Section 01's loopback-only asset server, CSP, private-file allowlist, no write A
 - [NestJS authentication](https://docs.nestjs.com/security/authentication) and [authorization](https://docs.nestjs.com/security/authorization).
 - [OWASP password storage](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html): the implemented scrypt work settings are one listed memory/work tradeoff.
 - [OWASP session management](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html) and [CSRF prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html). Local HTTP is explicitly an isolated development exception, not the recommended transport for a remote session.
+
+
+## Implemented Section 03 company isolation
+
+CompanyService reauthorizes inside the shared transaction lock and sets a raw session capability only with transaction-local set_config. SQL helpers independently validate its hash against an active non-temporary identity/session, idle/absolute expiry and credential version. Arbitrary actor/company IDs, a browser selector or a super flag confer no access. An ordinary platform role with company-named permissions also confers no membership.
+
+Eleven tenant tables have RLS, explicit same-company service predicates, composite foreign keys and immutable-ownership triggers. Runtime is not an owner/BYPASSRLS/DDL role. Private SECURITY DEFINER helpers use a fixed trusted search_path and fully qualified objects; PUBLIC execution is revoked. Startup verifies expected RLS tables. Policies derive company/branch/station permission scope from active memberships, company roles and active parent resources. Assignment/grant ceilings are checked in both service and RLS. Mixed-scope memberships cannot be replaced by a manager who controls only a subset. No credentials or raw tokens are stored in company records/audit.
+
+The last capable active company administrator is protected by deferred checks on company users/assignments/roles/permissions and global-user updates, under the same lock. Operations that remove the actor own company access before an audit can complete are refused. Archive instead of deleting company history; global credentials are changed only through the existing platform identity tools.
+
+Support access requires an active reserved platform-support role, reason, explicit Super Admin grant, approved company, selected read-only codes, non-revocation and database-time expiry. Company managers may inspect grants but cannot create/revoke them. No financial permissions exist in this section. Local-only policies, limited capacities and tests do not constitute a production security certification. HTTPS, proxy trust, recovery delivery, MFA, load/performance and final security review remain future deployment work.
+
+The implementation follows PostgreSQL documented [row security behavior](https://www.postgresql.org/docs/18/ddl-rowsecurity.html) and [SECURITY DEFINER precautions](https://www.postgresql.org/docs/18/sql-createfunction.html), including separate non-owner runtime credentials and restricted helper execution.

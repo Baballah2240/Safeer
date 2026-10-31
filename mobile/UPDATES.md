@@ -1,5 +1,9 @@
 # Safeer mobile status
 
+## 0.4.0 - 2026-10-31, Section 03 company access
+
+Shared responsive staff screens now include real companies, approval/settings, branches/stations, scoped employees/roles, support grants and audit. Single-company employees open only their assigned workspace without a selector. Server and database enforce scope; changing a UI company ID grants nothing. Arabic/English, dark/light themes and existing passenger/luggage UI remain available. No native mobile build or installation was requested.
+
 ## 0.3.0 - 2026-10-30, Section 02 local identity
 
 - Add a responsive Arabic/English staff sign-in and identity administration interface, separate from the fictional passenger/luggage example.

@@ -1,4 +1,5 @@
 export const arabic = {
+  "Staff company access uses authenticated memberships. This selector switches fictional demo workspaces only.": "يعتمد وصول موظفي الشركات على العضويات الموثقة. يبدل هذا الخيار مساحات عمل تجريبية فقط.",
   "Passenger transport workspace": "مساحة عمل نقل الركاب",
   "Browse sample trips, choose a seat and review the reservation.": "تصفح الرحلات التجريبية واختر مقعداً وراجع الحجز.",
   "Fictional reservations reset on refresh. Staff accounts are managed separately in Staff access.": "الحجوزات التجريبية تمسح عند التحديث. تدار حسابات الموظفين بصورة منفصلة من دخول الموظفين.",

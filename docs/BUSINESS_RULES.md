@@ -81,3 +81,12 @@ Existing authorization, reservation deadlines and offline-payment boundaries rem
 ## 0.3.4 - Dark mode (2026-10-31)
 
 Theme switching must preserve drafts, focus and authorization. Preferences survive reloads and same-origin navigation and synchronize across windows. Reservation references print on white paper regardless of screen theme.
+
+
+## Section 03 company rules (D24)
+
+Company approval and active authenticated memberships define company access. Super Admin can configure any company; other users receive only assigned companies/branches/stations, or explicitly granted read-only support. A company selector never authorizes access. Pending/suspended/archived companies and inactive parent resources remove ordinary access immediately.
+
+Assignments use tenant-owned roles and same-company resources, with a grant ceiling in both the service and RLS. A manager cannot replace a membership that also spans resources outside their authority. Company role scope is immutable. Existing global identities may be linked only by Super Admin; new company staff receive temporary passwords and must change them. Membership edits do not reset or disable a shared global identity. Keep a capable active company administrator; self-removal that would prevent completing the audit is refused and must be performed by another administrator.
+
+Support grants require an active platform-support account, a reason, Super Admin approval, 1-24 hours and read permissions only; database time, revocation and current role/account/company status apply on every query. No financial grant or future permission is invented. Archive companies and deactivate resources/memberships rather than deleting their history. Company settings are saved but real reservations/payments remain later work.

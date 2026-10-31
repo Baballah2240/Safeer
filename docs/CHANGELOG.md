@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0 - 2026-10-31 - SECTION 03
+
+Added real local company approval/settings, branches/stations, tenant role copies, multi-scope staff memberships, temporary staff onboarding, expiring read-only support grants and company audit. Integrated Companies screens with bilingual dark/light staff navigation. Added same-company FKs, eleven-table RLS, raw-session-derived policies, grant ceilings, immutable ownership, startup RLS checks, local capacity guards and atomic last-company-admin protection. Preserves identity rows and existing passwords/sessions during upgrade. Passenger bookings/payments remain fictional or deferred; stop before Section 04.
+
 
 ## 0.3.1 - Super Administrator role editing
 

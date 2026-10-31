@@ -2,7 +2,7 @@
 
 ## Implemented Section 01 objects
 
-PostgreSQL 18. The migration runner creates private `safeer_meta.schema_migrations(version integer PK, name text UNIQUE, checksum text, applied_at timestamptz)`. Migration `0001_foundation.sql` creates the private `safeer` namespace. PUBLIC receives no namespace/ledger access. Section 02 adds identity objects below; no company, reservation, financial or registered luggage table exists yet.
+PostgreSQL 18. The migration runner creates private `safeer_meta.schema_migrations(version integer PK, name text UNIQUE, checksum text, applied_at timestamptz)`. Migration `0001_foundation.sql` creates the private `safeer` namespace. PUBLIC receives no namespace/ledger access. Section 02 adds identity objects below; company objects are added by Section 03; reservation, financial and registered luggage tables remain deferred.
 
 The passenger prototype still uses memory. Staff access uses the identity service and a limited PostgreSQL runtime login. Native tests use disposable databases; the optional local launcher creates a separate persistent development database under ignored `runtime/`. No school, restaurant or production database is used.
 
@@ -10,13 +10,25 @@ The passenger prototype still uses memory. Staff access uses the identity servic
 
 Migration [0002_identity.sql](../database/migrations/0002_identity.sql) creates eight identity tables: users, sessions, roles, permissions, role_permissions, platform_user_roles, identity_audit and auth_throttles. Users have normalized unique email login, salted scrypt hash, active/temporary-password flags, optimistic version and credential version. Sessions have only token hashes, credential version, absolute expiry, last activity and revocation; idle expiry is checked at request time. No plaintext password or session token is persisted in the database.
 
-Eight built-in role templates and six implemented identity permissions are seeded. Only platform-scope roles can be assigned here: a composite role/scope FK plus a platform-only check rejects company/branch/station/trip assignments. Company memberships/custom company roles/support grants remain Section 03, and later permission catalogs are not seeded as fake working grants.
+Eight built-in role templates and six implemented identity permissions are seeded. Only platform-scope roles can be assigned here: a composite role/scope FK plus a platform-only check rejects company/branch/station/trip assignments. Company memberships/custom company roles/support grants are implemented in Section 03, and later permission catalogs are not seeded as fake working grants.
 
 The global identity mutation advisory lock `(94106,2)` serializes authorization-sensitive changes, with a shared lock for reads. It makes last-active-owner checks and reauthorization atomic across sessions/role changes. Login limits use hashed keys and database reset instants. Identity audit contains UUID actor/target, action and timestamp only; the runtime role cannot update/delete audit records or mutate the permission catalog. This is identity consistency, not a business inventory/tenant isolation implementation.
 
-[runtime-grants.mjs](../database/runtime-grants.mjs) grants only the DML needed by this module. The API refuses superuser/BYPASSRLS or schema-CREATE connections; the local developer launcher uses separate migration-owner and runtime credentials. RLS for company resources belongs to Section 03.
+[runtime-grants.mjs](../database/runtime-grants.mjs) grants only the DML needed by this module. The API refuses superuser/BYPASSRLS or schema-CREATE connections; the local developer launcher uses separate migration-owner and runtime credentials. Section 03 adds RLS for company resources.
 
 The 0.2.1 prototype adds in-memory reservation fields `hasLuggage` (boolean) and `luggageDescription` (trimmed text, required at 1-300 characters when true, empty when false). No SQL migration or luggage record is created. In Section 09 persist the equivalent `has_luggage` / `luggage_description` declaration on each booking passenger, with an invariant enforcing the same rules; existing historical data needs an explicit migration policy. Section 11 registration remains a separate verified record linked to that passenger.
+
+## Implemented Section 03 objects
+
+[0003_companies.sql](../database/migrations/0003_companies.sql) adds companies, company_settings, branches, stations, company_roles, company_role_permissions, company_users, company_user_roles, support_access_grants, support_access_grant_permissions and company_audit (11 new / 19 total application tables).
+
+Company slugs are globally unique; branch/station codes are company-unique. Company settings store hold minutes (5-1440), IANA timezone and language. Companies have pending/approved/suspended/archived state. Members are unique per company/global user and keep a company-local display name and active flag. Up to ten role assignments bind company, branch or station scope, with composite company/member/role/scope/resource FKs and NULLS NOT DISTINCT uniqueness. Stations' (company,branch,id) keys prevent mixing branches in assignments. No trip assignment, city catalog, counter or currency/money table is introduced here.
+
+All eleven tables enable RLS. company_actor validates a raw transaction-local session against hashed sessions, active credentials, first-password change and absolute/idle expiry. company_can/company_has evaluate the current scope, active parent resources and explicit expiring support grants; platform permission names alone do not confer company membership. Security-definer helpers use a fixed pg_catalog path and fully qualified names; execution is revoked from PUBLIC and selectively granted to the non-owner runtime login. No GUC actor ID/company ID/super flag can bypass those checks.
+
+Policies restrict tenant reads/writes and grant ceilings. Immutable-ownership triggers reject transferring existing tenant rows. Deferred last-company-administrator constraints check final transactional state, including global user deactivation, under the shared authorization lock. A capable company administrator retains company-scoped profile/staff/role read and staff/role management permissions. Company audit is append-only for runtime. Only Super Admin changes approval/slug or support grants. Support permissions are restricted by CHECK to profile/resources/audit reads, with maximum 24-hour expiry and reason/approver/history.
+
+Local capacities are enforced by owner-defined insert triggers (serialized with the authorization lock): 200 companies; per company 100 branches, 200 stations, 500 members, 50 roles, 500 support-history rows; 10 assignments/member. Lists are complete within these bounds; audit returns the latest 100 permitted events. Global templates receive the nine new company permissions and version increments to invalidate stale editors; existing user/credential/session rows remain unchanged. Tenant copies only inherit templates at company creation.
 
 ## Naming, keys and ownership for future migrations
 
@@ -26,7 +38,7 @@ The 0.2.1 prototype adds in-memory reservation fields `hasLuggage` (boolean) and
 - Amounts use bigint minor units, currency_code and immutable exponent/price snapshots. API amounts are integer strings. Quantities/weights use suitable checked integer/numeric fields, not formatted text.
 - FK delete defaults are RESTRICT; cascades are allowed only for documented nonhistorical child/config records. Index referencing FK columns and tenant/time access paths. Unique constraints are authoritative, not pre-insert UI checks.
 
-The catalog below remains the full target contract. The eight Section 02 tables listed above are implemented; company-role/membership rows marked 02/03 and all later business tables remain proposed. Their owning sections add migrations, constraints, repositories and authorization/RLS tests before use. Actual Section 02 DDL is authoritative where the earlier catalog is abbreviated.
+The catalog below remains the full target contract. The eight Section 02 tables listed above are implemented; company-role/membership rows marked 02/03 and Section 03 tables above are implemented; later business tables remain proposed. Their owning sections add migrations, constraints, repositories and authorization/RLS tests before use. Actual Section 02/03 DDL is authoritative where the earlier catalog is abbreviated.
 
 ## Complete planned entity catalog
 
@@ -128,7 +140,9 @@ Payment confirmation locks the booking and allocations, reads a fresh database c
 | Migration | Executable changes | Owning section |
 | --- | --- | --- |
 | 0001_foundation.sql | Private safeer namespace; migration runner manages private checksum ledger | 01 |
-| Future sequential files | Only the implemented module's reviewed DDL/constraints/indexes/policies | 02 onward |
+| 0002_identity.sql | Identity tables, role templates, sessions and audit | 02 |
+| 0003_companies.sql | Eleven company tables, scoped access, RLS and administrator guards | 03 |
+| Future sequential files | Only the implemented module's reviewed DDL/constraints/indexes/policies | 04 onward |
 
 Use append-only sequential `0001_name.sql` files. The runner normalizes CRLF, hashes contents, checks applied names/versions/checksums, obtains a transaction-level advisory lock, and commits all pending files with their ledger rows atomically. SQL files must not contain their own transaction control or nontransactional statements. Drift/unknown history fails closed. No automatic down-migrations or edits to applied files; use reviewed forward corrections. Keep schema-owner and application credentials separate.
 

@@ -1,9 +1,9 @@
 {
   "name": "safeer",
-  "version": "0.3.4",
+  "version": "0.4.0",
   "private": true,
   "type": "module",
-  "description": "Section 02 local identity and passenger prototype for Safeer",
+  "description": "Section 03 local company access and passenger prototype for Safeer",
   "engines": {
     "node": ">=24"
   },
@@ -25,7 +25,9 @@
     "test:identity": "node --test tests/identity.integration.mjs",
     "test:identity:browser": "node tests/identity.browser.mjs",
     "identity:recover": "node database/recover-owner.mjs",
-    "identity:grant": "node database/grant-runtime.mjs"
+    "identity:grant": "node database/grant-runtime.mjs",
+    "test:companies": "node --test tests/companies.integration.mjs",
+    "test:companies:browser": "node tests/companies.browser.mjs"
   },
   "license": "UNLICENSED",
   "dependencies": {

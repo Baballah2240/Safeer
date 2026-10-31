@@ -1,84 +1,54 @@
-# Current state - read this first
+﻿# Current state - read this first
 
-Updated: 2026-10-31. Safeer / Sudan Transport, version 0.3.4.
+Updated: 2026-10-31. Safeer / Sudan Transport, version 0.4.0.
 
-## Current section and gate
+## Current section and next gate
 
-The owner explicitly approved Section 02 (authentication, users, roles and permissions) by answering "next". Section 02 is complete: tested and documented, with a verified exact-commit source checkpoint generated at handover. Do not begin Section 03 without explicit approval.
+The owner's latest "next" authorized Section 03 (D24): companies, branches, stations, company isolation and scoped staff/support access. Implementation is complete; final verification and local upgrade evidence are recorded below. Stop before Section 04 (cities/routes/destinations) until the owner approves it. Do not start bookings, payments or native mobile work early.
 
-## What works
+## Working application
 
-- NestJS 12.3.2 / TypeScript 6.0.3 local identity API and bilingual staff interface at /staff.
-- PostgreSQL users, hashed/revocable sessions, eight built-in role templates, six implemented identity permissions, configurable platform roles and immutable identity audit.
-- Sign-in/out, mandatory temporary-password change, own session list/revocation, user creation/edit/disable/password reset, platform role assignment/create/edit and recent audit view, subject to server permissions/current-password checks.
-- Scrypt hashes; strict input validation; same-origin/CSRF protection; durable login/reauthentication limits; bounded hashing; absolute/idle session expiry; immediate grant/account revocation; expected-version edits; last-owner protection under a transaction lock.
-- One-time generated local owner bootstrap and privileged local owner recovery. No fixed account password or unauthenticated web bootstrap.
-- Private persistent Windows development PostgreSQL launcher: npm run local. Migration owner and restricted API DB credentials are separate; ignored runtime/ is limited to the current Windows user/SYSTEM.
-- Preserved passenger/luggage example, Arabic/English views, unpaid reference/print, expiry/cancellation. It remains fictional and separate from staff identity.
+- Local NestJS/TypeScript API, PostgreSQL and bilingual responsive staff UI at http://127.0.0.1:4320/staff.
+- Sign-in, password/session lifecycle, platform users/roles, protected Super Admin and identity audit from Section 02.
+- **Companies** in the sidebar: Super Admin creates companies, configures names/contact details, hold duration, timezone/language, and approves/suspends/archives them.
+- Real company workspaces: overview, branches/stations, company staff, company roles, support access and audit.
+- Other users see only approved companies granted by active memberships or explicitly permitted support grants. Single-company users go straight into that workspace without a company chooser.
+- Multi-role memberships support company, branch and station scopes. Scoped managers cannot grant wider access or change a membership spanning resources outside their authority. Trip roles wait for Section 06.
+- Company admins can create new local staff accounts with one-time temporary passwords. Super Admin alone links existing global identities. Membership editing never changes a shared identity's password, platform roles or global active state.
+- Company-owned roles copy global templates when a company is created. Subsequent template edits do not silently change existing companies.
+- Read-only platform-support grants require Super Admin, a reason, 1-24 hours and selected read permissions. Expiry, revocation, account/role deactivation and company status are checked against database time.
+- RLS on all 11 company-owned tables; composite same-company foreign keys; immutable tenant ownership; current-password/CSRF/version checks; append-only audit; last capable company administrator protected atomically, including global user deactivation.
+- Dark/light skeuomorphic styling, persistent theme preference, Arabic/English and clean white-paper reference printing remain available.
+- The passenger/luggage preview is still fictional in-memory data. It is deliberately separate from durable company records and cannot issue real tickets or collect payment.
 
-## How to run
+## Run and use
 
-Install Node 24+ and run npm ci, then npm run local from this folder on Windows. Open http://127.0.0.1:4320/staff. On the first fresh startup, fictional owner@safeer.local and a generated temporary password are saved privately to runtime/first-login.txt. Change it at first sign-in; do not put this file into Git, an archive or customer handover. Stopping the launcher stops the PostgreSQL process it started while preserving data for the next launch.
+Install Node 24+, then `npm.cmd ci` and `npm.cmd run local` from this folder on Windows. Existing users/passwords are retained when migrations are applied. Back up the private database before an upgrade; never delete runtime/ to repair login.
 
-npm start alone still serves the passenger prototype without identity. For existing PostgreSQL, use [IDENTITY_SETUP](database/IDENTITY_SETUP.md). Ports 4320/4321 and the private DB port are loopback only. No remote deployment is configured.
+On a fresh database only, the launcher creates owner@safeer.local and privately writes a generated temporary password to runtime/first-login.txt. Change it at first sign-in. Existing credentials are never regenerated by an update. Runtime data, credentials, first-login text and private backups are excluded from Git and source archives.
 
-## Database status
+First-use company workflow: sign in as Super Admin -> Companies -> Create company -> Edit company -> approve -> add branches/stations -> add company staff and scoped roles. Share a generated temporary password privately; the employee must change it at first sign-in. See [company workflow](workflows/COMPANY_ACCESS.md).
 
-Migrations 0001_foundation.sql and 0002_identity.sql are executable. Eight identity tables exist; the migration ledger is separate. Runtime grants allow only required identity DML, cannot update/delete audit or alter the permission catalog, and cannot create schema objects. No company/membership, branch/station, booking, payment, registered luggage or boarding table exists.
+For manual PostgreSQL startup/recovery see [IDENTITY_SETUP](database/IDENTITY_SETUP.md). Only loopback is enabled. No remote hosting, HTTPS proxy trust, MFA or email/SMS credential delivery is configured.
 
-Company/branch/station/trip roles are templates only and cannot be assigned globally. Scoped company roles, memberships, support grants and RLS begin in Section 03. Platform support defaults to identity users/roles read only and has no financial authority.
+## Database and contracts
 
-## Verification status
+Migrations 0001 and 0002 are unchanged. [0003_companies.sql](../database/migrations/0003_companies.sql) adds 11 company-owned tables to eight identity tables (19 application tables, plus the separate migration ledger). Nine company permissions join the six identity permissions. Four initial company/branch/station templates are copied into tenant roles; driver/boarding trip assignments remain deferred.
 
-- Dependency reproduction: npm ci --offline --ignore-scripts passed from the lockfile; 123 packages installed.
-- Current unit/security suite: 13 passed, including password salts/work limits, cookies/CSRF, private assets and malformed request-target recovery, plus retained passenger/luggage regression.
-- Native PostgreSQL migration/identity suite: 19 passed with no skips, using disposable databases and real restricted runtime roles. Covers transactional migrations, scope/FKs, session rotation/expiry/revocation, Origin/CSRF, durable throttling, current-password checks, delegated permissions, owner-template/last-owner concurrency, audit and owner recovery.
-- Strict TypeScript API build and 12 public assets passed; no native mobile application was built.
-- Staff browser workflows passed on source and built assets: real login, one-time credentials, users, role assignment/create/edit, temporary-password change, support restrictions, session revocation, account switching, expired-form recovery, escaped names and EN/AR at 1920x1080, 1366x768 and 390x844. Screenshots never include temporary passwords.
-- Passenger/luggage browser checks passed on both source and built assets.
-- Windows local launcher: restricted current-user/SYSTEM ACL verified; one account/eight templates and first-login details survived two supervised restarts; owned database/web/API processes stopped cleanly. The persistence test fixed repeated ACL hardening so already-private ACLs are verified instead of rewritten.
-- Documentation: 11 mandatory records and links across 24 Markdown files passed.
-- Runtime dependency audit: zero known advisories reported on 2026-10-30. This is not a production security certification.
-- Source patch hygiene passed. Final ZIP CRC/per-file SHA-256, exact commit and exclusions are verified at checkpoint generation under ignored archives/.
+RLS authorization derives the actor from a valid opaque session set transaction-locally and evaluates server-side memberships, resource ownership and support grants. Caller-provided company/actor IDs or a super flag cannot grant access. SQL policy helpers have fixed trusted search paths, restricted execution and a non-owner runtime connection. See [access control](security/ACCESS_CONTROL.md).
 
-## Remaining boundaries
+OpenAPI has 27 implemented paths / 31 operations. Fifteen public source assets are allowlisted. Local list capacities are explicit: 200 companies, 100 branches/company, 200 stations/company, 500 members/company, 50 roles/company, 10 assignments/member and 500 support-grant history rows/company. Requests remain bounded to 8 KiB; audit lists show the latest 100 permitted events.
 
-This is local development authentication. HTTPS/proxy trust, email/SMS reset, MFA, Flutter token/keychain delivery and final production/load/security audit are not enabled. Local HTTP cookies intentionally omit Secure and must not be used remotely. Company access does not exist yet: a template or demo selector grants no company membership.
+## Verification and handover
 
-Real passenger data, multi-seat/guest-mobile bookings, station money/tickets, registered luggage/tags/tracking, boarding and production hosting remain later sections. The passenger example resets on refresh. No Stocrant or school files change for this work.
+Verified 43 automated checks (13 unit/server and 30 native PostgreSQL), with no failures or skips. Company browser workflows passed in source and built modes across 72 layouts each; existing identity workflows passed in both modes across 60 layouts each, and passenger/luggage checks passed in both modes. The private backup was restored in isolation and verified; the existing local account, credentials and first-login file are unchanged.
 
-## Exact next task after handover
+Final verification receipts are kept under ignored .qa/ and copied into the verified source checkpoint. The native suites use disposable databases and restricted runtime roles, never the persistent local data. The local upgrade is backed up privately and checks existing account/credential preservation.
 
-Stop and wait for Section 03 approval: companies, branches, stations and company isolation. Then add company/membership/resource tables, scoped roles and support grants, composite same-company FKs, runtime RLS and cross-company/resource tests. Do not add booking/payment modules early. Read the master plan, decisions, this file and Section 02 archive before continuing.
+Source checkpoint: archives/Safeer-0.4.0-Section-03-2026-10-31.zip, generated from the final committed source and verified by ZIP CRC and per-file SHA-256. Source archives contain no runtime database, accounts, credentials, private backups, native caches or node_modules. Earlier checkpoints remain separately under archives/.
 
+Section handovers: [Section 02](archive/SECTION_02_IDENTITY.md), [Section 03](archive/SECTION_03_COMPANIES.md). Source control/push status is reported separately; a GitHub push does not deploy hosting.
 
-## 0.3.1 - Super Administrator role editing
+## Remaining work
 
-Owner-authorized D20 follow-up: Super Administrators can edit names, permissions and status of all eight built-in role templates and custom platform roles. Reserved owner codes/scopes remain immutable, owner authority always includes the permission catalog, and disabling the last active owner is rejected atomically. Other administrators remain restricted. Company/resource assignment remains deferred to Section 03; no schema migration or company access is added. The role editor supports Arabic/English and mobile layouts.
-
-
-0.3.1 verification: 13 unit/server checks and 19 native PostgreSQL/identity checks passed; build, documentation links and offline locked install passed. Real source and built Chrome checks passed for Super Administrator owner/company role edits, restricted support UI, and Arabic/English at 1920x1080, 1366x768 and 390x844 with no uncaught browser errors. Follow-up checkpoint: `archives/Safeer-0.3.1-role-editing-2026-10-30.zip` (generated from the committed source, credentials/runtime excluded).
-
-
-## 0.3.2 - Connected workspace layout
-
-The local staff workspace now has a consistent sidebar, account overview and permission-aware task shortcuts. Users show role labels linking to role management, searchable currently loaded users, and searchable/filterable role templates. Arabic/English links connect staff and passenger interfaces while retaining their separate data boundaries. Open /staff and refresh to see the new layout. Versioned checkpoint: archives/Safeer-0.3.2-workspace-2026-10-30.zip; runtime and credentials are excluded.
-
-
-0.3.2 validation: 13 unit/server checks, TypeScript/API/public build and documentation links passed. Source and built staff browser workflows passed across 30 layouts each (five screens, Arabic/English, three viewports). Search/scope filters, role links, Super Administrator edits, restricted support views, session/password workflows, keyboard dismissal and language-preserving round trips passed with no uncaught errors. Passenger source/built reservation, luggage, escaping and printing regressions passed. No schema or authorization changes required repeating migrations.
-
-
-## 0.3.3 - Skeuomorphic styling (2026-10-31)
-
-Staff/passenger screens now use tactile raised buttons, inset inputs, navy textured navigation, paper panels, padded seats and ticket-style references. Existing responsive layouts and Arabic/English workflows remain intact. Open /staff and refresh. Checkpoint: archives/Safeer-0.3.3-skeuomorphism-2026-10-31.zip; credentials/runtime excluded.
-
-
-0.3.3 verification: 13 unit/server checks, build and documentation links passed. Existing source and built staff workflows each passed 30 Arabic/English desktop/mobile layout checks, including keyboard dialog dismissal, forms, roles, sessions and permission restrictions. Passenger source/built checks passed for seat selection, luggage, escaping and printed references. Reviewed rendered desktop and Arabic mobile screenshots. No application logic, database changes or new dependencies.
-
-
-## 0.3.4 - Dark mode (2026-10-31)
-
-Dark skeuomorphic mode is the default for staff, passenger booking, tables, forms and dialogs. Use the Light mode / Dark mode button in either header; the choice is remembered locally. Arabic labels and responsive layouts are preserved. Dark-screen references print on white paper. Checkpoint: archives/Safeer-0.3.4-dark-mode-2026-10-31.zip; private runtime/credentials excluded.
-
-
-0.3.4 validation: 13 unit/server checks, 14-asset build and documentation links passed. Source/built staff checks covered 60 dark/light Arabic/English responsive combinations per run. Source/built passenger checks verified theme default, real cross-window preference changes, reload persistence, drafts, blocked storage, seat/luggage flows and white-paper printing. Reviewed dark staff/passenger screenshots; no uncaught browser errors.
+Wait for Section 04 approval: cities, routes, destinations and ordered route stops. Company stations currently have addresses; city foreign keys join the real city catalog in Section 04. Counters, money/currency catalogs, station payments, real guest/multi-seat reservations, tickets, registered luggage, boarding and native clients remain later sections. Company capacity limits are local-stage bounds rather than a production scale claim. Scoped roles cannot grant capabilities from future modules that do not exist.

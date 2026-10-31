@@ -4,10 +4,25 @@ import {randomUUID, createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import pg from 'pg';
 import {databaseConfig, readMigrations, migrationStatus, runMigrations} from '../database/migrate.mjs';
+import {hashPassword} from '../dist/api/security.js';
 
 if (!process.env.SAFEER_TEST_DATABASE_URL) throw Error('Set SAFEER_TEST_DATABASE_URL for a disposable local PostgreSQL instance; no tests are skipped.');
 const config = databaseConfig(process.env.SAFEER_TEST_DATABASE_URL);
 const migrations = await readMigrations();
+
+test('Section 03 upgrades an existing identity database without changing users, credentials or sessions',async()=>fixture(async client=>{
+  await runMigrations(client,migrations.slice(0,2));
+  const id=randomUUID(),sid=randomUUID(),encoded=await hashPassword(randomUUID()+randomUUID()),tokenHash=createHash('sha256').update(randomUUID()).digest('hex');
+  await client.query('INSERT INTO safeer.users(id,normalized_login,display_name,password_hash,must_change_password) VALUES($1,$2,$3,$4,false)',[id,'upgrade-fixture@safeer.local','Fictional Existing Owner',encoded]);
+  await client.query("INSERT INTO safeer.platform_user_roles(user_id,role_id,assigned_by) VALUES($1,'00000000-0000-4000-8000-000000000001',$1)",[id]);
+  await client.query("INSERT INTO safeer.sessions(id,user_id,token_hash,credential_version,expires_at) VALUES($1,$2,$3,1,clock_timestamp()+interval '1 hour')",[sid,id,tokenHash]);
+  const before=(await client.query('SELECT row_to_json(u) AS record FROM safeer.users u WHERE id=$1',[id])).rows[0].record;
+  await runMigrations(client,migrations);
+  assert.deepEqual((await client.query('SELECT row_to_json(u) AS record FROM safeer.users u WHERE id=$1',[id])).rows[0].record,before);
+  assert.equal((await client.query('SELECT token_hash FROM safeer.sessions WHERE id=$1',[sid])).rows[0].token_hash,tokenHash);
+  assert.equal((await client.query('SELECT count(*)::int AS n FROM safeer.companies')).rows[0].n,0);
+  assert.equal((await client.query('SELECT count(*)::int AS n FROM safeer.platform_user_roles WHERE user_id=$1',[id])).rows[0].n,1);
+}));
 
 async function fixture(action) {
   const admin = new pg.Client(config), name = 'safeer_s01_' + randomUUID().replaceAll('-', '');
@@ -57,7 +72,7 @@ test('concurrent migration runners serialize on one PostgreSQL transaction lock'
 
 test('later migrations retain PostgreSQL primary key, foreign key and check constraints', async () => fixture(async client => {
   const sql = 'CREATE TABLE safeer.migration_probe (id integer PRIMARY KEY CHECK (id > 0), parent_id integer REFERENCES safeer.migration_probe(id));';
-  const next = {version: 3, name: '0003_qa_probe.sql', sql, checksum: createHash('sha256').update(sql).digest('hex')};
+  const next = {version: 4, name: '0004_qa_probe.sql', sql, checksum: createHash('sha256').update(sql).digest('hex')};
   await runMigrations(client, [...migrations, next]);
   await client.query('INSERT INTO safeer.migration_probe VALUES (1, NULL)');
   await assert.rejects(client.query('INSERT INTO safeer.migration_probe VALUES (1, NULL)'), error => error.code === '23505');
@@ -70,7 +85,7 @@ test('foundation schemas and migration ledger grant no public access', async () 
   const result = await client.query("SELECT count(*)::int AS count FROM pg_namespace n CROSS JOIN LATERAL aclexplode(n.nspacl) acl WHERE n.nspname IN ('safeer', 'safeer_meta') AND acl.grantee = 0");
   assert.equal(result.rows[0].count, 0);
   const tables = await client.query("SELECT tablename FROM pg_tables WHERE schemaname = 'safeer'");
-  assert.deepEqual(tables.rows.map(r=>r.tablename).sort(), ['users','sessions','roles','permissions','role_permissions','platform_user_roles','identity_audit','auth_throttles'].sort());
+  assert.deepEqual(tables.rows.map(r=>r.tablename).sort(), ['users','sessions','roles','permissions','role_permissions','platform_user_roles','identity_audit','auth_throttles','companies','company_settings','branches','stations','company_roles','company_role_permissions','company_users','company_user_roles','support_access_grants','support_access_grant_permissions','company_audit'].sort());
 }));
 
 test('migration CLI reports pending/applied status without echoing credentials', async () => fixture(async (client, url) => {

@@ -1,6 +1,6 @@
 # Safeer / Sudan Transport - project master
 
-Updated: 2026-10-30. Current authorization: **Section 02 only**, approved by the owner's "next". Start continuation with [CURRENT_STATE.md](CURRENT_STATE.md). The owner's [master instructions](decisions/MASTER_INSTRUCTIONS_2026-10-30.md) are the governing plan; [DECISIONS.md](DECISIONS.md) records scope decisions. Stop before Section 03 after the Section 02 handover.
+Updated: 2026-10-31. Current authorization: **Section 03**, approved by the latest "next" (D24). Read [CURRENT_STATE.md](CURRENT_STATE.md), [master instructions](decisions/MASTER_INSTRUCTIONS_2026-10-30.md) and [DECISIONS.md](DECISIONS.md). Stop before Section 04 after the Section 03 handover.
 
 Owner-authorized 0.2.1 follow-up: collect and display a passenger luggage yes/no declaration and required description in the local prototype. This scoped change (D16) does not begin authentication or full station luggage management.
 
@@ -18,7 +18,7 @@ An expired hold does not authorize payment or boarding. One booking initially be
 
 ## Architecture: target versus current source
 
-| Layer | Target decision | Implemented now (Sections 01-02) |
+| Layer | Target decision | Implemented now (Sections 01-03) |
 | --- | --- | --- |
 | Public marketplace, company pages, dashboards, station PWA | Next.js/React with TypeScript | Existing responsive JavaScript prototype retained, freight removed; no Next.js app installed |
 | Passenger and driver apps | Flutter/Dart clients | Contracts/design sharing strategy documented; no native project or build |
@@ -46,7 +46,7 @@ Approved initial roles: platform super administrator, platform support administr
 7. Support Arabic/English, RTL/LTR, accessible controls, low-bandwidth clients and clear errors. Do not promise offline seat sales until conflict policy is implemented and tested.
 8. Test, fix, document and archive before handing off. Do not mark proposed schema or target frameworks as implemented.
 
-Section 02 ends at the verified identity handover. Section 03 requires explicit owner approval. No production deployment, school-app changes, restaurant/mobile changes, real passenger data or external service enrollment is authorized by this section.
+Section 03 ends at its verified company-access handover. Section 04 requires explicit owner approval. No production deployment, school-app changes, restaurant/mobile changes, real passenger data or external service enrollment is authorized by this section.
 
 
 ## 0.3.1 - Super Administrator role editing
@@ -67,3 +67,8 @@ D22 owner-authorized visual follow-up: restrained skeuomorphic materials across 
 ## 0.3.4 - Dark mode (2026-10-31)
 
 D23: shared dark skeuomorphic mode is now the default across existing staff and passenger screens, with a bilingual light/dark switch. Existing implementation scope and access rules remain unchanged.
+
+
+## Section 03 implementation
+
+Authenticated company workspaces now include approval/profile/settings, branches/stations, company-owned roles, scoped staff memberships, time-limited read-only support access and company audit. Super Admin controls all companies; other staff access is derived from server-side memberships/resource scope. The passenger example remains fictional. See [company workflow](workflows/COMPANY_ACCESS.md) and [Section 03 handover](archive/SECTION_03_COMPANIES.md).

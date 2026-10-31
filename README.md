@@ -1,8 +1,8 @@
 # Safeer / Sudan Transport
 
-Version 0.3.4, Section 02: local authentication, users, roles and permissions. This independent Sudan passenger-transport project does not modify Stocrant or the school application.
+Version 0.4.0, Section 03: local companies, branches, stations and scoped staff access, built on the existing authentication system. This independent Sudan passenger-transport project does not modify Stocrant or the school application.
 
-Start continuation at [CURRENT_STATE](docs/CURRENT_STATE.md). Section 03 requires explicit approval after the Section 02 handover.
+Start continuation at [CURRENT_STATE](docs/CURRENT_STATE.md). Section 03 is authorized by the latest "next". Stop before Section 04 after its handover.
 
 ## Run locally on Windows
 
@@ -21,7 +21,7 @@ The launcher creates a persistent private PostgreSQL development database, appli
 - Sign-in/out, mandatory temporary-password change, active-session list/revocation and password reset by authorized administrators.
 - User creation/edit/deactivation, platform role assignment and configurable platform roles/permissions; protected owner/last-owner rules and audited privileged changes.
 - Adaptive salted scrypt, bounded hashing, durable throttling, strict inputs, opaque hashed sessions, expiry/revocation, Origin/CSRF protection and same-origin HttpOnly cookies.
-- Eight built-in templates. Only platform roles can be assigned in Section 02; company/branch/station/trip membership is Section 03. Support has no default finance access.
+- Eight built-in templates. Platform assignments stay separate from company/branch/station memberships; trip roles wait for real trips. Support has no default finance access.
 
 This is local development, not remote production deployment. Loopback HTTP cookies intentionally omit Secure. HTTPS/proxy trust, MFA, email/SMS reset delivery, mobile token/keychain flows and final load/security auditing require further work before remote use.
 
@@ -43,3 +43,10 @@ One central marketplace, company public booking pages and independent private op
 - npm audit --omit=dev
 
 Read [database/schema](docs/DATABASE_SCHEMA.md), [security](docs/security/ACCESS_CONTROL.md), [Section 02 tests](docs/testing/SECTION_02_TEST_PLAN.md), [API contracts](docs/api/CONTRACTS.md), [decisions](docs/DECISIONS.md) and [archive records](docs/archive/README.md). Source ZIPs/checksums exclude credentials, databases, native binary caches, node_modules and temporary profiles. Source copies do not include your registered users; database backups are separate.
+
+
+## Company workspaces
+
+Open **Companies** in the staff sidebar. Super Admin creates and approves a company, configures its profile/hold/timezone/language, adds branches/stations and then staff with scoped company roles. Ordinary users see only their approved assigned companies; a single assignment opens directly without a chooser. Company membership changes never reset shared global passwords or deactivate access to other companies.
+
+Support access is explicit, read-only, reasoned, expiring (1-24 hours) and revocable. Company events are audited. See [company workflow](docs/workflows/COMPANY_ACCESS.md) and [Section 03 security](docs/security/ACCESS_CONTROL.md). Existing users/passwords are preserved on upgrade; keep a private database backup before applying migrations. The passenger reservation preview remains separate fictional data.

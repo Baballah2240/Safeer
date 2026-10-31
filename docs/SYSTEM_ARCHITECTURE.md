@@ -31,7 +31,7 @@ flowchart LR
   Worker --> Storage[Private S3-compatible documents]
 ```
 
-Only the identity module is implemented so far; company/business modules, Next.js, Flutter, Redis workers, S3 and notifications remain planned. Start with one backend codebase and database; a separately running worker may use the same modules. No microservices or independent financial databases are required. Cache misses, delayed jobs and WebSocket disconnects must not compromise database correctness.
+Identity and company-access modules are implemented; later business modules, Next.js, Flutter, Redis workers, S3 and notifications remain planned. Start with one backend codebase and database; a separately running worker may use the same modules. No microservices or independent financial databases are required. Cache misses, delayed jobs and WebSocket disconnects must not compromise database correctness.
 
 ## Frontends and shared contracts
 
@@ -91,3 +91,10 @@ Shared material tokens in src/tokens.css define paper, enamel, navy texture and 
 ## 0.3.4 - Dark mode (2026-10-31)
 
 Shared src/theme.js initializes dark mode by default, handles delegated theme switching without re-rendering forms, persists a validated preference, and listens for same-origin storage updates. Shared src/theme.css styles both interfaces and isolates dark materials to screen media. Both HTML entry points load the theme stylesheet; the public asset allowlist/build now contains 14 files.
+
+
+## Section 03 executable boundary
+
+`CompanyService` and company controllers reuse the authenticated identity transaction, current-password/CSRF validation and shared advisory lock. The server sets the raw opaque session capability with transaction-local set_config; fixed-search-path SQL helpers resolve the active actor, memberships, scoped permissions and read-only support grants. RLS applies to all eleven tenant tables, in addition to explicit company predicates and composite FKs. Local context expires with the transaction and cannot be replaced by caller actor/company IDs. Runtime connections are non-owner/non-BYPASSRLS; startup requires the expected RLS tables. Definer functions are owned by the migration owner and have no PUBLIC execution.
+
+The shared staff shell loads `src/companies.js`; real company screens are separate from the fictional in-memory passenger example. The build contains 15 public allowlisted files. Future city relationships, trip scopes, money/catalogs and booking integration are deferred to their owning modules. No service source or runtime backup enters the static build.

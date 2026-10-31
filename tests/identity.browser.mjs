@@ -31,7 +31,7 @@ try{
     assert.equal(await evaluate('document.documentElement.dataset.theme'),'light');
     await click('[data-theme-toggle]');assert.equal(await evaluate('document.documentElement.dataset.theme'),'dark');
     assert.equal(await evaluate('document.querySelectorAll(".staff-summary article").length'),3);
-    assert.equal(await evaluate('document.querySelectorAll(".staff-shortcuts button").length'),4);
+    assert.equal(await evaluate('document.querySelectorAll(".staff-shortcuts button").length'),5);
     await click('.staff-shortcuts [data-tab=users]');await until('Boolean(document.querySelector("[data-create-user]"))');
     await tab('users','[data-create-user]');await click('[data-create-user]');
     await fill('#staff-dialog [name=displayName]','Fictional <img src=x onerror="window.__xss=true">');

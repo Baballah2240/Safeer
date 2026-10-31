@@ -15,8 +15,8 @@ test('real PostgreSQL runtime is restricted, identities persist and no business 
   await assert.rejects(f.api.db.pool.query("DELETE FROM safeer.identity_audit"),e=>e.code==='42501');
   await assert.rejects(f.api.db.pool.query("UPDATE safeer.permissions SET module='x'"),e=>e.code==='42501');
   assert.equal((await f.admin.request('identity/roles')).data.items.length,8);
-  assert.equal((await f.admin.request('identity/permissions')).data.items.length,6);
-  assert.equal((await f.migration.query("SELECT count(*)::int AS n FROM pg_tables WHERE schemaname='safeer' AND tablename IN ('companies','bookings','payments')")).rows[0].n,0);
+  assert.equal((await f.admin.request('identity/permissions')).data.items.length,15);
+  assert.equal((await f.migration.query("SELECT count(*)::int AS n FROM pg_tables WHERE schemaname='safeer' AND tablename IN ('bookings','payments')")).rows[0].n,0);
   const hashes=(await f.migration.query('SELECT password_hash FROM safeer.users')).rows;
   assert.ok(hashes.every(r=>r.password_hash.startsWith('scrypt$')));
   assert.equal((await f.api.db.pool.query('SELECT count(*)::int AS n FROM safeer.users')).rows[0].n,1);
@@ -56,7 +56,7 @@ test('super administrators edit every role without losing authority or removing 
   assert.equal((await f.admin.request('identity/users/'+me.id,'PATCH',{displayName:'Owner',active:false,version:me.version,currentPassword:f.password})).error.code,'LAST_OWNER');
   assert.equal((await assign(f,me,[])).error.code,'LAST_OWNER');
   assert.equal((await f.admin.request('identity/roles/'+ownerRole,'PATCH',{displayName:'Owner',active:false,permissions:[],version:1,currentPassword:f.password})).error.code,'LAST_OWNER');
-  let roles=(await f.admin.request('identity/roles')).data.items;
+  let roles=(await f.admin.request('identity/roles')).data.items;const initialVersions=Object.fromEntries(roles.map(r=>[r.id,r.version]));
   assert.equal(roles.find(r=>r.id===ownerRole).version,1,'failed edits roll back');
   for(const role of roles){
     const edit={displayName:'Updated '+role.code,active:true,permissions:[],version:role.version,currentPassword:f.password};
@@ -65,14 +65,14 @@ test('super administrators edit every role without losing authority or removing 
   }
   const after=(await f.admin.request('auth/me')).data;
   assert.equal(after.superAdministrator,true);
-  assert.equal(after.permissions.length,6,'owner authority survives clearing its editable grants');
+  assert.equal(after.permissions.length,15,'owner authority survives clearing its editable grants');
   roles=(await f.admin.request('identity/roles')).data.items;
-  assert.ok(roles.every(r=>r.version===2&&r.permissions.length===0&&r.displayName.startsWith('Updated ')));
+  assert.ok(roles.every(r=>r.version===initialVersions[r.id]+1&&r.permissions.length===0&&r.displayName.startsWith('Updated ')));
   assert.equal((await f.admin.request('identity/audit')).data.items.filter(r=>r.action==='role.updated').length,8);
   const staff=await create(f);
   assert.equal((await assign(f,staff.user,[companyRole])).error.code,'INVALID_ROLE_SCOPE');
   await assert.rejects(f.api.db.pool.query('INSERT INTO safeer.platform_user_roles(user_id,role_id) VALUES($1,$2)',[staff.user.id,companyRole]),e=>e.code==='23503');
-  assert.equal((await f.admin.request('identity/roles/'+companyRole,'PATCH',{displayName:'Company role',active:false,permissions:[],version:2,currentPassword:f.password})).status,200);
+  assert.equal((await f.admin.request('identity/roles/'+companyRole,'PATCH',{displayName:'Company role',active:false,permissions:[],version:initialVersions[companyRole]+1,currentPassword:f.password})).status,200);
 }));
 test('configurable role changes apply immediately and delegated administrators cannot escalate',async()=>identityFixture(async f=>{
   const created=await create(f),role=(await f.admin.request('identity/roles','POST',{displayName:'Identity reader',permissions:['identity.roles.read'],currentPassword:f.password})).data;

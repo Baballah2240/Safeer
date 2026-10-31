@@ -1,6 +1,6 @@
 # Implemented API contracts
 
-Canonical OpenAPI 3.1: [src/contracts/openapi.json](../../src/contracts/openapi.json), version 0.3.4. It records only implemented operations, request fields, cookies/CSRF, envelopes and response schemas. Requests are strict JSON with an 8 KiB limit. Responses use {data: ...} or {error:{code,message}}; no SQL, token or password details are logged in errors. Successful one-time credential responses are explicit exceptions intended only for the authorized administrator.
+Canonical OpenAPI 3.1: [src/contracts/openapi.json](../../src/contracts/openapi.json), version 0.4.0. It records only implemented operations, request fields, cookies/CSRF, envelopes and response schemas. Requests are strict JSON with an 8 KiB limit. Responses use {data: ...} or {error:{code,message}}; no SQL, token or password details are logged in errors. Successful one-time credential responses are explicit exceptions intended only for the authorized administrator.
 
 ## Section 02 routes
 
@@ -33,3 +33,20 @@ No bootstrap, registration, password-reset email/SMS, company selector, tenant m
 Company operations need verified membership plus company/branch/station/trip scope in Section 03. Marketplace projections need approved/publication filters; guest holds/bookings need verified capabilities and atomic server inventory in Sections 07-09. Station payment/tickets, luggage/boarding and finance/support-grant operations follow their scheduled sections. No such paths enter this executable contract until implemented and tested.
 
 Future booking/payment writes require scoped idempotency keys/request hashes; cache and event delivery cannot authorize money or seats. Flutter bearer/secure-storage contracts, request IDs/observability and WebSocket authentication will be added with their owning modules. The current cookie implementation is for the local browser staff interface only.
+
+
+## Section 03 company routes
+
+The canonical schema now records 27 paths / 31 operations. All company requests require a valid non-temporary session. Mutations require exact Origin/CSRF/current password; edits use expected versions. UUIDs are validated; unavailable companies/resources return 404 or denied scope, without granting access from the path alone.
+
+| Method | Path under /api/v1 | Rule |
+| --- | --- | --- |
+| GET, POST | /companies | Authorized company list; only Super Admin creates pending companies |
+| GET, PATCH | /companies/{id} | Scoped workspace/profile/settings; only Super Admin changes approval/slug |
+| POST | /companies/{id}/branches, /companies/{id}/stations | Resource creation in permitted company/branch scope |
+| PATCH | /companies/{id}/branches/{rid}, /companies/{id}/stations/{rid} | Versioned resource edit; immutable ownership and station branch |
+| POST, PATCH | /companies/{id}/members, /companies/{id}/members/{rid} | New local employee / tenant membership and multi-scope assignments; existing identity link is Super Admin-only |
+| POST, PATCH | /companies/{id}/roles, /companies/{id}/roles/{rid} | Tenant role create/edit with grant ceiling and last-admin protection |
+| POST, DELETE | /companies/{id}/support, /companies/{id}/support/{rid} | Super Admin reasoned 1-24-hour read grant / revocation |
+
+Workspace responses contain only RLS-visible resources and field-level UI capabilities, including which resources may be managed. These capabilities improve the interface; server/database checks remain authoritative on every mutation. Staff creation shows a temporary password once. Company member edits never reset a global identity or its other company access. Audit is the latest 100 permitted events. Complete bounded lists and capacity limits are documented in CURRENT_STATE. No booking/payment endpoints are added.

@@ -6,6 +6,7 @@ import type {Request,Response} from 'express';
 import {readFileSync} from 'node:fs';
 import {IdentityService} from './identity.service.js';
 import {Database} from './database.js';
+import {CompanyService} from './company.service.js';
 import {IdentityError,sessionToken,validCsrf,fail} from './security.js';
 
 const version=JSON.parse(readFileSync(new URL('../../package.json',import.meta.url),'utf8')).version;
@@ -21,7 +22,9 @@ class Errors implements ExceptionFilter {
     const code=(error as {code?:string})?.code;
     const type=(error as {type?:string})?.type;
     if(type==='entity.parse.failed'||type==='entity.too.large'){res.status(type==='entity.too.large'?413:400).json({error:{code:'INVALID_REQUEST',message:'Send a valid JSON request within 8 KiB.'}});return;}
-    if(code==='23505'){res.status(409).json({error:{code:'DUPLICATE_LOGIN',message:'That login is already in use.'}});return;}
+    if(code==='23505'){const constraint=(error as {constraint?:string}).constraint||'';const loginConflict=constraint==='users_normalized_login_key';res.status(409).json({error:{code:loginConflict?'DUPLICATE_LOGIN':'DUPLICATE_RECORD',message:loginConflict?'That login is already in use.':'This code, slug or membership is already in use.'}});return;}
+    if(code==='P0001'&&['LAST_COMPANY_ADMIN','COMPANY_LIMIT'].includes((error as Error).message)){res.status(409).json({error:{code:(error as Error).message,message:'Keep an active company administrator and stay within the documented local capacity.'}});return;}
+    if(['23503','23514','42501'].includes(code||'')){res.status(code==='42501'?403:400).json({error:{code:code==='42501'?'FORBIDDEN':'INVALID_RESOURCE_SCOPE',message:'The resource does not belong to an allowed company or scope.'}});return;}
     if(error instanceof HttpException){res.status(error.getStatus()).json({error:{code:'INVALID_REQUEST',message:'The request is not valid.'}});return;}
     res.status(500).json({error:{code:'INTERNAL_ERROR',message:'The request could not be completed.'}});
   }
@@ -49,7 +52,25 @@ class IdentityController {
   @Get('identity/permissions') async permissions(@Req() req:Request){return reply(await this.identity.permissions(token(req)));}
   @Get('identity/audit') async audit(@Req() req:Request){return reply(await this.identity.auditLog(token(req)));}
 }
-@Module({controllers:[IdentityController],providers:[Database,IdentityService]})
+@Controller('api/v1/companies')
+class CompanyController {
+ constructor(private readonly companies:CompanyService){}
+ @Get() list(@Req() req:Request){return this.companies.companies(token(req)).then(reply);}
+ @Post() create(@Req() req:Request,@Body() data:unknown){return this.companies.create(token(req),data).then(reply);}
+ @Get(':id') workspace(@Req() req:Request,@Param('id') id:string){return this.companies.workspace(token(req),id).then(reply);}
+ @Patch(':id') update(@Req() req:Request,@Param('id') id:string,@Body() data:unknown){return this.companies.update(token(req),id,data).then(reply);}
+ @Post(':id/branches') branch(@Req() req:Request,@Param('id') id:string,@Body() data:unknown){return this.companies.resource(token(req),id,'branches',undefined,data).then(reply);}
+ @Patch(':id/branches/:rid') updateBranch(@Req() req:Request,@Param('id') id:string,@Param('rid') rid:string,@Body() data:unknown){return this.companies.resource(token(req),id,'branches',rid,data).then(reply);}
+ @Post(':id/stations') station(@Req() req:Request,@Param('id') id:string,@Body() data:unknown){return this.companies.resource(token(req),id,'stations',undefined,data).then(reply);}
+ @Patch(':id/stations/:rid') updateStation(@Req() req:Request,@Param('id') id:string,@Param('rid') rid:string,@Body() data:unknown){return this.companies.resource(token(req),id,'stations',rid,data).then(reply);}
+ @Post(':id/members') member(@Req() req:Request,@Param('id') id:string,@Body() data:unknown){return this.companies.member(token(req),id,undefined,data).then(reply);}
+ @Patch(':id/members/:rid') updateMember(@Req() req:Request,@Param('id') id:string,@Param('rid') rid:string,@Body() data:unknown){return this.companies.member(token(req),id,rid,data).then(reply);}
+ @Post(':id/roles') role(@Req() req:Request,@Param('id') id:string,@Body() data:unknown){return this.companies.role(token(req),id,undefined,data).then(reply);}
+ @Patch(':id/roles/:rid') updateRole(@Req() req:Request,@Param('id') id:string,@Param('rid') rid:string,@Body() data:unknown){return this.companies.role(token(req),id,rid,data).then(reply);}
+ @Post(':id/support') support(@Req() req:Request,@Param('id') id:string,@Body() data:unknown){return this.companies.support(token(req),id,undefined,data).then(reply);}
+ @Delete(':id/support/:rid') revokeSupport(@Req() req:Request,@Param('id') id:string,@Param('rid') rid:string,@Body() data:unknown){return this.companies.support(token(req),id,rid,data).then(reply);}
+}
+@Module({controllers:[IdentityController,CompanyController],providers:[Database,IdentityService,CompanyService]})
 export class IdentityModule {}
 
 export async function createIdentityApi({port=4321,webOrigin='http://127.0.0.1:4320'}:{port?:number;webOrigin?:string}={}){

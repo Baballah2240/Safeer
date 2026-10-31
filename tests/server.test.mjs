@@ -18,7 +18,9 @@ test('prototype serves only explicit public assets, locally, without a write API
     const contract=JSON.parse(await readFile(new URL('../src/contracts/openapi.json',import.meta.url),'utf8'));
     assert.ok(Object.hasOwn(contract.paths,'/api/v1/health'));
     assert.ok(Object.hasOwn(contract.paths,'/api/v1/auth/login'));
-    assert.equal(Object.keys(contract.paths).length,15);
+    assert.ok(Object.hasOwn(contract.paths,'/api/v1/companies'));
+    assert.ok(Object.hasOwn(contract.paths,'/api/v1/companies/{id}/members'));
+    assert.equal(Object.keys(contract.paths).length,27);
     assert.equal(contract.info.version,health.data.version);
     const schema=contract.paths['/api/v1/health'].get.responses['200'].content['application/json'].schema.properties.data;
     assert.deepEqual(Object.keys(health.data).sort(),schema.required.toSorted());

@@ -9,3 +9,5 @@ Numbered Markdown entries in this directory are permanent source-controlled hand
 - Section 02: [identity handover](SECTION_02_IDENTITY.md), with separate `archives/Safeer-0.3.0-Section-02-2026-10-30.zip` generated/verified at handover. Includes previous verified source and current test evidence; excludes runtime users, credentials, first-login text and native caches. Section 03 is not started.
 
 To continue, extract into a new folder, read docs/CURRENT_STATE.md first, run npm ci, npm test and npm run build. Do not point integration tests at real operational databases. Follow database/MIGRATIONS documentation for a disposable local PostgreSQL instance. Keep real business-data backups separately and securely; no runtime credentials or customer databases belong in a source archive.
+
+- Section 03: [company access handover](SECTION_03_COMPANIES.md), separate `archives/Safeer-0.4.0-Section-03-2026-10-31.zip` with current source, exact commit and verification evidence; private database backups are excluded. Stop before Section 04.

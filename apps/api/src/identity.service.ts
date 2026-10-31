@@ -6,7 +6,7 @@ import {body,text,login,password,uuid,version,list,digest,secret,csrf,fail,hashP
 
 const OWNER='platform_super_administrator';
 type UserRow={id:string;normalized_login:string;display_name:string;password_hash:string;active:boolean;must_change_password:boolean;credential_version:number;version:number;created_at:Date};
-type Principal={id:string;login:string;displayName:string;mustChangePassword:boolean;version:number;sessionId:string;roles:{id:string;code:string;displayName:string;scope:string}[];permissions:string[];superAdministrator:boolean};
+export type Principal={id:string;login:string;displayName:string;mustChangePassword:boolean;version:number;sessionId:string;roles:{id:string;code:string;displayName:string;scope:string}[];permissions:string[];superAdministrator:boolean};
 const userView=(u:UserRow)=>({id:u.id,login:u.normalized_login,displayName:u.display_name,active:u.active,mustChangePassword:u.must_change_password,version:u.version,createdAt:u.created_at});
 
 @Injectable()
@@ -17,7 +17,7 @@ export class IdentityService implements OnModuleInit {
   private async audit(c:PoolClient,actor:string|null,action:string,target:string|null){
     await c.query('INSERT INTO safeer.identity_audit(id,actor_id,action,target_id) VALUES($1,$2,$3,$4)',[randomUUID(),actor,action,target]);
   }
-  private async principal(c:PoolClient,token:string,permission?:string,allowChange=false):Promise<Principal>{
+  async principal(c:PoolClient,token:string,permission?:string,allowChange=false):Promise<Principal>{
     const result=await c.query<UserRow & {session_id:string}>(`SELECT u.*,s.id AS session_id FROM safeer.sessions s JOIN safeer.users u ON u.id=s.user_id
       WHERE s.token_hash=$1 AND s.revoked_at IS NULL AND s.expires_at>clock_timestamp()
       AND s.last_seen_at>clock_timestamp()-interval '30 minutes' AND s.credential_version=u.credential_version AND u.active`,[digest(token)]);
@@ -47,7 +47,7 @@ export class IdentityService implements OnModuleInit {
     if(!await verifyPassword(pass,encoded))fail('REAUTHENTICATION_FAILED',403,'Your current password was not accepted.');
     await this.db.transaction(async c=>{await c.query('DELETE FROM safeer.auth_throttles WHERE key_hash=$1',[key]);});
   }
-  private async reauthenticate(token:string,value:unknown){
+  async reauthenticate(token:string,value:unknown){
     const p=await this.session(token);if(p.mustChangePassword)fail('PASSWORD_CHANGE_REQUIRED',403);
     const {rows}=await this.db.pool.query<UserRow>('SELECT * FROM safeer.users WHERE id=$1',[p.id]);
     if(!rows[0])fail('UNAUTHENTICATED',401);await this.checkPassword(p.id,value,rows[0].password_hash);

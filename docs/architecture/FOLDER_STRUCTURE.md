@@ -51,3 +51,6 @@ apps/api/src contains the NestJS identity module: app/main/admin, database, secu
 The 0002 identity migration remains in database/migrations alongside the original checksum-stable baseline. runtime-grants, grant-runtime and recover-owner are local developer/owner commands. scripts/local.mjs owns the optional private Windows PostgreSQL development process and restricted runtime configuration. tests/support/identity-db.mjs supplies disposable real PostgreSQL fixtures shared by HTTP/browser tests.
 
 runtime/ contains the ignored persistent development database, private connection settings and first-login text; never treat it as source/build cache. The optional pinned Windows PostgreSQL binary stays in node_modules and is excluded from archives.
+
+
+Section 03 adds `apps/api/src/company.service.ts`, `database/migrations/0003_companies.sql`, `src/companies.js`, company integration/browser tests, the company access workflow and numbered Section 03 archive. Company SQL/authorization stays in the API/database; shared responsive company UI stays under src/. Runtime database dumps are private under ignored runtime/backups/, never under source archives.
