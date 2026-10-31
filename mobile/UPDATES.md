@@ -36,3 +36,8 @@ Owner-authorized D20 follow-up: Super Administrators can edit names, permissions
 ## 0.3.2 - Connected workspace layout
 
 Responsive staff navigation, account overview, shortcuts, role labels, search and scope filters are available in the shared web code. Arabic RTL and English links preserve language when switching between staff and passenger views. No native mobile package or installation was requested.
+
+
+## 0.3.3 - Skeuomorphic styling (2026-10-31)
+
+Shared responsive web screens receive the skeuomorphic theme: tactile buttons, inset fields, paper panels and seat controls. Arabic RTL, touch controls and existing navigation remain available. No native mobile package was requested.

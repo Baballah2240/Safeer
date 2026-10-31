@@ -1,6 +1,6 @@
 # Current state - read this first
 
-Updated: 2026-10-30. Safeer / Sudan Transport, version 0.3.2.
+Updated: 2026-10-31. Safeer / Sudan Transport, version 0.3.3.
 
 ## Current section and gate
 
@@ -66,3 +66,11 @@ The local staff workspace now has a consistent sidebar, account overview and per
 
 
 0.3.2 validation: 13 unit/server checks, TypeScript/API/public build and documentation links passed. Source and built staff browser workflows passed across 30 layouts each (five screens, Arabic/English, three viewports). Search/scope filters, role links, Super Administrator edits, restricted support views, session/password workflows, keyboard dismissal and language-preserving round trips passed with no uncaught errors. Passenger source/built reservation, luggage, escaping and printing regressions passed. No schema or authorization changes required repeating migrations.
+
+
+## 0.3.3 - Skeuomorphic styling (2026-10-31)
+
+Staff/passenger screens now use tactile raised buttons, inset inputs, navy textured navigation, paper panels, padded seats and ticket-style references. Existing responsive layouts and Arabic/English workflows remain intact. Open /staff and refresh. Checkpoint: archives/Safeer-0.3.3-skeuomorphism-2026-10-31.zip; credentials/runtime excluded.
+
+
+0.3.3 verification: 13 unit/server checks, build and documentation links passed. Existing source and built staff workflows each passed 30 Arabic/English desktop/mobile layout checks, including keyboard dialog dismissal, forms, roles, sessions and permission restrictions. Passenger source/built checks passed for seat selection, luggage, escaping and printed references. Reviewed rendered desktop and Arabic mobile screenshots. No application logic, database changes or new dependencies.

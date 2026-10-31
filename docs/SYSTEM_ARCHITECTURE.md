@@ -81,3 +81,8 @@ Owner-authorized D20 follow-up: Super Administrators can edit names, permissions
 ## 0.3.2 - Connected workspace layout
 
 The staff shell in src/staff.js and src/staff.css provides a responsive sidebar, account overview, filters and cross-screen actions. Users resolve assigned role labels through the existing permission-checked API. Staff/passenger URLs preserve only the selected language via ?lang=en or ?lang=ar; no credentials or authorization state are put in URLs.
+
+
+## 0.3.3 - Skeuomorphic styling (2026-10-31)
+
+Shared material tokens in src/tokens.css define paper, enamel, navy texture and raised/inset shadows. Staff and passenger styles consume those materials without images, remote resources, new dependencies or behavior changes.

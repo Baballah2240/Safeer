@@ -143,3 +143,8 @@ Owner-authorized D20 follow-up: Super Administrators can edit names, permissions
 ## 0.3.2 - Connected workspace layout
 
 No schema or grants change in this layout update. User-role names are resolved from the existing authorized roles endpoint. Search filters the currently loaded page only; it does not imply a global user search.
+
+
+## 0.3.3 - Skeuomorphic styling (2026-10-31)
+
+No database, migration, grants or stored data changes. All material styling is CSS-only.

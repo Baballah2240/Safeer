@@ -52,3 +52,8 @@ Owner-authorized D20 follow-up: Super Administrators can edit names, permissions
 ## 0.3.2 - Connected workspace layout
 
 Completed the D21 layout follow-up for existing Section 02 screens and the passenger demonstration. Section 03 company membership and real business integration remain deferred; navigation does not grant company access.
+
+
+## 0.3.3 - Skeuomorphic styling (2026-10-31)
+
+Completed D22 tactile styling for the existing local interface. This visual update does not begin Section 03 or add business modules.

@@ -57,3 +57,8 @@ Owner-authorized D20 follow-up: Super Administrators can edit names, permissions
 ## 0.3.2 - Connected workspace layout
 
 Owner-authorized D21 follow-up improves the implemented staff/passenger workspace: shared navy/teal styling, sidebar, account overview, permission-aware shortcuts, user-role navigation and language-preserving links. Business modules remain at their existing stage.
+
+
+## 0.3.3 - Skeuomorphic styling (2026-10-31)
+
+D22 owner-authorized visual follow-up: restrained skeuomorphic materials across the existing staff and passenger interfaces. Navigation and implemented scope are unchanged.

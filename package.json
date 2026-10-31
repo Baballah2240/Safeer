@@ -1,6 +1,6 @@
 {
   "name": "safeer",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "private": true,
   "type": "module",
   "description": "Section 02 local identity and passenger prototype for Safeer",

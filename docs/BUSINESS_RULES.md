@@ -71,3 +71,8 @@ Owner-authorized D20 follow-up: Super Administrators can edit names, permissions
 ## 0.3.2 - Connected workspace layout
 
 Sidebar navigation and overview shortcuts follow server-returned permissions. User role links open role management; assignments still use the existing explicit assignment form. The passenger demonstration continues to use fictional in-memory reservations, separate from durable staff identities.
+
+
+## 0.3.3 - Skeuomorphic styling (2026-10-31)
+
+Existing authorization, reservation deadlines and offline-payment boundaries remain unchanged. Selected/disabled controls retain distinct styling; reference printing remains clean and unpaid references are not final tickets.

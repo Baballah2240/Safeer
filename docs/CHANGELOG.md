@@ -70,3 +70,8 @@ Added independent Safeer local passenger/freight demonstration, company-specific
 ## 0.3.2 - Connected workspace layout
 
 Simplified the responsive staff shell and account overview; added permission-aware shortcuts, user-role links, current-page search, role scope filters and result counts. Unified passenger styling, replaced outdated no-sign-in copy and freight-related journey text, and preserved language across staff/passenger links. No backend authorization or schema change.
+
+
+## 0.3.3 - Skeuomorphic styling (2026-10-31)
+
+Applied restrained skeuomorphism using shared CSS materials, tactile enamel buttons, recessed fields, warm paper panels, brass navigation accents, padded seat controls and ticket/reference styling. Preserved focus indicators, selected/disabled states and print output. No new dependencies, schema or authorization changes.

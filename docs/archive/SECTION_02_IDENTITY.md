@@ -41,3 +41,11 @@ D21 follow-up checkpoint: archives/Safeer-0.3.2-workspace-2026-10-30.zip, genera
 
 
 0.3.2 validation: 13 unit/server checks, TypeScript/API/public build and documentation links passed. Source and built staff browser workflows passed across 30 layouts each (five screens, Arabic/English, three viewports). Search/scope filters, role links, Super Administrator edits, restricted support views, session/password workflows, keyboard dismissal and language-preserving round trips passed with no uncaught errors. Passenger source/built reservation, luggage, escaping and printing regressions passed. No schema or authorization changes required repeating migrations.
+
+
+## 0.3.3 - Skeuomorphic styling (2026-10-31)
+
+D22 visual follow-up checkpoint: archives/Safeer-0.3.3-skeuomorphism-2026-10-31.zip, generated from committed source and verified by hashes/CRC. Source-only handover excludes private runtime accounts and credentials.
+
+
+0.3.3 verification: 13 unit/server checks, build and documentation links passed. Existing source and built staff workflows each passed 30 Arabic/English desktop/mobile layout checks, including keyboard dialog dismissal, forms, roles, sessions and permission restrictions. Passenger source/built checks passed for seat selection, luggage, escaping and printed references. Reviewed rendered desktop and Arabic mobile screenshots. No application logic, database changes or new dependencies.

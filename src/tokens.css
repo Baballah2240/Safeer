@@ -1,12 +1,20 @@
 /* Shared visual vocabulary. Future clients consume equivalent documented tokens. */
 :root {
   --ink: #172e3c;
-  --muted: #6d7c87;
+  --muted: #536570;
   --accent: #086d77;
-  --border: #e5eaed;
-  --paper: #fff;
+  --border: #cdd1cc;
+  --paper: #fafaf7;
   --warning: #d59d37;
-  --page: #f4f6f8;
+  --page: #e9ece9;
+  /* Shared physical materials: paper, enamel, brushed metal and recessed wells. */
+  --material-paper: linear-gradient(155deg, #fffffc, #f5f5ef);
+  --material-control: linear-gradient(#fffffd, #f0f1eb);
+  --material-enamel: linear-gradient(#17828a, #08636d);
+  --material-navy: radial-gradient(#ffffff09 .65px, transparent .8px) 0 0 / 4px 4px, linear-gradient(110deg, #233e4a, #142b37);
+  --shadow-panel: inset 0 1px 0 #fff, 0 2px 3px #172e3c0a, 0 8px 20px #172e3c08;
+  --shadow-control: inset 0 1px 0 #fff, 0 2px 0 #bac3bf, 0 3px 4px #172e3c14;
+  --shadow-inset: inset 0 2px 4px #172e3c14, 0 1px 0 #fff;
   font-family: "Segoe UI", Tahoma, Arial, sans-serif;
   color: #243644;
   background: var(--page);

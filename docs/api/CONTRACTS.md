@@ -1,6 +1,6 @@
 # Implemented API contracts
 
-Canonical OpenAPI 3.1: [src/contracts/openapi.json](../../src/contracts/openapi.json), version 0.3.2. It records only implemented operations, request fields, cookies/CSRF, envelopes and response schemas. Requests are strict JSON with an 8 KiB limit. Responses use {data: ...} or {error:{code,message}}; no SQL, token or password details are logged in errors. Successful one-time credential responses are explicit exceptions intended only for the authorized administrator.
+Canonical OpenAPI 3.1: [src/contracts/openapi.json](../../src/contracts/openapi.json), version 0.3.3. It records only implemented operations, request fields, cookies/CSRF, envelopes and response schemas. Requests are strict JSON with an 8 KiB limit. Responses use {data: ...} or {error:{code,message}}; no SQL, token or password details are logged in errors. Successful one-time credential responses are explicit exceptions intended only for the authorized administrator.
 
 ## Section 02 routes
 
