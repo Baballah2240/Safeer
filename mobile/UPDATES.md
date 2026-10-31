@@ -41,3 +41,8 @@ Responsive staff navigation, account overview, shortcuts, role labels, search an
 ## 0.3.3 - Skeuomorphic styling (2026-10-31)
 
 Shared responsive web screens receive the skeuomorphic theme: tactile buttons, inset fields, paper panels and seat controls. Arabic RTL, touch controls and existing navigation remain available. No native mobile package was requested.
+
+
+## 0.3.4 - Dark mode (2026-10-31)
+
+Shared web/mobile-facing staff and passenger screens default to dark mode. Header controls switch to light mode and remember the preference. Arabic/English labels, touch layouts and drafts are preserved. No native mobile binary or installation was requested.

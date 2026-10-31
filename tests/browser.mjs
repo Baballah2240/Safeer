@@ -18,6 +18,12 @@ try {
   await send('Emulation.setDeviceMetricsOverride', {width: 1366, height: 900, deviceScaleFactor: 1, mobile: false});
   await send('Page.navigate', {url: app.origin});
   await until('Boolean(document.querySelector(".metrics"))');
+  assert.equal(await evaluate('document.documentElement.dataset.theme'),'dark');
+  await send('Runtime.evaluate',{expression:`(()=>{const other=window.open('about:blank','safeer-theme-check');if(!other)throw Error('Theme check window did not open');other.localStorage.setItem('safeer.theme','light');other.close();})()`,userGesture:true});
+  await until('document.documentElement.dataset.theme==="light"');
+  await send('Page.reload');await until('Boolean(document.querySelector(".metrics"))');
+  assert.equal(await evaluate('document.documentElement.dataset.theme'),'light');
+  await click('[data-theme-toggle]');assert.equal(await evaluate('document.documentElement.dataset.theme'),'dark');
   assert.equal(await evaluate('Boolean(document.querySelector("[data-nav=freight],#freight-form"))'), false);
   assert.equal(await evaluate('document.querySelectorAll(".metric").length'), 4);
   await shot('overview-en');
@@ -33,6 +39,11 @@ try {
   await evaluate(`(()=>{const field=document.querySelector('[name=luggageDescription]');field.value=${JSON.stringify(description)};field.dispatchEvent(new Event('input'));})()`);
   await click('[data-seat="4"]');
   assert.equal(await evaluate('document.querySelector("[name=luggageDescription]").value'), description);
+  await click('[data-theme-toggle]');
+  assert.equal(await evaluate('document.documentElement.dataset.theme'),'light');
+  assert.equal(await evaluate('document.querySelector("[name=luggageDescription]").value'),description);
+  await click('[data-theme-toggle]');
+  assert.equal(await evaluate('document.documentElement.dataset.theme'),'dark');
   await click('#language-button');
   assert.ok(await evaluate('document.querySelector("#luggage-details").textContent.includes("وصف الأمتعة")'));
   assert.equal(await evaluate('document.querySelector("[name=luggageDescription]").value'), description);
@@ -46,6 +57,7 @@ try {
   await shot('reference-luggage-en');
   await send('Emulation.setEmulatedMedia', {media: 'print'});
   assert.equal(await evaluate('getComputedStyle(document.querySelector("#app")).display'), 'none');
+  assert.equal(await evaluate('getComputedStyle(document.querySelector(".reference-sheet")).backgroundColor'),'rgb(255, 255, 255)');
   await send('Emulation.setEmulatedMedia', {media: 'screen'});
   await click('[data-close]');
   assert.equal(await evaluate('document.querySelector("[name=hasLuggage]").value'), 'no');
@@ -102,6 +114,11 @@ try {
   }
   await shot('passenger-mobile-ar');
   await click('[data-nav=overview]'); await shot('overview-mobile-ar');
+  const blocked=await send('Page.addScriptToEvaluateOnNewDocument',{source:`for(const name of ['getItem','setItem']){const original=Storage.prototype[name];Storage.prototype[name]=function(key,...args){if(key==='safeer.theme')throw new DOMException('Blocked','SecurityError');return original.call(this,key,...args);};}`});
+  await send('Page.reload');await until('Boolean(document.querySelector(".metrics"))');
+  assert.equal(await evaluate('document.documentElement.dataset.theme'),'dark');
+  await click('[data-theme-toggle]');assert.equal(await evaluate('document.documentElement.dataset.theme'),'light');
+  await send('Page.removeScriptToEvaluateOnNewDocument',{identifier:blocked.identifier});
   assert.deepEqual(await evaluate('window.__errors'), []);
   console.log('Passenger browser checks passed: luggage choice/required description, draft retention/reset, text escaping/print, no-luggage booking, company demo scoping, expiry, Arabic reference and desktop/mobile layouts.');
 } finally { await browser?.close(); await app.close(); }

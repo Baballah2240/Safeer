@@ -76,3 +76,8 @@ Sidebar navigation and overview shortcuts follow server-returned permissions. Us
 ## 0.3.3 - Skeuomorphic styling (2026-10-31)
 
 Existing authorization, reservation deadlines and offline-payment boundaries remain unchanged. Selected/disabled controls retain distinct styling; reference printing remains clean and unpaid references are not final tickets.
+
+
+## 0.3.4 - Dark mode (2026-10-31)
+
+Theme switching must preserve drafts, focus and authorization. Preferences survive reloads and same-origin navigation and synchronize across windows. Reservation references print on white paper regardless of screen theme.

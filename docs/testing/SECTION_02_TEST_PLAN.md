@@ -30,3 +30,8 @@ The local-launch check must confirm loopback listeners, private runtime ACLs, ge
 ## 0.3.2 - Connected workspace layout
 
 Verify overview task shortcuts; user role labels/links after assignment; current-page user search; role search, zero results and scope filters; support account restrictions; modal Escape dismissal; Arabic/English round-trip navigation between staff and passenger views. Capture all five staff screens in both languages at 1920x1080, 1366x768 and 390x844, with overflow and uncaught-error checks. Retain real sign-in, credentials, role editing, password, sessions, expired-form and XSS workflows.
+
+
+## 0.3.4 - Dark mode (2026-10-31)
+
+Verify dark defaults, light/dark controls, saved-theme reloads, cross-page and cross-window synchronization, draft preservation, blocked-storage fallback, white-paper print references and existing authorization workflows. Capture all five staff screens in both themes, Arabic/English, at 1920x1080, 1366x768 and 390x844 (60 combinations per source/built run).

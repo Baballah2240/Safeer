@@ -57,3 +57,8 @@ Completed the D21 layout follow-up for existing Section 02 screens and the passe
 ## 0.3.3 - Skeuomorphic styling (2026-10-31)
 
 Completed D22 tactile styling for the existing local interface. This visual update does not begin Section 03 or add business modules.
+
+
+## 0.3.4 - Dark mode (2026-10-31)
+
+Completed the owner-requested D23 dark-mode follow-up. Both themes retain Section 02 staff workflows and the fictional passenger preview; Section 03 remains deferred.

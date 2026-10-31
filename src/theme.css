@@ -1,0 +1,76 @@
+﻿/* Shared dark material finish. Explicit light mode keeps the original paper theme. */
+@media screen {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    color: #e0e8ec;
+    --ink: #e0e8ec;
+    --muted: #a5b7c2;
+    --accent: #79d0c7;
+    --border: #3b505d;
+    --paper: #22343f;
+    --page: #13212c;
+    --warning: #f2c675;
+    --material-paper: linear-gradient(150deg, #2b404c, #21333e);
+    --material-control: linear-gradient(#3b5260, #2b414e);
+    --material-enamel: linear-gradient(#227e86, #105a67);
+    --material-navy: radial-gradient(#ffffff08 .65px, transparent .8px) 0 0 / 4px 4px, linear-gradient(110deg, #152d39, #0b1c27);
+    --shadow-panel: inset 0 1px 0 #ffffff0d, 0 2px 3px #0003, 0 10px 22px #0002;
+    --shadow-control: inset 0 1px 0 #ffffff17, 0 2px 0 #0e1e29, 0 4px 5px #0003;
+    --shadow-inset: inset 0 2px 5px #0005, 0 1px 0 #ffffff0d;
+  }
+  :root:not([data-theme="light"]) body { background: radial-gradient(#ffffff04 .65px,transparent .9px) 0 0 / 5px 5px,var(--page) }
+  :root:not([data-theme="light"]) :is(.staff-topbar,.topbar) {background:linear-gradient(#2a3d49,#20313d);border-color:#40545f;box-shadow:inset 0 1px 0 #ffffff0a,0 2px 5px #0003}
+  :root:not([data-theme="light"]) :is(h1,h2,.staff-welcome h1,.staff-panel h2,.staff-summary strong,.metric strong) {text-shadow:0 1px 1px #0005}
+  :root:not([data-theme="light"]) :is(.staff-panel,.staff-summary article,.panel,.metric,.booking-summary) {background:var(--material-paper);border-color:#405461;box-shadow:var(--shadow-panel)}
+  :root:not([data-theme="light"]) :is(.staff-summary article,.metric) {border-top-color:#5a7c80}
+  :root:not([data-theme="light"]) .staff-record {background:linear-gradient(140deg,#2b404c,#243843);border-color:#435a66;box-shadow:inset 0 1px 0 #ffffff0c,0 2px 4px #0002}
+  :root:not([data-theme="light"]) :is(.staff-content button,dialog button,.secondary,.workspace-link) {background:var(--material-control);border-color:#536977;border-bottom-color:#142933;color:#e4eef0;box-shadow:var(--shadow-control);text-shadow:0 1px 1px #0005}
+  :root:not([data-theme="light"]) :is(.staff-content button,dialog button,.secondary,.workspace-link):hover:not(:disabled) {background:linear-gradient(#486370,#344e5d);border-color:#748c96}
+  :root:not([data-theme="light"]) :is(.staff-content button,dialog button,.secondary,.workspace-link):active:not(:disabled) {background:linear-gradient(#223944,#344d59);box-shadow:inset 0 2px 5px #0006,0 1px 0 #ffffff19}
+  :root:not([data-theme="light"]) :is(.staff-content .staff-primary,dialog .staff-primary,.primary) {background:var(--material-enamel);border:1px solid #40929a;border-bottom-color:#082f3a;color:#fff;box-shadow:inset 0 1px 0 #ffffff28,0 2px 0 #082b37,0 4px 5px #0004;text-shadow:0 1px 1px #001f2a}
+  :root:not([data-theme="light"]) :is(.staff-content .staff-primary,dialog .staff-primary,.primary):hover:not(:disabled) {background:linear-gradient(#25818a,#146977);border-color:#5ba9aa}
+  :root:not([data-theme="light"]) :is(.staff-content .staff-primary,dialog .staff-primary,.primary):active:not(:disabled) {background:linear-gradient(#124955,#1f7380);box-shadow:inset 0 2px 4px #0005,0 1px 0 #ffffff18}
+  :root:not([data-theme="light"]) button:disabled {box-shadow:none;text-shadow:none}
+  :root:not([data-theme="light"]) :is(input,select,textarea) {color:#e6eef0;background:linear-gradient(#172b35,#213944);border-color:#526c77;box-shadow:var(--shadow-inset)}
+  :root:not([data-theme="light"]) :is(input,select,textarea):focus {background:#1a303d;border-color:#91d6cd}
+  :root:not([data-theme="light"]) ::placeholder {color:#a7b9c3;opacity:1}
+  :root:not([data-theme="light"]) option {background:#21333f;color:#e6eef0}
+  :root:not([data-theme="light"]) :is(.staff-checks label,.staff-check) {background:linear-gradient(#1f343f,#293f4a);border-color:#455b68;box-shadow:var(--shadow-inset)}
+  :root:not([data-theme="light"]) .staff-record-icon {background:linear-gradient(#36555d,#25414c);border-color:#56747b;box-shadow:inset 0 1px 0 #ffffff18,0 2px 3px #0003}
+  :root:not([data-theme="light"]) :is(.staff-badge,.staff-permissions .staff-badge,.count,.flow-number) {color:#b7e9de;background:linear-gradient(#34575a,#28454e);border:1px solid #547476;box-shadow:inset 0 1px 0 #ffffff0d,0 1px 2px #0002}
+  :root:not([data-theme="light"]) :is(.vehicle,.demo-badge,.callout) {color:#c6d9df;background:#263e49;border-color:#4a6571}
+  :root:not([data-theme="light"]) :is(.staff-alert,.availability) {color:#b8e6d4}
+  :root:not([data-theme="light"]) .staff-alert {background:#243f3e;border-color:#4e7f70;box-shadow:inset 0 1px 0 #ffffff12}
+  :root:not([data-theme="light"]) :is(.staff-alert.bad,#toast.bad) {color:#ffd2c6;background:#512f36;border-color:#a87171}
+  :root:not([data-theme="light"]) :is(.danger,.staff-danger) {color:#ffb4a7}
+  :root:not([data-theme="light"]) .staff-table th {color:#d6e4e6;background:linear-gradient(#334b55,#2b424d);border-color:#536c75}
+  :root:not([data-theme="light"]) :is(td,.staff-table td,.discussion-list li) {border-color:#405561}
+  :root:not([data-theme="light"]) .staff-table tbody tr:nth-child(even) {background:#10283244}
+  :root:not([data-theme="light"]) :is(th,.footer,.footer strong,.notice,.reference-heading,.bus-front,.company-control>span) {color:#afc1ca}
+  :root:not([data-theme="light"]) .metric-line {background:#526a70}
+  :root:not([data-theme="light"]) .metric:first-child .metric-line {background:#8ab9b2}
+  :root:not([data-theme="light"]) dialog {color:#e0e8ec;background:var(--material-paper);border-color:#5c7681;box-shadow:inset 0 1px 0 #ffffff16,0 22px 70px #0008}
+  :root:not([data-theme="light"]) dialog::backdrop {background:#020b13b3}
+  :root:not([data-theme="light"]) .staff-secret {color:#d5eeeb;background:#152c35;border-color:#4b6970;box-shadow:var(--shadow-inset)}
+  :root:not([data-theme="light"]) .bus-area {background:linear-gradient(#132a33,#213c45);border-color:#47636a;box-shadow:var(--shadow-inset)}
+  :root:not([data-theme="light"]) .bus {background:linear-gradient(90deg,#233c45,#314d55 15%,#314d55 85%,#233c45);border-color:#547179;box-shadow:inset 0 1px 0 #ffffff1a,0 3px 8px #0004}
+  :root:not([data-theme="light"]) .seat {color:#dceae5;background:linear-gradient(#4b685d,#3a564e);border-color:#789b8c;border-bottom-color:#1d3934;box-shadow:inset 0 2px 0 #ffffff22,0 2px 3px #0004}
+  :root:not([data-theme="light"]) .seat:hover:not(:disabled) {background:linear-gradient(#4b6b5b,#3b5a4c)}
+  :root:not([data-theme="light"]) .seat.selected {color:#fff7df;background:linear-gradient(#81612b,#604719);border-color:#e8c37c;border-bottom-color:#3b2b14;box-shadow:inset 0 1px 0 #ffffff44,0 2px 0 #2e2415,0 3px 5px #0004}
+  :root:not([data-theme="light"]) .seat.selected:hover:not(:disabled) {background:linear-gradient(#81612b,#604719)}
+  :root:not([data-theme="light"]) .seat:disabled {color:#9baeb0;background:linear-gradient(#2e4248,#263b42);border-color:#4a5e63;box-shadow:inset 0 2px 3px #0004}
+  :root:not([data-theme="light"]) .seat-legend i {background:#476358;border-color:#789b8c}
+  :root:not([data-theme="light"]) .seat-legend i.taken {background:#263b42;border-color:#4a5e63}
+  :root:not([data-theme="light"]) .seat-legend i.selected {background:#a47a34;border-color:#e8c37c}
+  :root:not([data-theme="light"]) .deadline {background:#9c7b3114;border-color:#e1ba70}
+  :root:not([data-theme="light"]) .status {color:#c0d2d6;background:#344b56}
+  :root:not([data-theme="light"]) .status.reserved {color:#ffe0a5;background:#51452d}
+  :root:not([data-theme="light"]) .status.cancelled {color:#ffc0b2;background:#50363a}
+  :root:not([data-theme="light"]) .reference-sheet {color:#e1e8de;background:#283b3e;border-color:#677b70;box-shadow:0 3px 8px #0005}
+  :root:not([data-theme="light"]) .reference-large {color:#d9e8c8;background:#1b3033;border-color:#6b7d67;box-shadow:var(--shadow-inset)}
+  :root:not([data-theme="light"]) #toast {background:#304b59;color:#eff8fa;border:1px solid #6c8793;box-shadow:0 3px 12px #0005}
+}
+.theme-toggle {white-space:nowrap}
+@media(max-width:600px){.header-actions{flex-wrap:wrap;justify-content:flex-end;gap:8px}.topbar{flex-wrap:wrap}.company-control{flex:1;min-width:min(210px,100%)}.header-actions .theme-toggle{min-height:42px}}
+/* A dark screen still prints an ordinary white reservation reference. */
+@media print{html{color-scheme:light}body,.reference-sheet,dialog[open]{color:#172e3c;background:#fff;box-shadow:none}.reference-sheet p,.reference-sheet dt,.reference-sheet dd,.reference-sheet h2,.reference-heading,.reference-large{color:#172e3c!important;text-shadow:none}.theme-toggle{display:none!important}}

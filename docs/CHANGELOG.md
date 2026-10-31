@@ -75,3 +75,8 @@ Simplified the responsive staff shell and account overview; added permission-awa
 ## 0.3.3 - Skeuomorphic styling (2026-10-31)
 
 Applied restrained skeuomorphism using shared CSS materials, tactile enamel buttons, recessed fields, warm paper panels, brass navigation accents, padded seat controls and ticket/reference styling. Preserved focus indicators, selected/disabled states and print output. No new dependencies, schema or authorization changes.
+
+
+## 0.3.4 - Dark mode (2026-10-31)
+
+Added shared default dark theme, bilingual light/dark controls, validated persistent preferences, cross-window synchronization and storage-blocked fallback. Toggling preserves form drafts/focus. Styled seats, statuses, tables and dialogs; retained clean white-paper printing. No dependencies or database changes.

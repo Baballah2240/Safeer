@@ -62,3 +62,8 @@ Owner-authorized D21 follow-up improves the implemented staff/passenger workspac
 ## 0.3.3 - Skeuomorphic styling (2026-10-31)
 
 D22 owner-authorized visual follow-up: restrained skeuomorphic materials across the existing staff and passenger interfaces. Navigation and implemented scope are unchanged.
+
+
+## 0.3.4 - Dark mode (2026-10-31)
+
+D23: shared dark skeuomorphic mode is now the default across existing staff and passenger screens, with a bilingual light/dark switch. Existing implementation scope and access rules remain unchanged.

@@ -1,6 +1,6 @@
 # Current state - read this first
 
-Updated: 2026-10-31. Safeer / Sudan Transport, version 0.3.3.
+Updated: 2026-10-31. Safeer / Sudan Transport, version 0.3.4.
 
 ## Current section and gate
 
@@ -74,3 +74,11 @@ Staff/passenger screens now use tactile raised buttons, inset inputs, navy textu
 
 
 0.3.3 verification: 13 unit/server checks, build and documentation links passed. Existing source and built staff workflows each passed 30 Arabic/English desktop/mobile layout checks, including keyboard dialog dismissal, forms, roles, sessions and permission restrictions. Passenger source/built checks passed for seat selection, luggage, escaping and printed references. Reviewed rendered desktop and Arabic mobile screenshots. No application logic, database changes or new dependencies.
+
+
+## 0.3.4 - Dark mode (2026-10-31)
+
+Dark skeuomorphic mode is the default for staff, passenger booking, tables, forms and dialogs. Use the Light mode / Dark mode button in either header; the choice is remembered locally. Arabic labels and responsive layouts are preserved. Dark-screen references print on white paper. Checkpoint: archives/Safeer-0.3.4-dark-mode-2026-10-31.zip; private runtime/credentials excluded.
+
+
+0.3.4 validation: 13 unit/server checks, 14-asset build and documentation links passed. Source/built staff checks covered 60 dark/light Arabic/English responsive combinations per run. Source/built passenger checks verified theme default, real cross-window preference changes, reload persistence, drafts, blocked storage, seat/luggage flows and white-paper printing. Reviewed dark staff/passenger screenshots; no uncaught browser errors.

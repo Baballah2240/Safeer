@@ -49,3 +49,11 @@ D22 visual follow-up checkpoint: archives/Safeer-0.3.3-skeuomorphism-2026-10-31.
 
 
 0.3.3 verification: 13 unit/server checks, build and documentation links passed. Existing source and built staff workflows each passed 30 Arabic/English desktop/mobile layout checks, including keyboard dialog dismissal, forms, roles, sessions and permission restrictions. Passenger source/built checks passed for seat selection, luggage, escaping and printed references. Reviewed rendered desktop and Arabic mobile screenshots. No application logic, database changes or new dependencies.
+
+
+## 0.3.4 - Dark mode (2026-10-31)
+
+D23 follow-up source checkpoint: archives/Safeer-0.3.4-dark-mode-2026-10-31.zip. Existing prior checkpoints remain separately available in archives/. The source archive excludes runtime, credentials and databases.
+
+
+0.3.4 validation: 13 unit/server checks, 14-asset build and documentation links passed. Source/built staff checks covered 60 dark/light Arabic/English responsive combinations per run. Source/built passenger checks verified theme default, real cross-window preference changes, reload persistence, drafts, blocked storage, seat/luggage flows and white-paper printing. Reviewed dark staff/passenger screenshots; no uncaught browser errors.

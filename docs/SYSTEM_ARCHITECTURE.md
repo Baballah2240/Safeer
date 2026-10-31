@@ -86,3 +86,8 @@ The staff shell in src/staff.js and src/staff.css provides a responsive sidebar,
 ## 0.3.3 - Skeuomorphic styling (2026-10-31)
 
 Shared material tokens in src/tokens.css define paper, enamel, navy texture and raised/inset shadows. Staff and passenger styles consume those materials without images, remote resources, new dependencies or behavior changes.
+
+
+## 0.3.4 - Dark mode (2026-10-31)
+
+Shared src/theme.js initializes dark mode by default, handles delegated theme switching without re-rendering forms, persists a validated preference, and listens for same-origin storage updates. Shared src/theme.css styles both interfaces and isolates dark materials to screen media. Both HTML entry points load the theme stylesheet; the public asset allowlist/build now contains 14 files.

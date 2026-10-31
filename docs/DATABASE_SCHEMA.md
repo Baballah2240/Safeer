@@ -148,3 +148,8 @@ No schema or grants change in this layout update. User-role names are resolved f
 ## 0.3.3 - Skeuomorphic styling (2026-10-31)
 
 No database, migration, grants or stored data changes. All material styling is CSS-only.
+
+
+## 0.3.4 - Dark mode (2026-10-31)
+
+No schema, grants or runtime records change. Only the non-sensitive theme preference (safeer.theme: dark/light) is persisted in browser local storage, with a blocked-storage fallback.
