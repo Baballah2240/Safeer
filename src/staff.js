@@ -61,7 +61,8 @@ function showSecret(login,password){
   dialog.innerHTML=`<header><h2>${t('Temporary password — shown once')}</h2><button type="button" data-close-secret>${t('Close')}</button></header><p>${t('Share it privately. The user must change it at first sign-in.')}</p><bdi>${e(login)}</bdi><code class="staff-secret">${e(password)}</code><p>${t('Save these details before closing. They cannot be retrieved later.')}</p>`;
   dialog.querySelector('[data-close-secret]').onclick=()=>dialog.close();dialog.showModal();
 }
-dialog.addEventListener('close',()=>dialog.replaceChildren());
+// The close event arrives after a delay, so a form opened in that gap must not be cleared.
+dialog.addEventListener('close',()=>{if(!dialog.open)dialog.replaceChildren();});
 function bind(){
   if(tab==='companies'&&data&&!loading&&me)bindCompanies(root,data,{api,refresh,render,openForm,input,currentPassword,dialog,t,e,language});
   if(tab==='cities'&&data&&!loading&&me)bindCities(root,data,{api,openForm,input,currentPassword,t,e,language});

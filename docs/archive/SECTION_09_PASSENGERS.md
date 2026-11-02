@@ -20,6 +20,8 @@ Coverage includes refused holds taking no seats, retrieval masking, guess limits
 
 An independent review before commit found and fixed: an unkeyed retry fingerprint that could confirm an erased number; staff reasons outliving erasure; bulk reads missing from the audit; a client over its limit still using up another booking's attempts; a first success permanently using an attempt; a retry at the limit discarding the only key; the old detail-free hold route staying callable after an upgrade; a seat label breaking the correction form; and smaller retrieval and display problems.
 
+Verification also found a timing bug in the staff dialog: its delayed close event could wipe a form opened in the moments after another closed. This is fixed. The fleet browser suite then passed 15 of 16 repeat runs. The one failure, a seat map dialog with no Close button, did not recur in 10 further instrumented runs and its cause is unknown, so treat a repeat as a real signal.
+
 Erasure was tested by moving stored dates as the database owner. A full 90-day wait was not run.
 
 ## Open owner step: upgrade the private local database
