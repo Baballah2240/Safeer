@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.0 - 2026-11-02 - SECTION 06
+
+Add draft trips from routes, repeated scheduling, stop times, fares, bus and driver assignment with history, publication and cancellation. Add migration 0006, trip service and controller, 3 RLS tables, database-filled snapshots, overlap protection and 2 template permissions. 68 automated checks and source/built browser suites passed. The private local database upgrade is an open owner step.
+
 ## 0.6.0 - 2026-11-02 - SECTION 05
 
 Add company-private seat layouts with immutable revisions, a visual seat-map editor, buses and driver records. Add migration 0005, fleet service and controller, 5 RLS tables, sealed revisions, capacity guards, 4 template permissions and database/backup-local.mjs. 60 automated checks and source/built browser suites passed. The private local database upgrade is an open owner step.

@@ -60,3 +60,7 @@ Section 04 verification: 52 automated checks, source/built route screens (48 lay
 ## 2026-11-02 - Section 05 fleet
 
 Add bilingual responsive seat-map editing and viewing, bus and driver records to shared src/. Preserve dark/light styling and company permissions. Seat maps scroll inside themselves on phones. No native app build or deployment requested. Verification: 60 automated checks and 64 fleet layouts per source/built mode.
+
+## 2026-11-02 - Section 06 trips
+
+Add bilingual responsive trip scheduling, assignment, publication and cancellation to shared src/. Preserve dark/light styling and company permissions. No native app build or deployment requested. Verification: 68 automated checks and 48 trip layouts per source/built mode.

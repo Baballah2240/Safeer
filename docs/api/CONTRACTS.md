@@ -58,3 +58,7 @@ Workspace responses contain only RLS-visible resources and field-level UI capabi
 ## Section 05 / 0.6.0
 
 40 paths / 49 operations. GET /api/v1/companies/:id/fleet; POST fleet/layouts; PATCH fleet/layouts/:rid; POST fleet/layouts/:rid/revisions (expectedRevision); GET fleet/layouts/:rid/revisions/:revision; POST fleet/buses; PATCH fleet/buses/:rid; GET/POST companies/:id/drivers; PATCH drivers/:rid. Writes reauthenticate and require CSRF. Conflicts return STALE_VERSION, DUPLICATE_RECORD, LAYOUT_IN_USE, INACTIVE_LAYOUT or CATALOG_LIMIT. No delete, trip or reservation operation exists.
+
+## Section 06 / 0.7.0
+
+45 paths / 56 operations. GET/POST /api/v1/companies/:id/trips (optional from date); GET/PATCH trips/:rid; POST trips/:rid/assignment; POST trips/:rid/publish; POST trips/:rid/cancel. Writes reauthenticate and require CSRF. Conflicts return STALE_VERSION, TRIP_NOT_DRAFT, TRIP_NOT_READY, INVALID_TRIP_STOPS, ASSIGNMENT_CONFLICT, INACTIVE_ASSIGNMENT, TRIP_RESOURCE_IN_USE or CATALOG_LIMIT. No delete, passenger search or reservation operation exists.

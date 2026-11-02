@@ -107,3 +107,7 @@ The shared staff shell loads `src/companies.js`; real company screens are separa
 ## Section 05 fleet
 
 FleetService and its versioned controller extend the existing NestJS modular backend. src/fleet.js shares existing staff authentication, dialogs, translations and themes. Company workspaces fetch fleet and driver data only when their company-wide capabilities allow it. Seat maps render left-to-right in both languages because they show the physical bus.
+
+## Section 06 trips
+
+TripService and its versioned controller extend the existing NestJS modular backend. src/trips.js shares existing staff authentication, dialogs, translations and themes. Snapshots are filled by database triggers, not the API, so no client can forge them.

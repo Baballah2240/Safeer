@@ -9,6 +9,7 @@ import {Database} from './database.js';
 import {CompanyService} from './company.service.js';
 import {RouteService} from './route.service.js';
 import {FleetService} from './fleet.service.js';
+import {TripService} from './trip.service.js';
 import {IdentityError,sessionToken,validCsrf,fail} from './security.js';
 
 const version=JSON.parse(readFileSync(new URL('../../package.json',import.meta.url),'utf8')).version;
@@ -25,7 +26,7 @@ class Errors implements ExceptionFilter {
     const type=(error as {type?:string})?.type;
     if(type==='entity.parse.failed'||type==='entity.too.large'){res.status(type==='entity.too.large'?413:400).json({error:{code:'INVALID_REQUEST',message:'Send a valid JSON request within 8 KiB.'}});return;}
     if(code==='23505'){const constraint=(error as {constraint?:string}).constraint||'';const loginConflict=constraint==='users_normalized_login_key';res.status(409).json({error:{code:loginConflict?'DUPLICATE_LOGIN':'DUPLICATE_RECORD',message:loginConflict?'That login is already in use.':'This code, slug or membership is already in use.'}});return;}
-    if(code==='P0001'&&['LAST_COMPANY_ADMIN','COMPANY_LIMIT','CATALOG_LIMIT','RESOURCE_IN_USE','STATION_CITY_IN_USE','INVALID_ROUTE_STOPS','INACTIVE_ROUTE_RESOURCE','LAYOUT_IN_USE','INACTIVE_LAYOUT','INVALID_SEAT_LAYOUT','IMMUTABLE_REVISION'].includes((error as Error).message)){res.status(409).json({error:{code:(error as Error).message,message:'The change conflicts with a protected resource, route rule or local capacity.'}});return;}
+    if(code==='P0001'&&['LAST_COMPANY_ADMIN','COMPANY_LIMIT','CATALOG_LIMIT','RESOURCE_IN_USE','STATION_CITY_IN_USE','INVALID_ROUTE_STOPS','INACTIVE_ROUTE_RESOURCE','LAYOUT_IN_USE','INACTIVE_LAYOUT','INVALID_SEAT_LAYOUT','IMMUTABLE_REVISION','TRIP_NOT_DRAFT','TRIP_NOT_READY','INVALID_TRIP_STOPS','ASSIGNMENT_CONFLICT','INACTIVE_ASSIGNMENT','TRIP_RESOURCE_IN_USE'].includes((error as Error).message)){res.status(409).json({error:{code:(error as Error).message,message:'The change conflicts with a protected resource, route rule or local capacity.'}});return;}
     if(['23503','23514','42501'].includes(code||'')){res.status(code==='42501'?403:400).json({error:{code:code==='42501'?'FORBIDDEN':'INVALID_RESOURCE_SCOPE',message:'The resource does not belong to an allowed company or scope.'}});return;}
     if(error instanceof HttpException){res.status(error.getStatus()).json({error:{code:'INVALID_REQUEST',message:'The request is not valid.'}});return;}
     res.status(500).json({error:{code:'INTERNAL_ERROR',message:'The request could not be completed.'}});
@@ -97,7 +98,18 @@ class FleetController {
  @Post('drivers') createDriver(@Req() req:Request,@Param('id') id:string,@Body() data:unknown){return this.fleet.saveDriver(token(req),id,undefined,data).then(reply);}
  @Patch('drivers/:rid') updateDriver(@Req() req:Request,@Param('id') id:string,@Param('rid') rid:string,@Body() data:unknown){return this.fleet.saveDriver(token(req),id,rid,data).then(reply);}
 }
-@Module({controllers:[IdentityController,CompanyController,RouteController,FleetController],providers:[Database,IdentityService,CompanyService,RouteService,FleetService]})
+@Controller('api/v1/companies/:id/trips')
+class TripController {
+ constructor(private readonly trips:TripService){}
+ @Get() list(@Req() req:Request,@Param('id') id:string,@Query('from') from:string|undefined){return this.trips.trips(token(req),id,from).then(reply);}
+ @Post() create(@Req() req:Request,@Param('id') id:string,@Body() data:unknown){return this.trips.create(token(req),id,data).then(reply);}
+ @Get(':rid') detail(@Req() req:Request,@Param('id') id:string,@Param('rid') rid:string){return this.trips.detail(token(req),id,rid).then(reply);}
+ @Patch(':rid') update(@Req() req:Request,@Param('id') id:string,@Param('rid') rid:string,@Body() data:unknown){return this.trips.update(token(req),id,rid,data).then(reply);}
+ @Post(':rid/assignment') assign(@Req() req:Request,@Param('id') id:string,@Param('rid') rid:string,@Body() data:unknown){return this.trips.assign(token(req),id,rid,data).then(reply);}
+ @Post(':rid/publish') publish(@Req() req:Request,@Param('id') id:string,@Param('rid') rid:string,@Body() data:unknown){return this.trips.publish(token(req),id,rid,data).then(reply);}
+ @Post(':rid/cancel') cancel(@Req() req:Request,@Param('id') id:string,@Param('rid') rid:string,@Body() data:unknown){return this.trips.cancel(token(req),id,rid,data).then(reply);}
+}
+@Module({controllers:[IdentityController,CompanyController,RouteController,FleetController,TripController],providers:[Database,IdentityService,CompanyService,RouteService,FleetService,TripService]})
 export class IdentityModule {}
 
 export async function createIdentityApi({port=4321,webOrigin='http://127.0.0.1:4320'}:{port?:number;webOrigin?:string}={}){

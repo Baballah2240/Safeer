@@ -15,7 +15,7 @@ test('real PostgreSQL runtime is restricted, identities persist and no business 
   await assert.rejects(f.api.db.pool.query("DELETE FROM safeer.identity_audit"),e=>e.code==='42501');
   await assert.rejects(f.api.db.pool.query("UPDATE safeer.permissions SET module='x'"),e=>e.code==='42501');
   assert.equal((await f.admin.request('identity/roles')).data.items.length,8);
-  assert.equal((await f.admin.request('identity/permissions')).data.items.length,21);
+  assert.equal((await f.admin.request('identity/permissions')).data.items.length,23);
   assert.equal((await f.migration.query("SELECT count(*)::int AS n FROM pg_tables WHERE schemaname='safeer' AND tablename IN ('bookings','payments')")).rows[0].n,0);
   const hashes=(await f.migration.query('SELECT password_hash FROM safeer.users')).rows;
   assert.ok(hashes.every(r=>r.password_hash.startsWith('scrypt$')));
@@ -65,7 +65,7 @@ test('super administrators edit every role without losing authority or removing 
   }
   const after=(await f.admin.request('auth/me')).data;
   assert.equal(after.superAdministrator,true);
-  assert.equal(after.permissions.length,21,'owner authority survives clearing its editable grants');
+  assert.equal(after.permissions.length,23,'owner authority survives clearing its editable grants');
   roles=(await f.admin.request('identity/roles')).data.items;
   assert.ok(roles.every(r=>r.version===initialVersions[r.id]+1&&r.permissions.length===0&&r.displayName.startsWith('Updated ')));
   assert.equal((await f.admin.request('identity/audit')).data.items.filter(r=>r.action==='role.updated').length,8);

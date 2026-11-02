@@ -73,3 +73,7 @@ Cities/routes/stops add three RLS tables (14 total). A valid transaction-local r
 ## Section 05
 
 Seat layouts, revisions, seats, buses and drivers add five RLS tables (19 total). A valid transaction-local raw session is mandatory. Fleet and driver reads use company_can without branch or station parameters, so narrower grants never match. Writes also require the matching manage permission, company profile read for audit and the current password. Driver contact details need driver read permission, and fleet access does not reveal them. Support grants cannot include fleet or driver permissions. Linking a driver to a staff member grants nothing.
+
+## Section 06
+
+Trips, trip stops and assignments add three RLS tables (22 total). A valid transaction-local raw session is mandatory. Reads use company_can without branch or station parameters. Writes also require company-wide route, fleet and driver reads, company profile read for audit and the current password. Trip readers never receive driver contact details. Support grants cannot include trip permissions.

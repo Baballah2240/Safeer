@@ -151,7 +151,8 @@ Payment confirmation locks the booking and allocations, reads a fresh database c
 | 0003_companies.sql | Eleven company tables, scoped access, RLS and administrator guards | 03 |
 | 0004_routes.sql | Cities, station city links, company routes and ordered stops with RLS/consistency guards | 04 |
 | 0005_fleet.sql | Seat layouts, immutable revisions and seats, buses and drivers with RLS/consistency guards | 05 |
-| Future sequential files | Only the implemented module's reviewed DDL/constraints/indexes/policies | 06 onward |
+| 0006_trips.sql | Trips, stop and assignment snapshots with RLS, status rules and overlap protection | 06 |
+| Future sequential files | Only the implemented module's reviewed DDL/constraints/indexes/policies | 07 onward |
 
 Use append-only sequential `0001_name.sql` files. The runner normalizes CRLF, hashes contents, checks applied names/versions/checksums, obtains a transaction-level advisory lock, and commits all pending files with their ledger rows atomically. SQL files must not contain their own transaction control or nontransactional statements. Drift/unknown history fails closed. No automatic down-migrations or edits to applied files; use reviewed forward corrections. Keep schema-owner and application credentials separate.
 
@@ -182,3 +183,9 @@ No schema, grants or runtime records change. Only the non-sensitive theme prefer
 Migration 0005_fleet.sql adds seat_layouts (stable code, bilingual names, active, edit version, latest_revision), seat_layout_revisions (revision, row_count, column_count, seat_count, created_by), seat_layout_seats (row, column, unique case-insensitive label), buses (code, registration, same-company layout revision FK) and drivers (employee code, bilingual names, optional phone, optional same-company member FK).
 
 All five have company-wide RLS. Limited runtime receives no DELETE on any of them and no UPDATE on revisions or seats. Owner-level triggers also reject revision and seat UPDATE, DELETE and TRUNCATE, so history is protected from the database owner too. Seats can only join a revision created in the same transaction, which seals it at commit. Deferred validation requires a latest revision whose seat count matches. There are 27 application tables plus the migration ledger and 19 RLS tables.
+
+## Implemented Section 06 (D27)
+
+Migration 0006_trips.sql adds trips (route snapshot, status, timezone, departure and arrival, fare in minor units, currency, cancel reason), trip_stops (stop index, minutes after departure, city and station snapshot) and trip_assignments (bus, driver, seat-layout revision, seat count and name snapshots, replaced_at, replaced_reason, one current assignment per trip).
+
+All three have company-wide RLS. Limited runtime receives no DELETE. Owner-level triggers fill snapshots, enforce status rules and publish conditions, reject overlapping buses or drivers and keep assignment history from being rewritten or deleted. Deferred validation requires every route stop, strictly increasing minutes from 0 and an arrival matching the last stop. There are 30 application tables plus the migration ledger and 22 RLS tables.

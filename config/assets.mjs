@@ -8,6 +8,7 @@ export const publicAssets = {
   '/src/styles.css': ['src/styles.css', 'text/css'],
   '/src/tokens.css': ['src/tokens.css', 'text/css'],
   '/src/routes.js': ['src/routes.js', 'text/javascript'],
+  '/src/trips.js': ['src/trips.js', 'text/javascript'],
   '/src/fleet.js': ['src/fleet.js', 'text/javascript'],
   '/src/companies.js': ['src/companies.js', 'text/javascript'],
   '/src/theme.js': ['src/theme.js', 'text/javascript'],

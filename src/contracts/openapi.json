@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Safeer local identity API",
-    "version": "0.6.0",
-    "description": "Local Safeer identity and company workspaces. No production hosting, real booking or money API. Section 04 adds authenticated cities and company route planning. Section 05 adds company-private buses, immutable seat-layout revisions and driver records; no real trips or reservations."
+    "version": "0.7.0",
+    "description": "Local Safeer identity and company workspaces. No production hosting, real booking or money API. Section 04 adds authenticated cities and company route planning. Section 05 adds company-private buses, immutable seat-layout revisions and driver records; Section 06 adds company trip scheduling, assignments and publication; no passenger search, reservations or payments."
   },
   "servers": [
     {
@@ -7456,6 +7456,750 @@
           }
         }
       }
+    },
+    "/api/v1/companies/{id}/trips": {
+      "get": {
+        "summary": "List upcoming company trips",
+        "description": "Existing session, same-origin CSRF and DTO validation apply. Requires company-wide trip permission; managing also needs company-wide route, fleet and driver reads, and writes require the current password. No passenger booking exists.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "items",
+                        "canManage"
+                      ],
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Trip"
+                          }
+                        },
+                        "canManage": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in required."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not available."
+          },
+          "409": {
+            "description": "Stale, not ready, conflicting or capacity limit."
+          }
+        }
+      },
+      "post": {
+        "summary": "Create 1-31 draft trips, all or none",
+        "description": "Existing session, same-origin CSRF and DTO validation apply. Requires company-wide trip permission; managing also needs company-wide route, fleet and driver reads, and writes require the current password. No passenger booking exists.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "routeId",
+                  "dates",
+                  "time",
+                  "offsets",
+                  "fareMinor",
+                  "currentPassword"
+                ],
+                "properties": {
+                  "routeId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "dates": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 31,
+                    "items": {
+                      "type": "string",
+                      "format": "date"
+                    }
+                  },
+                  "time": {
+                    "type": "string"
+                  },
+                  "offsets": {
+                    "type": "array",
+                    "minItems": 2,
+                    "maxItems": 30,
+                    "items": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 10080
+                    }
+                  },
+                  "fareMinor": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100000000
+                  },
+                  "currency": {
+                    "type": "string"
+                  },
+                  "currentPassword": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "ids"
+                      ],
+                      "properties": {
+                        "ids": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "format": "uuid"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in required."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not available."
+          },
+          "409": {
+            "description": "Stale, not ready, conflicting or capacity limit."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/trips/{rid}": {
+      "get": {
+        "summary": "Read a trip, its stops and assignment history",
+        "description": "Existing session, same-origin CSRF and DTO validation apply. Requires company-wide trip permission; managing also needs company-wide route, fleet and driver reads, and writes require the current password. No passenger booking exists.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "rid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "trip",
+                        "stops",
+                        "assignments"
+                      ],
+                      "properties": {
+                        "trip": {
+                          "$ref": "#/components/schemas/Trip"
+                        },
+                        "stops": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/TripStop"
+                          }
+                        },
+                        "assignments": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/TripAssignment"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in required."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not available."
+          },
+          "409": {
+            "description": "Stale, not ready, conflicting or capacity limit."
+          }
+        }
+      },
+      "patch": {
+        "summary": "Edit a draft trip",
+        "description": "Existing session, same-origin CSRF and DTO validation apply. Requires company-wide trip permission; managing also needs company-wide route, fleet and driver reads, and writes require the current password. No passenger booking exists.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "rid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "date",
+                  "time",
+                  "offsets",
+                  "fareMinor",
+                  "version",
+                  "currentPassword"
+                ],
+                "properties": {
+                  "date": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "time": {
+                    "type": "string"
+                  },
+                  "offsets": {
+                    "type": "array",
+                    "minItems": 2,
+                    "maxItems": 30,
+                    "items": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 10080
+                    }
+                  },
+                  "fareMinor": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100000000
+                  },
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "currentPassword": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "id"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in required."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not available."
+          },
+          "409": {
+            "description": "Stale, not ready, conflicting or capacity limit."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/trips/{rid}/assignment": {
+      "post": {
+        "summary": "Assign or replace the bus and driver",
+        "description": "Existing session, same-origin CSRF and DTO validation apply. Requires company-wide trip permission; managing also needs company-wide route, fleet and driver reads, and writes require the current password. No passenger booking exists.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "rid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "busId",
+                  "driverId",
+                  "version",
+                  "currentPassword"
+                ],
+                "properties": {
+                  "busId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "driverId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "reason": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "currentPassword": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "id"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in required."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not available."
+          },
+          "409": {
+            "description": "Stale, not ready, conflicting or capacity limit."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/trips/{rid}/publish": {
+      "post": {
+        "summary": "Publish a ready draft",
+        "description": "Existing session, same-origin CSRF and DTO validation apply. Requires company-wide trip permission; managing also needs company-wide route, fleet and driver reads, and writes require the current password. No passenger booking exists.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "rid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "version",
+                  "currentPassword"
+                ],
+                "properties": {
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "currentPassword": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "id"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in required."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not available."
+          },
+          "409": {
+            "description": "Stale, not ready, conflicting or capacity limit."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/trips/{rid}/cancel": {
+      "post": {
+        "summary": "Cancel a trip with a reason",
+        "description": "Existing session, same-origin CSRF and DTO validation apply. Requires company-wide trip permission; managing also needs company-wide route, fleet and driver reads, and writes require the current password. No passenger booking exists.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "rid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "reason",
+                  "version",
+                  "currentPassword"
+                ],
+                "properties": {
+                  "reason": {
+                    "type": "string"
+                  },
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "currentPassword": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "id"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in required."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not available."
+          },
+          "409": {
+            "description": "Stale, not ready, conflicting or capacity limit."
+          }
+        }
+      }
     }
   },
   "components": {
@@ -8813,6 +9557,224 @@
           "version": {
             "type": "integer",
             "minimum": 1
+          }
+        }
+      },
+      "TripAssignment": {
+        "type": "object",
+        "required": [
+          "id",
+          "busId",
+          "driverId",
+          "layoutId",
+          "layoutRevision",
+          "seatCount",
+          "busCode",
+          "busRegistration",
+          "driverNameEn",
+          "driverNameAr",
+          "assignedAt",
+          "replacedAt",
+          "replacedReason"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "busId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "driverId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "layoutId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "layoutRevision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "seatCount": {
+            "type": "integer"
+          },
+          "busCode": {
+            "type": "string"
+          },
+          "busRegistration": {
+            "type": "string"
+          },
+          "driverNameEn": {
+            "type": "string"
+          },
+          "driverNameAr": {
+            "type": "string"
+          },
+          "assignedAt": {
+            "type": "string"
+          },
+          "replacedAt": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "replacedReason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "Trip": {
+        "type": "object",
+        "required": [
+          "id",
+          "routeId",
+          "status",
+          "date",
+          "time",
+          "timezone",
+          "departureAt",
+          "arrivalAt",
+          "fareMinor",
+          "currency",
+          "version"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "routeId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "routeVersion": {
+            "type": "integer"
+          },
+          "routeCode": {
+            "type": "string"
+          },
+          "routeNameEn": {
+            "type": "string"
+          },
+          "routeNameAr": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "published",
+              "canceled"
+            ]
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "time": {
+            "type": "string"
+          },
+          "timezone": {
+            "type": "string"
+          },
+          "departureAt": {
+            "type": "string"
+          },
+          "arrivalAt": {
+            "type": "string"
+          },
+          "fareMinor": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000000
+          },
+          "currency": {
+            "type": "string"
+          },
+          "cancelReason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "publishedAt": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "canceledAt": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "assignment": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/TripAssignment"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "TripStop": {
+        "type": "object",
+        "required": [
+          "stopIndex",
+          "offsetMinutes",
+          "cityId",
+          "cityNameEn",
+          "cityNameAr"
+        ],
+        "properties": {
+          "stopIndex": {
+            "type": "integer"
+          },
+          "offsetMinutes": {
+            "type": "integer"
+          },
+          "cityId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "stationId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "cityNameEn": {
+            "type": "string"
+          },
+          "cityNameAr": {
+            "type": "string"
+          },
+          "stationNameEn": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "stationNameAr": {
+            "type": [
+              "string",
+              "null"
+            ]
           }
         }
       }

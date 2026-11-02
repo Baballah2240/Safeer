@@ -15,3 +15,5 @@ To continue, extract into a new folder, read docs/CURRENT_STATE.md first, run np
 [Section 04 routes](SECTION_04_ROUTES.md) records the city/route implementation and final verification. Stop before Section 05 until approved.
 
 [Section 05 fleet](SECTION_05_FLEET.md) records the bus, seat-layout and driver implementation, final verification and the open local upgrade step. Stop before Section 06 until approved.
+
+[Section 06 trips](SECTION_06_TRIPS.md) records trip scheduling, final verification and the open local upgrade step. Stop before Section 07 until approved.

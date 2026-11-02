@@ -58,3 +58,5 @@ Section 03 adds `apps/api/src/company.service.ts`, `database/migrations/0003_com
 Section 04 adds apps/api/src/route.service.ts, src/routes.js, database/migrations/0004_routes.sql and route-specific integration/browser tests. Route workflow and handover documents explain access, limits and continuation.
 
 Section 05 adds apps/api/src/fleet.service.ts, src/fleet.js, database/migrations/0005_fleet.sql, database/backup-local.mjs and fleet integration/browser tests. The fleet workflow and handover documents explain access, limits and continuation.
+
+Section 06 adds apps/api/src/trip.service.ts, src/trips.js, database/migrations/0006_trips.sql and trip integration/browser tests. The trip workflow and handover documents explain access, limits and continuation.
