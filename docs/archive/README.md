@@ -11,3 +11,5 @@ Numbered Markdown entries in this directory are permanent source-controlled hand
 To continue, extract into a new folder, read docs/CURRENT_STATE.md first, run npm ci, npm test and npm run build. Do not point integration tests at real operational databases. Follow database/MIGRATIONS documentation for a disposable local PostgreSQL instance. Keep real business-data backups separately and securely; no runtime credentials or customer databases belong in a source archive.
 
 - Section 03: [company access handover](SECTION_03_COMPANIES.md), separate `archives/Safeer-0.4.0-Section-03-2026-10-31.zip` with current source, exact commit and verification evidence; private database backups are excluded. Stop before Section 04.
+
+[Section 04 routes](SECTION_04_ROUTES.md) records the city/route implementation and final verification. Stop before Section 05 until approved.

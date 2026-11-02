@@ -1,5 +1,10 @@
 # System architecture
 
+## Section 04 route planning
+
+RouteService and its versioned controller extend the existing NestJS modular backend. src/routes.js shares existing staff authentication, dialogs, translations and themes for catalog and route editing. Company workspaces fetch permitted route summaries, then details on demand. City catalog and station-city options connect the two modules. Three new tables use server/database constraints and RLS; route and resource writes share the authorization lock. Atomic route/stop replacement validates deferred constraints before audit/commit. Cities are global; company routes never become public through these endpoints.
+
+
 ## Present executable architecture
 
 Section 02 adds `apps/api/src/`, compiled to `dist/api/`: a NestJS 12.3.2/TypeScript 6.0.3 modular identity backend, PostgreSQL repositories, password/session primitives and versioned HTTP controllers. `/staff` is a working bilingual staff UI; the existing server proxies `/api/v1/` to the explicitly configured loopback API. Cookies stay same-origin. No backend credentials or service source files enter the public asset allowlist.

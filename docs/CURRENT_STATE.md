@@ -1,54 +1,43 @@
-﻿# Current state - read this first
+# Current state - read this first
 
-Updated: 2026-10-31. Safeer / Sudan Transport, version 0.4.0.
+Updated: 2026-11-02. Safeer / Sudan Transport, version 0.5.0.
 
 ## Current section and next gate
 
-The owner's latest "next" authorized Section 03 (D24): companies, branches, stations, company isolation and scoped staff/support access. Implementation is complete; final verification and local upgrade evidence are recorded below. Stop before Section 04 (cities/routes/destinations) until the owner approves it. Do not start bookings, payments or native mobile work early.
+The owner's latest "next" authorizes Section 04 (D25): cities, destinations, company routes and ordered stops. Implementation is complete and verified. Stop before Section 05 (bus fleet, seat layouts and drivers) until explicitly approved.
 
 ## Working application
 
-- Local NestJS/TypeScript API, PostgreSQL and bilingual responsive staff UI at http://127.0.0.1:4320/staff.
-- Sign-in, password/session lifecycle, platform users/roles, protected Super Admin and identity audit from Section 02.
-- **Companies** in the sidebar: Super Admin creates companies, configures names/contact details, hold duration, timezone/language, and approves/suspends/archives them.
-- Real company workspaces: overview, branches/stations, company staff, company roles, support access and audit.
-- Other users see only approved companies granted by active memberships or explicitly permitted support grants. Single-company users go straight into that workspace without a company chooser.
-- Multi-role memberships support company, branch and station scopes. Scoped managers cannot grant wider access or change a membership spanning resources outside their authority. Trip roles wait for Section 06.
-- Company admins can create new local staff accounts with one-time temporary passwords. Super Admin alone links existing global identities. Membership editing never changes a shared identity's password, platform roles or global active state.
-- Company-owned roles copy global templates when a company is created. Subsequent template edits do not silently change existing companies.
-- Read-only platform-support grants require Super Admin, a reason, 1-24 hours and selected read permissions. Expiry, revocation, account/role deactivation and company status are checked against database time.
-- RLS on all 11 company-owned tables; composite same-company foreign keys; immutable tenant ownership; current-password/CSRF/version checks; append-only audit; last capable company administrator protected atomically, including global user deactivation.
-- Dark/light skeuomorphic styling, persistent theme preference, Arabic/English and clean white-paper reference printing remain available.
-- The passenger/luggage preview is still fictional in-memory data. It is deliberately separate from durable company records and cannot issue real tickets or collect payment.
+Local bilingual staff UI at http://127.0.0.1:4320/staff with the NestJS/TypeScript API and PostgreSQL. Identity, protected Super Admin, company approval/settings, branches/stations, tenant roles, scoped staff, read-only support and audit remain implemented. Existing dark/light skeuomorphic styling and passenger/luggage demonstration are retained.
+
+Section 04 adds a shared Cities & destinations catalog. Super Admin creates/edits bilingual city names, canonical codes, country codes and active state. Authenticated staff can read the catalog. It contains no seeded real geography or passenger data.
+
+Companies -> Branches & stations now supports an optional City assignment. Existing station identities, branches and staff links are preserved; old stations initially have no city. Companies -> Routes & stops supports names/codes, active state, ordered stop details, creation/editing, adding/removing/reordering stops and optional station selection filtered by city.
+
+A route has 2-30 contiguous zero-based stops and different origin/destination cities. Identical city/station pairs cannot repeat; distinct stations in one city are allowed. Stop station references must match both company and city. Edits replace the route and its stops atomically, with expected version, current password, CSRF and audit. Failed/stale saves preserve the existing route. Deactivation keeps history. Active routes require active city/station/branch resources; retire affected routes before deactivating those resources. A station's city cannot change while any route references it.
+
+Route catalog permissions are company-wide company.routes.read/manage. Branch/station-only grants cannot broaden route access. Management also requires company-wide resource reads. Explicit support grants can include read-only routes with expiry/revocation. Existing company role copies are unchanged: Super Admin must explicitly add new route permissions to an existing company role. New-company administrator templates include them.
 
 ## Run and use
 
-Install Node 24+, then `npm.cmd ci` and `npm.cmd run local` from this folder on Windows. Existing users/passwords are retained when migrations are applied. Back up the private database before an upgrade; never delete runtime/ to repair login.
+From this folder use Node 24+, npm.cmd ci (when dependencies are absent), then npm.cmd run local. The local launcher applies append-only migrations with a private owner and runs the API as a separate restricted runtime role. Only loopback is enabled. Existing account passwords are not regenerated.
 
-On a fresh database only, the launcher creates owner@safeer.local and privately writes a generated temporary password to runtime/first-login.txt. Change it at first sign-in. Existing credentials are never regenerated by an update. Runtime data, credentials, first-login text and private backups are excluded from Git and source archives.
+On a fresh database only, owner@safeer.local receives a generated temporary password privately in runtime/first-login.txt; change it at first sign-in. Keep runtime/ intact. Private credentials/databases/backups are excluded from Git and source ZIPs. See [setup/recovery](database/IDENTITY_SETUP.md).
 
-First-use company workflow: sign in as Super Admin -> Companies -> Create company -> Edit company -> approve -> add branches/stations -> add company staff and scoped roles. Share a generated temporary password privately; the employee must change it at first sign-in. See [company workflow](workflows/COMPANY_ACCESS.md).
+Workflow: Super Admin -> Cities & destinations -> add cities -> Companies -> add/select company -> approve -> add branches/stations and assign station cities -> Routes & stops -> create route -> set stops in travel order. See [route planning](workflows/ROUTE_PLANNING.md) and [company access](workflows/COMPANY_ACCESS.md).
 
-For manual PostgreSQL startup/recovery see [IDENTITY_SETUP](database/IDENTITY_SETUP.md). Only loopback is enabled. No remote hosting, HTTPS proxy trust, MFA or email/SMS credential delivery is configured.
+## Database and API
 
-## Database and contracts
+Migrations 0001-0003 are immutable. New 0004_routes.sql adds cities, routes and route_stops plus nullable station city IDs, scoped policies, composite FKs, deferred route validation, resource guards and template permissions. There are 22 application tables plus the migration ledger, 14 RLS tables, 17 permissions, 31 implemented API paths / 38 operations and 16 allowlisted public assets.
 
-Migrations 0001 and 0002 are unchanged. [0003_companies.sql](../database/migrations/0003_companies.sql) adds 11 company-owned tables to eight identity tables (19 application tables, plus the separate migration ledger). Nine company permissions join the six identity permissions. Four initial company/branch/station templates are copied into tenant roles; driver/boarding trip assignments remain deferred.
+The global city catalog is authenticated and Super Admin-managed. Company RLS still derives authority from the valid raw opaque session set transaction-locally, not actor/company flags. Local bounds: 1000 cities, 500 routes/company and 30 stops/route, alongside the existing Section 03 company/resource limits. No DELETE city/route endpoint exists. Current routes use unique(company_id,code); version is optimistic concurrency. Section 06 must snapshot routes/stops for trips before publication.
 
-RLS authorization derives the actor from a valid opaque session set transaction-locally and evaluates server-side memberships, resource ownership and support grants. Caller-provided company/actor IDs or a super flag cannot grant access. SQL policy helpers have fixed trusted search paths, restricted execution and a non-owner runtime connection. See [access control](security/ACCESS_CONTROL.md).
+## Verification, backup and archive
 
-OpenAPI has 27 implemented paths / 31 operations. Fifteen public source assets are allowlisted. Local list capacities are explicit: 200 companies, 100 branches/company, 200 stations/company, 500 members/company, 50 roles/company, 10 assignments/member and 500 support-grant history rows/company. Requests remain bounded to 8 KiB; audit lists show the latest 100 permitted events.
+Native tests use disposable databases and restricted runtime roles, never the persistent local database. All 52 automated checks passed (13 unit/server and 39 native PostgreSQL), without failures or skips. Route workflows passed 48 Arabic/English dark/light layouts per source/built run at 1920x1080, 1366x768, 390x844 and 320x740. Company regressions passed 72 layouts per mode and identity regressions 60 per mode. The retained passenger/luggage built workflow passed. Build and documentation checks passed. The local migration preserved the existing account/credentials/settings and checked 11 company tables; its private backup was actually restored and verified in isolation. No known critical defects remain in the implemented scope. Final receipts are stored in ignored .qa/ and included in the source checkpoint. Account/business-data preservation and backup restoration are checked separately before handover.
 
-## Verification and handover
-
-Verified 43 automated checks (13 unit/server and 30 native PostgreSQL), with no failures or skips. Company browser workflows passed in source and built modes across 72 layouts each; existing identity workflows passed in both modes across 60 layouts each, and passenger/luggage checks passed in both modes. The private backup was restored in isolation and verified; the existing local account, credentials and first-login file are unchanged.
-
-Final verification receipts are kept under ignored .qa/ and copied into the verified source checkpoint. The native suites use disposable databases and restricted runtime roles, never the persistent local data. The local upgrade is backed up privately and checks existing account/credential preservation.
-
-Source checkpoint: archives/Safeer-0.4.0-Section-03-2026-10-31.zip, generated from the final committed source and verified by ZIP CRC and per-file SHA-256. Source archives contain no runtime database, accounts, credentials, private backups, native caches or node_modules. Earlier checkpoints remain separately under archives/.
-
-Section handovers: [Section 02](archive/SECTION_02_IDENTITY.md), [Section 03](archive/SECTION_03_COMPANIES.md). Source control/push status is reported separately; a GitHub push does not deploy hosting.
+Verified exact-source checkpoint: archives/Safeer-0.5.0-Section-04-2026-11-02.zip. It excludes accounts, credentials, runtime databases/backups, native caches and node_modules. Existing checkpoints remain separate. Source commit/push status is reported separately; pushing is not hosting deployment.
 
 ## Remaining work
 
-Wait for Section 04 approval: cities, routes, destinations and ordered route stops. Company stations currently have addresses; city foreign keys join the real city catalog in Section 04. Counters, money/currency catalogs, station payments, real guest/multi-seat reservations, tickets, registered luggage, boarding and native clients remain later sections. Company capacity limits are local-stage bounds rather than a production scale claim. Scoped roles cannot grant capabilities from future modules that do not exist.
+Section 04 is complete. Stop before Section 05 until explicitly approved. Fleet/seat layouts/drivers, trips, public marketplace, real seat inventory/holds, guest bookings, tickets/payments, registered luggage, boarding and finance remain later sections. The passenger preview still uses fictional in-memory records and must not be confused with durable bookings. No Safeer native app or external deployment was requested.

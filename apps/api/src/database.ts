@@ -23,8 +23,8 @@ export class Database implements OnModuleDestroy {
       FROM pg_roles r WHERE r.rolname=current_user`);
     if(!rows[0]||Object.values(rows[0]).some(Boolean))throw Error('The identity API requires a limited non-owner runtime database role without inherited memberships.');
     await this.pool.query('SELECT id FROM safeer.users LIMIT 0');
-    const security=await this.pool.query("SELECT count(*)::int AS n FROM pg_class c JOIN pg_namespace ns ON ns.oid=c.relnamespace WHERE ns.nspname='safeer' AND c.relrowsecurity AND c.relname IN ('companies','company_settings','branches','stations','company_roles','company_role_permissions','company_users','company_user_roles','support_access_grants','support_access_grant_permissions','company_audit')");
-    if(security.rows[0].n!==11)throw Error('Apply the Section 03 migration with row security before starting the API.');
+    const security=await this.pool.query("SELECT count(*)::int AS n FROM pg_class c JOIN pg_namespace ns ON ns.oid=c.relnamespace WHERE ns.nspname='safeer' AND c.relrowsecurity AND c.relname IN ('companies','company_settings','branches','stations','company_roles','company_role_permissions','company_users','company_user_roles','support_access_grants','support_access_grant_permissions','company_audit','cities','routes','route_stops')");
+    if(security.rows[0].n!==14)throw Error('Apply the Section 04 migration with row security before starting the API.');
   }
   async transaction<T>(action:(client:PoolClient)=>Promise<T>,write=true):Promise<T>{
     const client=await this.pool.connect();

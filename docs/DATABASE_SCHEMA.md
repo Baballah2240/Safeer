@@ -1,5 +1,12 @@
 # Database schema and migration status
 
+## Implemented Section 04 (D25)
+
+Migration 0004_routes.sql adds cities (global authenticated catalog; Super Admin writes), routes (company_id, unique code, bilingual names, different endpoint city FKs, active, edit version) and route_stops (company_id/route_id/stop_index PK, city FK, optional station FK matching company and city). Stops range 0-29; deferred triggers require 2-30 contiguous stops matching endpoints. Duplicate city/station pairs are unique including NULL station. Station city_id is nullable on upgrade, with an indexed FK and unique(company_id,id,city_id) for stop references. Existing station IDs/data and tenant role copies are preserved.
+
+Routes/stops have company-wide RLS; cities use authenticated reads/Super Admin writes. Limited runtime receives no city/route DELETE or stop UPDATE. Fixed-search-path owner helpers validate full routes and guard active resource references. Runtime adds route_manage(uuid) execution only. Capacity/resource checks serialize with the existing authorization advisory lock. City changes enter identity audit; routes enter company audit. Total: 22 application tables, 14 RLS tables, 17 permissions. Existing company-role copies are not silently granted new permissions. Current route uniqueness is company/code, with an optimistic version counter; future trips require immutable snapshots.
+
+
 ## Implemented Section 01 objects
 
 PostgreSQL 18. The migration runner creates private `safeer_meta.schema_migrations(version integer PK, name text UNIQUE, checksum text, applied_at timestamptz)`. Migration `0001_foundation.sql` creates the private `safeer` namespace. PUBLIC receives no namespace/ledger access. Section 02 adds identity objects below; company objects are added by Section 03; reservation, financial and registered luggage tables remain deferred.
@@ -38,7 +45,7 @@ Local capacities are enforced by owner-defined insert triggers (serialized with 
 - Amounts use bigint minor units, currency_code and immutable exponent/price snapshots. API amounts are integer strings. Quantities/weights use suitable checked integer/numeric fields, not formatted text.
 - FK delete defaults are RESTRICT; cascades are allowed only for documented nonhistorical child/config records. Index referencing FK columns and tenant/time access paths. Unique constraints are authoritative, not pre-insert UI checks.
 
-The catalog below remains the full target contract. The eight Section 02 tables listed above are implemented; company-role/membership rows marked 02/03 and Section 03 tables above are implemented; later business tables remain proposed. Their owning sections add migrations, constraints, repositories and authorization/RLS tests before use. Actual Section 02/03 DDL is authoritative where the earlier catalog is abbreviated.
+The catalog below remains the full target contract. The eight Section 02 tables listed above are implemented; company-role/membership rows marked 02/03 and Section 03 tables above are implemented; later business tables remain proposed. Their owning sections add migrations, constraints, repositories and authorization/RLS tests before use. Actual Section 02/03/04 DDL is authoritative where the earlier catalog is abbreviated.
 
 ## Complete planned entity catalog
 
@@ -64,7 +71,7 @@ The catalog below remains the full target contract. The eight Section 02 tables 
 | 03 | support_access_grants (platform-controlled/private) | company_id, support_user_id, permissions, reason, approved_by, expires_at, revoked_at | Expiry/revocation checks; company/user/time indexes; changes audited |
 | 03 | support_access_grant_permissions | company_id, grant_id, permission_id | Same-company grant FK and global permission FK; unique grant/permission; no unvalidated free-form permission list |
 | 04 | cities (global approved catalog) | id, canonical_code, name_ar/en, country_code, active | Unique canonical code; localized search indexes as measured |
-| 04 | routes | company_id, code, origin_city_id, destination_city_id, active, version | Different endpoints; city FKs; unique(company_id,code,version) |
+| 04 | routes | company_id, code, origin_city_id, destination_city_id, active, version | Different endpoints; city FKs; unique(company_id,code); optimistic edit version (D25) |
 | 04 | route_stops | company_id, route_id, stop_index, city_id, station_id optional | Unique(company_id,route_id,stop_index); stop order/range checks; same-company station |
 | 05 | seat_layouts | company_id, code, version, rows/configuration, immutable_at | Unique(company_id,code,version); prohibit in-place edits once used |
 | 05 | seats | company_id, seat_layout_id, label, row/column, class, active | Unique(company_id,seat_layout_id,label); valid positions |
@@ -142,7 +149,8 @@ Payment confirmation locks the booking and allocations, reads a fresh database c
 | 0001_foundation.sql | Private safeer namespace; migration runner manages private checksum ledger | 01 |
 | 0002_identity.sql | Identity tables, role templates, sessions and audit | 02 |
 | 0003_companies.sql | Eleven company tables, scoped access, RLS and administrator guards | 03 |
-| Future sequential files | Only the implemented module's reviewed DDL/constraints/indexes/policies | 04 onward |
+| 0004_routes.sql | Cities, station city links, company routes and ordered stops with RLS/consistency guards | 04 |
+| Future sequential files | Only the implemented module's reviewed DDL/constraints/indexes/policies | 05 onward |
 
 Use append-only sequential `0001_name.sql` files. The runner normalizes CRLF, hashes contents, checks applied names/versions/checksums, obtains a transaction-level advisory lock, and commits all pending files with their ledger rows atomically. SQL files must not contain their own transaction control or nontransactional statements. Drift/unknown history fails closed. No automatic down-migrations or edits to applied files; use reviewed forward corrections. Keep schema-owner and application credentials separate.
 

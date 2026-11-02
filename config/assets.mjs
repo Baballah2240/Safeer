@@ -7,6 +7,7 @@ export const publicAssets = {
   '/src/demo.mjs': ['src/demo.mjs', 'text/javascript'],
   '/src/styles.css': ['src/styles.css', 'text/css'],
   '/src/tokens.css': ['src/tokens.css', 'text/css'],
+  '/src/routes.js': ['src/routes.js', 'text/javascript'],
   '/src/companies.js': ['src/companies.js', 'text/javascript'],
   '/src/theme.js': ['src/theme.js', 'text/javascript'],
   '/src/theme.css': ['src/theme.css', 'text/css'],

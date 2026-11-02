@@ -1,5 +1,12 @@
 # Business rules
 
+## Section 04 route rules (D25)
+
+Cities are a Super Admin-managed shared bilingual catalog with authenticated reads. Route grants are company-wide, never inferred from a branch/station grant. Route management additionally requires company-wide resource reads. Existing tenant role copies need explicit new grants. Support route reads require a selected expiring grant; no mutations.
+
+Routes have 2-30 ordered stops and different endpoint cities. A linked station must belong to the route company and stop city. Identical city/station pairs cannot repeat. Route edits replace all stops atomically under expected version, reauthentication, CSRF and audit. Active routes require active cities/stations/branches; deactivate affected routes before their resources. Any historical station reference prevents changing that station city until detached. Preserve history through deactivation. No route publishing, fares, vehicles or booking are implied.
+
+
 These are approved target invariants unless marked as an open policy. The current prototype demonstrates only basic single-seat holds/cancellation; it does not implement real guest booking, payments, tickets, luggage or boarding.
 
 ## Identity and authorization - Section 02

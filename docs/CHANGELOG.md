@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.0 - 2026-11-02 - SECTION 04
+
+Add bilingual cities, company routes/destinations and ordered stops; station-city assignment; route details, reorder controls and inline validation. Add migration 0004, route service/controllers, 3 RLS tables, composite city/station FKs, deferred route checks, protected active resources, new-company template grants and audit. Preserve existing tenant copies and station identities. Preserve disabled reorder controls after failed form validation. Updated contracts, permissions, startup checks, versions, tests and continuation/workflow/archive documentation. Final verification and local upgrade receipts are recorded in CURRENT_STATE. No files removed; stop before Section 05.
+
+
 ## 0.4.0 - 2026-10-31 - SECTION 03
 
 Added real local company approval/settings, branches/stations, tenant role copies, multi-scope staff memberships, temporary staff onboarding, expiring read-only support grants and company audit. Integrated Companies screens with bilingual dark/light staff navigation. Added same-company FKs, eleven-table RLS, raw-session-derived policies, grant ceilings, immutable ownership, startup RLS checks, local capacity guards and atomic last-company-admin protection. Preserves identity rows and existing passwords/sessions during upgrade. Passenger bookings/payments remain fictional or deferred; stop before Section 04.

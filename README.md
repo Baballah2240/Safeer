@@ -1,8 +1,8 @@
 # Safeer / Sudan Transport
 
-Version 0.4.0, Section 03: local companies, branches, stations and scoped staff access, built on the existing authentication system. This independent Sudan passenger-transport project does not modify Stocrant or the school application.
+Version 0.5.0, Section 04: cities, company routes, destinations and ordered stops, built on the existing company and identity system. This independent Sudan passenger-transport project does not modify Stocrant or the school application.
 
-Start continuation at [CURRENT_STATE](docs/CURRENT_STATE.md). Section 03 is authorized by the latest "next". Stop before Section 04 after its handover.
+Start continuation at [CURRENT_STATE](docs/CURRENT_STATE.md). Section 04 is authorized by the latest "next". Stop before Section 05 after its handover.
 
 ## Run locally on Windows
 
@@ -50,3 +50,5 @@ Read [database/schema](docs/DATABASE_SCHEMA.md), [security](docs/security/ACCESS
 Open **Companies** in the staff sidebar. Super Admin creates and approves a company, configures its profile/hold/timezone/language, adds branches/stations and then staff with scoped company roles. Ordinary users see only their approved assigned companies; a single assignment opens directly without a chooser. Company membership changes never reset shared global passwords or deactivate access to other companies.
 
 Support access is explicit, read-only, reasoned, expiring (1-24 hours) and revocable. Company events are audited. See [company workflow](docs/workflows/COMPANY_ACCESS.md) and [Section 03 security](docs/security/ACCESS_CONTROL.md). Existing users/passwords are preserved on upgrade; keep a private database backup before applying migrations. The passenger reservation preview remains separate fictional data.
+
+Route workflow: Super Admin -> Cities & destinations -> add cities -> Companies -> Branches & stations -> assign cities -> Routes & stops -> create and order stops. Existing company roles need explicit route grants. See [route planning](docs/workflows/ROUTE_PLANNING.md).

@@ -40,6 +40,32 @@ async function fixture(action) {
   }
 }
 
+test('Section 04 preserves existing company resources and tenant role copies while adding nullable station cities',async()=>fixture(async client=>{
+ await runMigrations(client,migrations.slice(0,3));
+ const [user,cid,bid,sid,role,member,assignment]=Array.from({length:7},()=>randomUUID());
+ await client.query('BEGIN');
+ try{
+  await client.query('INSERT INTO safeer.users(id,normalized_login,display_name,password_hash,must_change_password) VALUES($1,$2,$3,$4,false)',[user,'company-upgrade@safeer.local','Fictional Upgrade Owner',await hashPassword(randomUUID()+randomUUID())]);
+  await client.query("INSERT INTO safeer.companies(id,slug,name_en,name_ar,status) VALUES($1,'upgrade-company','Fictional Company','Fictional Company','approved')",[cid]);
+  await client.query('INSERT INTO safeer.company_settings(company_id) VALUES($1)',[cid]);
+  await client.query("INSERT INTO safeer.branches(id,company_id,code,name_en,name_ar) VALUES($1,$2,'MAIN','Fictional Branch','Fictional Branch')",[bid,cid]);
+  await client.query("INSERT INTO safeer.stations(id,company_id,branch_id,code,name_en,name_ar,address) VALUES($1,$2,$3,'MAIN','Fictional Station','Fictional Station','Existing address')",[sid,cid,bid]);
+  await client.query("INSERT INTO safeer.company_roles(id,company_id,code,display_name,scope) VALUES($1,$2,'company_administrator','Existing Custom Name','company')",[role,cid]);
+  await client.query("INSERT INTO safeer.company_role_permissions(company_id,role_id,permission_code) SELECT $1,$2,p.permission_code FROM safeer.role_permissions p JOIN safeer.roles r ON r.id=p.role_id WHERE r.code='company_administrator'",[cid,role]);
+  await client.query("INSERT INTO safeer.company_users(id,company_id,user_id,display_name) VALUES($1,$2,$3,'Existing Local Name')",[member,cid,user]);
+  await client.query("INSERT INTO safeer.company_user_roles(id,company_id,member_id,role_id,scope) VALUES($1,$2,$3,$4,'company')",[assignment,cid,member,role]);
+  await client.query('COMMIT');
+ }catch(error){await client.query('ROLLBACK');throw error;}
+ const before=(await client.query('SELECT row_to_json(s) AS row FROM safeer.stations s WHERE id=$1',[sid])).rows[0].row;
+ const membership=(await client.query('SELECT row_to_json(s) AS row FROM safeer.company_users s WHERE id=$1',[member])).rows[0].row;
+ await runMigrations(client,migrations);
+ assert.deepEqual((await client.query('SELECT row_to_json(s) AS row FROM safeer.stations s WHERE id=$1',[sid])).rows[0].row,{...before,city_id:null});
+ assert.deepEqual((await client.query('SELECT row_to_json(s) AS row FROM safeer.company_users s WHERE id=$1',[member])).rows[0].row,membership);
+ assert.equal((await client.query('SELECT count(*)::int AS n FROM safeer.company_role_permissions WHERE role_id=$1',[role])).rows[0].n,9);
+ assert.equal((await client.query("SELECT count(*)::int AS n FROM safeer.role_permissions p JOIN safeer.roles r ON r.id=p.role_id WHERE r.code='company_administrator'")).rows[0].n,11);
+ assert.equal((await client.query('SELECT count(*)::int AS n FROM safeer.cities')).rows[0].n,0);
+}));
+
 test('PostgreSQL baseline applies, records its checksum and reruns without changing history', async () => fixture(async client => {
   assert.equal((await migrationStatus(client, migrations))[0].state, 'pending');
   assert.deepEqual(await runMigrations(client, migrations), migrations.map(m=>m.name));
@@ -72,7 +98,8 @@ test('concurrent migration runners serialize on one PostgreSQL transaction lock'
 
 test('later migrations retain PostgreSQL primary key, foreign key and check constraints', async () => fixture(async client => {
   const sql = 'CREATE TABLE safeer.migration_probe (id integer PRIMARY KEY CHECK (id > 0), parent_id integer REFERENCES safeer.migration_probe(id));';
-  const next = {version: 4, name: '0004_qa_probe.sql', sql, checksum: createHash('sha256').update(sql).digest('hex')};
+  const nextVersion=migrations.at(-1).version+1;
+  const next = {version: nextVersion, name: String(nextVersion).padStart(4,'0')+'_qa_probe.sql', sql, checksum: createHash('sha256').update(sql).digest('hex')};
   await runMigrations(client, [...migrations, next]);
   await client.query('INSERT INTO safeer.migration_probe VALUES (1, NULL)');
   await assert.rejects(client.query('INSERT INTO safeer.migration_probe VALUES (1, NULL)'), error => error.code === '23505');
@@ -85,7 +112,7 @@ test('foundation schemas and migration ledger grant no public access', async () 
   const result = await client.query("SELECT count(*)::int AS count FROM pg_namespace n CROSS JOIN LATERAL aclexplode(n.nspacl) acl WHERE n.nspname IN ('safeer', 'safeer_meta') AND acl.grantee = 0");
   assert.equal(result.rows[0].count, 0);
   const tables = await client.query("SELECT tablename FROM pg_tables WHERE schemaname = 'safeer'");
-  assert.deepEqual(tables.rows.map(r=>r.tablename).sort(), ['users','sessions','roles','permissions','role_permissions','platform_user_roles','identity_audit','auth_throttles','companies','company_settings','branches','stations','company_roles','company_role_permissions','company_users','company_user_roles','support_access_grants','support_access_grant_permissions','company_audit'].sort());
+  assert.deepEqual(tables.rows.map(r=>r.tablename).sort(), ['users','sessions','roles','permissions','role_permissions','platform_user_roles','identity_audit','auth_throttles','companies','company_settings','branches','stations','company_roles','company_role_permissions','company_users','company_user_roles','support_access_grants','support_access_grant_permissions','company_audit','cities','routes','route_stops'].sort());
 }));
 
 test('migration CLI reports pending/applied status without echoing credentials', async () => fixture(async (client, url) => {

@@ -50,3 +50,9 @@ Shared responsive web screens receive the skeuomorphic theme: tactile buttons, i
 ## 0.3.4 - Dark mode (2026-10-31)
 
 Shared web/mobile-facing staff and passenger screens default to dark mode. Header controls switch to light mode and remember the preference. Arabic/English labels, touch layouts and drafts are preserved. No native mobile binary or installation was requested.
+
+## 2026-11-02 - Section 04 route planning
+
+Add bilingual responsive city catalog, station-city assignment and company route/stop editing to shared src/. Preserve dark/light styling, keyboard/touch reordering and company permissions. No native app build or deployment requested. Verification receipts accompany the Section 04 source checkpoint.
+
+Section 04 verification: 52 automated checks, source/built route screens (48 layouts per mode), company/identity regressions and private local upgrade/restore passed. No native build or deployment.

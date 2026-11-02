@@ -1,6 +1,6 @@
 # Safeer / Sudan Transport - project master
 
-Updated: 2026-10-31. Current authorization: **Section 03**, approved by the latest "next" (D24). Read [CURRENT_STATE.md](CURRENT_STATE.md), [master instructions](decisions/MASTER_INSTRUCTIONS_2026-10-30.md) and [DECISIONS.md](DECISIONS.md). Stop before Section 04 after the Section 03 handover.
+Updated: 2026-11-02. Current authorization: **Section 04**, approved by the latest "next" (D25). Read [CURRENT_STATE.md](CURRENT_STATE.md), [master instructions](decisions/MASTER_INSTRUCTIONS_2026-10-30.md) and [DECISIONS.md](DECISIONS.md). Stop before Section 05 after the Section 04 handover.
 
 Owner-authorized 0.2.1 follow-up: collect and display a passenger luggage yes/no declaration and required description in the local prototype. This scoped change (D16) does not begin authentication or full station luggage management.
 
@@ -18,12 +18,12 @@ An expired hold does not authorize payment or boarding. One booking initially be
 
 ## Architecture: target versus current source
 
-| Layer | Target decision | Implemented now (Sections 01-03) |
+| Layer | Target decision | Implemented now (Sections 01-04) |
 | --- | --- | --- |
 | Public marketplace, company pages, dashboards, station PWA | Next.js/React with TypeScript | Existing responsive JavaScript prototype retained, freight removed; no Next.js app installed |
 | Passenger and driver apps | Flutter/Dart clients | Contracts/design sharing strategy documented; no native project or build |
-| Backend | NestJS/TypeScript modular monolith, versioned APIs | Section 02 NestJS identity API, same-origin local proxy and separate public passenger example |
-| Durable data | PostgreSQL 18, explicit SQL migrations | Migration runner plus durable identity/session/role/audit tables; no passenger business tables |
+| Backend | NestJS/TypeScript modular monolith, versioned APIs | NestJS identity/company/route API, same-origin local proxy and separate public passenger example |
+| Durable data | PostgreSQL 18, explicit SQL migrations | Four migrations and 22 identity/company/city/route tables; no durable passenger bookings |
 | Jobs/cache/events | Redis, idempotent workers and WebSocket availability updates | Interfaces and consistency requirements documented; services not installed |
 | Documents/storage/notifications | S3-compatible private storage, FCM where applicable | Ownership, outbox and access requirements documented; no accounts or integrations |
 
@@ -46,7 +46,7 @@ Approved initial roles: platform super administrator, platform support administr
 7. Support Arabic/English, RTL/LTR, accessible controls, low-bandwidth clients and clear errors. Do not promise offline seat sales until conflict policy is implemented and tested.
 8. Test, fix, document and archive before handing off. Do not mark proposed schema or target frameworks as implemented.
 
-Section 03 ends at its verified company-access handover. Section 04 requires explicit owner approval. No production deployment, school-app changes, restaurant/mobile changes, real passenger data or external service enrollment is authorized by this section.
+Section 04 ends at its verified route-planning handover. Section 05 requires explicit owner approval. No production deployment, school-app changes, restaurant/mobile changes, real passenger data or external service enrollment is authorized by this section.
 
 
 ## 0.3.1 - Super Administrator role editing
@@ -72,3 +72,7 @@ D23: shared dark skeuomorphic mode is now the default across existing staff and 
 ## Section 03 implementation
 
 Authenticated company workspaces now include approval/profile/settings, branches/stations, company-owned roles, scoped staff memberships, time-limited read-only support access and company audit. Super Admin controls all companies; other staff access is derived from server-side memberships/resource scope. The passenger example remains fictional. See [company workflow](workflows/COMPANY_ACCESS.md) and [Section 03 handover](archive/SECTION_03_COMPANIES.md).
+
+## Section 04 implementation
+
+Completed and verified: Super Admin-managed city catalog, station-city assignment, company-wide route permissions and atomic route/ordered-stop planning. Route and resource constraints protect company/city links and active resources. Local upgrade and private restore verification preserve existing identities and company records. Stop before Section 05; see [route workflow](workflows/ROUTE_PLANNING.md).
