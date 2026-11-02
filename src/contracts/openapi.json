@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Safeer local passenger transport API",
-    "version": "0.12.0",
-    "description": "Local-only Safeer passenger transport API through Section 11: identity and company isolation, routes, fleet, trips, marketplace, seat holds, passenger details, station ticketing, offline payment recording and luggage tracking. No external payment gateway, production hosting or driver/boarding client is enabled."
+    "version": "0.13.0",
+    "description": "Local-only Safeer passenger transport API through Section 12: company isolation, trips, seat holds, station ticketing, offline payments, luggage and assigned-driver boarding/journey operations. No native client, external hosting or online payment gateway."
   },
   "servers": [
     {
@@ -10303,7 +10303,7 @@
     "/api/v1/companies/{id}/bookings/{bid}/print": {
       "post": {
         "summary": "Record a print and learn whether it is a copy",
-        "description": "Requires company.bookings.read. Refunded bookings print no tickets.",
+        "description": "Requires company.ticketing.operate. Record an original/copy print; ticket output includes opaque stable QR codes. Refunded or canceled tickets are not printable.",
         "security": [
           {
             "cookieSession": []
@@ -10355,18 +10355,71 @@
         },
         "responses": {
           "201": {
-            "description": "Successful operation.",
+            "description": "Print recorded.",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "additionalProperties": false,
                   "required": [
                     "data"
                   ],
                   "properties": {
                     "data": {
                       "type": "object",
-                      "additionalProperties": true
+                      "additionalProperties": false,
+                      "required": [
+                        "copy",
+                        "earlierPrints",
+                        "codes"
+                      ],
+                      "properties": {
+                        "copy": {
+                          "type": "boolean"
+                        },
+                        "earlierPrints": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "codes": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "number",
+                              "token",
+                              "qr"
+                            ],
+                            "properties": {
+                              "number": {
+                                "type": "string"
+                              },
+                              "token": {
+                                "type": "string",
+                                "pattern": "^TQ[0-9a-f]{64}$"
+                              },
+                              "qr": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "required": [
+                                  "size",
+                                  "path"
+                                ],
+                                "properties": {
+                                  "size": {
+                                    "type": "integer",
+                                    "minimum": 1
+                                  },
+                                  "path": {
+                                    "type": "string"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
                     }
                   }
                 }
@@ -11239,6 +11292,760 @@
           },
           "409": {
             "description": "Conflict with the booking, session or version."
+          }
+        }
+      }
+    },
+    "/api/v1/driver/trips": {
+      "get": {
+        "summary": "List only currently authorized trips",
+        "description": "Requires a valid session and current assigned-driver capability, or company-wide journey management. Rechecked server-side for every operation. Writes also require same-origin JSON and X-CSRF-Token. No offline success.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful local driver operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "items"
+                      ],
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "id",
+                              "companyId",
+                              "companyEn",
+                              "companyAr",
+                              "routeEn",
+                              "routeAr",
+                              "departureAt",
+                              "arrivalAt",
+                              "status",
+                              "bus",
+                              "journey"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "companyId": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "companyEn": {
+                                "type": "string"
+                              },
+                              "companyAr": {
+                                "type": "string"
+                              },
+                              "routeEn": {
+                                "type": "string"
+                              },
+                              "routeAr": {
+                                "type": "string"
+                              },
+                              "departureAt": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "arrivalAt": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "status": {
+                                "enum": [
+                                  "published",
+                                  "canceled"
+                                ]
+                              },
+                              "bus": {
+                                "type": "string"
+                              },
+                              "journey": {
+                                "enum": [
+                                  "scheduled",
+                                  "departed",
+                                  "arrived"
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sign-in/session required."
+          },
+          "403": {
+            "description": "No current authorized assignment or company journey permission."
+          },
+          "409": {
+            "description": "Ticket invalid, boarding closed, journey order or idempotency conflict."
+          }
+        }
+      }
+    },
+    "/api/v1/driver/companies/{cid}/trips/{tid}": {
+      "get": {
+        "summary": "Read minimal manifest and journey records",
+        "description": "Requires a valid session and current assigned-driver capability, or company-wide journey management. Rechecked server-side for every operation. Writes also require same-origin JSON and X-CSRF-Token. No offline success.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "tid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful local driver operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "tripId",
+                        "status",
+                        "departureAt",
+                        "arrivalAt",
+                        "events",
+                        "incidents",
+                        "passengers"
+                      ],
+                      "properties": {
+                        "tripId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "status": {
+                          "enum": [
+                            "published",
+                            "canceled"
+                          ]
+                        },
+                        "departureAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "arrivalAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "events": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "event",
+                              "at"
+                            ],
+                            "properties": {
+                              "event": {
+                                "enum": [
+                                  "departed",
+                                  "arrived"
+                                ]
+                              },
+                              "at": {
+                                "type": "string",
+                                "format": "date-time"
+                              }
+                            }
+                          }
+                        },
+                        "incidents": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "id",
+                              "kind",
+                              "note",
+                              "at"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "kind": {
+                                "enum": [
+                                  "delay",
+                                  "breakdown",
+                                  "safety",
+                                  "other"
+                                ]
+                              },
+                              "note": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "at": {
+                                "type": "string",
+                                "format": "date-time"
+                              }
+                            }
+                          }
+                        },
+                        "passengers": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "ticket",
+                              "seat",
+                              "name",
+                              "valid",
+                              "boardedAt"
+                            ],
+                            "properties": {
+                              "ticket": {
+                                "type": "string"
+                              },
+                              "seat": {
+                                "type": "string"
+                              },
+                              "name": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "valid": {
+                                "type": "boolean"
+                              },
+                              "boardedAt": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "date-time"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sign-in/session required."
+          },
+          "403": {
+            "description": "No current authorized assignment or company journey permission."
+          },
+          "409": {
+            "description": "Ticket invalid, boarding closed, journey order or idempotency conflict."
+          }
+        }
+      }
+    },
+    "/api/v1/driver/companies/{cid}/trips/{tid}/verify": {
+      "post": {
+        "summary": "Check a ticket without recording boarding",
+        "description": "Requires a valid session and current assigned-driver capability, or company-wide journey management. Rechecked server-side for every operation. Writes also require same-origin JSON and X-CSRF-Token. No offline success.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "tid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "token"
+                ],
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "pattern": "^TQ[0-9a-f]{64}$"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful local driver operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "ticket",
+                        "seat",
+                        "name",
+                        "boardedAt"
+                      ],
+                      "properties": {
+                        "ticket": {
+                          "type": "string"
+                        },
+                        "seat": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "boardedAt": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sign-in/session required."
+          },
+          "403": {
+            "description": "No current authorized assignment or company journey permission."
+          },
+          "409": {
+            "description": "Ticket invalid, boarding closed, journey order or idempotency conflict."
+          }
+        }
+      }
+    },
+    "/api/v1/driver/companies/{cid}/trips/{tid}/board": {
+      "post": {
+        "summary": "Recheck and board a valid ticket exactly once",
+        "description": "Requires a valid session and current assigned-driver capability, or company-wide journey management. Rechecked server-side for every operation. Writes also require same-origin JSON and X-CSRF-Token. No offline success.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "tid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "token"
+                ],
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "pattern": "^TQ[0-9a-f]{64}$"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful local driver operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "ticket",
+                        "seat",
+                        "name",
+                        "boardedAt"
+                      ],
+                      "properties": {
+                        "ticket": {
+                          "type": "string"
+                        },
+                        "seat": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "boardedAt": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sign-in/session required."
+          },
+          "403": {
+            "description": "No current authorized assignment or company journey permission."
+          },
+          "409": {
+            "description": "Ticket invalid, boarding closed, journey order or idempotency conflict."
+          }
+        }
+      }
+    },
+    "/api/v1/driver/companies/{cid}/trips/{tid}/events": {
+      "post": {
+        "summary": "Record ordered database-timed departure or arrival",
+        "description": "Requires a valid session and current assigned-driver capability, or company-wide journey management. Rechecked server-side for every operation. Writes also require same-origin JSON and X-CSRF-Token. No offline success.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "tid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "event"
+                ],
+                "properties": {
+                  "event": {
+                    "enum": [
+                      "departed",
+                      "arrived"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful local driver operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "event",
+                        "at"
+                      ],
+                      "properties": {
+                        "event": {
+                          "enum": [
+                            "departed",
+                            "arrived"
+                          ]
+                        },
+                        "at": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sign-in/session required."
+          },
+          "403": {
+            "description": "No current authorized assignment or company journey permission."
+          },
+          "409": {
+            "description": "Ticket invalid, boarding closed, journey order or idempotency conflict."
+          }
+        }
+      }
+    },
+    "/api/v1/driver/companies/{cid}/trips/{tid}/incidents": {
+      "post": {
+        "summary": "Record an idempotent incident",
+        "description": "Requires a valid session and current assigned-driver capability, or company-wide journey management. Rechecked server-side for every operation. Writes also require same-origin JSON and X-CSRF-Token. No offline success.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "tid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "note",
+                  "key"
+                ],
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "delay",
+                      "breakdown",
+                      "safety",
+                      "other"
+                    ]
+                  },
+                  "note": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "key": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful local driver operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "id"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sign-in/session required."
+          },
+          "403": {
+            "description": "No current authorized assignment or company journey permission."
+          },
+          "409": {
+            "description": "Ticket invalid, boarding closed, journey order or idempotency conflict."
           }
         }
       }

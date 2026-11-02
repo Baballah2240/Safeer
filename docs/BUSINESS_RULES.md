@@ -1,6 +1,10 @@
 # Business rules
 
-Local upgrade D34 (2026-11-02) changes no business policy. Existing identity and company history are preserved; new permissions remain explicit grants for existing company roles. Current implementations through Section 11 are described in their numbered workflows; early prototype-only statements below are historical. Driver/boarding work remains Section 12.
+## Section 12 implementation — 2026-11-03 (D36)
+
+Section 12 is complete. The local app runs 0.13.0 with all twelve migrations applied and the original account/settings preserved. It adds the owner-approved responsive driver workspace, assigned-trip manifests, printed ticket QRs, separate verification/boarding, journey events and incidents. All 109 automated checks passed (13 unit/server and 96 native PostgreSQL). Source and built driver workflows passed 32 language/theme/viewport combinations; the built station regression passed another 32. The private backup matched 1512 files, passed a protected restore/start/stop check, and the upgraded account/credentials/settings and 45 legacy tables passed integrity comparisons. Flutter remains deferred. See [driver workflow](workflows/DRIVER_BOARDING.md) and [Section 12](archive/SECTION_12_BOARDING.md). Stop before Section 13. Earlier per-section entries retain historical results.
+
+Local upgrade D34 (2026-11-02) changes no business policy. Existing identity and company history are preserved; new permissions remain explicit grants for existing company roles. Current implementations through Section 12 are described in their numbered workflows; early prototype-only statements below are historical. D36 records the implemented driver/boarding rules.
 
 ## Section 04 route rules (D25)
 

@@ -1,6 +1,6 @@
 # Section 12 preparation: driver access and boarding
 
-Status: authorized for preparation by D35; not implemented or released. The local application remains 0.12.0, with migrations 0001-0011.
+Historical preparation under D35. Superseded by D36: the owner chose the local web client and assigned-driver boarding authority. Section 12 is now complete in local 0.13.0. See [current state](../CURRENT_STATE.md) and [workflow](../workflows/DRIVER_BOARDING.md). The questions and proposed checks below record the preparation checkpoint.
 
 ## Decisions awaiting the owner
 
@@ -11,7 +11,7 @@ These answers determine the client and security model. No new role capability is
 
 ## Existing connections reviewed
 
-- Drivers may link to a same-company membership through `drivers.company_user_id`. That link is not a login or permission grant. Identity already provides login, password changes, session expiry and revocation.
+- Drivers may link to a same-company membership through `drivers.member_id`. That link is not a login or permission grant. Identity already provides login, password changes, session expiry and revocation.
 - Current trip assignments snapshot a bus and driver, preserve replacement history and reject overlapping assignments. Driver access must resolve the current assignment and active membership at every request; an old assignment or browser company selection grants nothing.
 - Trips currently have draft, published and canceled states. Scheduled departure/arrival are not actual journey events. Record actual events separately without rewriting fare, stop or schedule snapshots.
 - Paid tickets belong to a booking, seat allocation and payment. Refunded tickets remain in history. Booking references and sequential ticket numbers alone must not become bearer authorization for manifest access or boarding.

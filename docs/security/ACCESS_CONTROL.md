@@ -97,3 +97,7 @@ New permissions: company.ticketing.operate (counter work, payment, sale, refund 
 ## Section 11
 
 New permissions: company.luggage.operate (register, tag, move, report and hand over) and company.luggage.resolve (resolve problems). Existing role copies are not rewritten, so company admins must add them. Support grants do not include them. Company-wide holders can list bags; station-scoped holders find them by ticket, tag, bag or booking number, up to 300 typed numbers an hour, without the booking reference. Searches and scans are audited without what was typed. The reference-and-mobile passenger view shows bag numbers and status only.
+
+## Section 12 driver boundary
+
+company.driver.operate requires company scope, an active linked same-company driver/member and the current unreplaced trip assignment. company.journeys.manage is company-wide supervision. Both derive from the validated raw session; caller actor/company flags cannot bypass checks. Manifest access is audited and omits contact/payment/collection fields. Checking a QR and committing boarding both revalidate ticket/payment/trip state; the trip lock and application authorization lock serialize critical mutations. Private ticket credentials, boarding, journey and incident tables have no direct runtime grants. QR values contain no PII and are not bearer access to passenger data. Actual completed journeys cannot be canceled to reopen scheduled-time refunds. Incident text erasure joins the existing maintenance routine. No offline success or remote HTTP is enabled.

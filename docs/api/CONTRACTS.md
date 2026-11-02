@@ -1,6 +1,6 @@
 # Implemented API contracts
 
-Canonical OpenAPI 3.1: [src/contracts/openapi.json](../../src/contracts/openapi.json), version 0.12.0, 79 paths/92 operations. It records implemented operations, request fields, cookies/CSRF, envelopes and response schemas. Requests are strict JSON with an 8 KiB limit. Responses use {data: ...} or {error:{code,message}}; no SQL, token or password details are logged in errors. Successful one-time credential responses are explicit exceptions intended only for the authorized administrator. D34 applied the existing contracts to the upgraded local runtime without changing operation behavior.
+Canonical OpenAPI 3.1: [src/contracts/openapi.json](../../src/contracts/openapi.json), version 0.13.0, 85 paths/98 operations. It records implemented operations, request fields, cookies/CSRF, envelopes and response schemas. Requests are strict JSON with an 8 KiB limit. Responses use {data: ...} or {error:{code,message}}; no SQL, token or password details are logged in errors. Successful one-time credential responses are explicit exceptions intended only for the authorized administrator. D34 applied the existing contracts to the upgraded local runtime without changing operation behavior.
 
 ## Section 02 routes
 
@@ -82,3 +82,7 @@ Workspace responses contain only RLS-visible resources and field-level UI capabi
 ## Section 11 / 0.12.0
 
 79 paths / 92 operations. Under /api/v1/companies/:id/luggage: GET (q) and POST; POST /scan; PATCH /:lid; POST /:lid/tag, /:lid/move, /:lid/collect, /:lid/exceptions and /:lid/exceptions/:eid/resolve. All writes need CSRF; resolving also needs the current password. travelers[].luggage is optional on POST /public/holds, POST /counter/sales and PATCH /bookings/:bid. Booking replies gain luggage (number, category, quantity, seat, status). New errors include LUGGAGE_HELD, LUGGAGE_STATE, LUGGAGE_EXCEPTION_OPEN, TICKET_REQUIRED, TAG_UNKNOWN, TAG_REPLACED, TAG_REASON_REQUIRED, REASON_REQUIRED and COLLECTION_NOT_VERIFIED.
+
+## Section 12 driver operations
+
+GET /driver/trips lists authorized assignments. GET /driver/companies/{cid}/trips/{tid} reads the minimal manifest. POST suffixes /verify, /board, /events and /incidents implement strict JSON requests, same-origin CSRF and current assignment checks. QR values belong in request bodies, never query strings. Ticket print responses now include stable opaque QR values and vector geometry for authorized station printing. See the canonical schemas and [driver workflow](../workflows/DRIVER_BOARDING.md).

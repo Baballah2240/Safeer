@@ -5,6 +5,7 @@ import {Database} from './database.js';
 import {IdentityService} from './identity.service.js';
 import {body,digest,text,uuid,fail} from './security.js';
 import {mobileNumber,saleTravelers,seatList} from './reservation.service.js';
+import {ticketQr} from './ticket-qr.js';
 
 const minor=(value:unknown,max:number)=>{if(!Number.isSafeInteger(value)||Number(value)<0||Number(value)>max)fail('INVALID_INPUT');return Number(value);};
 const optional=(value:unknown,max:number)=>value===undefined||value===null||value===''?null:text(value,1,max);
@@ -65,6 +66,8 @@ export class TicketingService {
  }
  print(token:string,cid:string,bid:string,input:unknown){
   uuid(bid);const data=body(input,['document']);if(data.document!=='tickets'&&data.document!=='receipt'&&data.document!=='refund')fail('INVALID_INPUT');
-  return this.staff(token,cid,async(c,actor)=>{const earlier=(await c.query('SELECT safeer.record_print($1,$2,$3,$4) AS n',[cid,bid,actor,data.document])).rows[0].n;if(earlier===null)fail('NOT_FOUND',404);return {copy:Number(earlier)>0,earlierPrints:Number(earlier)};});
+  return this.staff(token,cid,async(c,actor)=>{const earlier=(await c.query('SELECT safeer.record_print($1,$2,$3,$4) AS n',[cid,bid,actor,data.document])).rows[0].n;if(earlier===null)fail('NOT_FOUND',404);
+   const codes=data.document==='tickets'?(await c.query('SELECT safeer.ticket_codes($1,$2) AS codes',[cid,bid])).rows[0].codes:[];
+   return {copy:Number(earlier)>0,earlierPrints:Number(earlier),codes:codes.map((r:{number:string,token:string})=>({...r,qr:ticketQr(r.token)}))};});
  }
 }

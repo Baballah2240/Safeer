@@ -52,3 +52,7 @@ Open **Companies** in the staff sidebar. Super Admin creates and approves a comp
 Support access is explicit, read-only, reasoned, expiring (1-24 hours) and revocable. Company events are audited. See [company workflow](docs/workflows/COMPANY_ACCESS.md) and [Section 03 security](docs/security/ACCESS_CONTROL.md). Existing users/passwords are preserved on upgrade; keep a private database backup before applying migrations. The passenger reservation preview remains separate fictional data.
 
 Route workflow: Super Admin -> Cities & destinations -> add cities -> Companies -> Branches & stations -> assign cities -> Routes & stops -> create and order stops. Existing company roles need explicit route grants. See [route planning](docs/workflows/ROUTE_PLANNING.md).
+
+## Section 12 local driver workspace
+
+Version 0.13.0 adds /driver for assigned-trip ticket verification, boarding, departure/arrival and incidents. Read [driver setup and use](docs/workflows/DRIVER_BOARDING.md) and [current verification status](docs/CURRENT_STATE.md). Use the existing staff account and password; managers link driver records to members and grant explicit permissions. Flutter and remote access are deferred.

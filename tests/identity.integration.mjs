@@ -9,14 +9,14 @@ const create=async(f,email='staff@safeer.local')=>{const r=await f.admin.request
 const assign=async(f,u,roles)=>f.admin.request('identity/users/'+u.id+'/roles','PUT',{roleIds:roles,version:u.version,currentPassword:f.password});
 async function readyStaff(f,created){const user=f.client();assert.equal((await user.signIn(created.user.login,created.temporaryPassword)).status,201);const pass=randomBytes(24).toString('hex');assert.equal((await user.request('auth/password','POST',{currentPassword:created.temporaryPassword,newPassword:pass})).status,201);return {user,pass};}
 
-test('real PostgreSQL runtime is restricted, identities persist and no business modules are created',async()=>identityFixture(async f=>{
+test('real PostgreSQL runtime is restricted and identities coexist with the applied business schema',async()=>identityFixture(async f=>{
   const r=(await f.api.db.pool.query('SELECT current_user')).rows[0];assert.match(r.current_user,/^safeer_/);
   await assert.rejects(f.api.db.pool.query('CREATE TABLE safeer.unwanted(id integer)'),e=>e.code==='42501');
   await assert.rejects(f.api.db.pool.query("DELETE FROM safeer.identity_audit"),e=>e.code==='42501');
   await assert.rejects(f.api.db.pool.query("UPDATE safeer.permissions SET module='x'"),e=>e.code==='42501');
-  assert.equal((await f.admin.request('identity/roles')).data.items.length,8);
-  assert.equal((await f.admin.request('identity/permissions')).data.items.length,30);
-  assert.equal((await f.migration.query("SELECT count(*)::int AS n FROM pg_tables WHERE schemaname='safeer' AND tablename IN ('boarding_records')")).rows[0].n,0);
+  assert.equal((await f.admin.request('identity/roles')).data.items.length,9);
+  assert.equal((await f.admin.request('identity/permissions')).data.items.length,32);
+  assert.equal((await f.migration.query("SELECT count(*)::int AS n FROM pg_tables WHERE schemaname='safeer' AND tablename IN ('boarding_records')")).rows[0].n,1);
   const hashes=(await f.migration.query('SELECT password_hash FROM safeer.users')).rows;
   assert.ok(hashes.every(r=>r.password_hash.startsWith('scrypt$')));
   assert.equal((await f.api.db.pool.query('SELECT count(*)::int AS n FROM safeer.users')).rows[0].n,1);
@@ -65,10 +65,10 @@ test('super administrators edit every role without losing authority or removing 
   }
   const after=(await f.admin.request('auth/me')).data;
   assert.equal(after.superAdministrator,true);
-  assert.equal(after.permissions.length,30,'owner authority survives clearing its editable grants');
+  assert.equal(after.permissions.length,32,'owner authority survives clearing its editable grants');
   roles=(await f.admin.request('identity/roles')).data.items;
   assert.ok(roles.every(r=>r.version===initialVersions[r.id]+1&&r.permissions.length===0&&r.displayName.startsWith('Updated ')));
-  assert.equal((await f.admin.request('identity/audit')).data.items.filter(r=>r.action==='role.updated').length,8);
+  assert.equal((await f.admin.request('identity/audit')).data.items.filter(r=>r.action==='role.updated').length,9);
   const staff=await create(f);
   assert.equal((await assign(f,staff.user,[companyRole])).error.code,'INVALID_ROLE_SCOPE');
   await assert.rejects(f.api.db.pool.query('INSERT INTO safeer.platform_user_roles(user_id,role_id) VALUES($1,$2)',[staff.user.id,companyRole]),e=>e.code==='23503');

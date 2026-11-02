@@ -1,5 +1,9 @@
 # Safeer mobile status
 
+## 0.13.0 - 2026-11-03, Section 12 driver workspace
+
+Add the shared responsive Arabic/English driver workspace at /driver: assigned trips, minimal manifest, QR ticket checking and boarding, departure/arrival and incident reports. Driver authority is checked against current membership/assignment on every request. Station ticket prints now include stable QR codes. Source/built browser verification and the local upgrade are recorded in docs/CURRENT_STATE.md. The owner chose local web first; no Flutter app, native build or phone installation is included.
+
 ## 0.12.0 - 2026-11-02, local upgrade handover
 
 The existing local web runtime now serves the verified responsive Sections 05-11 from 0.12.0 with the original account preserved. API summary metadata now reflects these implemented modules. No mobile UI behavior changed in this maintenance handover; no native app was built or installed, and no external hosting was enabled.

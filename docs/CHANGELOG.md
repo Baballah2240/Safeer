@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.13.0 — 2026-11-03 — Section 12 (D36)
+
+Section 12 is complete. The local app runs 0.13.0 with all twelve migrations applied and the original account/settings preserved. It adds the owner-approved responsive driver workspace, assigned-trip manifests, printed ticket QRs, separate verification/boarding, journey events and incidents. All 109 automated checks passed (13 unit/server and 96 native PostgreSQL). Source and built driver workflows passed 32 language/theme/viewport combinations; the built station regression passed another 32. The private backup matched 1512 files, passed a protected restore/start/stop check, and the upgraded account/credentials/settings and 45 legacy tables passed integrity comparisons. Flutter remains deferred. See [driver workflow](workflows/DRIVER_BOARDING.md) and [Section 12](archive/SECTION_12_BOARDING.md). Stop before Section 13. Earlier per-section entries retain historical results.
+
 ## 0.12.0 - 2026-11-02 - Verified local upgrade (D34)
 
 Complete the owner-approved 0.5.0 to 0.12.0 local update. A private physical backup matched 1378 files and passed a separate restore/start/stop check. Apply migrations 0005-0011; preserve the existing account, credentials/settings, role labels and 18 legacy tables. Harden database/backup-local.mjs against linked paths, unprotected restore copies, port collisions and cleanup after failed stops. Refresh continuation documentation and API summary metadata. Re-run 13 unit/server tests, build and documentation checks; local health, migration checksums and data fingerprints pass. No business policy, UI, native app or hosting change; Section 12 remains gated.

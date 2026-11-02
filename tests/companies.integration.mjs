@@ -10,7 +10,7 @@ async function ready(f,created){const user=f.client();assert.equal((await user.s
 const member=async(f,id,role,fields={})=>{const r=await f.admin.request(`companies/${id}/members`,'POST',{login:'employee@safeer.local',displayName:'Fictional Employee',existing:false,assignments:[{roleId:role.id}],currentPassword:f.password,...fields});assert.equal(r.status,201,r.raw);return r.data;};
 
 test('companies copy role templates, preserve identity, and require approval before staff access',async()=>identityFixture(async f=>{
- const id=await create(f);let w=await workspace(f,id);assert.equal(w.company.status,'pending');assert.equal(w.roles.length,4);assert.equal(w.members.length,1);
+ const id=await create(f);let w=await workspace(f,id);assert.equal(w.company.status,'pending');assert.equal(w.roles.length,5);assert.equal(w.members.length,1);
  const created=await member(f,id,w.roles.find(r=>r.code==='company_administrator'));const {user}=await ready(f,created);
  assert.equal((await user.request('companies')).data.items.length,0);await approve(f,id);
  assert.equal((await user.request('companies')).data.items[0].id,id);assert.equal((await user.request('companies/'+id)).status,200);
@@ -88,7 +88,7 @@ test('support access is explicit, read-only, time limited, revocable and tied to
 test('company role edits take effect immediately, template copies stay independent and shared identities are protected',async()=>identityFixture(async f=>{
  const a=await create(f);let w=await approve(f,a);const adminRole=w.roles.find(r=>r.code==='company_administrator'),created=await member(f,a,adminRole);const manager=await ready(f,created);
  const global=(await f.admin.request('identity/roles')).data.items.find(r=>r.code==='company_administrator');assert.equal((await f.admin.request('identity/roles/'+global.id,'PATCH',{displayName:'New template name',permissions:[],active:true,version:global.version,currentPassword:f.password})).status,200);
- assert.equal((await workspace(f,a)).roles.find(r=>r.id===adminRole.id).permissions.length,24);
+ assert.equal((await workspace(f,a)).roles.find(r=>r.id===adminRole.id).permissions.length,26);
  const custom=(await manager.user.request(`companies/${a}/roles`,'POST',{displayName:'Profile reader',scope:'company',permissions:['company.profile.read'],currentPassword:manager.pass}));assert.equal(custom.status,201,custom.raw);
  const employee=(await manager.user.request(`companies/${a}/members`,'POST',{displayName:'Fictional Company Staff',login:'company-staff@safeer.local',existing:false,assignments:[{roleId:custom.data.id}],currentPassword:manager.pass}));assert.equal(employee.status,201,employee.raw);const staff=await ready(f,employee.data);assert.equal((await staff.user.request('companies')).data.items.length,1);
  let role=(await workspace(f,a)).roles.find(r=>r.id===custom.data.id);assert.equal((await manager.user.request(`companies/${a}/roles/${role.id}`,'PATCH',{displayName:role.displayName,permissions:[],active:true,version:role.version,currentPassword:manager.pass})).status,200);assert.equal((await staff.user.request('companies')).data.items.length,0);

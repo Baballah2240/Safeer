@@ -5,7 +5,7 @@ import {Database} from './database.js';
 import {IdentityService,type Principal} from './identity.service.js';
 import {body,text,login,uuid,version,list,secret,hashPassword,fail} from './security.js';
 
-const permissionCodes=['company.profile.read','company.profile.manage','company.resources.read','company.resources.manage','company.members.read','company.members.manage','company.roles.read','company.roles.manage','company.audit.read','company.routes.read','company.routes.manage','company.fleet.read','company.fleet.manage','company.drivers.read','company.drivers.manage','company.trips.read','company.trips.manage','company.bookings.read','company.bookings.manage','company.luggage.operate','company.luggage.resolve','company.ticketing.operate','company.payments.late','company.sessions.manage'];
+const permissionCodes=['company.profile.read','company.profile.manage','company.resources.read','company.resources.manage','company.members.read','company.members.manage','company.roles.read','company.roles.manage','company.audit.read','company.routes.read','company.routes.manage','company.fleet.read','company.fleet.manage','company.drivers.read','company.drivers.manage','company.trips.read','company.trips.manage','company.bookings.read','company.bookings.manage','company.luggage.operate','company.luggage.resolve','company.ticketing.operate','company.payments.late','company.sessions.manage','company.driver.operate','company.journeys.manage'];
 const supportCodes=['company.profile.read','company.resources.read','company.audit.read','company.routes.read'];
 type Assignment={roleId:string;branchId:string|null;stationId:string|null;scope:string};
 const optional=(value:unknown,max:number)=>value===undefined?'':text(value,0,max);

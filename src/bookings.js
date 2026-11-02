@@ -13,10 +13,10 @@ export function bindBookings(root,data,ctx){
  const {api,openForm,input,currentPassword,dialog,t,e,language}=ctx,path='companies/'+data.company.id+'/bookings',box=root.querySelector('#booking-results'),when=(row,value)=>new Intl.DateTimeFormat('en-GB',{dateStyle:'short',timeStyle:'short',timeZone:row.timezone}).format(new Date(value));
  const failure=error=>`<p role="alert">${e(t(error.message))}</p>`;
  // Printed documents always come from the server's records. Later prints say they are copies.
- const sheet=(row,kind,copy)=>{
+ const sheet=(row,kind,copy,codes=[])=>{
   const company=e(language==='ar'?data.company.nameAr:data.company.nameEn),head=title=>`<header class="print-head"><strong>${company}</strong><h2>${t(title)}</h2>${copy?`<p class="print-copy">${t('Copy, not the original')}</p>`:''}</header>`,trip=`<p>${e(route(row,language))} · <bdi>${e(row.date)} ${e(row.time)}</bdi></p><p>${t('Booking reference')}: <bdi>${e(row.reference)}</bdi></p>`;
   const tools=`<div class="staff-actions no-print"><button type="button" data-sheet-print>${t('Print again')}</button><button type="button" data-sheet-back>${t('Close')}</button></div>`;
-  if(kind==='tickets')return `<div class="print-sheet">${row.tickets.map(ticket=>{const person=row.travelers.find(p=>p.seat===ticket.seat);return `<article class="print-ticket">${head('Ticket')}<p class="print-number"><bdi>${e(ticket.number)}</bdi></p><p>${t('Seat')}: <strong><bdi>${e(ticket.seat)}</bdi></strong></p>${person?.name?`<p>${t('Traveler')}: ${e(person.name)}</p>`:''}${trip}</article>`;}).join('')}</div>${tools}`;
+  if(kind==='tickets')return `<div class="print-sheet">${row.tickets.map(ticket=>{const person=row.travelers.find(p=>p.seat===ticket.seat),code=codes.find(c=>c.number===ticket.number);return `<article class="print-ticket">${head('Ticket')}<p class="print-number"><bdi>${e(ticket.number)}</bdi></p><p>${t('Seat')}: <strong><bdi>${e(ticket.seat)}</bdi></strong></p>${person?.name?`<p>${t('Traveler')}: ${e(person.name)}</p>`:''}${trip}${code?`<svg class="ticket-qr" role="img" aria-label="${t('Ticket QR')}" viewBox="-4 -4 ${code.qr.size+8} ${code.qr.size+8}"><rect x="-4" y="-4" width="${code.qr.size+8}" height="${code.qr.size+8}" fill="white"/><path d="${e(code.qr.path)}" fill="black"/></svg>`:''}</article>`;}).join('')}</div>${tools}`;
   if(kind==='refund')return `<div class="print-sheet"><article class="print-ticket">${head('Refund receipt')}<p class="print-number"><bdi>${e(row.refund.number)}</bdi></p>${trip}<p>${t('Amount refunded')}: <strong><bdi>${e(moneyText(row.refund.amountMinor,row.refund.currency,language))}</bdi></strong></p><p>${t(methodLabel[row.refund.method])}${row.refund.reference?` · <bdi>${e(row.refund.reference)}</bdi>`:''}</p><p>${t('Original receipt')}: <bdi>${e(row.payment.receiptNumber)}</bdi></p><p><bdi>${e(when(row,row.refund.at))}</bdi> · ${e(row.refund.refundedBy)}</p></article></div>${tools}`;
   return `<div class="print-sheet"><article class="print-ticket">${head('Payment receipt')}<p class="print-number"><bdi>${e(row.payment.receiptNumber)}</bdi></p>${trip}<p>${t('Seats')}: <bdi>${e(row.seats.join(', '))}</bdi></p><p>${t('Amount paid')}: <strong><bdi>${e(moneyText(row.payment.amountMinor,row.payment.currency,language))}</bdi></strong></p><p>${t(methodLabel[row.payment.method])}${row.payment.reference?` · <bdi>${e(row.payment.reference)}</bdi>`:''}</p><p><bdi>${e(when(row,row.payment.at))}</bdi> · ${e(row.payment.takenBy)}</p>${row.refund?`<p class="print-copy">${t('Refunded')}: <bdi>${e(row.refund.number)}</bdi></p>`:''}</article></div>${tools}`;
  };
@@ -52,7 +52,7 @@ export function bindBookings(root,data,ctx){
     try{
      // Read again after recording the print, so a refund made elsewhere shows on the receipt.
      const result=await api(`${path}/${row.id}/print`,'POST',{document:document_}),fresh=await api(path+'/'+row.id);
-     dialog.innerHTML=sheet(fresh,document_,result.copy);
+     dialog.innerHTML=sheet(fresh,document_,result.copy,result.codes);
      dialog.querySelector('[data-sheet-print]').onclick=()=>void printDocument(document_);dialog.querySelector('[data-sheet-back]').onclick=()=>void open(null,row.id);
      window.print();
     }catch(error){
