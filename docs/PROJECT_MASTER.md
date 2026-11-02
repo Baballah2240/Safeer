@@ -1,6 +1,6 @@
 # Safeer / Sudan Transport - project master
 
-Updated: 2026-11-02. **Section 11 and its local upgrade are complete** (D33-D34). The existing local app runs 0.12.0, with all eleven migrations applied and its account preserved. Read [CURRENT_STATE.md](CURRENT_STATE.md), [master instructions](decisions/MASTER_INSTRUCTIONS_2026-10-30.md) and [DECISIONS.md](DECISIONS.md). Stop before Section 12 until approved. Earlier section summaries below are historical; CURRENT_STATE is authoritative.
+Updated: 2026-11-02. **Section 11 and its local upgrade are complete** (D33-D34). The existing local app runs 0.12.0, with all eleven migrations applied and its account preserved. The owner authorized Section 12 next (D35); client format and driver permissions are pending before implementation. Read [CURRENT_STATE.md](CURRENT_STATE.md), [master instructions](decisions/MASTER_INSTRUCTIONS_2026-10-30.md) and [DECISIONS.md](DECISIONS.md). Stop before Section 13. Earlier section summaries below are historical; CURRENT_STATE is authoritative.
 
 Owner-authorized 0.2.1 follow-up: collect and display a passenger luggage yes/no declaration and required description in the local prototype. This scoped change (D16) does not begin authentication or full station luggage management.
 

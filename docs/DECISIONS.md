@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-11-02 - Section 12 authorization and preparation
+
+D35: The owner's next "next" after the verified 0.12.0 local upgrade authorizes Section 12: driver access, assigned trips, passenger manifest/seat details, ticket QR verification, boarding, departure/arrival records and incidents. Section 13 financial reports remain gated. Implementation has not begun. Two owner questions are pending: whether the first driver client is a responsive local workspace or the master plan's separate Flutter app, and whether assigned drivers may perform boarding as well as record journey events. Do not silently replace Flutter or grant new driver authority. Continue preserving the existing local account, loopback-only service and all existing payment/luggage policies. See the [implementation preparation](modules/DRIVER_BOARDING_PREPARATION.md) for reviewed dependencies and required verification. No migration, ticket format or operational permission changes are authorized by this preparation note alone.
+
 ## 2026-11-02 - Local upgrade handover
 
 D34: The owner explicitly approved stopping the existing Safeer app, verifying a private backup, upgrading 0.5.0 to the completed 0.12.0 and restarting with the existing account unchanged. This completes the open Sections 05-11 local upgrade; it does not authorize Section 12 or change payment/luggage policies. The backup helper rejects linked database paths, protects its temporary restore directory before copying data, selects a free loopback port, and only removes the restore after a successful database stop and an explicit resolved-path/tree check. A stale process marker was handled by normal PostgreSQL recovery, not by deleting data or bypassing migration history. Preserve private backups separately from source archives.

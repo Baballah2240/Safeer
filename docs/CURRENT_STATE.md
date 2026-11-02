@@ -4,7 +4,7 @@ Updated: 2026-11-02. Safeer / Sudan Transport, version 0.12.0.
 
 ## Current section and next gate
 
-Section 11 (D33), including the local upgrade, is complete. On 2026-11-02 the owner approved the backup/update/restart (D34): the running app is now 0.12.0 with migrations 0001-0011 applied. One existing account, its credentials and settings, and all 18 preserved legacy tables passed integrity comparisons. There are no companies in this private runtime yet. The owner will revisit money policy later; open questions remain in [Section 10](archive/SECTION_10_TICKETING.md). Stop before Section 12 (driver client, QR verification, boarding) until explicitly approved.
+Section 11 (D33), including the local upgrade, is complete. On 2026-11-02 the owner approved the backup/update/restart (D34): the running app is now 0.12.0 with migrations 0001-0011 applied. One existing account, its credentials and settings, and all 18 preserved legacy tables passed integrity comparisons. There are no companies in this private runtime yet. The owner will revisit money policy later; open questions remain in [Section 10](archive/SECTION_10_TICKETING.md). The subsequent "next" authorizes Section 12 preparation (D35). Driver client format and operational authority are awaiting the owner's answers; no Section 12 feature or migration is implemented. See [preparation](modules/DRIVER_BOARDING_PREPARATION.md). Stop before Section 13.
 
 ## Working application
 
@@ -40,7 +40,7 @@ Verified exact-source checkpoint: archives/Safeer-0.12.0-Section-11-2026-11-02.z
 
 ## Remaining work
 
-The local upgrade is verified and running. Section 12 boarding/driver work and later financial reporting are not started. The passenger preview at / still uses fictional in-memory records and must not be confused with durable holds. No Safeer native app or external deployment was requested.
+The local upgrade is verified and running. Section 12 boarding/driver preparation is underway; implementation awaits the client and permission decisions. Later financial reporting is not started. The passenger preview at / still uses fictional in-memory records and must not be confused with durable holds. No Safeer native app or external deployment exists.
 
 ## Local upgrade verification (D34)
 
