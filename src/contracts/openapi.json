@@ -1,9 +1,9 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Safeer local identity API",
+    "title": "Safeer local passenger transport API",
     "version": "0.12.0",
-    "description": "Local Safeer identity and company workspaces. No production hosting, real booking or money API. Section 04 adds authenticated cities and company route planning. Section 05 adds company-private buses, immutable seat-layout revisions and driver records; Section 06 adds company trip scheduling, assignments and publication; Section 07 adds anonymous read-only marketplace routes; no reservations or payments."
+    "description": "Local-only Safeer passenger transport API through Section 11: identity and company isolation, routes, fleet, trips, marketplace, seat holds, passenger details, station ticketing, offline payment recording and luggage tracking. No external payment gateway, production hosting or driver/boarding client is enabled."
   },
   "servers": [
     {

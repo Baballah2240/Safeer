@@ -3,7 +3,7 @@
   "version": "0.12.0",
   "private": true,
   "type": "module",
-  "description": "Section 10 local station ticketing, passenger details, booking management, seat holds, marketplace, trip scheduling, fleet, route and company management and passenger prototype for Safeer",
+  "description": "Section 11 local passenger luggage, station ticketing, passenger details, seat holds, marketplace, trips, fleet, routes and company management for Safeer",
   "engines": {
     "node": ">=24"
   },

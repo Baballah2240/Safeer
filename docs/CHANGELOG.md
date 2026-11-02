@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.12.0 - 2026-11-02 - Verified local upgrade (D34)
+
+Complete the owner-approved 0.5.0 to 0.12.0 local update. A private physical backup matched 1378 files and passed a separate restore/start/stop check. Apply migrations 0005-0011; preserve the existing account, credentials/settings, role labels and 18 legacy tables. Harden database/backup-local.mjs against linked paths, unprotected restore copies, port collisions and cleanup after failed stops. Refresh continuation documentation and API summary metadata. Re-run 13 unit/server tests, build and documentation checks; local health, migration checksums and data fingerprints pass. No business policy, UI, native app or hosting change; Section 12 remains gated.
+
 ## 0.12.0 - 2026-11-02 - SECTION 11
 
 Add a luggage declaration per traveler, bag registration on paid tickets with weight and no fees, QR tags, one-step tracking, problem reports with a separate resolve permission, collection checked against the ticket or mobile number, and a refund block while bags are with the company. Add migration 0011 and 8 paths. 102 automated checks and source/built browser suites passed. The private local database upgrade is an open owner step.

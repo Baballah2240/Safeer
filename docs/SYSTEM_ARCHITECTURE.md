@@ -1,5 +1,9 @@
 # System architecture
 
+## Verified local upgrade (D34)
+
+The local launcher now runs the completed 0.12.0 source with migrations 0001-0011. The owner-approved backup matched every copied file and an isolated restore was started and stopped before upgrade. Restore checks inherit private ACLs before data is copied; linked paths are rejected and resolved temporary paths are verified before cleanup. A failed restore stop retains its copy. Credentials and runtime backups remain outside source archives. HTTP remains loopback-only; no production deployment occurred.
+
 ## Section 04 route planning
 
 RouteService and its versioned controller extend the existing NestJS modular backend. src/routes.js shares existing staff authentication, dialogs, translations and themes for catalog and route editing. Company workspaces fetch permitted route summaries, then details on demand. City catalog and station-city options connect the two modules. Three new tables use server/database constraints and RLS; route and resource writes share the authorization lock. Atomic route/stop replacement validates deferred constraints before audit/commit. Cities are global; company routes never become public through these endpoints.

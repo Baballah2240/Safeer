@@ -1,5 +1,9 @@
 # Database schema and migration status
 
+## Current local status (D34)
+
+Verified 2026-11-02: migrations 0001-0011 are applied to the existing private local database. It contains 49 application tables, 41 RLS tables and 30 permissions. The original account/credential records and 18 legacy tables passed pre/post-upgrade integrity comparisons. Earlier per-section counts below describe historical checkpoints. No existing company role copies were granted extra capabilities automatically.
+
 ## Implemented Section 04 (D25)
 
 Migration 0004_routes.sql adds cities (global authenticated catalog; Super Admin writes), routes (company_id, unique code, bilingual names, different endpoint city FKs, active, edit version) and route_stops (company_id/route_id/stop_index PK, city FK, optional station FK matching company and city). Stops range 0-29; deferred triggers require 2-30 contiguous stops matching endpoints. Duplicate city/station pairs are unique including NULL station. Station city_id is nullable on upgrade, with an indexed FK and unique(company_id,id,city_id) for stop references. Existing station IDs/data and tenant role copies are preserved.

@@ -1,6 +1,6 @@
 # Development roadmap
 
-Updated 2026-11-02. The latest "next" approved Section 11 (D33). See [CURRENT_STATE.md](CURRENT_STATE.md) for verification and [Section 11](archive/SECTION_11_LUGGAGE.md) for the handover. Stop before Section 12.
+Updated 2026-11-02. Section 11 (D33) and the owner-approved local upgrade (D34) are complete. The app now runs 0.12.0 with migrations 0001-0011. Historical rows marked "local upgrade open" below are closed by D34. See [CURRENT_STATE.md](CURRENT_STATE.md). Stop before Section 12.
 
 0.2.1 owner-requested prototype addendum: luggage choice/description in the reservation, passenger list and unpaid reference. It is not completion of Section 09 or 11; station luggage registration, tags, tracking and fees remain in their scheduled sections.
 

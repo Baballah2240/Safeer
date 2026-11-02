@@ -1,5 +1,7 @@
 # Business rules
 
+Local upgrade D34 (2026-11-02) changes no business policy. Existing identity and company history are preserved; new permissions remain explicit grants for existing company roles. Current implementations through Section 11 are described in their numbered workflows; early prototype-only statements below are historical. Driver/boarding work remains Section 12.
+
 ## Section 04 route rules (D25)
 
 Cities are a Super Admin-managed shared bilingual catalog with authenticated reads. Route grants are company-wide, never inferred from a branch/station grant. Route management additionally requires company-wide resource reads. Existing tenant role copies need explicit new grants. Support route reads require a selected expiring grant; no mutations.

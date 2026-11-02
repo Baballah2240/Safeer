@@ -4,7 +4,7 @@ Updated: 2026-11-02. Safeer / Sudan Transport, version 0.12.0.
 
 ## Current section and next gate
 
-The owner's latest "next" authorizes Section 11 (D33): passenger luggage. Source is complete and verified. **Open owner step:** the real runtime/ database is still at Section 04. Stop the running launcher, then run npm.cmd run local:backup -- Section-11 and npm.cmd run local; see [Section 11](archive/SECTION_11_LUGGAGE.md). The owner said they will come back to the money flow later; open questions are listed in [Section 10](archive/SECTION_10_TICKETING.md). Stop before Section 12 (driver client, QR verification, boarding) until explicitly approved.
+Section 11 (D33), including the local upgrade, is complete. On 2026-11-02 the owner approved the backup/update/restart (D34): the running app is now 0.12.0 with migrations 0001-0011 applied. One existing account, its credentials and settings, and all 18 preserved legacy tables passed integrity comparisons. There are no companies in this private runtime yet. The owner will revisit money policy later; open questions remain in [Section 10](archive/SECTION_10_TICKETING.md). Stop before Section 12 (driver client, QR verification, boarding) until explicitly approved.
 
 ## Working application
 
@@ -28,19 +28,23 @@ Workflow: Super Admin -> Cities & destinations -> add cities -> Companies -> add
 
 ## Database and API
 
-Migrations 0001-0010 are immutable. New 0011_luggage.sql adds luggage_records, luggage_tags, luggage_events, luggage_exceptions and a declaration on booking_passengers. There are 49 application tables plus the migration ledger and 41 RLS tables. Earlier, 0010_ticketing.sql added company_payment_settings, station_counters, cash_sessions, document_sequences, payments, receipts, tickets, refunds, document_prints and fixed functions for counter work. Earlier, 0009_passengers.sql added booking_contacts, booking_passengers and functions for retrieval, staff access and erasure. Earlier, 0008_reservations.sql added bookings, seat_allocations, booking_events and fixed hold functions. Earlier, 0007_marketplace.sql added company_public_profiles and fixed anonymous read projections. Earlier, 0006_trips.sql added trips, trip_stops and trip_assignments with company-wide RLS, database-filled snapshots and overlap protection. Earlier, 0005_fleet.sql added seat_layouts, seat_layout_revisions, seat_layout_seats, buses and drivers with company-wide RLS, sealed revisions and capacity guards. Earlier, 0004_routes.sql added cities, routes and route_stops plus nullable station city IDs, scoped policies, composite FKs, deferred route validation, resource guards and template permissions. There are 22 application tables plus the migration ledger, 14 RLS tables, 17 permissions, 31 implemented API paths / 38 operations and 16 allowlisted public assets.
+Migrations 0001-0011 are immutable and applied locally. Migration 0011_luggage.sql adds luggage_records, luggage_tags, luggage_events, luggage_exceptions and a declaration on booking_passengers. Current totals: 49 application tables plus the migration ledger, 41 RLS tables, 30 permissions, 79 API paths / 92 operations and 26 public assets. Earlier migrations add station ticketing, passenger details, atomic seat holds, public profiles, trip/seat snapshots, immutable fleet revisions and company-private routes. Each numbered section below retains its own historical verification.
 
 The global city catalog is authenticated and Super Admin-managed. Company RLS still derives authority from the valid raw opaque session set transaction-locally, not actor/company flags. Local bounds: 1000 cities, 500 routes/company and 30 stops/route, alongside the existing Section 03 company/resource limits. No DELETE city/route endpoint exists. Current routes use unique(company_id,code); version is optimistic concurrency. Section 06 must snapshot routes/stops for trips before publication.
 
 ## Verification, backup and archive
 
-Native tests use disposable databases and restricted runtime roles, never the persistent local database. All 102 automated checks passed (13 unit/server and 89 native PostgreSQL), without failures or skips. Luggage workflows passed 32 Arabic/English dark/light layouts per source and built run at 1920, 1366, 390 and 320 pixels. The backup command and upgrade path were proven on a throwaway runtime only.
+Native tests use disposable databases and restricted runtime roles, never the persistent local database. Section 11 passed 102 automated checks (13 unit/server and 89 native PostgreSQL), without failures or skips. Luggage workflows passed 32 Arabic/English dark/light layouts per source and built run at 1920, 1366, 390 and 320 pixels. D34 additionally verifies the actual private runtime backup, restore and upgrade; see the local verification below.
 
 Verified exact-source checkpoint: archives/Safeer-0.12.0-Section-11-2026-11-02.zip. It excludes accounts, credentials, runtime databases/backups, native caches and node_modules. Existing checkpoints remain separate. Source commit/push status is reported separately; pushing is not hosting deployment.
 
 ## Remaining work
 
-Section 11 source is complete; the local database upgrade above is open. Stop before Section 12 until explicitly approved. boarding and finance remain later sections. The passenger preview at / still uses fictional in-memory records and must not be confused with durable holds. No Safeer native app or external deployment was requested.
+The local upgrade is verified and running. Section 12 boarding/driver work and later financial reporting are not started. The passenger preview at / still uses fictional in-memory records and must not be confused with durable holds. No Safeer native app or external deployment was requested.
+
+## Local upgrade verification (D34)
+
+The private backup matched 1378 files and a protected restore copy started with the existing account, then stopped and was safely removed. The original private backup remains under runtime/backups/. Existing users/credentials, first-login file, private settings, role labels and legacy records were unchanged. The upgraded catalog has 49 application tables, 41 RLS tables and 30 permissions; source contracts list 79 paths/92 operations and the build contains 26 public assets. The build, all 13 unit/server tests and documentation checks passed again for this handover. The earlier Section 11 native/browser results above remain the domain verification; this maintenance update changed no business rules or UI workflows.
 
 ## Section 05 fleet
 

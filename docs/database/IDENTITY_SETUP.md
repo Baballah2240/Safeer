@@ -57,4 +57,6 @@ This can recover only an existing protected owner account. It generates a new te
 
 ## Backup boundaries
 
+The local backup command rejects linked database paths and checksums copied files. Its temporary restore directory is private before copying, uses an available loopback port, and is removed only after a successful stop, absent process marker and resolved-path/tree verification. A failed stop retains both the restore copy and original backup. The original private backup is never used as the writable restore-check database.
+
 Keep an encrypted PostgreSQL backup and secure configuration backup separately from source archives. Stop the private cluster before a filesystem-level development copy; a running directory copy is not a verified database backup. Restore/disaster recovery/retention for production remains Section 15. Do not share runtime/, password files, native binary caches or database URLs in a customer source ZIP.

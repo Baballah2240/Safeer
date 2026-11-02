@@ -1,6 +1,6 @@
 # Section 11 - Passenger luggage
 
-Authorized by the owner's "next" on 2026-11-02, decision D33. Version 0.12.0. Status: source complete and verified. One owner step is open: upgrading the existing private local database (below).
+Authorized by the owner's "next" on 2026-11-02, decision D33. Version 0.12.0. Source and local upgrade are complete and verified; see the D34 update below.
 
 ## Delivered source
 
@@ -35,15 +35,13 @@ Hand-over checks are not limited in number, because only signed-in staff can att
 3. A staff member can type up to 300 numbers an hour under Luggage. Scans do not count.
 4. The ticket number is left off the tag, so a bag's tag alone cannot collect it. Anyone holding the ticket or knowing the booking's mobile number still can, as the owner chose.
 
-## Open owner step: upgrade the private local database
+## Completed local upgrade (D34, 2026-11-02)
 
-The real runtime/ database is still at Section 04. The automated session was not permitted to stop the running local launcher, so migrations 0005-0011 and their backup are still to run.
+The owner explicitly approved backup, update and restart. The previously running 0.5.0 launcher was stopped. Its stale database marker was checked against the missing process, and PostgreSQL performed normal recovery before backup; no runtime data or marker was manually deleted. A clean physical backup matched 1378 files and was started independently in a protected temporary restore directory, then stopped before verified cleanup. The original backup is retained privately. Migrations 0005-0011 are now applied and local health reports 0.12.0 with a connected database. The existing account/credentials/settings, role labels and all 18 preserved legacy tables are unchanged. No company records exist in this runtime yet.
 
-1. Stop the running local launcher.
-2. npm.cmd run local:backup -- Section-11
-3. npm.cmd run local
+For future upgrades: stop the launcher, run npm.cmd run local:backup -- Section-11, then npm.cmd run local only after backup verification succeeds.
 
-Do not run step 3 if step 2 reports a failure. Then add the new permissions to existing company roles, for both Section 10 and Section 11.
+Never continue after a failed backup check. Existing company role copies still need new permissions explicitly assigned; this upgrade does not silently broaden access.
 
 ## Open owner step: push to GitHub
 

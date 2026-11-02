@@ -1,6 +1,6 @@
 # Safeer / Sudan Transport - project master
 
-Updated: 2026-11-02. Current authorization: **Section 11**, approved by the latest "next" (D33). Read [CURRENT_STATE.md](CURRENT_STATE.md), [master instructions](decisions/MASTER_INSTRUCTIONS_2026-10-30.md) and [DECISIONS.md](DECISIONS.md). Stop before Section 05 after the Section 04 handover.
+Updated: 2026-11-02. **Section 11 and its local upgrade are complete** (D33-D34). The existing local app runs 0.12.0, with all eleven migrations applied and its account preserved. Read [CURRENT_STATE.md](CURRENT_STATE.md), [master instructions](decisions/MASTER_INSTRUCTIONS_2026-10-30.md) and [DECISIONS.md](DECISIONS.md). Stop before Section 12 until approved. Earlier section summaries below are historical; CURRENT_STATE is authoritative.
 
 Owner-authorized 0.2.1 follow-up: collect and display a passenger luggage yes/no declaration and required description in the local prototype. This scoped change (D16) does not begin authentication or full station luggage management.
 
@@ -18,12 +18,12 @@ An expired hold does not authorize payment or boarding. One booking initially be
 
 ## Architecture: target versus current source
 
-| Layer | Target decision | Implemented now (Sections 01-09) |
+| Layer | Target decision | Implemented now (Sections 01-11) |
 | --- | --- | --- |
 | Public marketplace, company pages, dashboards, station PWA | Next.js/React with TypeScript | Existing responsive JavaScript prototype retained, freight removed; no Next.js app installed |
 | Passenger and driver apps | Flutter/Dart clients | Contracts/design sharing strategy documented; no native project or build |
-| Backend | NestJS/TypeScript modular monolith, versioned APIs | NestJS identity/company/route/fleet/trip/marketplace/seat-hold/booking API, same-origin local proxy and separate public passenger example |
-| Durable data | PostgreSQL 18, explicit SQL migrations | Nine migrations and 36 identity/company/city/route/fleet/trip/profile/hold/passenger tables; passenger details are erased 90 days after the trip |
+| Backend | NestJS/TypeScript modular monolith, versioned APIs | NestJS identity/company/route/fleet/trip/marketplace/booking/ticketing/luggage APIs, same-origin local proxy and separate fictional passenger example |
+| Durable data | PostgreSQL 18, explicit SQL migrations | Eleven migrations and 49 application tables; private details follow the agreed erasure policies, while financial history is preserved |
 | Jobs/cache/events | Redis, idempotent workers and WebSocket availability updates | Interfaces and consistency requirements documented; services not installed |
 | Documents/storage/notifications | S3-compatible private storage, FCM where applicable | Ownership, outbox and access requirements documented; no accounts or integrations |
 

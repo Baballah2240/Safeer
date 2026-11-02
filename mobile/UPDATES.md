@@ -1,5 +1,9 @@
 # Safeer mobile status
 
+## 0.12.0 - 2026-11-02, local upgrade handover
+
+The existing local web runtime now serves the verified responsive Sections 05-11 from 0.12.0 with the original account preserved. API summary metadata now reflects these implemented modules. No mobile UI behavior changed in this maintenance handover; no native app was built or installed, and no external hosting was enabled.
+
 ## 0.4.0 - 2026-10-31, Section 03 company access
 
 Shared responsive staff screens now include real companies, approval/settings, branches/stations, scoped employees/roles, support grants and audit. Single-company employees open only their assigned workspace without a selector. Server and database enforce scope; changing a UI company ID grants nothing. Arabic/English, dark/light themes and existing passenger/luggage UI remain available. No native mobile build or installation was requested.

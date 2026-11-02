@@ -2,7 +2,7 @@
 
 Version 0.12.0, Section 11: passenger luggage registration, QR tags, tracking, problems and collection, built on the existing ticketing, passenger details, seat holds, marketplace, trip, fleet, company, route and identity system. This independent Sudan passenger-transport project does not modify Stocrant or the school application.
 
-Start continuation at [CURRENT_STATE](docs/CURRENT_STATE.md). Section 11 is authorized by the latest "next". Stop before Section 12 after its handover. To upgrade an existing local database, stop the launcher, then run npm.cmd run local:backup -- Section-11 followed by npm.cmd run local.
+Start continuation at [CURRENT_STATE](docs/CURRENT_STATE.md). Section 11 and the owner-approved local upgrade are complete: the existing runtime now runs 0.12.0 with its original account unchanged. Stop before Section 12 until approved. For a future local update, stop the launcher, verify npm.cmd run local:backup -- Section-11, then run npm.cmd run local.
 
 ## Run locally on Windows
 

@@ -1,5 +1,7 @@
 # Section archives and source checkpoints
 
+2026-11-02 update: D34 closes the historical local-upgrade items for Sections 05-11 below. The existing runtime is verified at 0.12.0 with all migrations applied and its account preserved. The original Section 11 checkpoint remains unchanged; a separate local-update source checkpoint records the backup safeguard/documentation changes. Private runtime backups are excluded from both.
+
 Numbered Markdown entries in this directory are permanent source-controlled handovers. Compressed source ZIPs live under the ignored project `archives/` folder, with SHA-256 sidecars and per-file manifests. The source repository retains history; ZIPs do not include its entire .git database.
 
 - Pre-change checkpoint: `archives/Safeer-0.1.0-before-passenger-scope-2026-10-30.zip`, 16 files from f06a638. This preserves the superseded passenger-plus-freight prototype. Verified SHA-256: `c96957d4d5211abadd2fcf7527d2fc03655ab42dc45da3525583fda40b0ee1f0`.
