@@ -13,6 +13,8 @@ export const publicAssets = {
   '/src/marketplace.css': ['src/marketplace.css', 'text/css'],
   '/src/public-page.js': ['src/public-page.js', 'text/javascript'],
   '/src/trips.js': ['src/trips.js', 'text/javascript'],
+  '/src/bookings.js': ['src/bookings.js', 'text/javascript'],
+  '/booking': ['marketplace.html', 'text/html'],
   '/src/fleet.js': ['src/fleet.js', 'text/javascript'],
   '/src/companies.js': ['src/companies.js', 'text/javascript'],
   '/src/theme.js': ['src/theme.js', 'text/javascript'],

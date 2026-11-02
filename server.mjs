@@ -49,7 +49,7 @@ export async function startServer({port = 4320, built = false, identityApiUrl} =
         return;
       }
       // Company, seat and hold pages are the same static page; the public API checks each identifier.
-      const asset = /^\/(company\/[a-z0-9-]{1,60}|trip\/[0-9a-f-]{36}|hold\/SF-[2-9A-HJ-NP-Z]{8})$/.test(path) ? '/marketplace' : path;
+      const asset = /^\/(booking|company\/[a-z0-9-]{1,60}|trip\/[0-9a-f-]{36}|hold\/SF-[2-9A-HJ-NP-Z]{8})$/.test(path) ? '/marketplace' : path;
       if (!Object.hasOwn(publicAssets, asset)) {
         response.writeHead(404); response.end('Not found'); return;
       }

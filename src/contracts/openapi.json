@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Safeer local identity API",
-    "version": "0.9.0",
+    "version": "0.10.0",
     "description": "Local Safeer identity and company workspaces. No production hosting, real booking or money API. Section 04 adds authenticated cities and company route planning. Section 05 adds company-private buses, immutable seat-layout revisions and driver records; Section 06 adds company trip scheduling, assignments and publication; Section 07 adds anonymous read-only marketplace routes; no reservations or payments."
   },
   "servers": [
@@ -8627,7 +8627,7 @@
     },
     "/api/v1/public/holds": {
       "post": {
-        "summary": "Hold 1-10 seats, all or none",
+        "summary": "Hold 1-10 seats with their travelers, all or none",
         "description": "Anonymous. No session is used; writes require the page origin and JSON. Limited to 120 seats per client address per 15 minutes. Repeating a key with the same seats returns the original hold.",
         "security": [],
         "requestBody": {
@@ -8640,7 +8640,9 @@
                 "required": [
                   "tripId",
                   "seats",
-                  "key"
+                  "key",
+                  "mobile",
+                  "travelers"
                 ],
                 "properties": {
                   "tripId": {
@@ -8660,6 +8662,37 @@
                     "type": "string",
                     "format": "uuid",
                     "description": "Created by the browser. Makes retries idempotent and is the only way to reopen or release the hold; only its hash is stored."
+                  },
+                  "mobile": {
+                    "type": "string",
+                    "description": "Local Sudanese or international. Stored in international form and erased 90 days after the trip."
+                  },
+                  "travelers": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 10,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "seat",
+                        "name"
+                      ],
+                      "properties": {
+                        "seat": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string",
+                          "minLength": 2,
+                          "maxLength": 100
+                        },
+                        "mobile": {
+                          "type": "string",
+                          "nullable": true
+                        }
+                      }
+                    }
                   }
                 }
               }
@@ -8764,7 +8797,7 @@
     "/api/v1/public/holds/{reference}/release": {
       "post": {
         "summary": "Release a hold",
-        "description": "Anonymous. No session is used; writes require the page origin and JSON. Releasing twice is harmless; a hold that has ended stays ended.",
+        "description": "Anonymous. No session is used; writes require the page origin and JSON. Releasing twice is harmless; a hold that has ended stays ended. Reference-and-mobile attempts share the lookup limits, and replies stay masked.",
         "security": [],
         "parameters": [
           {
@@ -8784,16 +8817,18 @@
               "schema": {
                 "type": "object",
                 "additionalProperties": false,
-                "required": [
-                  "key"
-                ],
+                "required": [],
                 "properties": {
                   "key": {
                     "type": "string",
                     "format": "uuid",
                     "description": "Created by the browser. Makes retries idempotent and is the only way to reopen or release the hold; only its hash is stored."
+                  },
+                  "mobile": {
+                    "type": "string"
                   }
-                }
+                },
+                "description": "Send either key or mobile, not both."
               }
             }
           }
@@ -8994,6 +9029,377 @@
           },
           "409": {
             "description": "Seats or hold state conflict."
+          }
+        }
+      }
+    },
+    "/api/v1/public/holds/current": {
+      "get": {
+        "summary": "Find the hold made with a key",
+        "description": "Anonymous. Recovers an attempt whose reply was lost.",
+        "security": [],
+        "parameters": [
+          {
+            "name": "X-Booking-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "404": {
+            "description": "Not found. A wrong reference and a wrong number look the same."
+          }
+        }
+      }
+    },
+    "/api/v1/public/holds/lookup": {
+      "post": {
+        "summary": "Reopen a booking with its reference and mobile number",
+        "description": "Anonymous, requiring the page origin and JSON. Returns a masked number and shortened names. Limited to 5 failures per reference and 30 attempts per client address per 15 minutes.",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "reference",
+                  "mobile"
+                ],
+                "properties": {
+                  "reference": {
+                    "type": "string"
+                  },
+                  "mobile": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "403": {
+            "description": "Not permitted, or the request came from another origin."
+          },
+          "404": {
+            "description": "Not found. A wrong reference and a wrong number look the same."
+          },
+          "415": {
+            "description": "Send JSON."
+          },
+          "429": {
+            "description": "Too many attempts."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/bookings": {
+      "get": {
+        "summary": "List or search bookings, up to 50",
+        "description": "Requires company.bookings.read. q takes a reference, a mobile number or part of a traveler name. Searches are audited without their text.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in to continue."
+          },
+          "403": {
+            "description": "Not permitted, or the request came from another origin."
+          },
+          "404": {
+            "description": "Not found. A wrong reference and a wrong number look the same."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/bookings/{bid}": {
+      "get": {
+        "summary": "Open a booking with its travelers and history",
+        "description": "Requires company.bookings.read. Each open is audited.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "bid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sign in to continue."
+          },
+          "403": {
+            "description": "Not permitted, or the request came from another origin."
+          },
+          "404": {
+            "description": "Not found. A wrong reference and a wrong number look the same."
+          }
+        }
+      },
+      "patch": {
+        "summary": "Correct details while seats are held",
+        "description": "Existing session, same-origin CSRF and the current password apply. Requires company.bookings.manage. Old values are not kept.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "bid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "mobile",
+                  "seats",
+                  "travelers",
+                  "reason",
+                  "version",
+                  "currentPassword"
+                ],
+                "properties": {
+                  "mobile": {
+                    "type": "string"
+                  },
+                  "seats": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "travelers": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 10,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "seat",
+                        "name"
+                      ],
+                      "properties": {
+                        "seat": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string",
+                          "minLength": 2,
+                          "maxLength": 100
+                        },
+                        "mobile": {
+                          "type": "string",
+                          "nullable": true
+                        }
+                      }
+                    }
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 300
+                  },
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "currentPassword": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in to continue."
+          },
+          "403": {
+            "description": "Not permitted, or the request came from another origin."
+          },
+          "404": {
+            "description": "Not found. A wrong reference and a wrong number look the same."
+          },
+          "409": {
+            "description": "Conflict with the booking state or version."
           }
         }
       }

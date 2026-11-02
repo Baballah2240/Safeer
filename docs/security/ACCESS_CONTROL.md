@@ -85,3 +85,7 @@ Four anonymous GET routes exist. They use no session and call fixed projections 
 ## Section 08
 
 Anonymous writes now exist for exactly two paths: POST public/holds and POST public/holds/:reference/release. They need the page origin and JSON but no session or CSRF token, and carry a browser-held key whose hash is the only stored proof of ownership. Holds are limited to 120 seats per client address per 15 minutes; the address is the socket peer, so hosting must forward the real client address first. company.bookings.read and company.bookings.manage are checked inside the database functions. Support grants do not include them. Public seat maps never name a hold. Contact details stop showing on a hold once its company is hidden or loses approval.
+
+## Section 09
+
+POST public/holds/lookup joins the anonymous writes. Reference-and-mobile access returns a masked number and shortened names, and the same 404 for a wrong reference or number; it is limited to 5 failures per reference and 30 attempts per client address per 15 minutes. A number is not proof of identity, because no SMS check exists. company.bookings.read now covers passenger details, and company.bookings.manage covers corrections. Support grants do not include them. Lists, searches, seat views and opened bookings are audited without search text. Names and numbers are not logged. The retry fingerprint is bound to the secret key so it cannot confirm erased details.

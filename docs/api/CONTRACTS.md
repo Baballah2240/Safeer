@@ -70,3 +70,7 @@ Workspace responses contain only RLS-visible resources and field-level UI capabi
 ## Section 08 / 0.9.0
 
 56 paths / 68 operations. Anonymous GET /api/v1/public/trips/:id, POST /public/holds (tripId, seats, key), GET /public/holds/:reference (X-Booking-Key header) and POST /public/holds/:reference/release (key). GET /api/v1/companies/:id/trips/:rid/seats needs company.bookings.read. POST /companies/:id/trips/:rid/holds/:hid/release needs company.bookings.manage, CSRF, a reason and the current password. Conflicts return 409 with SEATS_UNAVAILABLE, IDEMPOTENCY_CONFLICT, TRIP_NOT_BOOKABLE, INVALID_SEATS, SEATS_HELD or HOLD_CLOSED.
+
+## Section 09 / 0.10.0
+
+60 paths / 73 operations. POST /api/v1/public/holds now requires mobile and travelers (seat, name, optional mobile). Anonymous GET /public/holds/current (X-Booking-Key header) and POST /public/holds/lookup (reference, mobile). POST /public/holds/:reference/release accepts key or mobile. GET /api/v1/companies/:id/bookings (q) and GET /companies/:id/bookings/:bid need company.bookings.read. PATCH /companies/:id/bookings/:bid needs company.bookings.manage, CSRF, a reason, version and the current password. New errors: INVALID_MOBILE, INVALID_PASSENGERS, STALE_VERSION.

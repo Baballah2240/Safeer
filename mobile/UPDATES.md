@@ -76,3 +76,7 @@ Improve the responsive public marketplace and company page layouts in shared src
 ## 2026-11-02 - Section 08 seat holds
 
 Add responsive bilingual seat maps, hold pages with a countdown, and the staff seat view to shared src/. No native app build or deployment requested. Verification: 81 automated checks and 32 layouts per source/built mode.
+
+## 2026-11-02 - Section 09 passenger details
+
+Add responsive bilingual passenger forms, the My booking retrieval page and the staff Bookings section to shared src/. No native app build or deployment requested. Verification: 87 automated checks and 48 layouts per source/built mode.

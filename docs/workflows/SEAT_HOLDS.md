@@ -24,3 +24,5 @@ To free seats early, choose Release hold, give a reason and enter your current p
 - Changing to a bus with a different seat map is refused while seats are held. A bus with the same seat map keeps its holds.
 - Canceling a trip releases its holds at once, and the passenger's page says so.
 - History is kept: a hold can be closed once, and nothing about it can be edited afterwards.
+
+From Section 09, passengers enter names and a mobile number with their seats, and the hold page reopens through My booking on other devices. See [passenger bookings](PASSENGER_BOOKINGS.md), which replaces the no-details and same-device statements above.

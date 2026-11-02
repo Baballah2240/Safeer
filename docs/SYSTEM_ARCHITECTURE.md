@@ -119,3 +119,7 @@ PublicService serves anonymous reads through fixed SECURITY DEFINER projections,
 ## Section 08 seat holds
 
 ReservationService exposes anonymous holds and staff seat views through fixed SECURITY DEFINER functions; the runtime role has no access to the tables. public_hold locks the trip row, which serializes claims per trip without a global lock, and a GiST exclusion constraint over company, trip, seat and stop range is the final guarantee. A 30-second in-process job closes lapsed holds, but no decision depends on it. marketplace.html serves /trip/{id} and /hold/{reference} as well as the search and company pages. Hold writes are the first without a session, so the API middleware exempts exactly those paths from CSRF while still requiring the page origin and JSON.
+
+## Section 09 passengers
+
+Personal details live in booking_contacts and booking_passengers so they can be erased while bookings, allocations and events stay. public_book wraps public_hold and inserts details in the same transaction. An hourly in-process job erases what is due in short batches. The browser stores only the hold key, never names or numbers, and the Bookings staff section loads details only when opened.

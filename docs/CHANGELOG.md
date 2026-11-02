@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.0 - 2026-11-02 - SECTION 09
+
+Add passenger names and mobile numbers with each hold, retrieval by reference and mobile, staff booking search, correction and history, and automatic erasure 90 days after the trip. Add migration 0009 and 4 paths. 87 automated checks and source/built browser suites passed. The private local database upgrade is an open owner step.
+
 ## 0.9.0 - 2026-11-02 - SECTION 08
 
 Add temporary seat holds: live seat maps, all-or-none holds of 1-10 seats with references and countdowns, automatic expiry, passenger and staff release, and availability in search. Add migration 0008 and 6 routes. 81 automated checks and source/built browser suites passed. The private local database upgrade is an open owner step.

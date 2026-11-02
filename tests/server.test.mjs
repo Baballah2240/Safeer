@@ -20,12 +20,13 @@ test('prototype serves only explicit public assets, locally, without a write API
     assert.ok(Object.hasOwn(contract.paths,'/api/v1/auth/login'));
     assert.ok(Object.hasOwn(contract.paths,'/api/v1/companies'));
     assert.ok(Object.hasOwn(contract.paths,'/api/v1/companies/{id}/members'));
-    assert.equal(Object.keys(contract.paths).length,56);
+    assert.equal(Object.keys(contract.paths).length,60);
     assert.equal((await fetch(app.origin+'/marketplace')).status,200);
     assert.equal((await fetch(app.origin+'/company/fictional-nile')).status,200);
     assert.equal((await fetch(app.origin+'/company/../server.mjs')).status,404);
     assert.equal((await fetch(app.origin+'/trip/00000000-0000-4000-8000-000000000000')).status,200);
     assert.equal((await fetch(app.origin+'/hold/SF-ABCD2345')).status,200);
+    assert.equal((await fetch(app.origin+'/booking')).status,200);
     for(const path of ['/trip/not-a-trip','/hold/not-a-reference','/hold/SF-ABCD234O'])assert.equal((await fetch(app.origin+path)).status,404,path);
     assert.equal(contract.info.version,health.data.version);
     const schema=contract.paths['/api/v1/health'].get.responses['200'].content['application/json'].schema.properties.data;

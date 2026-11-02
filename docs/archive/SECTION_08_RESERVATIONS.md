@@ -28,7 +28,7 @@ Coverage includes 20 simultaneous requests for one seat with exactly one winner;
 
 An independent review before commit found and fixed: a lost reply that discarded the only key to a live hold, the proxy's 503 being treated as a refusal, a background refresh closing the release confirmation, a bus change freezing the seat page, focus lost on refresh, a silent failed release, overlapping requests when the countdown reached zero, trip cancellation rewriting already-lapsed holds as released, live holds able to fall off the staff list, and contact details still showing after a company hid itself. The hold limit was also changed to count seats rather than requests.
 
-One issue is unexplained. During verification the native test process died mid-test twice (once in the fleet suite, once in the marketplace suite), with no failed check and no error captured. It did not recur in 8 further rounds of both suites, some under extra load, and three direct runs of the real 30-second job against a live API were clean. The cause is unknown, so treat a repeat as a real signal and capture the PostgreSQL log.
+During verification two test runs appeared to crash mid-test with no error. Section 09 traced this to the verification command itself: each run had reached its own time limit, which killed the test process. It was not an application fault.
 
 The identity browser suite had been broken since Section 07, when the new Marketplace sidebar link shared a class with the passenger preview link and the test clicked the wrong one. The app was unaffected. The test now selects the right link.
 

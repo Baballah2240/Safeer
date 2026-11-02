@@ -39,3 +39,4 @@
 @media (max-width:900px){.market-booking{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:640px){.market-seats{grid-template-columns:repeat(var(--market-columns,4),minmax(0,1fr))}.market-ticket>button,.market-ticket>.market-book{justify-self:stretch}.market-confirm button{flex:1}}
 @media(forced-colors:active){.market-seat.selected{outline:2px solid Highlight}.market-seat.taken{color:GrayText}}
+.market-travelers{display:grid;gap:10px;margin:14px 0 0;padding:0;border:0;min-width:0}.market-travelers legend{padding:0;margin-bottom:8px;color:var(--ink);font-weight:700}.market-travelers label,.market-lookup label{display:grid;gap:4px;font-size:.85rem;font-weight:600}.market-travelers input,.market-lookup input{width:100%;min-height:44px}.market-lookup{display:grid;gap:12px}.market-subhead{margin:6px 0 4px;font-size:1rem}.market-aside .market-rows li{align-items:center}.market-aside .market-rows button{min-height:44px;margin-inline-start:auto}

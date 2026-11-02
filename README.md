@@ -1,8 +1,8 @@
 # Safeer / Sudan Transport
 
-Version 0.9.0, Section 08: temporary seat holds with live availability, built on the existing marketplace, trip, fleet, company, route and identity system. This independent Sudan passenger-transport project does not modify Stocrant or the school application.
+Version 0.10.0, Section 09: passenger details, booking retrieval and staff booking management, built on the existing seat holds, marketplace, trip, fleet, company, route and identity system. This independent Sudan passenger-transport project does not modify Stocrant or the school application.
 
-Start continuation at [CURRENT_STATE](docs/CURRENT_STATE.md). Section 08 is authorized by the latest "next". Stop before Section 09 after its handover. To upgrade an existing local database, stop the launcher, then run npm.cmd run local:backup -- Section-08 followed by npm.cmd run local.
+Start continuation at [CURRENT_STATE](docs/CURRENT_STATE.md). Section 09 is authorized by the latest "next". Stop before Section 10 after its handover. To upgrade an existing local database, stop the launcher, then run npm.cmd run local:backup -- Section-09 followed by npm.cmd run local.
 
 ## Run locally on Windows
 

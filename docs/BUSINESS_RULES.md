@@ -117,3 +117,7 @@ A company appears only when approved and self-listed; listing defaults to off. P
 ## Section 08 seat hold rules (D30)
 
 A hold takes 1-10 seats on one published, future trip of an approved, listed company, all or none. It lasts the company's hold minutes as set when it was made, ending by departure. It carries no passenger details until Section 09. Holds cover the whole trip because fares do. Expiry follows the database clock, not the job or the browser. A hold closes once, by expiring, by its passenger, by staff with a reason and current password, or by the trip being canceled. A seat map change is refused while seats are held. These rules implement the reservation invariants above; payment, tickets and cancellation policy remain open.
+
+## Section 09 passenger rules (D31)
+
+Every held seat has a traveler's full name, and the booking has one required mobile number; a traveler may add their own number. No age or date of birth is collected, and a child with a seat is named on it. Seats and details commit together. A passenger can reopen a booking with its reference and mobile number, seeing a masked number and shortened names, and can view or release but not change it. Staff correct details only while seats are held, with a reason and current password, and old values are not kept. Names, numbers and staff-written reasons are erased 90 days after the trip ends, whatever the booking's outcome. This resolves the open child/group and retention policy above for local development; it needs legal review before real data is collected.

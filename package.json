@@ -1,9 +1,9 @@
 {
   "name": "safeer",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "private": true,
   "type": "module",
-  "description": "Section 08 local seat holds, marketplace, trip scheduling, fleet, route and company management and passenger prototype for Safeer",
+  "description": "Section 09 local passenger details and booking management, seat holds, marketplace, trip scheduling, fleet, route and company management and passenger prototype for Safeer",
   "engines": {
     "node": ">=24"
   },
@@ -36,7 +36,8 @@
     "test:marketplace": "node --test tests/marketplace.integration.mjs",
     "test:marketplace:browser": "node tests/marketplace.browser.mjs",
     "test:reservations": "node --test tests/reservations.integration.mjs",
-    "test:reservations:browser": "node tests/reservations.browser.mjs"
+    "test:reservations:browser": "node tests/reservations.browser.mjs",
+    "test:passengers": "node --test tests/passengers.integration.mjs"
   },
   "license": "UNLICENSED",
   "dependencies": {

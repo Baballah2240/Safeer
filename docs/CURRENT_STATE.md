@@ -1,10 +1,10 @@
 # Current state - read this first
 
-Updated: 2026-11-02. Safeer / Sudan Transport, version 0.9.0.
+Updated: 2026-11-02. Safeer / Sudan Transport, version 0.10.0.
 
 ## Current section and next gate
 
-The owner's latest "next" authorizes Section 08 (D30): seat inventory and temporary reservations. Source is complete and verified. **Open owner step:** the real runtime/ database is still at Section 04. Stop the running launcher, then run npm.cmd run local:backup -- Section-08 and npm.cmd run local; see [Section 08](archive/SECTION_08_RESERVATIONS.md). Stop before Section 09 (passenger information and booking management) until explicitly approved.
+The owner's latest "next" authorizes Section 09 (D31): passenger information and booking management. Source is complete and verified. **Open owner step:** the real runtime/ database is still at Section 04. Stop the running launcher, then run npm.cmd run local:backup -- Section-09 and npm.cmd run local; see [Section 09](archive/SECTION_09_PASSENGERS.md). Stop before Section 10 (station ticketing, payments, tickets and receipts) until explicitly approved.
 
 ## Working application
 
@@ -28,19 +28,19 @@ Workflow: Super Admin -> Cities & destinations -> add cities -> Companies -> add
 
 ## Database and API
 
-Migrations 0001-0007 are immutable. New 0008_reservations.sql adds bookings, seat_allocations, booking_events and fixed hold functions. There are 34 application tables plus the migration ledger and 26 RLS tables. Earlier, 0007_marketplace.sql added company_public_profiles and fixed anonymous read projections. Earlier, 0006_trips.sql added trips, trip_stops and trip_assignments with company-wide RLS, database-filled snapshots and overlap protection. Earlier, 0005_fleet.sql added seat_layouts, seat_layout_revisions, seat_layout_seats, buses and drivers with company-wide RLS, sealed revisions and capacity guards. Earlier, 0004_routes.sql added cities, routes and route_stops plus nullable station city IDs, scoped policies, composite FKs, deferred route validation, resource guards and template permissions. There are 22 application tables plus the migration ledger, 14 RLS tables, 17 permissions, 31 implemented API paths / 38 operations and 16 allowlisted public assets.
+Migrations 0001-0008 are immutable. New 0009_passengers.sql adds booking_contacts, booking_passengers and functions for retrieval, staff access and erasure. There are 36 application tables plus the migration ledger and 28 RLS tables. Earlier, 0008_reservations.sql added bookings, seat_allocations, booking_events and fixed hold functions. Earlier, 0007_marketplace.sql added company_public_profiles and fixed anonymous read projections. Earlier, 0006_trips.sql added trips, trip_stops and trip_assignments with company-wide RLS, database-filled snapshots and overlap protection. Earlier, 0005_fleet.sql added seat_layouts, seat_layout_revisions, seat_layout_seats, buses and drivers with company-wide RLS, sealed revisions and capacity guards. Earlier, 0004_routes.sql added cities, routes and route_stops plus nullable station city IDs, scoped policies, composite FKs, deferred route validation, resource guards and template permissions. There are 22 application tables plus the migration ledger, 14 RLS tables, 17 permissions, 31 implemented API paths / 38 operations and 16 allowlisted public assets.
 
 The global city catalog is authenticated and Super Admin-managed. Company RLS still derives authority from the valid raw opaque session set transaction-locally, not actor/company flags. Local bounds: 1000 cities, 500 routes/company and 30 stops/route, alongside the existing Section 03 company/resource limits. No DELETE city/route endpoint exists. Current routes use unique(company_id,code); version is optimistic concurrency. Section 06 must snapshot routes/stops for trips before publication.
 
 ## Verification, backup and archive
 
-Native tests use disposable databases and restricted runtime roles, never the persistent local database. All 81 automated checks passed (13 unit/server and 68 native PostgreSQL), without failures or skips. Reservation workflows passed 32 Arabic/English dark/light layouts per source and built run at 1920, 1366, 390 and 320 pixels. The backup command and upgrade path were proven on a throwaway runtime only.
+Native tests use disposable databases and restricted runtime roles, never the persistent local database. All 87 automated checks passed (13 unit/server and 74 native PostgreSQL), without failures or skips. Reservation workflows passed 48 Arabic/English dark/light layouts per source and built run at 1920, 1366, 390 and 320 pixels. The backup command and upgrade path were proven on a throwaway runtime only.
 
-Verified exact-source checkpoint: archives/Safeer-0.9.0-Section-08-2026-11-02.zip. It excludes accounts, credentials, runtime databases/backups, native caches and node_modules. Existing checkpoints remain separate. Source commit/push status is reported separately; pushing is not hosting deployment.
+Verified exact-source checkpoint: archives/Safeer-0.10.0-Section-09-2026-11-02.zip. It excludes accounts, credentials, runtime databases/backups, native caches and node_modules. Existing checkpoints remain separate. Source commit/push status is reported separately; pushing is not hosting deployment.
 
 ## Remaining work
 
-Section 08 source is complete; the local database upgrade above is open. Stop before Section 09 until explicitly approved. Passenger details, guest bookings, tickets/payments, registered luggage, boarding and finance remain later sections. The passenger preview at / still uses fictional in-memory records and must not be confused with durable holds. No Safeer native app or external deployment was requested.
+Section 09 source is complete; the local database upgrade above is open. Stop before Section 10 until explicitly approved. tickets/payments, registered luggage, boarding and finance remain later sections. The passenger preview at / still uses fictional in-memory records and must not be confused with durable holds. No Safeer native app or external deployment was requested.
 
 ## Section 05 fleet
 
@@ -57,3 +57,7 @@ Public pages are at /marketplace and /company/{slug}. See [marketplace workflow]
 ## Section 08 seat holds
 
 Passengers hold seats at /trip/{id} and keep a reference at /hold/{reference}. See [seat holds workflow](workflows/SEAT_HOLDS.md). Existing company roles need the new booking permissions added. A hold cannot yet become a ticket.
+
+## Section 09 passengers
+
+Passengers give names and a mobile number with each hold and reopen bookings at /booking. Staff use Bookings in the company workspace. Details are erased 90 days after the trip; backups are not. See [passenger bookings workflow](workflows/PASSENGER_BOOKINGS.md).

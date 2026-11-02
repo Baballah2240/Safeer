@@ -20,7 +20,7 @@ async function setup(f,slug='hold-demo',{publish=true,list=true,hold=30}={}){
  if(list)ok(await f.admin.request(base+'/public-profile','PUT',{listed:true,aboutEn:'',aboutAr:'',phone:'+249 333 333 333',version:0,...pw}),200);
  return {cid,base,w,path,trip,pw,buses,driver,slug};
 }
-const hold=(f,tripId,seats,key=randomUUID())=>f.client().request('public/holds','POST',{tripId,seats,key});
+const hold=(f,tripId,seats,key=randomUUID())=>f.client().request('public/holds','POST',{tripId,seats,key,mobile:'+249900000000',travelers:Array.isArray(seats)?[...new Set(seats)].map(seat=>({seat:typeof seat==='string'?seat:'1',name:'Fictional Traveler'})):[]});
 const view=(f,reference,key)=>f.client().request('public/holds/'+reference,'GET',undefined,key?{'X-Booking-Key':key}:{});
 const seatMap=async(f,id)=>ok(await f.client().request('public/trips/'+id),200);
 const free=map=>map.seats.filter(s=>s.available).map(s=>s.label);
@@ -41,8 +41,8 @@ test('a hold takes every requested seat or none, snapshots its terms and updates
  const taken=await hold(f,id,['4','3','5']);assert.equal(taken.status,409);assert.equal(taken.error.code,'SEATS_UNAVAILABLE');
  assert.deepEqual([await count(f,'bookings'),await count(f,'seat_allocations'),await count(f,'booking_events')],counts);assert.equal((await seatMap(f,id)).seatsLeft,9);
  for(const bad of [[],['1','1'],['99'],Array.from({length:11},(_,i)=>String(i+1)),'1',[1]])assert.equal((await hold(f,id,bad)).error?.code,'INVALID_SEATS',JSON.stringify(bad));
- assert.equal((await f.client().request('public/holds','POST',{tripId:id,seats:['6'],key:'not-a-uuid'})).status,400);
- assert.equal((await f.client().request('public/holds','POST',{tripId:id,seats:['6'],key:randomUUID(),extra:1})).status,400,'Passenger details are not accepted yet.');
+ assert.equal((await f.client().request('public/holds','POST',{tripId:id,seats:['6'],key:'not-a-uuid',mobile:'+249900000000',travelers:[{seat:'6',name:'Fictional Traveler'}]})).status,400);
+ assert.equal((await f.client().request('public/holds','POST',{tripId:id,seats:['6'],key:randomUUID(),mobile:'+249900000000',travelers:[{seat:'6',name:'Fictional Traveler'}],extra:1})).status,400,'Unknown fields are refused.');
 }));
 
 test('competing requests never share a seat',async()=>identityFixture(async f=>{
@@ -98,7 +98,7 @@ test('only the browser that made a hold can open or release it',async()=>identit
  assert.equal((await f.client().request(`public/holds/${a.reference}/release`,'POST',{key:randomUUID()})).status,404);assert.equal((await seatMap(f,id)).seatsLeft,11);
  const closed=ok(await f.client().request(`public/holds/${a.reference}/release`,'POST',{key}));assert.equal(closed.status,'released');assert.equal(closed.releasedBy,'passenger');assert.equal((await seatMap(f,id)).seatsLeft,12);
  assert.equal(ok(await f.client().request(`public/holds/${a.reference}/release`,'POST',{key})).status,'released','Releasing twice is harmless.');
- const origin=await fetch(f.api.origin+'/api/v1/public/holds',{method:'POST',headers:{'Content-Type':'application/json',Origin:'http://127.0.0.1:9'},body:JSON.stringify({tripId:id,seats:['2'],key:randomUUID()})});assert.equal(origin.status,403,'Other sites cannot create holds.');
+ const origin=await fetch(f.api.origin+'/api/v1/public/holds',{method:'POST',headers:{'Content-Type':'application/json',Origin:'http://127.0.0.1:9'},body:JSON.stringify({tripId:id,seats:['2'],key:randomUUID(),mobile:'+249900000000',travelers:[{seat:'2',name:'Fictional Traveler'}]})});assert.equal(origin.status,403,'Other sites cannot create holds.');
  assert.equal((await fetch(f.api.origin+'/api/v1/public/holds',{method:'POST',headers:{'Content-Type':'text/plain',Origin:'http://127.0.0.1:4320'},body:'{}'})).status,415);
  await f.migration.query("UPDATE safeer.auth_throttles SET attempts=120");const limited=await hold(f,id,['2']);assert.equal(limited.status,429);assert.equal(limited.error.code,'RATE_LIMITED');
 }));

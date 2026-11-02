@@ -21,3 +21,5 @@ To continue, extract into a new folder, read docs/CURRENT_STATE.md first, run np
 [Section 07 marketplace](SECTION_07_MARKETPLACE.md) records the public pages, final verification and the open local upgrade step. Stop before Section 08 until approved.
 
 [Section 08 seat holds](SECTION_08_RESERVATIONS.md) records the hold engine, final verification and the open local upgrade step. Stop before Section 09 until approved.
+
+[Section 09 passengers](SECTION_09_PASSENGERS.md) records passenger details, retrieval, erasure, final verification and the open local upgrade step. Stop before Section 10 until approved.
