@@ -1,10 +1,10 @@
 # Current state - read this first
 
-Updated: 2026-11-02. Safeer / Sudan Transport, version 0.7.0.
+Updated: 2026-11-02. Safeer / Sudan Transport, version 0.8.0.
 
 ## Current section and next gate
 
-The owner's latest "next" authorizes Section 06 (D27): trip scheduling, bus and driver assignment, snapshots and publication. Source is complete and verified. **Open owner step:** the real runtime/ database is still at Section 04. Stop the running launcher, then run npm.cmd run local:backup -- Section-06 and npm.cmd run local; see [Section 06](archive/SECTION_06_TRIPS.md). Stop before Section 07 (passenger marketplace and company pages) until explicitly approved.
+The owner's latest "next" authorizes Section 07 (D28): the public marketplace and company pages. Source is complete and verified. **Open owner step:** the real runtime/ database is still at Section 04. Stop the running launcher, then run npm.cmd run local:backup -- Section-07 and npm.cmd run local; see [Section 07](archive/SECTION_07_MARKETPLACE.md). Stop before Section 08 (seat inventory and temporary reservations) until explicitly approved.
 
 ## Working application
 
@@ -28,19 +28,19 @@ Workflow: Super Admin -> Cities & destinations -> add cities -> Companies -> add
 
 ## Database and API
 
-Migrations 0001-0005 are immutable. New 0006_trips.sql adds trips, trip_stops and trip_assignments with company-wide RLS, database-filled snapshots and overlap protection. There are 30 application tables plus the migration ledger and 22 RLS tables. Earlier, 0005_fleet.sql added seat_layouts, seat_layout_revisions, seat_layout_seats, buses and drivers with company-wide RLS, sealed revisions and capacity guards. Earlier, 0004_routes.sql added cities, routes and route_stops plus nullable station city IDs, scoped policies, composite FKs, deferred route validation, resource guards and template permissions. There are 22 application tables plus the migration ledger, 14 RLS tables, 17 permissions, 31 implemented API paths / 38 operations and 16 allowlisted public assets.
+Migrations 0001-0006 are immutable. New 0007_marketplace.sql adds company_public_profiles and fixed anonymous read projections. There are 31 application tables plus the migration ledger and 23 RLS tables. Earlier, 0006_trips.sql added trips, trip_stops and trip_assignments with company-wide RLS, database-filled snapshots and overlap protection. Earlier, 0005_fleet.sql added seat_layouts, seat_layout_revisions, seat_layout_seats, buses and drivers with company-wide RLS, sealed revisions and capacity guards. Earlier, 0004_routes.sql added cities, routes and route_stops plus nullable station city IDs, scoped policies, composite FKs, deferred route validation, resource guards and template permissions. There are 22 application tables plus the migration ledger, 14 RLS tables, 17 permissions, 31 implemented API paths / 38 operations and 16 allowlisted public assets.
 
 The global city catalog is authenticated and Super Admin-managed. Company RLS still derives authority from the valid raw opaque session set transaction-locally, not actor/company flags. Local bounds: 1000 cities, 500 routes/company and 30 stops/route, alongside the existing Section 03 company/resource limits. No DELETE city/route endpoint exists. Current routes use unique(company_id,code); version is optimistic concurrency. Section 06 must snapshot routes/stops for trips before publication.
 
 ## Verification, backup and archive
 
-Native tests use disposable databases and restricted runtime roles, never the persistent local database. All 68 automated checks passed (13 unit/server and 55 native PostgreSQL), without failures or skips. Trip workflows passed 48 Arabic/English dark/light layouts per source and built run at 1920, 1366, 390 and 320 pixels. The backup command and upgrade path were proven on a throwaway runtime only.
+Native tests use disposable databases and restricted runtime roles, never the persistent local database. All 73 automated checks passed (13 unit/server and 60 native PostgreSQL), without failures or skips. Marketplace workflows passed 32 Arabic/English dark/light layouts per source and built run at 1920, 1366, 390 and 320 pixels. The backup command and upgrade path were proven on a throwaway runtime only.
 
-Verified exact-source checkpoint: archives/Safeer-0.7.0-Section-06-2026-11-02.zip. It excludes accounts, credentials, runtime databases/backups, native caches and node_modules. Existing checkpoints remain separate. Source commit/push status is reported separately; pushing is not hosting deployment.
+Verified exact-source checkpoint: archives/Safeer-0.8.0-Section-07-2026-11-02.zip. It excludes accounts, credentials, runtime databases/backups, native caches and node_modules. Existing checkpoints remain separate. Source commit/push status is reported separately; pushing is not hosting deployment.
 
 ## Remaining work
 
-Section 06 source is complete; the local database upgrade above is open. Stop before Section 07 until explicitly approved. Public marketplace, real seat inventory/holds, guest bookings, tickets/payments, registered luggage, boarding and finance remain later sections. The passenger preview still uses fictional in-memory records and must not be confused with durable bookings. No Safeer native app or external deployment was requested.
+Section 07 source is complete; the local database upgrade above is open. Stop before Section 08 until explicitly approved. real seat inventory/holds, guest bookings, tickets/payments, registered luggage, boarding and finance remain later sections. The passenger preview still uses fictional in-memory records and must not be confused with durable bookings. No Safeer native app or external deployment was requested.
 
 ## Section 05 fleet
 
@@ -49,3 +49,7 @@ Company workspaces add Buses & seat maps and Drivers. See [fleet workflow](workf
 ## Section 06 trips
 
 Company workspaces add Trips. See [trip workflow](workflows/TRIP_SCHEDULING.md). Existing company role copies need the trip permissions assigned explicitly.
+
+## Section 07 marketplace
+
+Public pages are at /marketplace and /company/{slug}. See [marketplace workflow](workflows/MARKETPLACE.md). Existing companies stay hidden until they list themselves under Public page.

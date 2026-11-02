@@ -64,3 +64,7 @@ Add bilingual responsive seat-map editing and viewing, bus and driver records to
 ## 2026-11-02 - Section 06 trips
 
 Add bilingual responsive trip scheduling, assignment, publication and cancellation to shared src/. Preserve dark/light styling and company permissions. No native app build or deployment requested. Verification: 68 automated checks and 48 trip layouts per source/built mode.
+
+## 2026-11-02 - Section 07 marketplace
+
+Add responsive bilingual public marketplace and company pages, plus the company Public page editor, to shared src/. No native app build or deployment requested. Verification: 73 automated checks and 32 public layouts per source/built mode.

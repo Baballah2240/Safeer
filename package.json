@@ -1,9 +1,9 @@
 {
   "name": "safeer",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "private": true,
   "type": "module",
-  "description": "Section 06 local trip scheduling, fleet, route and company management and passenger prototype for Safeer",
+  "description": "Section 07 local marketplace, trip scheduling, fleet, route and company management and passenger prototype for Safeer",
   "engines": {
     "node": ">=24"
   },
@@ -32,7 +32,9 @@
     "test:fleet": "node --test tests/fleet.integration.mjs",
     "test:fleet:browser": "node tests/fleet.browser.mjs",
     "test:trips": "node --test tests/trips.integration.mjs",
-    "test:trips:browser": "node tests/trips.browser.mjs"
+    "test:trips:browser": "node tests/trips.browser.mjs",
+    "test:marketplace": "node --test tests/marketplace.integration.mjs",
+    "test:marketplace:browser": "node tests/marketplace.browser.mjs"
   },
   "license": "UNLICENSED",
   "dependencies": {

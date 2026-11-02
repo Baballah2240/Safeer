@@ -58,3 +58,4 @@ input:not([type=checkbox]):focus,select:focus{border-color:#568e85;background:#f
 /* Trip status stays readable without relying on colour alone: the badge always carries its word. */
 .trip-offsets{display:grid;gap:12px;border:1px solid var(--border);padding:14px;border-radius:14px;min-width:0}.trip-offsets legend{font-weight:700;padding-inline:8px}
 .trip-canceled{text-decoration:line-through}.trip-assignment{padding-block:8px;border-bottom:1px solid var(--border);overflow-wrap:anywhere}.trip-assignment small{color:var(--muted)}
+.public-summary{display:grid;gap:10px;margin:16px 0}.public-summary dt{color:var(--muted);font-size:.85rem}.public-summary dd{margin:2px 0 0;overflow-wrap:anywhere}.public-about{white-space:pre-wrap}

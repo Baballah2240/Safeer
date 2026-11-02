@@ -10,6 +10,7 @@ import {CompanyService} from './company.service.js';
 import {RouteService} from './route.service.js';
 import {FleetService} from './fleet.service.js';
 import {TripService} from './trip.service.js';
+import {PublicService} from './public.service.js';
 import {IdentityError,sessionToken,validCsrf,fail} from './security.js';
 
 const version=JSON.parse(readFileSync(new URL('../../package.json',import.meta.url),'utf8')).version;
@@ -109,7 +110,21 @@ class TripController {
  @Post(':rid/publish') publish(@Req() req:Request,@Param('id') id:string,@Param('rid') rid:string,@Body() data:unknown){return this.trips.publish(token(req),id,rid,data).then(reply);}
  @Post(':rid/cancel') cancel(@Req() req:Request,@Param('id') id:string,@Param('rid') rid:string,@Body() data:unknown){return this.trips.cancel(token(req),id,rid,data).then(reply);}
 }
-@Module({controllers:[IdentityController,CompanyController,RouteController,FleetController,TripController],providers:[Database,IdentityService,CompanyService,RouteService,FleetService,TripService]})
+@Controller('api/v1/public')
+class PublicController {
+ constructor(private readonly market:PublicService){}
+ @Get('cities') cities(){return this.market.cities().then(reply);}
+ @Get('companies') companies(){return this.market.companies().then(reply);}
+ @Get('companies/:slug') company(@Param('slug') slug:string){return this.market.company(slug).then(reply);}
+ @Get('trips') trips(@Query() query:Record<string,unknown>){return this.market.trips(query).then(reply);}
+}
+@Controller('api/v1/companies/:id/public-profile')
+class PublicProfileController {
+ constructor(private readonly market:PublicService){}
+ @Get() read(@Req() req:Request,@Param('id') id:string){return this.market.profile(token(req),id).then(reply);}
+ @Put() save(@Req() req:Request,@Param('id') id:string,@Body() data:unknown){return this.market.saveProfile(token(req),id,data).then(reply);}
+}
+@Module({controllers:[IdentityController,CompanyController,RouteController,FleetController,TripController,PublicController,PublicProfileController],providers:[Database,IdentityService,CompanyService,RouteService,FleetService,TripService,PublicService]})
 export class IdentityModule {}
 
 export async function createIdentityApi({port=4321,webOrigin='http://127.0.0.1:4320'}:{port?:number;webOrigin?:string}={}){

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.0 - 2026-11-02 - SECTION 07
+
+Add the public marketplace with search and sorting, company pages and a company-managed public profile. Add migration 0007, anonymous read-only projections and 4 public routes. 73 automated checks and source/built browser suites passed. The private local database upgrade is an open owner step.
+
 ## 0.7.0 - 2026-11-02 - SECTION 06
 
 Add draft trips from routes, repeated scheduling, stop times, fares, bus and driver assignment with history, publication and cancellation. Add migration 0006, trip service and controller, 3 RLS tables, database-filled snapshots, overlap protection and 2 template permissions. 68 automated checks and source/built browser suites passed. The private local database upgrade is an open owner step.

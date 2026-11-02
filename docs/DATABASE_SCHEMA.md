@@ -152,7 +152,8 @@ Payment confirmation locks the booking and allocations, reads a fresh database c
 | 0004_routes.sql | Cities, station city links, company routes and ordered stops with RLS/consistency guards | 04 |
 | 0005_fleet.sql | Seat layouts, immutable revisions and seats, buses and drivers with RLS/consistency guards | 05 |
 | 0006_trips.sql | Trips, stop and assignment snapshots with RLS, status rules and overlap protection | 06 |
-| Future sequential files | Only the implemented module's reviewed DDL/constraints/indexes/policies | 07 onward |
+| 0007_marketplace.sql | Company public profiles and fixed anonymous read projections | 07 |
+| Future sequential files | Only the implemented module's reviewed DDL/constraints/indexes/policies | 08 onward |
 
 Use append-only sequential `0001_name.sql` files. The runner normalizes CRLF, hashes contents, checks applied names/versions/checksums, obtains a transaction-level advisory lock, and commits all pending files with their ledger rows atomically. SQL files must not contain their own transaction control or nontransactional statements. Drift/unknown history fails closed. No automatic down-migrations or edits to applied files; use reviewed forward corrections. Keep schema-owner and application credentials separate.
 
@@ -189,3 +190,7 @@ All five have company-wide RLS. Limited runtime receives no DELETE on any of the
 Migration 0006_trips.sql adds trips (route snapshot, status, timezone, departure and arrival, fare in minor units, currency, cancel reason), trip_stops (stop index, minutes after departure, city and station snapshot) and trip_assignments (bus, driver, seat-layout revision, seat count and name snapshots, replaced_at, replaced_reason, one current assignment per trip).
 
 All three have company-wide RLS. Limited runtime receives no DELETE. Owner-level triggers fill snapshots, enforce status rules and publish conditions, reject overlapping buses or drivers and keep assignment history from being rewritten or deleted. Deferred validation requires every route stop, strictly increasing minutes from 0 and an arrival matching the last stop. There are 30 application tables plus the migration ledger and 22 RLS tables.
+
+## Implemented Section 07 (D28)
+
+Migration 0007_marketplace.sql adds company_public_profiles (listed, bilingual about text, public phone, email and address, version) with RLS, and the projections public_trips, public_cities and public_companies. There are 31 application tables plus the migration ledger and 23 RLS tables.

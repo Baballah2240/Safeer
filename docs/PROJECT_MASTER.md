@@ -1,6 +1,6 @@
 # Safeer / Sudan Transport - project master
 
-Updated: 2026-11-02. Current authorization: **Section 06**, approved by the latest "next" (D27). Read [CURRENT_STATE.md](CURRENT_STATE.md), [master instructions](decisions/MASTER_INSTRUCTIONS_2026-10-30.md) and [DECISIONS.md](DECISIONS.md). Stop before Section 05 after the Section 04 handover.
+Updated: 2026-11-02. Current authorization: **Section 07**, approved by the latest "next" (D28). Read [CURRENT_STATE.md](CURRENT_STATE.md), [master instructions](decisions/MASTER_INSTRUCTIONS_2026-10-30.md) and [DECISIONS.md](DECISIONS.md). Stop before Section 05 after the Section 04 handover.
 
 Owner-authorized 0.2.1 follow-up: collect and display a passenger luggage yes/no declaration and required description in the local prototype. This scoped change (D16) does not begin authentication or full station luggage management.
 
@@ -18,12 +18,12 @@ An expired hold does not authorize payment or boarding. One booking initially be
 
 ## Architecture: target versus current source
 
-| Layer | Target decision | Implemented now (Sections 01-06) |
+| Layer | Target decision | Implemented now (Sections 01-07) |
 | --- | --- | --- |
 | Public marketplace, company pages, dashboards, station PWA | Next.js/React with TypeScript | Existing responsive JavaScript prototype retained, freight removed; no Next.js app installed |
 | Passenger and driver apps | Flutter/Dart clients | Contracts/design sharing strategy documented; no native project or build |
-| Backend | NestJS/TypeScript modular monolith, versioned APIs | NestJS identity/company/route/fleet/trip API, same-origin local proxy and separate public passenger example |
-| Durable data | PostgreSQL 18, explicit SQL migrations | Six migrations and 30 identity/company/city/route/fleet/trip tables; no durable passenger bookings |
+| Backend | NestJS/TypeScript modular monolith, versioned APIs | NestJS identity/company/route/fleet/trip/marketplace API, same-origin local proxy and separate public passenger example |
+| Durable data | PostgreSQL 18, explicit SQL migrations | Seven migrations and 31 identity/company/city/route/fleet/trip/profile tables; no durable passenger bookings |
 | Jobs/cache/events | Redis, idempotent workers and WebSocket availability updates | Interfaces and consistency requirements documented; services not installed |
 | Documents/storage/notifications | S3-compatible private storage, FCM where applicable | Ownership, outbox and access requirements documented; no accounts or integrations |
 
@@ -46,7 +46,7 @@ Approved initial roles: platform super administrator, platform support administr
 7. Support Arabic/English, RTL/LTR, accessible controls, low-bandwidth clients and clear errors. Do not promise offline seat sales until conflict policy is implemented and tested.
 8. Test, fix, document and archive before handing off. Do not mark proposed schema or target frameworks as implemented.
 
-Section 06 ends at its verified trip handover. Section 07 requires explicit owner approval. No production deployment, school-app changes, restaurant/mobile changes, real passenger data or external service enrollment is authorized by this section.
+Section 07 ends at its verified marketplace handover. Section 08 requires explicit owner approval. No production deployment, school-app changes, restaurant/mobile changes, real passenger data or external service enrollment is authorized by this section.
 
 
 ## 0.3.1 - Super Administrator role editing
@@ -84,3 +84,7 @@ Completed and verified in source: company-private buses, immutable seat-layout r
 ## Section 06 implementation
 
 Completed and verified in source: company trip scheduling, stop and seat-layout snapshots, bus and driver assignment with history, publication and cancellation. The real local database has not been upgraded yet; see the owner step in [Section 06](archive/SECTION_06_TRIPS.md).
+
+## Section 07 implementation
+
+Completed and verified in source: anonymous marketplace search, company pages and company-managed public profiles over fixed database projections. The real local database has not been upgraded yet; see the owner step in [Section 07](archive/SECTION_07_MARKETPLACE.md).

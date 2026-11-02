@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Safeer local identity API",
-    "version": "0.7.0",
-    "description": "Local Safeer identity and company workspaces. No production hosting, real booking or money API. Section 04 adds authenticated cities and company route planning. Section 05 adds company-private buses, immutable seat-layout revisions and driver records; Section 06 adds company trip scheduling, assignments and publication; no passenger search, reservations or payments."
+    "version": "0.8.0",
+    "description": "Local Safeer identity and company workspaces. No production hosting, real booking or money API. Section 04 adds authenticated cities and company route planning. Section 05 adds company-private buses, immutable seat-layout revisions and driver records; Section 06 adds company trip scheduling, assignments and publication; Section 07 adds anonymous read-only marketplace routes; no reservations or payments."
   },
   "servers": [
     {
@@ -8200,6 +8200,385 @@
           }
         }
       }
+    },
+    "/api/v1/public/cities": {
+      "get": {
+        "summary": "Cities with public trips",
+        "description": "Anonymous read-only projection of listed, approved companies and published future trips. No session is used.",
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "items"
+                      ],
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/PublicCity"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/public/companies": {
+      "get": {
+        "summary": "Listed companies",
+        "description": "Anonymous read-only projection of listed, approved companies and published future trips. No session is used.",
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "items"
+                      ],
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/PublicCompany"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/public/companies/{slug}": {
+      "get": {
+        "summary": "One company page",
+        "description": "Anonymous read-only projection of listed, approved companies and published future trips. No session is used.",
+        "security": [],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "company",
+                        "trips"
+                      ],
+                      "properties": {
+                        "company": {
+                          "$ref": "#/components/schemas/PublicCompany"
+                        },
+                        "trips": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/PublicTrip"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not available."
+          }
+        }
+      }
+    },
+    "/api/v1/public/trips": {
+      "get": {
+        "summary": "Search public trips, up to 100",
+        "description": "Anonymous read-only projection of listed, approved companies and published future trips. No session is used.",
+        "security": [],
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "items"
+                      ],
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/PublicTrip"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid filter."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/public-profile": {
+      "get": {
+        "summary": "Read the company public profile",
+        "description": "Requires company.profile.manage.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/PublicProfile"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in required."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not available."
+          },
+          "409": {
+            "description": "Stale version."
+          }
+        }
+      },
+      "put": {
+        "summary": "Save the company public profile",
+        "description": "Requires company.profile.manage, CSRF, the current password and the expected version (0 for the first save).",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "listed",
+                  "version",
+                  "currentPassword"
+                ],
+                "properties": {
+                  "listed": {
+                    "type": "boolean"
+                  },
+                  "aboutEn": {
+                    "type": "string"
+                  },
+                  "aboutAr": {
+                    "type": "string"
+                  },
+                  "phone": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "email": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "address": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "version": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "currentPassword": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "id"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in required."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not available."
+          },
+          "409": {
+            "description": "Stale version."
+          }
+        }
+      }
     }
   },
   "components": {
@@ -9775,6 +10154,248 @@
               "string",
               "null"
             ]
+          }
+        }
+      },
+      "PublicCity": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code",
+          "nameEn",
+          "nameAr"
+        ],
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "nameEn": {
+            "type": "string"
+          },
+          "nameAr": {
+            "type": "string"
+          }
+        }
+      },
+      "PublicCompany": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "slug",
+          "nameEn",
+          "nameAr",
+          "aboutEn",
+          "aboutAr",
+          "phone",
+          "email",
+          "address",
+          "tripCount"
+        ],
+        "properties": {
+          "slug": {
+            "type": "string"
+          },
+          "nameEn": {
+            "type": "string"
+          },
+          "nameAr": {
+            "type": "string"
+          },
+          "aboutEn": {
+            "type": "string"
+          },
+          "aboutAr": {
+            "type": "string"
+          },
+          "phone": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "email": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "address": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "tripCount": {
+            "type": "integer"
+          }
+        }
+      },
+      "PublicTripStop": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "cityNameEn",
+          "cityNameAr",
+          "stationNameEn",
+          "stationNameAr",
+          "offsetMinutes"
+        ],
+        "properties": {
+          "cityNameEn": {
+            "type": "string"
+          },
+          "cityNameAr": {
+            "type": "string"
+          },
+          "stationNameEn": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "stationNameAr": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "offsetMinutes": {
+            "type": "integer"
+          }
+        }
+      },
+      "PublicTrip": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "companySlug",
+          "date",
+          "time",
+          "fareMinor",
+          "currency",
+          "seatCount",
+          "stops"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "companySlug": {
+            "type": "string"
+          },
+          "companyNameEn": {
+            "type": "string"
+          },
+          "companyNameAr": {
+            "type": "string"
+          },
+          "routeNameEn": {
+            "type": "string"
+          },
+          "routeNameAr": {
+            "type": "string"
+          },
+          "fromCode": {
+            "type": "string"
+          },
+          "fromNameEn": {
+            "type": "string"
+          },
+          "fromNameAr": {
+            "type": "string"
+          },
+          "toCode": {
+            "type": "string"
+          },
+          "toNameEn": {
+            "type": "string"
+          },
+          "toNameAr": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string"
+          },
+          "time": {
+            "type": "string"
+          },
+          "arrivalDate": {
+            "type": "string"
+          },
+          "arrivalTime": {
+            "type": "string"
+          },
+          "durationMinutes": {
+            "type": "integer"
+          },
+          "fareMinor": {
+            "type": "integer"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "seatCount": {
+            "type": "integer"
+          },
+          "busTypeEn": {
+            "type": "string"
+          },
+          "busTypeAr": {
+            "type": "string"
+          },
+          "stops": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PublicTripStop"
+            }
+          }
+        }
+      },
+      "PublicProfile": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "listed",
+          "aboutEn",
+          "aboutAr",
+          "phone",
+          "email",
+          "address",
+          "version"
+        ],
+        "properties": {
+          "listed": {
+            "type": "boolean"
+          },
+          "aboutEn": {
+            "type": "string"
+          },
+          "aboutAr": {
+            "type": "string"
+          },
+          "phone": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "email": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "address": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 0
           }
         }
       }

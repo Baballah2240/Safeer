@@ -77,3 +77,7 @@ Seat layouts, revisions, seats, buses and drivers add five RLS tables (19 total)
 ## Section 06
 
 Trips, trip stops and assignments add three RLS tables (22 total). A valid transaction-local raw session is mandatory. Reads use company_can without branch or station parameters. Writes also require company-wide route, fleet and driver reads, company profile read for audit and the current password. Trip readers never receive driver contact details. Support grants cannot include trip permissions.
+
+## Section 07
+
+Four anonymous GET routes exist. They use no session and call fixed projections that exclude drivers, registrations, bus codes, staff and private contacts. All other routes keep their checks. Public profile changes need company.profile.manage, CSRF and the current password. Public routes have no rate limit yet; hosting must add one before any public exposure.

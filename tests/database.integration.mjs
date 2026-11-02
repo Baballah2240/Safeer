@@ -137,7 +137,7 @@ test('foundation schemas and migration ledger grant no public access', async () 
   const result = await client.query("SELECT count(*)::int AS count FROM pg_namespace n CROSS JOIN LATERAL aclexplode(n.nspacl) acl WHERE n.nspname IN ('safeer', 'safeer_meta') AND acl.grantee = 0");
   assert.equal(result.rows[0].count, 0);
   const tables = await client.query("SELECT tablename FROM pg_tables WHERE schemaname = 'safeer'");
-  assert.deepEqual(tables.rows.map(r=>r.tablename).sort(), ['users','sessions','roles','permissions','role_permissions','platform_user_roles','identity_audit','auth_throttles','companies','company_settings','branches','stations','company_roles','company_role_permissions','company_users','company_user_roles','support_access_grants','support_access_grant_permissions','company_audit','cities','routes','route_stops','seat_layouts','seat_layout_revisions','seat_layout_seats','buses','drivers','trips','trip_stops','trip_assignments'].sort());
+  assert.deepEqual(tables.rows.map(r=>r.tablename).sort(), ['users','sessions','roles','permissions','role_permissions','platform_user_roles','identity_audit','auth_throttles','companies','company_settings','branches','stations','company_roles','company_role_permissions','company_users','company_user_roles','support_access_grants','support_access_grant_permissions','company_audit','cities','routes','route_stops','seat_layouts','seat_layout_revisions','seat_layout_seats','buses','drivers','trips','trip_stops','trip_assignments','company_public_profiles'].sort());
 }));
 
 test('migration CLI reports pending/applied status without echoing credentials', async () => fixture(async (client, url) => {

@@ -48,10 +48,12 @@ export async function startServer({port = 4320, built = false, identityApiUrl} =
         response.end(request.method === 'HEAD' ? undefined : JSON.stringify({data: {service: 'safeer', version, mode: 'local-prototype', database: 'not-connected'}}));
         return;
       }
-      if (!Object.hasOwn(publicAssets, path)) {
+      // Every company page is the same static page; the slug is checked by the public API.
+      const asset = /^\/company\/[a-z0-9-]{1,60}$/.test(path) ? '/marketplace' : path;
+      if (!Object.hasOwn(publicAssets, asset)) {
         response.writeHead(404); response.end('Not found'); return;
       }
-      const [file, type] = publicAssets[path];
+      const [file, type] = publicAssets[asset];
       const content = await readFile(new URL((built ? 'dist/' : '') + file, import.meta.url));
       response.writeHead(200, {'Content-Type': type + (type === 'image/svg+xml' ? '' : '; charset=utf-8')});
       response.end(request.method === 'HEAD' ? undefined : content);

@@ -21,5 +21,7 @@ export async function grantIdentityRuntime(client,role){
     GRANT EXECUTE ON FUNCTION safeer.fleet_manage(uuid),safeer.driver_manage(uuid) TO "${role}";
     GRANT SELECT,INSERT,UPDATE ON safeer.trips,safeer.trip_stops,safeer.trip_assignments TO "${role}";
     GRANT EXECUTE ON FUNCTION safeer.trip_manage(uuid) TO "${role}";
+    GRANT SELECT,INSERT,UPDATE ON safeer.company_public_profiles TO "${role}";
+    GRANT EXECUTE ON FUNCTION safeer.public_trips(text,text,date,text),safeer.public_cities(),safeer.public_companies(text) TO "${role}";
     GRANT EXECUTE ON FUNCTION safeer.company_actor(),safeer.company_super(),safeer.company_can(uuid,text,uuid,uuid),safeer.company_has(uuid,text),safeer.member_visible(uuid,uuid,boolean),safeer.assignment_allowed(uuid,uuid,uuid,uuid) TO "${role}";`);
 }

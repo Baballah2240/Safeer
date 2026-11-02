@@ -109,3 +109,7 @@ A seat map has 1-20 rows, 1-7 columns and 1-100 uniquely labeled seats, and empt
 Trip access is company-wide; managing also needs company-wide route, fleet and driver reads. Support grants gain no trip access. A trip copies its route, stops, and at assignment its bus, seat-layout revision, seat count and driver name, so later edits never change it. Times use the company timezone and each stop stores whole minutes after departure, strictly increasing from 0.
 
 Status moves only from draft to published, and from draft or published to canceled with a reason; canceled is final. Publishing needs an approved company, an active bus and driver, a fare above zero and a future departure. Published trips keep their time and fare. One bus or driver cannot overlap two live trips, and replacing either keeps history and needs a reason. Upcoming assignments protect a bus or driver from deactivation. Trip readers see a driver's name but never contact details. Fares are stored in minor units as a snapshot; nothing is sold. Section 08 must add rules for reassigning trips once seats can be reserved.
+
+## Section 07 marketplace rules (D28)
+
+A company appears only when approved and self-listed; listing defaults to off. Public contact details are separate from private company contact fields. Only published trips with a future departure and a current assignment appear. Search matches a trip's first and last stop because a fare covers the whole trip. Seats shown are the bus's total until Section 08 adds availability. No passenger details are collected.

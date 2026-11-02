@@ -1,8 +1,8 @@
 # Safeer / Sudan Transport
 
-Version 0.7.0, Section 06: company trip scheduling, bus and driver assignment and publication, built on the existing fleet, company, route and identity system. This independent Sudan passenger-transport project does not modify Stocrant or the school application.
+Version 0.8.0, Section 07: public marketplace and company pages at /marketplace, built on the existing trip, fleet, company, route and identity system. This independent Sudan passenger-transport project does not modify Stocrant or the school application.
 
-Start continuation at [CURRENT_STATE](docs/CURRENT_STATE.md). Section 06 is authorized by the latest "next". Stop before Section 07 after its handover. To upgrade an existing local database, stop the launcher, then run npm.cmd run local:backup -- Section-06 followed by npm.cmd run local.
+Start continuation at [CURRENT_STATE](docs/CURRENT_STATE.md). Section 07 is authorized by the latest "next". Stop before Section 08 after its handover. To upgrade an existing local database, stop the launcher, then run npm.cmd run local:backup -- Section-07 followed by npm.cmd run local.
 
 ## Run locally on Windows
 

@@ -62,3 +62,7 @@ Workspace responses contain only RLS-visible resources and field-level UI capabi
 ## Section 06 / 0.7.0
 
 45 paths / 56 operations. GET/POST /api/v1/companies/:id/trips (optional from date); GET/PATCH trips/:rid; POST trips/:rid/assignment; POST trips/:rid/publish; POST trips/:rid/cancel. Writes reauthenticate and require CSRF. Conflicts return STALE_VERSION, TRIP_NOT_DRAFT, TRIP_NOT_READY, INVALID_TRIP_STOPS, ASSIGNMENT_CONFLICT, INACTIVE_ASSIGNMENT, TRIP_RESOURCE_IN_USE or CATALOG_LIMIT. No delete, passenger search or reservation operation exists.
+
+## Section 07 / 0.8.0
+
+50 paths / 62 operations. Anonymous GET /api/v1/public/cities, /public/companies, /public/companies/:slug and /public/trips (from, to, date). GET/PUT /api/v1/companies/:id/public-profile needs company.profile.manage; version 0 is the first save. No write route is anonymous.

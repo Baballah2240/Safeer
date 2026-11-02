@@ -111,3 +111,7 @@ FleetService and its versioned controller extend the existing NestJS modular bac
 ## Section 06 trips
 
 TripService and its versioned controller extend the existing NestJS modular backend. src/trips.js shares existing staff authentication, dialogs, translations and themes. Snapshots are filled by database triggers, not the API, so no client can forge them.
+
+## Section 07 marketplace
+
+PublicService serves anonymous reads through fixed SECURITY DEFINER projections, each naming its output fields; the runtime role still cannot read the underlying rows without a session. marketplace.html and src/marketplace.js are one static page serving /marketplace and /company/{slug}, separate from staff code and the fictional prototype at /. This supersedes nothing in the target Next.js plan: it is the local implementation until hosting is authorized.
