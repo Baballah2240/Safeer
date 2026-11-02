@@ -156,6 +156,7 @@ Payment confirmation locks the booking and allocations, reads a fresh database c
 | 0008_reservations.sql | Seat holds, allocations with an exclusion constraint, hold history and fixed projections | 08 |
 | 0009_passengers.sql | Passenger details apart from booking history, retrieval, staff booking access and erasure | 09 |
 | 0010_ticketing.sql | Counters, cash sessions, numbered documents, payments, receipts, tickets, refunds and print records | 10 |
+| 0011_luggage.sql | Traveler declaration, bags, QR tags, append-only events, exceptions and the refund block | 11 |
 | Future sequential files | Only the implemented module's reviewed DDL/constraints/indexes/policies | 10 onward |
 
 Use append-only sequential `0001_name.sql` files. The runner normalizes CRLF, hashes contents, checks applied names/versions/checksums, obtains a transaction-level advisory lock, and commits all pending files with their ledger rows atomically. SQL files must not contain their own transaction control or nontransactional statements. Drift/unknown history fails closed. No automatic down-migrations or edits to applied files; use reviewed forward corrections. Keep schema-owner and application credentials separate.
@@ -209,3 +210,7 @@ Migration 0009_passengers.sql adds booking_contacts (mobile, erase_at, erased_at
 ## Implemented Section 10 (D32)
 
 Migration 0010_ticketing.sql adds company_payment_settings, station_counters, cash_sessions, document_sequences, payments, receipts, tickets, refunds and document_prints, all with row security and no runtime grants. There are 45 application tables plus the migration ledger and 37 RLS tables. Bookings gain the statuses confirmed and refunded, and seat claims stay exclusive through seat_allocations_no_sharing. Guards refuse changes to money records. This differs from the plan above: payment_allocations and cash_movements are not created, because a payment settles exactly one booking and expected cash is worked out from the permanent payment and refund records. Names on tickets follow the 90-day erasure; financial records are kept.
+
+## Implemented Section 11 (D33)
+
+Migration 0011_luggage.sql adds luggage_records, luggage_tags (only a hash of the QR value, with replacement history), luggage_events (append-only) and luggage_exceptions (at most one open per bag, beside the lifecycle), all with row security and no runtime grants. There are 49 application tables plus the migration ledger and 41 RLS tables. booking_passengers gains luggage_note, erased with the name. This replaces the earlier has_luggage / luggage_description plan with one optional note, where empty means none. A trigger on refunds refuses a refund while a bag on that booking is neither collected nor lost.

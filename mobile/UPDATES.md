@@ -84,3 +84,7 @@ Add responsive bilingual passenger forms, the My booking retrieval page and the 
 ## 2026-11-02 - Section 10 ticketing
 
 Add the responsive bilingual Station section, payment, refund and print sheets and passenger confirmed and refunded pages to shared src/. No native app build or deployment requested. Verification: 96 automated checks and 32 ticketing layouts per source/built mode.
+
+## 2026-11-02 - Section 11 luggage
+
+Add the responsive bilingual Luggage section, printable QR tags, a luggage field on passenger and walk-in forms and bag status on the passenger booking page to shared src/. No native app build or deployment requested. Verification: 102 automated checks and 32 luggage layouts per source/built mode.

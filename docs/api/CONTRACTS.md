@@ -77,4 +77,8 @@ Workspace responses contain only RLS-visible resources and field-level UI capabi
 
 ## Section 10 / 0.11.0
 
-71 paths / 84 operations. Under /api/v1/companies/:id: GET /counter and /counter/trips/:tid; PUT /payment-settings; POST /counters and PATCH /counters/:rid; POST /counter/sessions and /counter/sessions/:sid/close; POST /counter/sales; POST /bookings/:bid/pay, /bookings/:bid/refund and /bookings/:bid/print. All writes need CSRF. Payment settings, counter changes, closing a session and refunds also need the current password; a late payment needs a reason and the late-payment permission. See src/contracts/openapi.json for fields and errors.
+71 paths / 83 operations. Under /api/v1/companies/:id: GET /counter and /counter/trips/:tid; PUT /payment-settings; POST /counters and PATCH /counters/:rid; POST /counter/sessions and /counter/sessions/:sid/close; POST /counter/sales; POST /bookings/:bid/pay, /bookings/:bid/refund and /bookings/:bid/print. All writes need CSRF. Payment settings, counter changes, closing a session and refunds also need the current password; a late payment needs a reason and the late-payment permission. See src/contracts/openapi.json for fields and errors.
+
+## Section 11 / 0.12.0
+
+79 paths / 92 operations. Under /api/v1/companies/:id/luggage: GET (q) and POST; POST /scan; PATCH /:lid; POST /:lid/tag, /:lid/move, /:lid/collect, /:lid/exceptions and /:lid/exceptions/:eid/resolve. All writes need CSRF; resolving also needs the current password. travelers[].luggage is optional on POST /public/holds, POST /counter/sales and PATCH /bookings/:bid. Booking replies gain luggage (number, category, quantity, seat, status). New errors include LUGGAGE_HELD, LUGGAGE_STATE, LUGGAGE_EXCEPTION_OPEN, TICKET_REQUIRED, TAG_UNKNOWN, TAG_REPLACED, TAG_REASON_REQUIRED, REASON_REQUIRED and COLLECTION_NOT_VERIFIED.

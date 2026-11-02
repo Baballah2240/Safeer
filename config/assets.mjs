@@ -15,6 +15,7 @@ export const publicAssets = {
   '/src/trips.js': ['src/trips.js', 'text/javascript'],
   '/src/bookings.js': ['src/bookings.js', 'text/javascript'],
   '/src/station.js': ['src/station.js', 'text/javascript'],
+  '/src/luggage.js': ['src/luggage.js', 'text/javascript'],
   '/booking': ['marketplace.html', 'text/html'],
   '/src/fleet.js': ['src/fleet.js', 'text/javascript'],
   '/src/companies.js': ['src/companies.js', 'text/javascript'],

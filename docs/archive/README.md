@@ -25,3 +25,5 @@ To continue, extract into a new folder, read docs/CURRENT_STATE.md first, run np
 [Section 09 passengers](SECTION_09_PASSENGERS.md) records passenger details, retrieval, erasure, final verification and the open local upgrade step. Stop before Section 10 until approved.
 
 [Section 10 ticketing](SECTION_10_TICKETING.md) records counters, payments, tickets, refunds, final verification, questions for the owner and the open local upgrade step. Stop before Section 11 until approved.
+
+[Section 11 luggage](SECTION_11_LUGGAGE.md) records bags, tags, tracking, problems, final verification and the open local upgrade step. Stop before Section 12 until approved.

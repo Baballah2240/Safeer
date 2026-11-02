@@ -31,11 +31,13 @@ const fullName=(value:unknown)=>{
  const name=value.trim().replace(/\s+/g,' ');
  if(name.length<2||name.length>100||!/\p{L}/u.test(name))fail('INVALID_PASSENGERS');return name;
 };
+// What a traveler says they carry. Nothing is checked until staff register a bag.
+const luggageNote=(value:unknown)=>{if(value===undefined||value===null)return null;if(typeof value!=='string'||value.length>1000||/[\u0000-\u001f\u007f]/.test(value))fail('INVALID_PASSENGERS');const note=value.trim();if(note.length>300)fail('INVALID_PASSENGERS');return note||null;};
 const optionalMobile=(value:unknown)=>value===undefined||value===null||value===''?null:mobileNumber(value);
 // One traveler for each requested seat, no more and no fewer.
 function travelers(value:unknown,labels:string[]){
  if(!Array.isArray(value)||value.length!==labels.length)fail('INVALID_PASSENGERS');
- const rows=value.map(row=>{const data=body(row,['seat','name','mobile']);if(!labels.includes(data.seat as string))fail('INVALID_PASSENGERS');return {seat:data.seat as string,name:fullName(data.name),mobile:optionalMobile(data.mobile)};});
+ const rows=value.map(row=>{const data=body(row,['seat','name','mobile','luggage']);if(!labels.includes(data.seat as string))fail('INVALID_PASSENGERS');return {seat:data.seat as string,name:fullName(data.name),mobile:optionalMobile(data.mobile),luggage:luggageNote(data.luggage)};});
  if(new Set(rows.map(row=>row.seat)).size!==labels.length)fail('INVALID_PASSENGERS');
  return rows.sort((a,b)=>a.seat.localeCompare(b.seat));
 }

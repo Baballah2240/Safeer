@@ -3,9 +3,10 @@ import {fleetView,bindFleet,driversView,bindDrivers} from './fleet.js';
 import {tripsView,bindTrips} from './trips.js';
 import {publicPageView,bindPublicPage} from './public-page.js';
 import {bookingsView,bindBookings,openBookingNext} from './bookings.js';
-import {stationView,bindStation} from './station.js';
+import {luggageView,bindLuggage,resetLuggage} from './luggage.js';
+import {stationView,bindStation,resetStation} from './station.js';
 export const companyState={id:'',section:'overview'};
-export function resetCompanies(){companyState.id='';companyState.section='overview';openBookingNext(null);}
+export function resetCompanies(){companyState.id='';companyState.section='overview';openBookingNext(null);resetLuggage();resetStation();}
 export async function loadCompanies(api){
   const list=await api('companies');
   if(companyState.id&&!list.items.some(c=>c.id===companyState.id))resetCompanies();
@@ -27,7 +28,7 @@ export function companyView(data,{t,e,language}){
   if(!data.company)return `<section class="staff-panel"><header class="staff-section-head"><div><h1>${t('Companies')}</h1><p>${t('Only companies you are authorized to access appear here.')}</p></div>${data.canCreate?button('data-company-create class="staff-primary"','Create company'):''}</header><div class="staff-grid">${data.items.map(c=>`<article class="staff-record"><strong>${name(c)}</strong><p><bdi>${e(c.slug)}</bdi></p>${badge(c.status)}<div class="staff-actions">${button(`data-company-open="${c.id}"`,'Open company')}</div></article>`).join('')||`<p>${t('No company access assigned.')}</p>`}</div></section>`;
   const c=data.company,cap=data.capabilities;
   const when=value=>new Intl.DateTimeFormat(language==='ar'?'ar-SD':'en-GB',{dateStyle:'medium',timeStyle:'short',timeZone:c.timezone}).format(new Date(value));
-  const sections=[['overview','Company overview',true],['resources','Branches & stations',true],['routes','Routes & stops',cap.routesRead],['fleet','Buses & seat maps',cap.fleetRead],['drivers','Drivers',cap.driversRead],['trips','Trips',cap.tripsRead],['bookings','Bookings',cap.bookingsRead],['station','Station',cap.stationScreen],['public','Public page',cap.profile],['members','Company staff',cap.membersRead],['roles','Company roles',cap.rolesRead],['support','Support access',cap.supportRead],['audit','Company audit',cap.auditRead]].filter(r=>r[2]);
+  const sections=[['overview','Company overview',true],['resources','Branches & stations',true],['routes','Routes & stops',cap.routesRead],['fleet','Buses & seat maps',cap.fleetRead],['drivers','Drivers',cap.driversRead],['trips','Trips',cap.tripsRead],['bookings','Bookings',cap.bookingsRead],['station','Station',cap.stationScreen],['luggage','Luggage',cap.luggage||cap.luggageResolve],['public','Public page',cap.profile],['members','Company staff',cap.membersRead],['roles','Company roles',cap.rolesRead],['support','Support access',cap.supportRead],['audit','Company audit',cap.auditRead]].filter(r=>r[2]);
   if(!sections.some(([id])=>id===companyState.section))companyState.section='overview';
   const title=`<header class="staff-welcome"><div><p class="staff-eyebrow">${t('Company workspace')}</p><h1>${name(c)}</h1><p>${t('Your access is limited to your assigned company and resources.')}</p></div><div class="staff-actions">${badge(c.status)}${data.selectionCount>1||data.canCreate?button('data-company-back','All companies'):''}</div></header><nav class="company-nav" aria-label="${t('Company workspace')}">${sections.map(([id,label])=>button(`data-company-section="${id}" ${companyState.section===id?'aria-current="page"':''}`,label)).join('')}</nav>`;
   const branch=id=>data.branches.find(b=>b.id===id),station=id=>data.stations.find(s=>s.id===id);
@@ -40,6 +41,7 @@ export function companyView(data,{t,e,language}){
   if(companyState.section==='drivers')content=driversView(data,{t,e,language});
   if(companyState.section==='trips')content=tripsView(data,{t,e,language});
   if(companyState.section==='bookings')content=bookingsView(data,{t,e,language});
+  if(companyState.section==='luggage')content=luggageView(data,{t,e,language});
   if(companyState.section==='station')content=stationView(data,{t,e,language});
   if(companyState.section==='public')content=publicPageView(data,{t,e,language});
   if(companyState.section==='members')content=`<section class="staff-panel"><header class="staff-section-head"><div><h2>${t('Company staff')}</h2><p>${t('Membership changes affect this company only.')}</p></div>${cap.memberCreate?button('data-member-create class="staff-primary"','Add staff member'):''}</header><div class="staff-grid staff-user-grid">${data.members.map(m=>`<article class="staff-record"><strong>${e(m.displayName)}</strong><p><bdi>${e(m.login)}</bdi></p>${badge(m.active&&m.accountActive?'Active':'Inactive')}<div class="staff-permissions">${m.assignments.map(a=>`<span class="staff-badge">${assignment(a)}</span>`).join('')}</div><div class="staff-actions">${m.canEdit&&cap.memberCreate?button(`data-member-edit="${m.id}"`,'Edit membership'):''}</div></article>`).join('')||`<p>${t('No records to show.')}</p>`}</div></section>`;
@@ -71,6 +73,7 @@ export function bindCompanies(root,data,ctx){
   if(companyState.section==='drivers')bindDrivers(root,data,ctx);
   if(companyState.section==='trips')bindTrips(root,data,ctx);
   if(companyState.section==='bookings')bindBookings(root,data,ctx);
+  if(companyState.section==='luggage')bindLuggage(root,data,ctx);
   if(companyState.section==='station')bindStation(root,data,{...ctx,goToBooking:id=>{openBookingNext(id);companyState.section='bookings';render();}});
   if(companyState.section==='public')bindPublicPage(root,data,ctx);
   const resourceForm=(kind,row)=>{

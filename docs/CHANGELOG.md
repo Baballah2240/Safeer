@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.12.0 - 2026-11-02 - SECTION 11
+
+Add a luggage declaration per traveler, bag registration on paid tickets with weight and no fees, QR tags, one-step tracking, problem reports with a separate resolve permission, collection checked against the ticket or mobile number, and a refund block while bags are with the company. Add migration 0011 and 8 paths. 102 automated checks and source/built browser suites passed. The private local database upgrade is an open owner step.
+
 ## 0.11.0 - 2026-11-02 - SECTION 10
 
 Add station counters and cash sessions, full payment by cash, bank transfer or mobile wallet, walk-in sales, official tickets and receipts, full refunds until departure and on canceled trips, late payment by a separate permission, and marked reprints. Add migration 0010 and 11 paths. 96 automated checks and source/built browser suites passed. The private local database upgrade is an open owner step.

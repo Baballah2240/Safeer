@@ -1,6 +1,6 @@
 {
   "name": "safeer",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "private": true,
   "type": "module",
   "description": "Section 10 local station ticketing, passenger details, booking management, seat holds, marketplace, trip scheduling, fleet, route and company management and passenger prototype for Safeer",
@@ -39,7 +39,9 @@
     "test:reservations:browser": "node tests/reservations.browser.mjs",
     "test:passengers": "node --test tests/passengers.integration.mjs",
     "test:ticketing": "node --test tests/ticketing.integration.mjs",
-    "test:ticketing:browser": "node tests/ticketing.browser.mjs"
+    "test:ticketing:browser": "node tests/ticketing.browser.mjs",
+    "test:luggage": "node --test tests/luggage.integration.mjs",
+    "test:luggage:browser": "node tests/luggage.browser.mjs"
   },
   "license": "UNLICENSED",
   "dependencies": {
@@ -47,6 +49,7 @@
     "@nestjs/core": "12.3.2",
     "@nestjs/platform-express": "12.3.2",
     "pg": "8.23.1",
+    "qrcode-generator": "2.0.4",
     "reflect-metadata": "0.2.2",
     "rxjs": "7.8.2"
   },
@@ -54,6 +57,7 @@
     "@types/express": "5.0.6",
     "@types/node": "24.0.14",
     "@types/pg": "8.23.1",
+    "jsqr": "1.4.0",
     "typescript": "6.0.3"
   },
   "optionalDependencies": {

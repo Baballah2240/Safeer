@@ -127,3 +127,7 @@ Personal details live in booking_contacts and booking_passengers so they can be 
 ## Section 10 ticketing
 
 The Station section and booking sheets call a TicketingController backed by fixed database functions; the runtime role has no table access. Each payment or sale is one transaction, repeats return the original through a key bound to the company and purpose, and the trip row lock serializes seat changes. Document numbers come from per-company sequences that commit with the document. Printing uses the browser print dialog with print-only styles in src/staff.css.
+
+## Section 11 luggage
+
+The Luggage section calls a LuggageController backed by fixed database functions; the runtime role has no table access. The QR is built in the API from a random value, returned once as a vector path, and only its hash is stored. A hardware scanner types into the search box, and the scan goes in a request body so it stays out of logs. Registering takes the same trip lock as refunds, so a bag cannot slip in during a refund. qrcode-generator is a new runtime dependency; jsqr is used only by tests.
