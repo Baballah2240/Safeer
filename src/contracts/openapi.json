@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Safeer local identity API",
-    "version": "0.5.0",
-    "description": "Local Safeer identity and company workspaces. No production hosting, real booking or money API. Section 04 adds authenticated cities, company-wide route planning and ordered stops; no real trips or reservations."
+    "version": "0.6.0",
+    "description": "Local Safeer identity and company workspaces. No production hosting, real booking or money API. Section 04 adds authenticated cities and company route planning. Section 05 adds company-private buses, immutable seat-layout revisions and driver records; no real trips or reservations."
   },
   "servers": [
     {
@@ -6321,6 +6321,1141 @@
           }
         }
       }
+    },
+    "/api/v1/companies/{id}/fleet": {
+      "get": {
+        "summary": "List company seat layouts and buses",
+        "description": "Existing session, same-origin CSRF and DTO validation apply. Requires company-wide fleet or driver permission; writes also require the current password. Branch, station and support grants do not apply.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "layouts",
+                        "buses",
+                        "canManage"
+                      ],
+                      "properties": {
+                        "layouts": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/SeatLayout"
+                          }
+                        },
+                        "buses": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Bus"
+                          }
+                        },
+                        "canManage": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in required."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not available."
+          },
+          "409": {
+            "description": "Stale, duplicate, in-use or capacity conflict."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/fleet/layouts": {
+      "post": {
+        "summary": "Create a seat layout with revision 1",
+        "description": "Existing session, same-origin CSRF and DTO validation apply. Requires company-wide fleet or driver permission; writes also require the current password. Branch, station and support grants do not apply.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "code",
+                  "nameEn",
+                  "nameAr",
+                  "active",
+                  "rows",
+                  "columns",
+                  "seats",
+                  "currentPassword"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "nameEn": {
+                    "type": "string"
+                  },
+                  "nameAr": {
+                    "type": "string"
+                  },
+                  "active": {
+                    "type": "boolean"
+                  },
+                  "rows": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 20
+                  },
+                  "columns": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 7
+                  },
+                  "seats": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 100,
+                    "items": {
+                      "$ref": "#/components/schemas/Seat"
+                    }
+                  },
+                  "currentPassword": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "id"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "revision": {
+                          "type": "integer",
+                          "minimum": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in required."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not available."
+          },
+          "409": {
+            "description": "Stale, duplicate, in-use or capacity conflict."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/fleet/layouts/{rid}": {
+      "patch": {
+        "summary": "Change layout name or activation",
+        "description": "Existing session, same-origin CSRF and DTO validation apply. Requires company-wide fleet or driver permission; writes also require the current password. Branch, station and support grants do not apply.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "rid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "nameEn",
+                  "nameAr",
+                  "active",
+                  "version",
+                  "currentPassword"
+                ],
+                "properties": {
+                  "nameEn": {
+                    "type": "string"
+                  },
+                  "nameAr": {
+                    "type": "string"
+                  },
+                  "active": {
+                    "type": "boolean"
+                  },
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "currentPassword": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "id"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "revision": {
+                          "type": "integer",
+                          "minimum": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in required."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not available."
+          },
+          "409": {
+            "description": "Stale, duplicate, in-use or capacity conflict."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/fleet/layouts/{rid}/revisions": {
+      "post": {
+        "summary": "Create the next immutable revision",
+        "description": "Existing session, same-origin CSRF and DTO validation apply. Requires company-wide fleet or driver permission; writes also require the current password. Branch, station and support grants do not apply.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "rid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "rows",
+                  "columns",
+                  "seats",
+                  "expectedRevision",
+                  "currentPassword"
+                ],
+                "properties": {
+                  "rows": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 20
+                  },
+                  "columns": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 7
+                  },
+                  "seats": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 100,
+                    "items": {
+                      "$ref": "#/components/schemas/Seat"
+                    }
+                  },
+                  "expectedRevision": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "currentPassword": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "id"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "revision": {
+                          "type": "integer",
+                          "minimum": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in required."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not available."
+          },
+          "409": {
+            "description": "Stale, duplicate, in-use or capacity conflict."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/fleet/layouts/{rid}/revisions/{revision}": {
+      "get": {
+        "summary": "Read one revision and its seats",
+        "description": "Existing session, same-origin CSRF and DTO validation apply. Requires company-wide fleet or driver permission; writes also require the current password. Branch, station and support grants do not apply.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "rid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "revision",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "revision",
+                        "rows",
+                        "columns",
+                        "seatCount",
+                        "seats"
+                      ],
+                      "properties": {
+                        "revision": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "rows": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 20
+                        },
+                        "columns": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 7
+                        },
+                        "seatCount": {
+                          "type": "integer"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "seats": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Seat"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in required."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not available."
+          },
+          "409": {
+            "description": "Stale, duplicate, in-use or capacity conflict."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/fleet/buses": {
+      "post": {
+        "summary": "Add a bus",
+        "description": "Existing session, same-origin CSRF and DTO validation apply. Requires company-wide fleet or driver permission; writes also require the current password. Branch, station and support grants do not apply.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "code",
+                  "registration",
+                  "layoutId",
+                  "layoutRevision",
+                  "active",
+                  "currentPassword"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "registration": {
+                    "type": "string"
+                  },
+                  "layoutId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "layoutRevision": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "active": {
+                    "type": "boolean"
+                  },
+                  "currentPassword": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "id"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "revision": {
+                          "type": "integer",
+                          "minimum": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in required."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not available."
+          },
+          "409": {
+            "description": "Stale, duplicate, in-use or capacity conflict."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/fleet/buses/{rid}": {
+      "patch": {
+        "summary": "Edit a bus",
+        "description": "Existing session, same-origin CSRF and DTO validation apply. Requires company-wide fleet or driver permission; writes also require the current password. Branch, station and support grants do not apply.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "rid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "code",
+                  "registration",
+                  "layoutId",
+                  "layoutRevision",
+                  "active",
+                  "currentPassword",
+                  "version"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "registration": {
+                    "type": "string"
+                  },
+                  "layoutId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "layoutRevision": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "active": {
+                    "type": "boolean"
+                  },
+                  "currentPassword": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "id"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "revision": {
+                          "type": "integer",
+                          "minimum": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in required."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not available."
+          },
+          "409": {
+            "description": "Stale, duplicate, in-use or capacity conflict."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/drivers": {
+      "get": {
+        "summary": "List company drivers",
+        "description": "Existing session, same-origin CSRF and DTO validation apply. Requires company-wide fleet or driver permission; writes also require the current password. Branch, station and support grants do not apply.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "items",
+                        "canManage"
+                      ],
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Driver"
+                          }
+                        },
+                        "canManage": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in required."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not available."
+          },
+          "409": {
+            "description": "Stale, duplicate, in-use or capacity conflict."
+          }
+        }
+      },
+      "post": {
+        "summary": "Add a driver",
+        "description": "Existing session, same-origin CSRF and DTO validation apply. Requires company-wide fleet or driver permission; writes also require the current password. Branch, station and support grants do not apply.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "employeeCode",
+                  "nameEn",
+                  "nameAr",
+                  "active",
+                  "currentPassword"
+                ],
+                "properties": {
+                  "employeeCode": {
+                    "type": "string"
+                  },
+                  "nameEn": {
+                    "type": "string"
+                  },
+                  "nameAr": {
+                    "type": "string"
+                  },
+                  "phone": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "memberId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "uuid"
+                  },
+                  "active": {
+                    "type": "boolean"
+                  },
+                  "currentPassword": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "id"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "revision": {
+                          "type": "integer",
+                          "minimum": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in required."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not available."
+          },
+          "409": {
+            "description": "Stale, duplicate, in-use or capacity conflict."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/drivers/{rid}": {
+      "patch": {
+        "summary": "Edit a driver",
+        "description": "Existing session, same-origin CSRF and DTO validation apply. Requires company-wide fleet or driver permission; writes also require the current password. Branch, station and support grants do not apply.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "rid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "employeeCode",
+                  "nameEn",
+                  "nameAr",
+                  "active",
+                  "currentPassword",
+                  "version"
+                ],
+                "properties": {
+                  "employeeCode": {
+                    "type": "string"
+                  },
+                  "nameEn": {
+                    "type": "string"
+                  },
+                  "nameAr": {
+                    "type": "string"
+                  },
+                  "phone": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "memberId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "uuid"
+                  },
+                  "active": {
+                    "type": "boolean"
+                  },
+                  "currentPassword": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "id"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "revision": {
+                          "type": "integer",
+                          "minimum": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in required."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not available."
+          },
+          "409": {
+            "description": "Stale, duplicate, in-use or capacity conflict."
+          }
+        }
+      }
     }
   },
   "components": {
@@ -7488,6 +8623,198 @@
           "version",
           "stopCount"
         ]
+      },
+      "Seat": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "row",
+          "column",
+          "label"
+        ],
+        "properties": {
+          "row": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20
+          },
+          "column": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 7
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 8
+          }
+        }
+      },
+      "SeatLayoutRevision": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "revision",
+          "rows",
+          "columns",
+          "seatCount"
+        ],
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "rows": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20
+          },
+          "columns": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 7
+          },
+          "seatCount": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        }
+      },
+      "SeatLayout": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "code",
+          "nameEn",
+          "nameAr",
+          "active",
+          "version",
+          "latestRevision",
+          "revisions"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "code": {
+            "type": "string"
+          },
+          "nameEn": {
+            "type": "string"
+          },
+          "nameAr": {
+            "type": "string"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "latestRevision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "revisions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SeatLayoutRevision"
+            }
+          }
+        }
+      },
+      "Bus": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "code",
+          "registration",
+          "layoutId",
+          "layoutRevision",
+          "active",
+          "version"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "code": {
+            "type": "string"
+          },
+          "registration": {
+            "type": "string"
+          },
+          "layoutId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "layoutRevision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "Driver": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "employeeCode",
+          "nameEn",
+          "nameAr",
+          "phone",
+          "memberId",
+          "active",
+          "version"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "employeeCode": {
+            "type": "string"
+          },
+          "nameEn": {
+            "type": "string"
+          },
+          "nameAr": {
+            "type": "string"
+          },
+          "phone": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "memberId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
       }
     }
   }

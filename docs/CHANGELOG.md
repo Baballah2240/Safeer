@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.0 - 2026-11-02 - SECTION 05
+
+Add company-private seat layouts with immutable revisions, a visual seat-map editor, buses and driver records. Add migration 0005, fleet service and controller, 5 RLS tables, sealed revisions, capacity guards, 4 template permissions and database/backup-local.mjs. 60 automated checks and source/built browser suites passed. The private local database upgrade is an open owner step.
+
 ## 0.5.0 - 2026-11-02 - SECTION 04
 
 Add bilingual cities, company routes/destinations and ordered stops; station-city assignment; route details, reorder controls and inline validation. Add migration 0004, route service/controllers, 3 RLS tables, composite city/station FKs, deferred route checks, protected active resources, new-company template grants and audit. Preserve existing tenant copies and station identities. Preserve disabled reorder controls after failed form validation. Updated contracts, permissions, startup checks, versions, tests and continuation/workflow/archive documentation. Final verification and local upgrade receipts are recorded in CURRENT_STATE. No files removed; stop before Section 05.

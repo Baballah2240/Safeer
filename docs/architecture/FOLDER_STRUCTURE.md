@@ -56,3 +56,5 @@ runtime/ contains the ignored persistent development database, private connectio
 Section 03 adds `apps/api/src/company.service.ts`, `database/migrations/0003_companies.sql`, `src/companies.js`, company integration/browser tests, the company access workflow and numbered Section 03 archive. Company SQL/authorization stays in the API/database; shared responsive company UI stays under src/. Runtime database dumps are private under ignored runtime/backups/, never under source archives.
 
 Section 04 adds apps/api/src/route.service.ts, src/routes.js, database/migrations/0004_routes.sql and route-specific integration/browser tests. Route workflow and handover documents explain access, limits and continuation.
+
+Section 05 adds apps/api/src/fleet.service.ts, src/fleet.js, database/migrations/0005_fleet.sql, database/backup-local.mjs and fleet integration/browser tests. The fleet workflow and handover documents explain access, limits and continuation.

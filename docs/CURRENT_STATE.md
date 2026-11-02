@@ -1,10 +1,10 @@
 # Current state - read this first
 
-Updated: 2026-11-02. Safeer / Sudan Transport, version 0.5.0.
+Updated: 2026-11-02. Safeer / Sudan Transport, version 0.6.0.
 
 ## Current section and next gate
 
-The owner's latest "next" authorizes Section 04 (D25): cities, destinations, company routes and ordered stops. Implementation is complete and verified. Stop before Section 05 (bus fleet, seat layouts and drivers) until explicitly approved.
+The owner's latest "next" authorizes Section 05 (D26): company buses, immutable seat-layout revisions and drivers. Source is complete and verified. **Open owner step:** the real runtime/ database is not upgraded yet. Stop the running launcher, then run npm.cmd run local:backup -- Section-05 and npm.cmd run local; see [Section 05](archive/SECTION_05_FLEET.md). Stop before Section 06 (trip scheduling and management) until explicitly approved.
 
 ## Working application
 
@@ -28,16 +28,20 @@ Workflow: Super Admin -> Cities & destinations -> add cities -> Companies -> add
 
 ## Database and API
 
-Migrations 0001-0003 are immutable. New 0004_routes.sql adds cities, routes and route_stops plus nullable station city IDs, scoped policies, composite FKs, deferred route validation, resource guards and template permissions. There are 22 application tables plus the migration ledger, 14 RLS tables, 17 permissions, 31 implemented API paths / 38 operations and 16 allowlisted public assets.
+Migrations 0001-0004 are immutable. New 0005_fleet.sql adds seat_layouts, seat_layout_revisions, seat_layout_seats, buses and drivers with company-wide RLS, sealed revisions and capacity guards. There are 27 application tables plus the migration ledger and 19 RLS tables. Earlier, 0004_routes.sql added cities, routes and route_stops plus nullable station city IDs, scoped policies, composite FKs, deferred route validation, resource guards and template permissions. There are 22 application tables plus the migration ledger, 14 RLS tables, 17 permissions, 31 implemented API paths / 38 operations and 16 allowlisted public assets.
 
 The global city catalog is authenticated and Super Admin-managed. Company RLS still derives authority from the valid raw opaque session set transaction-locally, not actor/company flags. Local bounds: 1000 cities, 500 routes/company and 30 stops/route, alongside the existing Section 03 company/resource limits. No DELETE city/route endpoint exists. Current routes use unique(company_id,code); version is optimistic concurrency. Section 06 must snapshot routes/stops for trips before publication.
 
 ## Verification, backup and archive
 
-Native tests use disposable databases and restricted runtime roles, never the persistent local database. All 52 automated checks passed (13 unit/server and 39 native PostgreSQL), without failures or skips. Route workflows passed 48 Arabic/English dark/light layouts per source/built run at 1920x1080, 1366x768, 390x844 and 320x740. Company regressions passed 72 layouts per mode and identity regressions 60 per mode. The retained passenger/luggage built workflow passed. Build and documentation checks passed. The local migration preserved the existing account/credentials/settings and checked 11 company tables; its private backup was actually restored and verified in isolation. No known critical defects remain in the implemented scope. Final receipts are stored in ignored .qa/ and included in the source checkpoint. Account/business-data preservation and backup restoration are checked separately before handover.
+Native tests use disposable databases and restricted runtime roles, never the persistent local database. All 60 automated checks passed (13 unit/server and 47 native PostgreSQL), without failures or skips. Fleet workflows passed 64 Arabic/English dark/light layouts per source and built run at 1920, 1366, 390 and 320 pixels. The backup command and the 0004-to-0005 upgrade were proven on a throwaway runtime only.
 
-Verified exact-source checkpoint: archives/Safeer-0.5.0-Section-04-2026-11-02.zip. It excludes accounts, credentials, runtime databases/backups, native caches and node_modules. Existing checkpoints remain separate. Source commit/push status is reported separately; pushing is not hosting deployment.
+Verified exact-source checkpoint: archives/Safeer-0.6.0-Section-05-2026-11-02.zip. It excludes accounts, credentials, runtime databases/backups, native caches and node_modules. Existing checkpoints remain separate. Source commit/push status is reported separately; pushing is not hosting deployment.
 
 ## Remaining work
 
-Section 04 is complete. Stop before Section 05 until explicitly approved. Fleet/seat layouts/drivers, trips, public marketplace, real seat inventory/holds, guest bookings, tickets/payments, registered luggage, boarding and finance remain later sections. The passenger preview still uses fictional in-memory records and must not be confused with durable bookings. No Safeer native app or external deployment was requested.
+Section 05 source is complete; the local database upgrade above is open. Stop before Section 06 until explicitly approved. Trips, public marketplace, real seat inventory/holds, guest bookings, tickets/payments, registered luggage, boarding and finance remain later sections. The passenger preview still uses fictional in-memory records and must not be confused with durable bookings. No Safeer native app or external deployment was requested.
+
+## Section 05 fleet
+
+Company workspaces add Buses & seat maps and Drivers. See [fleet workflow](workflows/FLEET_MANAGEMENT.md). New-company administrators receive the four permissions; existing company role copies need them assigned explicitly.

@@ -50,3 +50,8 @@ input:not([type=checkbox]):focus,select:focus{border-color:#568e85;background:#f
 .route-stop legend{font-weight:700;padding-inline:8px}.route-stop .staff-actions{flex-wrap:wrap}
 .route-stop .staff-actions button{min-height:44px}.route-stop-list{padding-inline-start:28px;display:grid;gap:16px}
 .route-stop-list li{padding:12px;border-bottom:1px solid var(--border)}.route-stop-list li span{display:block;color:var(--muted);margin-top:6px}
+/* Seat maps keep the physical bus orientation in both languages and scroll inside themselves on phones. */
+.seat-editor-size{display:grid;grid-template-columns:1fr 1fr;gap:12px}.seat-count{font-weight:650}.seat-front{margin:12px 0 6px;color:var(--muted);font-size:.85rem;text-align:center}
+.seat-scroll{overflow-x:auto;padding-block:2px}.seat-map{display:grid;grid-template-columns:repeat(var(--seat-columns,4),minmax(38px,1fr));gap:6px;max-width:420px;margin-inline:auto}
+.seat-cell{display:flex;align-items:center;justify-content:center;min-height:38px;padding:2px;border:1px solid var(--border);border-radius:8px;font-size:.85rem;overflow-wrap:anywhere}.seat-aisle{border-color:transparent}
+.seat-editor input{width:100%;min-width:38px;min-height:40px;padding:2px;border-radius:8px;text-align:center}

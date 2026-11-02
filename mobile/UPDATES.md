@@ -56,3 +56,7 @@ Shared web/mobile-facing staff and passenger screens default to dark mode. Heade
 Add bilingual responsive city catalog, station-city assignment and company route/stop editing to shared src/. Preserve dark/light styling, keyboard/touch reordering and company permissions. No native app build or deployment requested. Verification receipts accompany the Section 04 source checkpoint.
 
 Section 04 verification: 52 automated checks, source/built route screens (48 layouts per mode), company/identity regressions and private local upgrade/restore passed. No native build or deployment.
+
+## 2026-11-02 - Section 05 fleet
+
+Add bilingual responsive seat-map editing and viewing, bus and driver records to shared src/. Preserve dark/light styling and company permissions. Seat maps scroll inside themselves on phones. No native app build or deployment requested. Verification: 60 automated checks and 64 fleet layouts per source/built mode.

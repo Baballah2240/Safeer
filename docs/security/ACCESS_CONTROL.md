@@ -69,3 +69,7 @@ The implementation follows PostgreSQL documented [row security behavior](https:/
 ## Section 04
 
 Cities/routes/stops add three RLS tables (14 total). A valid transaction-local raw session is mandatory. Only Super Admin mutates the shared catalog. Company route reads use company_can without branch/station parameters; management also requires resource reads, so scoped grants cannot broaden access. Existing tenant roles remain unchanged during migration. Explicit read-only support may select route access; expiry/revocation/status are rechecked before returning data. City changes enter identity audit, route changes company audit. Composite station/company/city FKs and deferred route/resource validation enforce consistency beneath the API. No public marketplace endpoint is added.
+
+## Section 05
+
+Seat layouts, revisions, seats, buses and drivers add five RLS tables (19 total). A valid transaction-local raw session is mandatory. Fleet and driver reads use company_can without branch or station parameters, so narrower grants never match. Writes also require the matching manage permission, company profile read for audit and the current password. Driver contact details need driver read permission, and fleet access does not reveal them. Support grants cannot include fleet or driver permissions. Linking a driver to a staff member grants nothing.

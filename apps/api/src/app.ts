@@ -8,6 +8,7 @@ import {IdentityService} from './identity.service.js';
 import {Database} from './database.js';
 import {CompanyService} from './company.service.js';
 import {RouteService} from './route.service.js';
+import {FleetService} from './fleet.service.js';
 import {IdentityError,sessionToken,validCsrf,fail} from './security.js';
 
 const version=JSON.parse(readFileSync(new URL('../../package.json',import.meta.url),'utf8')).version;
@@ -24,7 +25,7 @@ class Errors implements ExceptionFilter {
     const type=(error as {type?:string})?.type;
     if(type==='entity.parse.failed'||type==='entity.too.large'){res.status(type==='entity.too.large'?413:400).json({error:{code:'INVALID_REQUEST',message:'Send a valid JSON request within 8 KiB.'}});return;}
     if(code==='23505'){const constraint=(error as {constraint?:string}).constraint||'';const loginConflict=constraint==='users_normalized_login_key';res.status(409).json({error:{code:loginConflict?'DUPLICATE_LOGIN':'DUPLICATE_RECORD',message:loginConflict?'That login is already in use.':'This code, slug or membership is already in use.'}});return;}
-    if(code==='P0001'&&['LAST_COMPANY_ADMIN','COMPANY_LIMIT','CATALOG_LIMIT','RESOURCE_IN_USE','STATION_CITY_IN_USE','INVALID_ROUTE_STOPS','INACTIVE_ROUTE_RESOURCE'].includes((error as Error).message)){res.status(409).json({error:{code:(error as Error).message,message:'The change conflicts with a protected resource, route rule or local capacity.'}});return;}
+    if(code==='P0001'&&['LAST_COMPANY_ADMIN','COMPANY_LIMIT','CATALOG_LIMIT','RESOURCE_IN_USE','STATION_CITY_IN_USE','INVALID_ROUTE_STOPS','INACTIVE_ROUTE_RESOURCE','LAYOUT_IN_USE','INACTIVE_LAYOUT','INVALID_SEAT_LAYOUT','IMMUTABLE_REVISION'].includes((error as Error).message)){res.status(409).json({error:{code:(error as Error).message,message:'The change conflicts with a protected resource, route rule or local capacity.'}});return;}
     if(['23503','23514','42501'].includes(code||'')){res.status(code==='42501'?403:400).json({error:{code:code==='42501'?'FORBIDDEN':'INVALID_RESOURCE_SCOPE',message:'The resource does not belong to an allowed company or scope.'}});return;}
     if(error instanceof HttpException){res.status(error.getStatus()).json({error:{code:'INVALID_REQUEST',message:'The request is not valid.'}});return;}
     res.status(500).json({error:{code:'INTERNAL_ERROR',message:'The request could not be completed.'}});
@@ -82,7 +83,21 @@ class RouteController {
  @Post('companies/:id/routes') create(@Req() req:Request,@Param('id') id:string,@Body() data:unknown){return this.routes.save(token(req),id,undefined,data).then(reply);}
  @Patch('companies/:id/routes/:rid') update(@Req() req:Request,@Param('id') id:string,@Param('rid') rid:string,@Body() data:unknown){return this.routes.save(token(req),id,rid,data).then(reply);}
 }
-@Module({controllers:[IdentityController,CompanyController,RouteController],providers:[Database,IdentityService,CompanyService,RouteService]})
+@Controller('api/v1/companies/:id')
+class FleetController {
+ constructor(private readonly fleet:FleetService){}
+ @Get('fleet') list(@Req() req:Request,@Param('id') id:string){return this.fleet.fleet(token(req),id).then(reply);}
+ @Post('fleet/layouts') createLayout(@Req() req:Request,@Param('id') id:string,@Body() data:unknown){return this.fleet.createLayout(token(req),id,data).then(reply);}
+ @Patch('fleet/layouts/:rid') updateLayout(@Req() req:Request,@Param('id') id:string,@Param('rid') rid:string,@Body() data:unknown){return this.fleet.updateLayout(token(req),id,rid,data).then(reply);}
+ @Post('fleet/layouts/:rid/revisions') revise(@Req() req:Request,@Param('id') id:string,@Param('rid') rid:string,@Body() data:unknown){return this.fleet.revise(token(req),id,rid,data).then(reply);}
+ @Get('fleet/layouts/:rid/revisions/:revision') revision(@Req() req:Request,@Param('id') id:string,@Param('rid') rid:string,@Param('revision') revision:string){return this.fleet.revision(token(req),id,rid,revision).then(reply);}
+ @Post('fleet/buses') createBus(@Req() req:Request,@Param('id') id:string,@Body() data:unknown){return this.fleet.saveBus(token(req),id,undefined,data).then(reply);}
+ @Patch('fleet/buses/:rid') updateBus(@Req() req:Request,@Param('id') id:string,@Param('rid') rid:string,@Body() data:unknown){return this.fleet.saveBus(token(req),id,rid,data).then(reply);}
+ @Get('drivers') drivers(@Req() req:Request,@Param('id') id:string){return this.fleet.drivers(token(req),id).then(reply);}
+ @Post('drivers') createDriver(@Req() req:Request,@Param('id') id:string,@Body() data:unknown){return this.fleet.saveDriver(token(req),id,undefined,data).then(reply);}
+ @Patch('drivers/:rid') updateDriver(@Req() req:Request,@Param('id') id:string,@Param('rid') rid:string,@Body() data:unknown){return this.fleet.saveDriver(token(req),id,rid,data).then(reply);}
+}
+@Module({controllers:[IdentityController,CompanyController,RouteController,FleetController],providers:[Database,IdentityService,CompanyService,RouteService,FleetService]})
 export class IdentityModule {}
 
 export async function createIdentityApi({port=4321,webOrigin='http://127.0.0.1:4320'}:{port?:number;webOrigin?:string}={}){

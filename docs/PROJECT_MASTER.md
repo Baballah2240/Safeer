@@ -1,6 +1,6 @@
 # Safeer / Sudan Transport - project master
 
-Updated: 2026-11-02. Current authorization: **Section 04**, approved by the latest "next" (D25). Read [CURRENT_STATE.md](CURRENT_STATE.md), [master instructions](decisions/MASTER_INSTRUCTIONS_2026-10-30.md) and [DECISIONS.md](DECISIONS.md). Stop before Section 05 after the Section 04 handover.
+Updated: 2026-11-02. Current authorization: **Section 05**, approved by the latest "next" (D26). Read [CURRENT_STATE.md](CURRENT_STATE.md), [master instructions](decisions/MASTER_INSTRUCTIONS_2026-10-30.md) and [DECISIONS.md](DECISIONS.md). Stop before Section 05 after the Section 04 handover.
 
 Owner-authorized 0.2.1 follow-up: collect and display a passenger luggage yes/no declaration and required description in the local prototype. This scoped change (D16) does not begin authentication or full station luggage management.
 
@@ -18,12 +18,12 @@ An expired hold does not authorize payment or boarding. One booking initially be
 
 ## Architecture: target versus current source
 
-| Layer | Target decision | Implemented now (Sections 01-04) |
+| Layer | Target decision | Implemented now (Sections 01-05) |
 | --- | --- | --- |
 | Public marketplace, company pages, dashboards, station PWA | Next.js/React with TypeScript | Existing responsive JavaScript prototype retained, freight removed; no Next.js app installed |
 | Passenger and driver apps | Flutter/Dart clients | Contracts/design sharing strategy documented; no native project or build |
-| Backend | NestJS/TypeScript modular monolith, versioned APIs | NestJS identity/company/route API, same-origin local proxy and separate public passenger example |
-| Durable data | PostgreSQL 18, explicit SQL migrations | Four migrations and 22 identity/company/city/route tables; no durable passenger bookings |
+| Backend | NestJS/TypeScript modular monolith, versioned APIs | NestJS identity/company/route/fleet API, same-origin local proxy and separate public passenger example |
+| Durable data | PostgreSQL 18, explicit SQL migrations | Five migrations and 27 identity/company/city/route/fleet tables; no durable passenger bookings |
 | Jobs/cache/events | Redis, idempotent workers and WebSocket availability updates | Interfaces and consistency requirements documented; services not installed |
 | Documents/storage/notifications | S3-compatible private storage, FCM where applicable | Ownership, outbox and access requirements documented; no accounts or integrations |
 
@@ -46,7 +46,7 @@ Approved initial roles: platform super administrator, platform support administr
 7. Support Arabic/English, RTL/LTR, accessible controls, low-bandwidth clients and clear errors. Do not promise offline seat sales until conflict policy is implemented and tested.
 8. Test, fix, document and archive before handing off. Do not mark proposed schema or target frameworks as implemented.
 
-Section 04 ends at its verified route-planning handover. Section 05 requires explicit owner approval. No production deployment, school-app changes, restaurant/mobile changes, real passenger data or external service enrollment is authorized by this section.
+Section 05 ends at its verified fleet handover. Section 06 requires explicit owner approval. No production deployment, school-app changes, restaurant/mobile changes, real passenger data or external service enrollment is authorized by this section.
 
 
 ## 0.3.1 - Super Administrator role editing
@@ -76,3 +76,7 @@ Authenticated company workspaces now include approval/profile/settings, branches
 ## Section 04 implementation
 
 Completed and verified: Super Admin-managed city catalog, station-city assignment, company-wide route permissions and atomic route/ordered-stop planning. Route and resource constraints protect company/city links and active resources. Local upgrade and private restore verification preserve existing identities and company records. Stop before Section 05; see [route workflow](workflows/ROUTE_PLANNING.md).
+
+## Section 05 implementation
+
+Completed and verified in source: company-private buses, immutable seat-layout revisions and driver records with separate company-wide fleet and driver permissions. The real local database has not been upgraded yet; see the owner step in [Section 05](archive/SECTION_05_FLEET.md).

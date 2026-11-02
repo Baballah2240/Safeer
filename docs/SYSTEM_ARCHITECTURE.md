@@ -103,3 +103,7 @@ Shared src/theme.js initializes dark mode by default, handles delegated theme sw
 `CompanyService` and company controllers reuse the authenticated identity transaction, current-password/CSRF validation and shared advisory lock. The server sets the raw opaque session capability with transaction-local set_config; fixed-search-path SQL helpers resolve the active actor, memberships, scoped permissions and read-only support grants. RLS applies to all eleven tenant tables, in addition to explicit company predicates and composite FKs. Local context expires with the transaction and cannot be replaced by caller actor/company IDs. Runtime connections are non-owner/non-BYPASSRLS; startup requires the expected RLS tables. Definer functions are owned by the migration owner and have no PUBLIC execution.
 
 The shared staff shell loads `src/companies.js`; real company screens are separate from the fictional in-memory passenger example. The build contains 15 public allowlisted files. Future city relationships, trip scopes, money/catalogs and booking integration are deferred to their owning modules. No service source or runtime backup enters the static build.
+
+## Section 05 fleet
+
+FleetService and its versioned controller extend the existing NestJS modular backend. src/fleet.js shares existing staff authentication, dialogs, translations and themes. Company workspaces fetch fleet and driver data only when their company-wide capabilities allow it. Seat maps render left-to-right in both languages because they show the physical bus.

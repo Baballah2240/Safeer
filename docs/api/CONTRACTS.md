@@ -54,3 +54,7 @@ Workspace responses contain only RLS-visible resources and field-level UI capabi
 ## Section 04 / 0.5.0
 
 31 paths / 38 operations. GET/POST /api/v1/cities; PATCH /api/v1/cities/:id; GET/POST /api/v1/companies/:id/routes; GET/PATCH /api/v1/companies/:id/routes/:rid. Cities are global authenticated reads/Super Admin writes. Routes require company-wide company.routes.read; management additionally needs company.routes.manage and company.resources.read. Station create/update accepts optional nullable cityId; omission preserves an existing assignment. Route input: code, nameEn/nameAr, active, stops[{cityId,stationId?}], currentPassword and expected version on edits. Endpoint cities derive from ordered stops. Read summaries include stopCount; detail returns route and zero-based stops. Error codes include INVALID_ROUTE_STOPS, INACTIVE_ROUTE_RESOURCE, STATION_CITY_IN_USE, RESOURCE_IN_USE and CATALOG_LIMIT; stale/duplicate/CSRF/authentication conventions are unchanged. See the executable OpenAPI contract for exact schemas.
+
+## Section 05 / 0.6.0
+
+40 paths / 49 operations. GET /api/v1/companies/:id/fleet; POST fleet/layouts; PATCH fleet/layouts/:rid; POST fleet/layouts/:rid/revisions (expectedRevision); GET fleet/layouts/:rid/revisions/:revision; POST fleet/buses; PATCH fleet/buses/:rid; GET/POST companies/:id/drivers; PATCH drivers/:rid. Writes reauthenticate and require CSRF. Conflicts return STALE_VERSION, DUPLICATE_RECORD, LAYOUT_IN_USE, INACTIVE_LAYOUT or CATALOG_LIMIT. No delete, trip or reservation operation exists.
