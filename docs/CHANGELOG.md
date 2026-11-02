@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased - 2026-11-02 - Marketplace layout (D29)
+
+Rebuild the marketplace and company page layouts with a title band, ticket-style trip cards and a company sidebar. Fix unstyled links and the booking badge. No data, API or permission changes.
+
 ## 0.8.0 - 2026-11-02 - SECTION 07
 
 Add the public marketplace with search and sorting, company pages and a company-managed public profile. Add migration 0007, anonymous read-only projections and 4 public routes. 73 automated checks and source/built browser suites passed. The private local database upgrade is an open owner step.
