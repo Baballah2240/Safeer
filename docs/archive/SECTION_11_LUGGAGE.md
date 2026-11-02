@@ -43,7 +43,15 @@ The real runtime/ database is still at Section 04. The automated session was not
 2. npm.cmd run local:backup -- Section-11
 3. npm.cmd run local
 
-Do not run step 3 if step 2 reports a failure. Then add the new permissions to existing company roles.
+Do not run step 3 if step 2 reports a failure. Then add the new permissions to existing company roles, for both Section 10 and Section 11.
+
+## Open owner step: push to GitHub
+
+The Safeer commits from Section 04 onward are on local main and have not reached GitHub, because the automated session has no GitHub login. The owner runs git push origin main from their own terminal. That push also carries school-display commits and the developer portfolio commit 2afd97b, which was not made in this work, so check it first. A push does not deploy anything.
+
+## Waiting for the owner
+
+The owner said they will return to the money flow later. Eight questions for that visit are in [Section 10](SECTION_10_TICKETING.md). Four luggage rules chosen by the author are listed above under decisions to check.
 
 ## Checkpoint
 
