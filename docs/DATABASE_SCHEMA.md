@@ -153,7 +153,8 @@ Payment confirmation locks the booking and allocations, reads a fresh database c
 | 0005_fleet.sql | Seat layouts, immutable revisions and seats, buses and drivers with RLS/consistency guards | 05 |
 | 0006_trips.sql | Trips, stop and assignment snapshots with RLS, status rules and overlap protection | 06 |
 | 0007_marketplace.sql | Company public profiles and fixed anonymous read projections | 07 |
-| Future sequential files | Only the implemented module's reviewed DDL/constraints/indexes/policies | 08 onward |
+| 0008_reservations.sql | Seat holds, allocations with an exclusion constraint, hold history and fixed projections | 08 |
+| Future sequential files | Only the implemented module's reviewed DDL/constraints/indexes/policies | 09 onward |
 
 Use append-only sequential `0001_name.sql` files. The runner normalizes CRLF, hashes contents, checks applied names/versions/checksums, obtains a transaction-level advisory lock, and commits all pending files with their ledger rows atomically. SQL files must not contain their own transaction control or nontransactional statements. Drift/unknown history fails closed. No automatic down-migrations or edits to applied files; use reviewed forward corrections. Keep schema-owner and application credentials separate.
 
@@ -194,3 +195,7 @@ All three have company-wide RLS. Limited runtime receives no DELETE. Owner-level
 ## Implemented Section 07 (D28)
 
 Migration 0007_marketplace.sql adds company_public_profiles (listed, bilingual about text, public phone, email and address, version) with RLS, and the projections public_trips, public_cities and public_companies. There are 31 application tables plus the migration ledger and 23 RLS tables.
+
+## Implemented Section 08 (D30)
+
+Migration 0008_reservations.sql adds the btree_gist extension and the tables bookings, seat_allocations and booking_events, all with row security and no runtime grants. There are 34 application tables plus the migration ledger and 26 RLS tables. This differs from the plan above in three ways: the trip row is the lock anchor, so trip_seat_inventory is not created; expires_at on bookings and allocations replaces seat_holds; and allocation seats are identified by row and column in the assignment's layout revision. Bookings hold no passenger data and no guest_access token, only a hash of the browser's key.

@@ -1,6 +1,6 @@
 # Safeer / Sudan Transport - project master
 
-Updated: 2026-11-02. Current authorization: **Section 07**, approved by the latest "next" (D28). Read [CURRENT_STATE.md](CURRENT_STATE.md), [master instructions](decisions/MASTER_INSTRUCTIONS_2026-10-30.md) and [DECISIONS.md](DECISIONS.md). Stop before Section 05 after the Section 04 handover.
+Updated: 2026-11-02. Current authorization: **Section 08**, approved by the latest "next" (D30). Read [CURRENT_STATE.md](CURRENT_STATE.md), [master instructions](decisions/MASTER_INSTRUCTIONS_2026-10-30.md) and [DECISIONS.md](DECISIONS.md). Stop before Section 05 after the Section 04 handover.
 
 Owner-authorized 0.2.1 follow-up: collect and display a passenger luggage yes/no declaration and required description in the local prototype. This scoped change (D16) does not begin authentication or full station luggage management.
 
@@ -18,12 +18,12 @@ An expired hold does not authorize payment or boarding. One booking initially be
 
 ## Architecture: target versus current source
 
-| Layer | Target decision | Implemented now (Sections 01-07) |
+| Layer | Target decision | Implemented now (Sections 01-08) |
 | --- | --- | --- |
 | Public marketplace, company pages, dashboards, station PWA | Next.js/React with TypeScript | Existing responsive JavaScript prototype retained, freight removed; no Next.js app installed |
 | Passenger and driver apps | Flutter/Dart clients | Contracts/design sharing strategy documented; no native project or build |
-| Backend | NestJS/TypeScript modular monolith, versioned APIs | NestJS identity/company/route/fleet/trip/marketplace API, same-origin local proxy and separate public passenger example |
-| Durable data | PostgreSQL 18, explicit SQL migrations | Seven migrations and 31 identity/company/city/route/fleet/trip/profile tables; no durable passenger bookings |
+| Backend | NestJS/TypeScript modular monolith, versioned APIs | NestJS identity/company/route/fleet/trip/marketplace/seat-hold API, same-origin local proxy and separate public passenger example |
+| Durable data | PostgreSQL 18, explicit SQL migrations | Eight migrations and 34 identity/company/city/route/fleet/trip/profile/hold tables; holds carry no passenger details until Section 09 |
 | Jobs/cache/events | Redis, idempotent workers and WebSocket availability updates | Interfaces and consistency requirements documented; services not installed |
 | Documents/storage/notifications | S3-compatible private storage, FCM where applicable | Ownership, outbox and access requirements documented; no accounts or integrations |
 
@@ -46,7 +46,7 @@ Approved initial roles: platform super administrator, platform support administr
 7. Support Arabic/English, RTL/LTR, accessible controls, low-bandwidth clients and clear errors. Do not promise offline seat sales until conflict policy is implemented and tested.
 8. Test, fix, document and archive before handing off. Do not mark proposed schema or target frameworks as implemented.
 
-Section 07 ends at its verified marketplace handover. Section 08 requires explicit owner approval. No production deployment, school-app changes, restaurant/mobile changes, real passenger data or external service enrollment is authorized by this section.
+Section 08 ends at its verified seat-hold handover. Section 09 requires explicit owner approval. No production deployment, school-app changes, restaurant/mobile changes, real passenger data or external service enrollment is authorized by this section.
 
 
 ## 0.3.1 - Super Administrator role editing
@@ -88,3 +88,7 @@ Completed and verified in source: company trip scheduling, stop and seat-layout 
 ## Section 07 implementation
 
 Completed and verified in source: anonymous marketplace search, company pages and company-managed public profiles over fixed database projections. The real local database has not been upgraded yet; see the owner step in [Section 07](archive/SECTION_07_MARKETPLACE.md).
+
+## Section 08 implementation
+
+Completed and verified in source: live seat maps, all-or-none anonymous holds with references and countdowns, database-clock expiry and passenger and staff release. A hold cannot yet become a ticket. The real local database has not been upgraded yet; see the owner step in [Section 08](archive/SECTION_08_RESERVATIONS.md).

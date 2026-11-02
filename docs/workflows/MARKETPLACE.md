@@ -1,6 +1,6 @@
 # Marketplace and company pages
 
-Section 07 / 0.8.0. Passengers can find trips and companies. They cannot book yet.
+Section 07 / 0.8.0, with seat holds from Section 08. Passengers can find trips and companies, then [hold seats](SEAT_HOLDS.md).
 
 ## For a company
 
@@ -13,4 +13,4 @@ Passengers never see your drivers, staff, bus registrations, bus codes, draft tr
 
 ## For a passenger
 
-Open /marketplace with no account. Choose a departure city, destination and date, then sort by earliest departure, lowest price or shortest journey. Open a company to see its details, routes, bus types and upcoming trips. Search matches where a trip starts and ends; other stops are listed on each trip. Contact the company to travel until booking opens in Section 08.
+Open /marketplace with no account. Choose a departure city, destination and date, then sort by earliest departure, lowest price or shortest journey. Open a company to see its details, routes, bus types and upcoming trips. Search matches where a trip starts and ends; other stops are listed on each trip. Select seats on a trip to hold them for a limited time.

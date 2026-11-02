@@ -115,3 +115,7 @@ TripService and its versioned controller extend the existing NestJS modular back
 ## Section 07 marketplace
 
 PublicService serves anonymous reads through fixed SECURITY DEFINER projections, each naming its output fields; the runtime role still cannot read the underlying rows without a session. marketplace.html and src/marketplace.js are one static page serving /marketplace and /company/{slug}, separate from staff code and the fictional prototype at /. This supersedes nothing in the target Next.js plan: it is the local implementation until hosting is authorized.
+
+## Section 08 seat holds
+
+ReservationService exposes anonymous holds and staff seat views through fixed SECURITY DEFINER functions; the runtime role has no access to the tables. public_hold locks the trip row, which serializes claims per trip without a global lock, and a GiST exclusion constraint over company, trip, seat and stop range is the final guarantee. A 30-second in-process job closes lapsed holds, but no decision depends on it. marketplace.html serves /trip/{id} and /hold/{reference} as well as the search and company pages. Hold writes are the first without a session, so the API middleware exempts exactly those paths from CSRF while still requiring the page origin and JSON.

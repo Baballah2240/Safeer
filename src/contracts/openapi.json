@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Safeer local identity API",
-    "version": "0.8.0",
+    "version": "0.9.0",
     "description": "Local Safeer identity and company workspaces. No production hosting, real booking or money API. Section 04 adds authenticated cities and company route planning. Section 05 adds company-private buses, immutable seat-layout revisions and driver records; Section 06 adds company trip scheduling, assignments and publication; Section 07 adds anonymous read-only marketplace routes; no reservations or payments."
   },
   "servers": [
@@ -8576,6 +8576,424 @@
           },
           "409": {
             "description": "Stale version."
+          }
+        }
+      }
+    },
+    "/api/v1/public/trips/{id}": {
+      "get": {
+        "summary": "One published trip with its seat map",
+        "description": "Anonymous. No session is used; writes require the page origin and JSON. Seats report only whether they are free.",
+        "security": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "404": {
+            "description": "Not found."
+          }
+        }
+      }
+    },
+    "/api/v1/public/holds": {
+      "post": {
+        "summary": "Hold 1-10 seats, all or none",
+        "description": "Anonymous. No session is used; writes require the page origin and JSON. Limited to 120 seats per client address per 15 minutes. Repeating a key with the same seats returns the original hold.",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "tripId",
+                  "seats",
+                  "key"
+                ],
+                "properties": {
+                  "tripId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "seats": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 10,
+                    "items": {
+                      "type": "string",
+                      "maxLength": 8
+                    }
+                  },
+                  "key": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "Created by the browser. Makes retries idempotent and is the only way to reopen or release the hold; only its hash is stored."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "403": {
+            "description": "Not permitted, or the request came from another origin."
+          },
+          "409": {
+            "description": "Seats or hold state conflict."
+          },
+          "415": {
+            "description": "Send JSON."
+          },
+          "429": {
+            "description": "Too many attempts."
+          },
+          "503": {
+            "description": "Busy; retry with the same key."
+          }
+        }
+      }
+    },
+    "/api/v1/public/holds/{reference}": {
+      "get": {
+        "summary": "Open a hold",
+        "description": "Anonymous. No session is used; writes require the page origin and JSON. The reference alone opens nothing.",
+        "security": [],
+        "parameters": [
+          {
+            "name": "reference",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^SF-[2-9A-HJ-NP-Z]{8}$"
+            }
+          },
+          {
+            "name": "X-Booking-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "404": {
+            "description": "Not found."
+          }
+        }
+      }
+    },
+    "/api/v1/public/holds/{reference}/release": {
+      "post": {
+        "summary": "Release a hold",
+        "description": "Anonymous. No session is used; writes require the page origin and JSON. Releasing twice is harmless; a hold that has ended stays ended.",
+        "security": [],
+        "parameters": [
+          {
+            "name": "reference",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^SF-[2-9A-HJ-NP-Z]{8}$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "key"
+                ],
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "Created by the browser. Makes retries idempotent and is the only way to reopen or release the hold; only its hash is stored."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "403": {
+            "description": "Not permitted, or the request came from another origin."
+          },
+          "404": {
+            "description": "Not found."
+          },
+          "415": {
+            "description": "Send JSON."
+          },
+          "503": {
+            "description": "Busy; retry with the same key."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/trips/{rid}/seats": {
+      "get": {
+        "summary": "Seat map and recent holds for a trip",
+        "description": "Requires company.bookings.read. Returns live holds first, then the newest closed ones, up to 200, with the total.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "rid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sign in to continue."
+          },
+          "403": {
+            "description": "Not permitted, or the request came from another origin."
+          },
+          "404": {
+            "description": "Not found."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/trips/{rid}/holds/{hid}/release": {
+      "post": {
+        "summary": "Release a hold with a reason",
+        "description": "Existing session, same-origin CSRF and the current password apply. Requires company.bookings.manage.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "rid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "hid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "reason",
+                  "currentPassword"
+                ],
+                "properties": {
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 300
+                  },
+                  "currentPassword": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in to continue."
+          },
+          "403": {
+            "description": "Not permitted, or the request came from another origin."
+          },
+          "404": {
+            "description": "Not found."
+          },
+          "409": {
+            "description": "Seats or hold state conflict."
           }
         }
       }

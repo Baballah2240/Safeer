@@ -113,3 +113,7 @@ Status moves only from draft to published, and from draft or published to cancel
 ## Section 07 marketplace rules (D28)
 
 A company appears only when approved and self-listed; listing defaults to off. Public contact details are separate from private company contact fields. Only published trips with a future departure and a current assignment appear. Search matches a trip's first and last stop because a fare covers the whole trip. Seats shown are the bus's total until Section 08 adds availability. No passenger details are collected.
+
+## Section 08 seat hold rules (D30)
+
+A hold takes 1-10 seats on one published, future trip of an approved, listed company, all or none. It lasts the company's hold minutes as set when it was made, ending by departure. It carries no passenger details until Section 09. Holds cover the whole trip because fares do. Expiry follows the database clock, not the job or the browser. A hold closes once, by expiring, by its passenger, by staff with a reason and current password, or by the trip being canceled. A seat map change is refused while seats are held. These rules implement the reservation invariants above; payment, tickets and cancellation policy remain open.

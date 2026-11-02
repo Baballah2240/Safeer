@@ -1,6 +1,6 @@
 # Development roadmap
 
-Updated 2026-11-02. The latest "next" approved Section 07 (D28). See [CURRENT_STATE.md](CURRENT_STATE.md) for verification and [Section 07](archive/SECTION_07_MARKETPLACE.md) for the handover. Stop before Section 08.
+Updated 2026-11-02. The latest "next" approved Section 08 (D30). See [CURRENT_STATE.md](CURRENT_STATE.md) for verification and [Section 08](archive/SECTION_08_RESERVATIONS.md) for the handover. Stop before Section 09.
 
 0.2.1 owner-requested prototype addendum: luggage choice/description in the reservation, passenger list and unpaid reference. It is not completion of Section 09 or 11; station luggage registration, tags, tracking and fees remain in their scheduled sections.
 
@@ -13,7 +13,7 @@ Updated 2026-11-02. The latest "next" approved Section 07 (D28). See [CURRENT_ST
 | 05 | Bus fleet, immutable seat-layout versions, drivers | 03-04 | Source complete and verified; private local database upgrade is an open owner step |
 | 06 | Trip scheduling, assignments, stops/layout snapshots, publication | 04-05 | Source complete and verified; private local database upgrade is an open owner step |
 | 07 | Public marketplace and individual company pages | 03, 06 | Source complete and verified; private local database upgrade is an open owner step |
-| 08 | Seat inventory, atomic multi-seat holds, expiry, idempotency, segment-ready allocation | 06-07 | Not started |
+| 08 | Seat inventory, atomic multi-seat holds, expiry, idempotency, segment-ready allocation | 06-07 | Source complete and verified; private local database upgrade is an open owner step |
 | 09 | Guest passenger details, multi-passenger booking, secure retrieval and booking history | 08 | Not started |
 | 10 | Station ticketing, payment confirmation, official tickets, receipts, cancellations/refund operations | 02-03, 08-09 | Not started |
 | 11 | Passenger luggage registration, tagging/QR, tracking, exceptions and collection | 09-10 | Not started |
@@ -37,7 +37,7 @@ Within Section 02, scaffold the selected NestJS/TypeScript backend, connect the 
 - No critical/high-priority defects in the completed scope; limitations described without hiding failures.
 - Relevant mandatory docs, changelog, module notes and numbered archive entry updated.
 - Source checkpoint/archive checksum verified; no secrets, runtime databases or credentials committed.
-- Explicit owner approval before Section 08 and later sections; never cross an incomplete gate.
+- Explicit owner approval before Section 09 and later sections; never cross an incomplete gate.
 
 ## Known gaps, not completed features
 

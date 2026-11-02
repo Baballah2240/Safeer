@@ -48,8 +48,8 @@ export async function startServer({port = 4320, built = false, identityApiUrl} =
         response.end(request.method === 'HEAD' ? undefined : JSON.stringify({data: {service: 'safeer', version, mode: 'local-prototype', database: 'not-connected'}}));
         return;
       }
-      // Every company page is the same static page; the slug is checked by the public API.
-      const asset = /^\/company\/[a-z0-9-]{1,60}$/.test(path) ? '/marketplace' : path;
+      // Company, seat and hold pages are the same static page; the public API checks each identifier.
+      const asset = /^\/(company\/[a-z0-9-]{1,60}|trip\/[0-9a-f-]{36}|hold\/SF-[2-9A-HJ-NP-Z]{8})$/.test(path) ? '/marketplace' : path;
       if (!Object.hasOwn(publicAssets, asset)) {
         response.writeHead(404); response.end('Not found'); return;
       }

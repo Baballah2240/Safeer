@@ -1,6 +1,10 @@
 # Changelog
 
-## Unreleased - 2026-11-02 - Marketplace layout (D29)
+## 0.9.0 - 2026-11-02 - SECTION 08
+
+Add temporary seat holds: live seat maps, all-or-none holds of 1-10 seats with references and countdowns, automatic expiry, passenger and staff release, and availability in search. Add migration 0008 and 6 routes. 81 automated checks and source/built browser suites passed. The private local database upgrade is an open owner step.
+
+## 0.8.1 - 2026-11-02 - Marketplace layout (D29)
 
 Rebuild the marketplace and company page layouts with a title band, ticket-style trip cards and a company sidebar. Fix unstyled links and the booking badge. No data, API or permission changes.
 

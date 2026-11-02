@@ -92,7 +92,7 @@ test('raw RLS and SQL guards protect revisions and fleet records without the API
  await assert.rejects(context(f,f.admin,c=>c.query('DELETE FROM safeer.buses')),e=>e.code==='42501');await assert.rejects(context(f,f.admin,c=>c.query('DELETE FROM safeer.drivers')),e=>e.code==='42501');
  await assert.rejects(f.migration.query('UPDATE safeer.seat_layout_seats SET label=$1 WHERE layout_id=$2',['X',id]),e=>e.message==='IMMUTABLE_REVISION','Even the owner cannot edit a revision.');
  await assert.rejects(f.migration.query('DELETE FROM safeer.seat_layout_revisions WHERE layout_id=$1',[id]),e=>e.message==='IMMUTABLE_REVISION');
- await assert.rejects(f.migration.query('TRUNCATE safeer.seat_layout_seats'),e=>e.message==='IMMUTABLE_REVISION');
+ await assert.rejects(f.migration.query('TRUNCATE safeer.seat_layout_seats'),e=>e.code==='0A000','Seat allocations now reference these seats, so truncation is refused by the foreign key.');
  await assert.rejects(context(f,f.admin,c=>c.query('INSERT INTO safeer.seat_layout_seats(company_id,layout_id,revision,row_number,column_number,label) VALUES($1,$2,1,1,2,$3)',[s.cid,id,'LATE'])),e=>e.message==='IMMUTABLE_REVISION','A sealed revision takes no new seats.');
  await assert.rejects(context(f,f.admin,async c=>{await c.query('INSERT INTO safeer.seat_layouts(id,company_id,code,name_en,name_ar) VALUES($1,$2,$3,$4,$4)',[randomUUID(),s.cid,'EMPTY','Fictional']);await c.query('SET CONSTRAINTS ALL IMMEDIATE');}),e=>e.message==='INVALID_SEAT_LAYOUT','A layout needs a revision.');
  await assert.rejects(context(f,f.admin,c=>c.query('UPDATE safeer.seat_layouts SET code=$1 WHERE id=$2',['RENAMED',id])),e=>e.message==='INVALID_SEAT_LAYOUT','The layout code is stable.');

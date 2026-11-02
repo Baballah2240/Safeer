@@ -81,3 +81,7 @@ Trips, trip stops and assignments add three RLS tables (22 total). A valid trans
 ## Section 07
 
 Four anonymous GET routes exist. They use no session and call fixed projections that exclude drivers, registrations, bus codes, staff and private contacts. All other routes keep their checks. Public profile changes need company.profile.manage, CSRF and the current password. Public routes have no rate limit yet; hosting must add one before any public exposure.
+
+## Section 08
+
+Anonymous writes now exist for exactly two paths: POST public/holds and POST public/holds/:reference/release. They need the page origin and JSON but no session or CSRF token, and carry a browser-held key whose hash is the only stored proof of ownership. Holds are limited to 120 seats per client address per 15 minutes; the address is the socket peer, so hosting must forward the real client address first. company.bookings.read and company.bookings.manage are checked inside the database functions. Support grants do not include them. Public seat maps never name a hold. Contact details stop showing on a hold once its company is hidden or loses approval.

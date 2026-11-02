@@ -66,3 +66,7 @@ Workspace responses contain only RLS-visible resources and field-level UI capabi
 ## Section 07 / 0.8.0
 
 50 paths / 62 operations. Anonymous GET /api/v1/public/cities, /public/companies, /public/companies/:slug and /public/trips (from, to, date). GET/PUT /api/v1/companies/:id/public-profile needs company.profile.manage; version 0 is the first save. No write route is anonymous.
+
+## Section 08 / 0.9.0
+
+56 paths / 68 operations. Anonymous GET /api/v1/public/trips/:id, POST /public/holds (tripId, seats, key), GET /public/holds/:reference (X-Booking-Key header) and POST /public/holds/:reference/release (key). GET /api/v1/companies/:id/trips/:rid/seats needs company.bookings.read. POST /companies/:id/trips/:rid/holds/:hid/release needs company.bookings.manage, CSRF, a reason and the current password. Conflicts return 409 with SEATS_UNAVAILABLE, IDEMPOTENCY_CONFLICT, TRIP_NOT_BOOKABLE, INVALID_SEATS, SEATS_HELD or HOLD_CLOSED.

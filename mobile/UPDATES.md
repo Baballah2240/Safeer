@@ -72,3 +72,7 @@ Add responsive bilingual public marketplace and company pages, plus the company 
 ## 2026-11-02 - Marketplace layout (D29)
 
 Improve the responsive public marketplace and company page layouts in shared src/, including compact trip cards at phone widths. No native app build or deployment requested.
+
+## 2026-11-02 - Section 08 seat holds
+
+Add responsive bilingual seat maps, hold pages with a countdown, and the staff seat view to shared src/. No native app build or deployment requested. Verification: 81 automated checks and 32 layouts per source/built mode.
