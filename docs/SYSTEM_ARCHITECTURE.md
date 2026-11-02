@@ -123,3 +123,7 @@ ReservationService exposes anonymous holds and staff seat views through fixed SE
 ## Section 09 passengers
 
 Personal details live in booking_contacts and booking_passengers so they can be erased while bookings, allocations and events stay. public_book wraps public_hold and inserts details in the same transaction. An hourly in-process job erases what is due in short batches. The browser stores only the hold key, never names or numbers, and the Bookings staff section loads details only when opened.
+
+## Section 10 ticketing
+
+The Station section and booking sheets call a TicketingController backed by fixed database functions; the runtime role has no table access. Each payment or sale is one transaction, repeats return the original through a key bound to the company and purpose, and the trip row lock serializes seat changes. Document numbers come from per-company sequences that commit with the document. Printing uses the browser print dialog with print-only styles in src/staff.css.

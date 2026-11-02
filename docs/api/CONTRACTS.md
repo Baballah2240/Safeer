@@ -74,3 +74,7 @@ Workspace responses contain only RLS-visible resources and field-level UI capabi
 ## Section 09 / 0.10.0
 
 60 paths / 73 operations. POST /api/v1/public/holds now requires mobile and travelers (seat, name, optional mobile). Anonymous GET /public/holds/current (X-Booking-Key header) and POST /public/holds/lookup (reference, mobile). POST /public/holds/:reference/release accepts key or mobile. GET /api/v1/companies/:id/bookings (q) and GET /companies/:id/bookings/:bid need company.bookings.read. PATCH /companies/:id/bookings/:bid needs company.bookings.manage, CSRF, a reason, version and the current password. New errors: INVALID_MOBILE, INVALID_PASSENGERS, STALE_VERSION.
+
+## Section 10 / 0.11.0
+
+71 paths / 84 operations. Under /api/v1/companies/:id: GET /counter and /counter/trips/:tid; PUT /payment-settings; POST /counters and PATCH /counters/:rid; POST /counter/sessions and /counter/sessions/:sid/close; POST /counter/sales; POST /bookings/:bid/pay, /bookings/:bid/refund and /bookings/:bid/print. All writes need CSRF. Payment settings, counter changes, closing a session and refunds also need the current password; a late payment needs a reason and the late-payment permission. See src/contracts/openapi.json for fields and errors.

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11.0 - 2026-11-02 - SECTION 10
+
+Add station counters and cash sessions, full payment by cash, bank transfer or mobile wallet, walk-in sales, official tickets and receipts, full refunds until departure and on canceled trips, late payment by a separate permission, and marked reprints. Add migration 0010 and 11 paths. 96 automated checks and source/built browser suites passed. The private local database upgrade is an open owner step.
+
 ## 0.10.0 - 2026-11-02 - SECTION 09
 
 Add passenger names and mobile numbers with each hold, retrieval by reference and mobile, staff booking search, correction and history, and automatic erasure 90 days after the trip. Add migration 0009 and 4 paths. 87 automated checks and source/built browser suites passed. The private local database upgrade is an open owner step.

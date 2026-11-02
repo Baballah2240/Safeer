@@ -80,3 +80,7 @@ Add responsive bilingual seat maps, hold pages with a countdown, and the staff s
 ## 2026-11-02 - Section 09 passenger details
 
 Add responsive bilingual passenger forms, the My booking retrieval page and the staff Bookings section to shared src/. No native app build or deployment requested. Verification: 87 automated checks and 48 layouts per source/built mode.
+
+## 2026-11-02 - Section 10 ticketing
+
+Add the responsive bilingual Station section, payment, refund and print sheets and passenger confirmed and refunded pages to shared src/. No native app build or deployment requested. Verification: 96 automated checks and 32 ticketing layouts per source/built mode.

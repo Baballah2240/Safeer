@@ -1,6 +1,6 @@
 # Development roadmap
 
-Updated 2026-11-02. The latest "next" approved Section 09 (D31). See [CURRENT_STATE.md](CURRENT_STATE.md) for verification and [Section 09](archive/SECTION_09_PASSENGERS.md) for the handover. Stop before Section 10.
+Updated 2026-11-02. The latest "next" approved Section 10 (D32). See [CURRENT_STATE.md](CURRENT_STATE.md) for verification and [Section 10](archive/SECTION_10_TICKETING.md) for the handover. Stop before Section 11.
 
 0.2.1 owner-requested prototype addendum: luggage choice/description in the reservation, passenger list and unpaid reference. It is not completion of Section 09 or 11; station luggage registration, tags, tracking and fees remain in their scheduled sections.
 
@@ -15,7 +15,7 @@ Updated 2026-11-02. The latest "next" approved Section 09 (D31). See [CURRENT_ST
 | 07 | Public marketplace and individual company pages | 03, 06 | Source complete and verified; private local database upgrade is an open owner step |
 | 08 | Seat inventory, atomic multi-seat holds, expiry, idempotency, segment-ready allocation | 06-07 | Source complete and verified; private local database upgrade is an open owner step |
 | 09 | Guest passenger details, multi-passenger booking, secure retrieval and booking history | 08 | Source complete and verified; private local database upgrade is an open owner step |
-| 10 | Station ticketing, payment confirmation, official tickets, receipts, cancellations/refund operations | 02-03, 08-09 | Not started |
+| 10 | Station ticketing, payment confirmation, official tickets, receipts, cancellations/refund operations | 02-03, 08-09 | Complete in source; local upgrade open; owner will revisit the money flow |
 | 11 | Passenger luggage registration, tagging/QR, tracking, exceptions and collection | 09-10 | Not started |
 | 12 | Driver client, assigned-trip manifest, QR verification, boarding/departure/arrival | 05-06, 10-11 | Not started |
 | 13 | Company financial reports, cash sessions, daily reconciliation | 10 | Not started |

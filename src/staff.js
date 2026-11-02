@@ -13,8 +13,8 @@ async function api(path,method='GET',body){
   if(method==='POST'&&['auth/login','auth/password','auth/logout'].includes(path))authEpoch++;
   const epoch=authEpoch;
   let response;try{response=await fetch('/api/v1/'+path,{method,credentials:'same-origin',cache:'no-store',headers:{...(body?{'Content-Type':'application/json'}:{}),...(method!=='GET'&&csrfToken?{'X-CSRF-Token':csrfToken}:{})},...(body?{body:JSON.stringify(body)}:{})});}catch{throw Error('REQUEST_FAILED');}
-  let result;try{result=await response.json();}catch{throw Error('REQUEST_FAILED');}
-  if(!response.ok){if(epoch===authEpoch&&response.status===401&&path!=='auth/login'){clearSession();render();}throw Error(result.error?.code||'REQUEST_FAILED');}
+  let result;try{result=await response.json();}catch{throw Object.assign(Error('REQUEST_FAILED'),{status:response.status});}
+  if(!response.ok){if(epoch===authEpoch&&response.status===401&&path!=='auth/login'){clearSession();render();}throw Object.assign(Error(result.error?.code||'REQUEST_FAILED'),{status:response.status});}
   if(epoch===authEpoch&&result.data.csrfToken)csrfToken=result.data.csrfToken;return result.data;
 }
 const input=(name,label,type='text',extra='')=>`<label>${t(label)}<input name="${name}" type="${type}" required ${extra}></label>`;

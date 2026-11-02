@@ -66,3 +66,5 @@ Section 07 adds marketplace.html, apps/api/src/public.service.ts, src/marketplac
 Section 08 adds apps/api/src/reservation.service.ts, database/migrations/0008_reservations.sql and reservation integration/browser tests. Seat and hold pages live in src/marketplace.js and src/marketplace.css.
 
 Section 09 adds src/bookings.js, database/migrations/0009_passengers.sql and tests/passengers.integration.mjs. Passenger forms and the retrieval page live in src/marketplace.js.
+
+Section 10 adds apps/api/src/ticketing.service.ts, src/station.js, database/migrations/0010_ticketing.sql and ticketing integration/browser tests. Payment, refund and print sheets live in src/bookings.js.

@@ -12,6 +12,7 @@ import {FleetService} from './fleet.service.js';
 import {TripService} from './trip.service.js';
 import {PublicService} from './public.service.js';
 import {ReservationService} from './reservation.service.js';
+import {TicketingService} from './ticketing.service.js';
 import {IdentityError,sessionToken,validCsrf,fail} from './security.js';
 
 const version=JSON.parse(readFileSync(new URL('../../package.json',import.meta.url),'utf8')).version;
@@ -28,7 +29,7 @@ class Errors implements ExceptionFilter {
     const type=(error as {type?:string})?.type;
     if(type==='entity.parse.failed'||type==='entity.too.large'){res.status(type==='entity.too.large'?413:400).json({error:{code:'INVALID_REQUEST',message:'Send a valid JSON request within 8 KiB.'}});return;}
     if(code==='23505'){const constraint=(error as {constraint?:string}).constraint||'';const loginConflict=constraint==='users_normalized_login_key';res.status(409).json({error:{code:loginConflict?'DUPLICATE_LOGIN':'DUPLICATE_RECORD',message:loginConflict?'That login is already in use.':'This code, slug or membership is already in use.'}});return;}
-    if(code==='P0001'&&['LAST_COMPANY_ADMIN','COMPANY_LIMIT','CATALOG_LIMIT','RESOURCE_IN_USE','STATION_CITY_IN_USE','INVALID_ROUTE_STOPS','INACTIVE_ROUTE_RESOURCE','LAYOUT_IN_USE','INACTIVE_LAYOUT','INVALID_SEAT_LAYOUT','IMMUTABLE_REVISION','TRIP_NOT_DRAFT','TRIP_NOT_READY','INVALID_TRIP_STOPS','ASSIGNMENT_CONFLICT','INACTIVE_ASSIGNMENT','TRIP_RESOURCE_IN_USE','TRIP_NOT_BOOKABLE','INVALID_SEATS','SEATS_UNAVAILABLE','SEATS_HELD','IDEMPOTENCY_CONFLICT','HOLD_CLOSED','INVALID_PASSENGERS','STALE_VERSION'].includes((error as Error).message)){res.status(409).json({error:{code:(error as Error).message,message:'The change conflicts with a protected resource, route rule or local capacity.'}});return;}
+    if(code==='P0001'&&['LAST_COMPANY_ADMIN','COMPANY_LIMIT','CATALOG_LIMIT','RESOURCE_IN_USE','STATION_CITY_IN_USE','INVALID_ROUTE_STOPS','INACTIVE_ROUTE_RESOURCE','LAYOUT_IN_USE','INACTIVE_LAYOUT','INVALID_SEAT_LAYOUT','IMMUTABLE_REVISION','TRIP_NOT_DRAFT','TRIP_FINISHED','TRIP_NOT_READY','INVALID_TRIP_STOPS','ASSIGNMENT_CONFLICT','INACTIVE_ASSIGNMENT','TRIP_RESOURCE_IN_USE','TRIP_NOT_BOOKABLE','INVALID_SEATS','SEATS_UNAVAILABLE','SEATS_HELD','IDEMPOTENCY_CONFLICT','HOLD_CLOSED','INVALID_PASSENGERS','STALE_VERSION','NO_OPEN_SESSION','SESSION_OPEN','SESSION_CLOSED','COUNTER_INACTIVE','COUNTER_BUSY','NOTE_REQUIRED','ALREADY_PAID','HOLD_ENDED','LATE_REASON_REQUIRED','METHOD_DISABLED','CURRENCY_MISMATCH','ALREADY_REFUNDED','NOT_PAID','REFUND_CLOSED','REFERENCE_REQUIRED'].includes((error as Error).message)){res.status(409).json({error:{code:(error as Error).message,message:'The change conflicts with a protected resource, route rule or local capacity.'}});return;}
     if(code==='23P01'){res.status(409).json({error:{code:'SEATS_UNAVAILABLE',message:'Those seats have just been taken.'}});return;}
     if(code==='55P03'){res.setHeader('Retry-After','5');res.status(503).json({error:{code:'BUSY',message:'Please try again in a moment.'}});return;}
     if(['23503','23514','42501'].includes(code||'')){res.status(code==='42501'?403:400).json({error:{code:code==='42501'?'FORBIDDEN':'INVALID_RESOURCE_SCOPE',message:'The resource does not belong to an allowed company or scope.'}});return;}
@@ -131,6 +132,21 @@ class ReservationController {
  @Get('holds/:reference') booking(@Req() req:Request,@Param('reference') reference:string){return this.reservations.booking(reference,req.headers['x-booking-key']).then(reply);}
  @Post('holds/:reference/release') release(@Req() req:Request,@Param('reference') reference:string,@Body() data:unknown){return this.reservations.release(reference,data,req.socket.remoteAddress||'local').then(reply);}
 }
+@Controller('api/v1/companies/:id')
+class TicketingController {
+ constructor(private readonly ticketing:TicketingService){}
+ @Get('counter') overview(@Req() req:Request,@Param('id') id:string){return this.ticketing.overview(token(req),id).then(reply);}
+ @Get('counter/trips/:tid') trip(@Req() req:Request,@Param('id') id:string,@Param('tid') tid:string){return this.ticketing.trip(token(req),id,tid).then(reply);}
+ @Put('payment-settings') settings(@Req() req:Request,@Param('id') id:string,@Body() data:unknown){return this.ticketing.settings(token(req),id,data).then(reply);}
+ @Post('counters') createCounter(@Req() req:Request,@Param('id') id:string,@Body() data:unknown){return this.ticketing.counter(token(req),id,undefined,data).then(reply);}
+ @Patch('counters/:rid') updateCounter(@Req() req:Request,@Param('id') id:string,@Param('rid') rid:string,@Body() data:unknown){return this.ticketing.counter(token(req),id,rid,data).then(reply);}
+ @Post('counter/sessions') open(@Req() req:Request,@Param('id') id:string,@Body() data:unknown){return this.ticketing.openSession(token(req),id,data).then(reply);}
+ @Post('counter/sessions/:sid/close') close(@Req() req:Request,@Param('id') id:string,@Param('sid') sid:string,@Body() data:unknown){return this.ticketing.closeSession(token(req),id,sid,data).then(reply);}
+ @Post('counter/sales') sale(@Req() req:Request,@Param('id') id:string,@Body() data:unknown){return this.ticketing.sale(token(req),id,data).then(reply);}
+ @Post('bookings/:bid/pay') pay(@Req() req:Request,@Param('id') id:string,@Param('bid') bid:string,@Body() data:unknown){return this.ticketing.pay(token(req),id,bid,data).then(reply);}
+ @Post('bookings/:bid/refund') refund(@Req() req:Request,@Param('id') id:string,@Param('bid') bid:string,@Body() data:unknown){return this.ticketing.refund(token(req),id,bid,data).then(reply);}
+ @Post('bookings/:bid/print') print(@Req() req:Request,@Param('id') id:string,@Param('bid') bid:string,@Body() data:unknown){return this.ticketing.print(token(req),id,bid,data).then(reply);}
+}
 @Controller('api/v1/companies/:id/bookings')
 class BookingController {
  constructor(private readonly reservations:ReservationService){}
@@ -150,7 +166,7 @@ class PublicProfileController {
  @Get() read(@Req() req:Request,@Param('id') id:string){return this.market.profile(token(req),id).then(reply);}
  @Put() save(@Req() req:Request,@Param('id') id:string,@Body() data:unknown){return this.market.saveProfile(token(req),id,data).then(reply);}
 }
-@Module({controllers:[IdentityController,CompanyController,BookingController,RouteController,FleetController,TripSeatController,TripController,ReservationController,PublicController,PublicProfileController],providers:[Database,IdentityService,CompanyService,RouteService,FleetService,TripService,PublicService,ReservationService]})
+@Module({controllers:[IdentityController,CompanyController,TicketingController,BookingController,RouteController,FleetController,TripSeatController,TripController,ReservationController,PublicController,PublicProfileController],providers:[Database,IdentityService,CompanyService,RouteService,FleetService,TripService,PublicService,ReservationService,TicketingService]})
 export class IdentityModule {}
 
 export async function createIdentityApi({port=4321,webOrigin='http://127.0.0.1:4320'}:{port?:number;webOrigin?:string}={}){

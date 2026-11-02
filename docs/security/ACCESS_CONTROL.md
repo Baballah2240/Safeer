@@ -89,3 +89,7 @@ Anonymous writes now exist for exactly two paths: POST public/holds and POST pub
 ## Section 09
 
 POST public/holds/lookup joins the anonymous writes. Reference-and-mobile access returns a masked number and shortened names, and the same 404 for a wrong reference or number; it is limited to 5 failures per reference and 30 attempts per client address per 15 minutes. A number is not proof of identity, because no SMS check exists. company.bookings.read now covers passenger details, and company.bookings.manage covers corrections. Support grants do not include them. Lists, searches, seat views and opened bookings are audited without search text. Names and numbers are not logged. The retry fingerprint is bound to the secret key so it cannot confirm erased details.
+
+## Section 10
+
+New permissions: company.ticketing.operate (counter work, payment, sale, refund and print), company.payments.late (paying a hold that has ended) and company.sessions.manage (counters and other staff members' sessions). Existing role copies are not rewritten, so company admins must add them. Support grants do not include them. Station-scoped staff can find any of their company's bookings by reference or full mobile number, because a passenger may pay at any station; lists, name search and the seat-map booking view need company-wide read. Printing needs company.ticketing.operate. Money records can only be added to, and a repeated key is bound to the company and purpose.

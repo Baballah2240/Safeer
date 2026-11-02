@@ -7,6 +7,7 @@ import {body,digest,text,uuid,version,fail} from './security.js';
 
 const alphabet='23456789ABCDEFGHJKLMNPQRSTUVWXYZ',referencePattern=/^SF-[2-9A-HJ-NP-Z]{8}$/;
 const reference=()=>'SF-'+[...randomBytes(8)].map(byte=>alphabet[byte%32]).join('');
+export const seatList=(value:unknown)=>seatLabels(value);
 const seatLabels=(value:unknown)=>{
  if(!Array.isArray(value)||value.length<1||value.length>10)fail('INVALID_SEATS');
  const labels=value.map(label=>{if(typeof label!=='string'||label.length<1||label.length>8)fail('INVALID_SEATS');return label;});
@@ -38,6 +39,8 @@ function travelers(value:unknown,labels:string[]){
  if(new Set(rows.map(row=>row.seat)).size!==labels.length)fail('INVALID_PASSENGERS');
  return rows.sort((a,b)=>a.seat.localeCompare(b.seat));
 }
+
+export const saleTravelers=(value:unknown,labels:string[])=>travelers(value,labels);
 
 @Injectable()
 export class ReservationService implements OnModuleInit,OnModuleDestroy {

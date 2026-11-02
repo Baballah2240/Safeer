@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Safeer local identity API",
-    "version": "0.10.0",
+    "version": "0.11.0",
     "description": "Local Safeer identity and company workspaces. No production hosting, real booking or money API. Section 04 adds authenticated cities and company route planning. Section 05 adds company-private buses, immutable seat-layout revisions and driver records; Section 06 adds company trip scheduling, assignments and publication; Section 07 adds anonymous read-only marketplace routes; no reservations or payments."
   },
   "servers": [
@@ -9400,6 +9400,993 @@
           },
           "409": {
             "description": "Conflict with the booking state or version."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/counter": {
+      "get": {
+        "summary": "Station overview: your session, counters, methods and trips",
+        "description": "Requires a ticketing, session, resource or profile permission. Each section is limited to what the caller may see.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sign in to continue."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not found."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/counter/trips/{tid}": {
+      "get": {
+        "summary": "Seat map of a published trip for a walk-in sale",
+        "description": "Requires company.ticketing.operate. Seats report only whether they are free.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "tid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sign in to continue."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not found."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/payment-settings": {
+      "put": {
+        "summary": "Choose accepted payment methods",
+        "description": "Requires company.profile.manage, CSRF and the current password. Cash is always accepted.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "bankTransfer",
+                  "mobileWallet",
+                  "version",
+                  "currentPassword"
+                ],
+                "properties": {
+                  "bankTransfer": {
+                    "type": "boolean"
+                  },
+                  "mobileWallet": {
+                    "type": "boolean"
+                  },
+                  "version": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "currentPassword": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in to continue."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not found."
+          },
+          "409": {
+            "description": "Conflict with the booking, session or version."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/counters": {
+      "post": {
+        "summary": "Add a counter to a station",
+        "description": "Requires company.resources.manage at that station, CSRF and the current password.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "stationId",
+                  "code",
+                  "name",
+                  "currentPassword"
+                ],
+                "properties": {
+                  "stationId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "code": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "currentPassword": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in to continue."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not found."
+          },
+          "409": {
+            "description": "Conflict with the booking, session or version."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/counters/{rid}": {
+      "patch": {
+        "summary": "Edit a counter",
+        "description": "Requires company.resources.manage at its station, CSRF and the current password. A counter with an open session cannot be deactivated.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "rid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "code",
+                  "name",
+                  "active",
+                  "version",
+                  "currentPassword"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "active": {
+                    "type": "boolean"
+                  },
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "currentPassword": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in to continue."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not found."
+          },
+          "409": {
+            "description": "Conflict with the booking, session or version."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/counter/sessions": {
+      "post": {
+        "summary": "Open a cash session",
+        "description": "Requires company.ticketing.operate at the counter's station. One open session per person and per counter.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "counterId",
+                  "openingMinor"
+                ],
+                "properties": {
+                  "counterId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "openingMinor": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in to continue."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not found."
+          },
+          "409": {
+            "description": "Conflict with the booking, session or version."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/counter/sessions/{sid}/close": {
+      "post": {
+        "summary": "Close a session with counted cash",
+        "description": "The opener, or company.sessions.manage at the station, with CSRF and the current password. A difference needs a note and stays on record.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "sid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "countedMinor",
+                  "currentPassword"
+                ],
+                "properties": {
+                  "countedMinor": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "note": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "currentPassword": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in to continue."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not found."
+          },
+          "409": {
+            "description": "Conflict with the booking, session or version."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/counter/sales": {
+      "post": {
+        "summary": "Walk-in sale: seats, payment and tickets together",
+        "description": "Requires an open session. All of it commits, or none of it does.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "tripId",
+                  "seats",
+                  "mobile",
+                  "travelers",
+                  "method",
+                  "key"
+                ],
+                "properties": {
+                  "tripId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "seats": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "mobile": {
+                    "type": "string"
+                  },
+                  "travelers": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    }
+                  },
+                  "method": {
+                    "type": "string",
+                    "enum": [
+                      "cash",
+                      "bank_transfer",
+                      "mobile_wallet"
+                    ]
+                  },
+                  "reference": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "key": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "Repeating a key with the same request returns the original result."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in to continue."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not found."
+          },
+          "409": {
+            "description": "Conflict with the booking, session or version."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/bookings/{bid}/pay": {
+      "post": {
+        "summary": "Take full payment, issuing a receipt and tickets",
+        "description": "Requires an open session. The amount comes from the booking. An ended hold also needs company.payments.late, a reason and free seats.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "bid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "method",
+                  "key"
+                ],
+                "properties": {
+                  "method": {
+                    "type": "string",
+                    "enum": [
+                      "cash",
+                      "bank_transfer",
+                      "mobile_wallet"
+                    ]
+                  },
+                  "reference": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "lateReason": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "key": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "Repeating a key with the same request returns the original result."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in to continue."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not found."
+          },
+          "409": {
+            "description": "Conflict with the booking, session or version."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/bookings/{bid}/refund": {
+      "post": {
+        "summary": "Refund in full by the original method",
+        "description": "Requires an open session, CSRF, a reason and the current password. Allowed until departure, or at any time on a canceled trip.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "bid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "reason",
+                  "key",
+                  "currentPassword"
+                ],
+                "properties": {
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 300
+                  },
+                  "reference": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "key": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "Repeating a key with the same request returns the original result."
+                  },
+                  "currentPassword": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in to continue."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not found."
+          },
+          "409": {
+            "description": "Conflict with the booking, session or version."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/bookings/{bid}/print": {
+      "post": {
+        "summary": "Record a print and learn whether it is a copy",
+        "description": "Requires company.bookings.read. Refunded bookings print no tickets.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "bid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "document"
+                ],
+                "properties": {
+                  "document": {
+                    "type": "string",
+                    "enum": [
+                      "tickets",
+                      "receipt",
+                      "refund"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in to continue."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not found."
+          },
+          "409": {
+            "description": "Conflict with the booking, session or version."
           }
         }
       }

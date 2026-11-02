@@ -23,3 +23,5 @@ To continue, extract into a new folder, read docs/CURRENT_STATE.md first, run np
 [Section 08 seat holds](SECTION_08_RESERVATIONS.md) records the hold engine, final verification and the open local upgrade step. Stop before Section 09 until approved.
 
 [Section 09 passengers](SECTION_09_PASSENGERS.md) records passenger details, retrieval, erasure, final verification and the open local upgrade step. Stop before Section 10 until approved.
+
+[Section 10 ticketing](SECTION_10_TICKETING.md) records counters, payments, tickets, refunds, final verification, questions for the owner and the open local upgrade step. Stop before Section 11 until approved.
