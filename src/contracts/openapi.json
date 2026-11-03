@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Safeer local passenger transport API",
-    "version": "0.13.0",
-    "description": "Local-only Safeer passenger transport API through Section 12: company isolation, trips, seat holds, station ticketing, offline payments, luggage and assigned-driver boarding/journey operations. No native client, external hosting or online payment gateway."
+    "version": "0.14.0",
+    "description": "Local-only passenger transport API through Section 13: scoped financial reports and cash reconciliation over immutable station records, alongside identity, company isolation, ticketing, luggage and driver boarding. No external hosting, online gateway or native app."
   },
   "servers": [
     {
@@ -12046,6 +12046,808 @@
           },
           "409": {
             "description": "Ticket invalid, boarding closed, journey order or idempotency conflict."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/finance": {
+      "get": {
+        "summary": "Read scoped sales, refunds, transaction history and cash reconciliation",
+        "description": "Requires current company.finance.read at the cash session company/branch/station scope. Dates are inclusive company-local posting dates, at most 31 days. Currency amounts are integer minor-unit strings, never combined. Snapshots and all page/export requests recheck authorization. No money mutations. Sessions show lifetime totals and ignore the method filter.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "stationId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "const": ""
+                }
+              ]
+            }
+          },
+          {
+            "name": "employeeId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "const": ""
+                }
+              ]
+            }
+          },
+          {
+            "name": "method",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "",
+                "cash",
+                "bank_transfer",
+                "mobile_wallet"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            }
+          },
+          {
+            "name": "sessionPage",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            }
+          },
+          {
+            "name": "asOf",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "const": ""
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Scoped financial result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "from",
+                        "to",
+                        "timezone",
+                        "asOf",
+                        "page",
+                        "sessionPage",
+                        "movementCount",
+                        "sessionCount",
+                        "totals",
+                        "daily",
+                        "methods",
+                        "breakdown",
+                        "movements",
+                        "sessions"
+                      ],
+                      "properties": {
+                        "from": {
+                          "type": "string",
+                          "format": "date"
+                        },
+                        "to": {
+                          "type": "string",
+                          "format": "date"
+                        },
+                        "timezone": {
+                          "type": "string"
+                        },
+                        "asOf": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "page": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "sessionPage": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "movementCount": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "sessionCount": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "totals": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "currency",
+                              "salesMinor",
+                              "refundMinor",
+                              "netMinor",
+                              "ticketsSold",
+                              "ticketsRefunded"
+                            ],
+                            "properties": {
+                              "currency": {
+                                "type": "string"
+                              },
+                              "salesMinor": {
+                                "type": "string",
+                                "pattern": "^-?[0-9]+$"
+                              },
+                              "refundMinor": {
+                                "type": "string",
+                                "pattern": "^-?[0-9]+$"
+                              },
+                              "netMinor": {
+                                "type": "string",
+                                "pattern": "^-?[0-9]+$"
+                              },
+                              "ticketsSold": {
+                                "type": "integer",
+                                "minimum": 0
+                              },
+                              "ticketsRefunded": {
+                                "type": "integer",
+                                "minimum": 0
+                              }
+                            }
+                          }
+                        },
+                        "daily": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "currency",
+                              "date",
+                              "netMinor"
+                            ],
+                            "properties": {
+                              "currency": {
+                                "type": "string"
+                              },
+                              "date": {
+                                "type": "string",
+                                "format": "date"
+                              },
+                              "netMinor": {
+                                "type": "string",
+                                "pattern": "^-?[0-9]+$"
+                              }
+                            }
+                          }
+                        },
+                        "methods": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "currency",
+                              "method",
+                              "salesMinor",
+                              "refundMinor"
+                            ],
+                            "properties": {
+                              "currency": {
+                                "type": "string"
+                              },
+                              "method": {
+                                "type": "string"
+                              },
+                              "salesMinor": {
+                                "type": "string",
+                                "pattern": "^-?[0-9]+$"
+                              },
+                              "refundMinor": {
+                                "type": "string",
+                                "pattern": "^-?[0-9]+$"
+                              }
+                            }
+                          }
+                        },
+                        "breakdown": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "category",
+                              "id",
+                              "nameEn",
+                              "nameAr",
+                              "currency",
+                              "netMinor",
+                              "movements"
+                            ],
+                            "properties": {
+                              "category": {
+                                "enum": [
+                                  "employee",
+                                  "station",
+                                  "trip"
+                                ]
+                              },
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "nameEn": {
+                                "type": "string"
+                              },
+                              "nameAr": {
+                                "type": "string"
+                              },
+                              "currency": {
+                                "type": "string"
+                              },
+                              "netMinor": {
+                                "type": "string",
+                                "pattern": "^-?[0-9]+$"
+                              },
+                              "movements": {
+                                "type": "integer",
+                                "minimum": 0
+                              }
+                            }
+                          }
+                        },
+                        "movements": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "id",
+                              "kind",
+                              "at",
+                              "amountMinor",
+                              "currency",
+                              "document",
+                              "employeeId",
+                              "employee",
+                              "stationId",
+                              "stationEn",
+                              "stationAr",
+                              "tripId",
+                              "routeEn",
+                              "routeAr",
+                              "method",
+                              "tickets"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "kind": {
+                                "enum": [
+                                  "payment",
+                                  "refund"
+                                ]
+                              },
+                              "at": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "amountMinor": {
+                                "type": "string",
+                                "pattern": "^-?[0-9]+$"
+                              },
+                              "currency": {
+                                "type": "string"
+                              },
+                              "document": {
+                                "type": "string"
+                              },
+                              "employeeId": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "employee": {
+                                "type": "string"
+                              },
+                              "stationId": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "stationEn": {
+                                "type": "string"
+                              },
+                              "stationAr": {
+                                "type": "string"
+                              },
+                              "tripId": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "routeEn": {
+                                "type": "string"
+                              },
+                              "routeAr": {
+                                "type": "string"
+                              },
+                              "method": {
+                                "type": "string"
+                              },
+                              "tickets": {
+                                "type": "integer",
+                                "minimum": 0
+                              }
+                            }
+                          }
+                        },
+                        "sessions": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "id",
+                              "stationEn",
+                              "stationAr",
+                              "employee",
+                              "openedAt",
+                              "closedAt",
+                              "currency",
+                              "openingMinor",
+                              "cashInMinor",
+                              "cashOutMinor",
+                              "expectedMinor",
+                              "countedMinor",
+                              "varianceMinor",
+                              "recordedExpectedMinor",
+                              "stale",
+                              "counterName"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "stationEn": {
+                                "type": "string"
+                              },
+                              "stationAr": {
+                                "type": "string"
+                              },
+                              "employee": {
+                                "type": "string"
+                              },
+                              "openedAt": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "closedAt": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "date-time"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "currency": {
+                                "type": "string"
+                              },
+                              "openingMinor": {
+                                "type": "string",
+                                "pattern": "^-?[0-9]+$"
+                              },
+                              "cashInMinor": {
+                                "type": "string",
+                                "pattern": "^-?[0-9]+$"
+                              },
+                              "cashOutMinor": {
+                                "type": "string",
+                                "pattern": "^-?[0-9]+$"
+                              },
+                              "expectedMinor": {
+                                "type": "string",
+                                "pattern": "^-?[0-9]+$"
+                              },
+                              "countedMinor": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "pattern": "^-?[0-9]+$"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "varianceMinor": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "pattern": "^-?[0-9]+$"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "recordedExpectedMinor": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "pattern": "^-?[0-9]+$"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "stale": {
+                                "type": "boolean"
+                              },
+                              "counterName": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid dates, filters or page."
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "No current scoped financial access."
+          },
+          "409": {
+            "description": "Invalid report or export exceeds 10,000 transactions."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/finance/options": {
+      "get": {
+        "summary": "Read permitted financial station and employee filters",
+        "description": "Requires current company.finance.read at the cash session company/branch/station scope. Dates are inclusive company-local posting dates, at most 31 days. Currency amounts are integer minor-unit strings, never combined. Snapshots and all page/export requests recheck authorization. No money mutations. Sessions show lifetime totals and ignore the method filter.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Scoped financial result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "stations",
+                        "employees"
+                      ],
+                      "properties": {
+                        "stations": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "id",
+                              "nameEn",
+                              "nameAr"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "nameEn": {
+                                "type": "string"
+                              },
+                              "nameAr": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "employees": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "id",
+                              "name"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "name": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid dates, filters or page."
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "No current scoped financial access."
+          },
+          "409": {
+            "description": "Invalid report or export exceeds 10,000 transactions."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/finance/export": {
+      "post": {
+        "summary": "Export all matching transactions as formula-safe CSV, maximum 10,000 rows",
+        "description": "Requires current company.finance.read at the cash session company/branch/station scope. Dates are inclusive company-local posting dates, at most 31 days. Currency amounts are integer minor-unit strings, never combined. Snapshots and all page/export requests recheck authorization. No money mutations. Sessions show lifetime totals and ignore the method filter.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "from",
+                  "to"
+                ],
+                "properties": {
+                  "from": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "to": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "stationId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      {
+                        "const": ""
+                      }
+                    ]
+                  },
+                  "employeeId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      {
+                        "const": ""
+                      }
+                    ]
+                  },
+                  "method": {
+                    "enum": [
+                      "",
+                      "cash",
+                      "bank_transfer",
+                      "mobile_wallet"
+                    ]
+                  },
+                  "page": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000000
+                  },
+                  "sessionPage": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000000
+                  },
+                  "asOf": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      {
+                        "const": ""
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Scoped financial result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "csv",
+                        "filename",
+                        "count",
+                        "asOf"
+                      ],
+                      "properties": {
+                        "csv": {
+                          "type": "string"
+                        },
+                        "filename": {
+                          "type": "string"
+                        },
+                        "count": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "asOf": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid dates, filters or page."
+          },
+          "401": {
+            "description": "Authentication required."
+          },
+          "403": {
+            "description": "No current scoped financial access."
+          },
+          "409": {
+            "description": "Invalid report or export exceeds 10,000 transactions."
           }
         }
       }

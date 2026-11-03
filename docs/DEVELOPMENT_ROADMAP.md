@@ -1,6 +1,10 @@
 # Development roadmap
 
-## Section 12 implementation — 2026-11-03 (D36)
+## Section 13 — 2026-11-03 (D37)
+
+Section 13 is complete. Safeer runs locally at 0.14.0 with all thirteen migrations applied. All 118 automated checks passed (15 unit/server and 103 native PostgreSQL), including scoped read-only financial access and a 20,002-movement pagination/export-limit fixture. Source and built Finance browser workflows passed 16 layouts each. The private backup matched 1532 files and passed a protected restore/start/stop check; the existing account, settings and 49 legacy tables passed integrity comparisons. Existing financial rules are unchanged. See [financial reports](workflows/FINANCIAL_REPORTS.md) and [Section 13](archive/SECTION_13_FINANCE.md). Stop before Section 14.
+
+## Historical Section 12 checkpoint — 2026-11-03 (D36)
 
 Section 12 is complete. The local app runs 0.13.0 with all twelve migrations applied and the original account/settings preserved. It adds the owner-approved responsive driver workspace, assigned-trip manifests, printed ticket QRs, separate verification/boarding, journey events and incidents. All 109 automated checks passed (13 unit/server and 96 native PostgreSQL). Source and built driver workflows passed 32 language/theme/viewport combinations; the built station regression passed another 32. The private backup matched 1512 files, passed a protected restore/start/stop check, and the upgraded account/credentials/settings and 45 legacy tables passed integrity comparisons. Flutter remains deferred. See [driver workflow](workflows/DRIVER_BOARDING.md) and [Section 12](archive/SECTION_12_BOARDING.md). Stop before Section 13. Earlier per-section entries retain historical results.
 
@@ -22,7 +26,7 @@ Updated 2026-11-03. Sections 01-12 and the verified local upgrades (D34, D36) ar
 | 10 | Station ticketing, payment confirmation, official tickets, receipts, cancellations/refund operations | 02-03, 08-09 | Complete in source; local upgrade open; owner will revisit the money flow |
 | 11 | Passenger luggage registration, tagging/QR, tracking, exceptions and collection | 09-10 | Complete in source; local upgrade open |
 | 12 | Local driver client, assigned-trip manifest, QR verification, boarding/departure/arrival | 05-06, 10-11 | Complete and verified locally under D36; Flutter deferred |
-| 13 | Company financial reports, cash sessions, daily reconciliation | 10 | Not started |
+| 13 | Company financial reports and read-only cash reconciliation | 10 | Complete and verified locally under D37 |
 | 14 | Platform administration, company approval UI, notifications, global analytics | Existing module APIs through 13 | Not started |
 | 15 | Security audit, integration/concurrency/recovery tests, optimization and production preparation | All preceding sections | Not started |
 

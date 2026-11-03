@@ -1,5 +1,9 @@
 # Safeer mobile status
 
+## 0.14.0 — 2026-11-03, Section 13 Finance
+
+Add the shared responsive Finance section under Companies for scoped sales/refunds, currency/method/day/staff/station/trip breakdowns, cash-session reconciliation, CSV export and current-page print. Server checks current station/branch authority on every request. Existing money controls remain unchanged. Verification and local runtime upgrade are recorded in docs/CURRENT_STATE.md. No native app/build or remote access is included.
+
 ## 0.13.0 - 2026-11-03, Section 12 driver workspace
 
 Add the shared responsive Arabic/English driver workspace at /driver: assigned trips, minimal manifest, QR ticket checking and boarding, departure/arrival and incident reports. Driver authority is checked against current membership/assignment on every request. Station ticket prints now include stable QR codes. Source/built browser verification and the local upgrade are recorded in docs/CURRENT_STATE.md. The owner chose local web first; no Flutter app, native build or phone installation is included.

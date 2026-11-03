@@ -1,6 +1,6 @@
 # Implemented API contracts
 
-Canonical OpenAPI 3.1: [src/contracts/openapi.json](../../src/contracts/openapi.json), version 0.13.0, 85 paths/98 operations. It records implemented operations, request fields, cookies/CSRF, envelopes and response schemas. Requests are strict JSON with an 8 KiB limit. Responses use {data: ...} or {error:{code,message}}; no SQL, token or password details are logged in errors. Successful one-time credential responses are explicit exceptions intended only for the authorized administrator. D34 applied the existing contracts to the upgraded local runtime without changing operation behavior.
+Canonical OpenAPI 3.1: [src/contracts/openapi.json](../../src/contracts/openapi.json), version 0.14.0, 88 paths/101 operations. It records implemented operations, request fields, cookies/CSRF, envelopes and response schemas. Requests are strict JSON with an 8 KiB limit. Responses use {data: ...} or {error:{code,message}}; no SQL, token or password details are logged in errors. Successful one-time credential responses are explicit exceptions intended only for the authorized administrator. D34 applied the existing contracts to the upgraded local runtime without changing operation behavior.
 
 ## Section 02 routes
 
@@ -86,3 +86,7 @@ Workspace responses contain only RLS-visible resources and field-level UI capabi
 ## Section 12 driver operations
 
 GET /driver/trips lists authorized assignments. GET /driver/companies/{cid}/trips/{tid} reads the minimal manifest. POST suffixes /verify, /board, /events and /incidents implement strict JSON requests, same-origin CSRF and current assignment checks. QR values belong in request bodies, never query strings. Ticket print responses now include stable opaque QR values and vector geometry for authorized station printing. See the canonical schemas and [driver workflow](../workflows/DRIVER_BOARDING.md).
+
+## Section 13 financial reports
+
+GET /companies/{id}/finance/options exposes only permitted stations/financial operators. GET /companies/{id}/finance accepts company-local from/to dates (maximum 31 days), optional stationId/employeeId/method, independent page/sessionPage and an optional snapshot asOf timestamp. Responses carry separate currency/method/day/operator/station/trip totals, 75 movement rows and 50 sessions per page with full record counts. POST /companies/{id}/finance/export uses same-origin JSON/CSRF and the same scoped report filters, returning UTF-8 CSV/filename/count/asOf for at most 10,000 movements; larger exports fail instead of truncating. Money fields are integer minor-unit strings to preserve precision. Finance access grants no mutations.

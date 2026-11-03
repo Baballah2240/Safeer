@@ -1,6 +1,10 @@
 # Database schema and migration status
 
-## Section 12 implementation — 2026-11-03 (D36)
+## Section 13 — 2026-11-03 (D37)
+
+Section 13 is complete. Safeer runs locally at 0.14.0 with all thirteen migrations applied. All 118 automated checks passed (15 unit/server and 103 native PostgreSQL), including scoped read-only financial access and a 20,002-movement pagination/export-limit fixture. Source and built Finance browser workflows passed 16 layouts each. The private backup matched 1532 files and passed a protected restore/start/stop check; the existing account, settings and 49 legacy tables passed integrity comparisons. Existing financial rules are unchanged. See [financial reports](workflows/FINANCIAL_REPORTS.md) and [Section 13](archive/SECTION_13_FINANCE.md). Stop before Section 14.
+
+## Historical Section 12 checkpoint — 2026-11-03 (D36)
 
 Section 12 is complete. The local app runs 0.13.0 with all twelve migrations applied and the original account/settings preserved. It adds the owner-approved responsive driver workspace, assigned-trip manifests, printed ticket QRs, separate verification/boarding, journey events and incidents. All 109 automated checks passed (13 unit/server and 96 native PostgreSQL). Source and built driver workflows passed 32 language/theme/viewport combinations; the built station regression passed another 32. The private backup matched 1512 files, passed a protected restore/start/stop check, and the upgraded account/credentials/settings and 45 legacy tables passed integrity comparisons. Flutter remains deferred. See [driver workflow](workflows/DRIVER_BOARDING.md) and [Section 12](archive/SECTION_12_BOARDING.md). Stop before Section 13. Earlier per-section entries retain historical results.
 
@@ -226,3 +230,7 @@ Migration 0011_luggage.sql adds luggage_records, luggage_tags (only a hash of th
 ## Section 12 schema
 
 Migration 0012 adds ticket_credentials (same-company ticket FK, stable opaque QR, private access); boarding_records (same-company trip/ticket FKs, unique ticket boarding, actor/database time); journey_events (unique departure/arrival per trip); and journey_incidents (bounded note, kind, idempotency key/request digest, actor/time). New tables have RLS enabled and no runtime table grants. Trusted SQL helpers derive authority from the session and current assignment. Total after application: 53 application tables, 45 RLS tables, 32 permissions. Prior financial/migration history is preserved. The previous erasure routine is wrapped to clear incident notes without losing passenger/luggage cleanup.
+
+## Section 13 financial projections
+
+Migration 0013_finance.sql adds company.finance.read, finance_movements/report/options/audit functions and posting/opening-time indexes on existing financial tables. It adds no tables: the current schema remains 53 application tables/45 RLS tables. Runtime gets only the report/options/audit entry points; no financial table grants or raw movement helper grant. Amounts are integer minor-unit strings in API results. Projections scope by each cash session station, preserve company-local posting dates, separate currencies, snapshot pagination and full-lifetime cash-session calculations.

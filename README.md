@@ -56,3 +56,7 @@ Route workflow: Super Admin -> Cities & destinations -> add cities -> Companies 
 ## Section 12 local driver workspace
 
 Version 0.13.0 adds /driver for assigned-trip ticket verification, boarding, departure/arrival and incidents. Read [driver setup and use](docs/workflows/DRIVER_BOARDING.md) and [current verification status](docs/CURRENT_STATE.md). Use the existing staff account and password; managers link driver records to members and grant explicit permissions. Flutter and remote access are deferred.
+
+## Section 13 Finance
+
+Source 0.14.0 adds Companies → Finance: scoped financial reports and read-only cash reconciliation over existing payments/refunds/sessions. See [financial workflow](docs/workflows/FINANCIAL_REPORTS.md) and [verified running status](docs/CURRENT_STATE.md). Existing company roles need an explicit company.finance.read grant; no payment/refund or session-closing rights are added.

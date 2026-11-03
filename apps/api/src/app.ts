@@ -15,6 +15,7 @@ import {ReservationService} from './reservation.service.js';
 import {TicketingService} from './ticketing.service.js';
 import {LuggageService} from './luggage.service.js';
 import {BoardingService} from './boarding.service.js';
+import {FinanceService} from './finance.service.js';
 import {IdentityError,sessionToken,validCsrf,fail} from './security.js';
 
 const version=JSON.parse(readFileSync(new URL('../../package.json',import.meta.url),'utf8')).version;
@@ -31,9 +32,9 @@ class Errors implements ExceptionFilter {
     const type=(error as {type?:string})?.type;
     if(type==='entity.parse.failed'||type==='entity.too.large'){res.status(type==='entity.too.large'?413:400).json({error:{code:'INVALID_REQUEST',message:'Send a valid JSON request within 8 KiB.'}});return;}
     if(code==='23505'){const constraint=(error as {constraint?:string}).constraint||'';const loginConflict=constraint==='users_normalized_login_key';res.status(409).json({error:{code:loginConflict?'DUPLICATE_LOGIN':'DUPLICATE_RECORD',message:loginConflict?'That login is already in use.':'This code, slug or membership is already in use.'}});return;}
-    if(code==='P0001'&&['TICKET_INVALID','BOARDING_CLOSED','JOURNEY_STATE','LAST_COMPANY_ADMIN','COMPANY_LIMIT','CATALOG_LIMIT','RESOURCE_IN_USE','STATION_CITY_IN_USE','INVALID_ROUTE_STOPS','INACTIVE_ROUTE_RESOURCE','LAYOUT_IN_USE','INACTIVE_LAYOUT','INVALID_SEAT_LAYOUT','IMMUTABLE_REVISION','TRIP_NOT_DRAFT','TRIP_FINISHED','LUGGAGE_HELD','LUGGAGE_STATE','LUGGAGE_NOT_DEPARTED','LUGGAGE_EXCEPTION_OPEN','TICKET_REQUIRED','TAG_UNKNOWN','TAG_REPLACED','TAG_REASON_REQUIRED','REASON_REQUIRED','COLLECTION_NOT_VERIFIED','TRIP_NOT_READY','INVALID_TRIP_STOPS','ASSIGNMENT_CONFLICT','INACTIVE_ASSIGNMENT','TRIP_RESOURCE_IN_USE','TRIP_NOT_BOOKABLE','INVALID_SEATS','SEATS_UNAVAILABLE','SEATS_HELD','IDEMPOTENCY_CONFLICT','HOLD_CLOSED','INVALID_PASSENGERS','STALE_VERSION','NO_OPEN_SESSION','SESSION_OPEN','SESSION_CLOSED','COUNTER_INACTIVE','COUNTER_BUSY','NOTE_REQUIRED','ALREADY_PAID','HOLD_ENDED','LATE_REASON_REQUIRED','METHOD_DISABLED','CURRENCY_MISMATCH','ALREADY_REFUNDED','NOT_PAID','REFUND_CLOSED','REFERENCE_REQUIRED'].includes((error as Error).message)){res.status(409).json({error:{code:(error as Error).message,message:'The change conflicts with a protected resource, route rule or local capacity.'}});return;}
+    if(code==='P0001'&&['INVALID_REPORT','EXPORT_LIMIT','TICKET_INVALID','BOARDING_CLOSED','JOURNEY_STATE','LAST_COMPANY_ADMIN','COMPANY_LIMIT','CATALOG_LIMIT','RESOURCE_IN_USE','STATION_CITY_IN_USE','INVALID_ROUTE_STOPS','INACTIVE_ROUTE_RESOURCE','LAYOUT_IN_USE','INACTIVE_LAYOUT','INVALID_SEAT_LAYOUT','IMMUTABLE_REVISION','TRIP_NOT_DRAFT','TRIP_FINISHED','LUGGAGE_HELD','LUGGAGE_STATE','LUGGAGE_NOT_DEPARTED','LUGGAGE_EXCEPTION_OPEN','TICKET_REQUIRED','TAG_UNKNOWN','TAG_REPLACED','TAG_REASON_REQUIRED','REASON_REQUIRED','COLLECTION_NOT_VERIFIED','TRIP_NOT_READY','INVALID_TRIP_STOPS','ASSIGNMENT_CONFLICT','INACTIVE_ASSIGNMENT','TRIP_RESOURCE_IN_USE','TRIP_NOT_BOOKABLE','INVALID_SEATS','SEATS_UNAVAILABLE','SEATS_HELD','IDEMPOTENCY_CONFLICT','HOLD_CLOSED','INVALID_PASSENGERS','STALE_VERSION','NO_OPEN_SESSION','SESSION_OPEN','SESSION_CLOSED','COUNTER_INACTIVE','COUNTER_BUSY','NOTE_REQUIRED','ALREADY_PAID','HOLD_ENDED','LATE_REASON_REQUIRED','METHOD_DISABLED','CURRENCY_MISMATCH','ALREADY_REFUNDED','NOT_PAID','REFUND_CLOSED','REFERENCE_REQUIRED'].includes((error as Error).message)){res.status(409).json({error:{code:(error as Error).message,message:'The change conflicts with a protected resource, route rule or local capacity.'}});return;}
     if(code==='23P01'){res.status(409).json({error:{code:'SEATS_UNAVAILABLE',message:'Those seats have just been taken.'}});return;}
-    if(code==='55P03'){res.setHeader('Retry-After','5');res.status(503).json({error:{code:'BUSY',message:'Please try again in a moment.'}});return;}
+    if(['55P03','57014'].includes(code||'')){res.setHeader('Retry-After','5');res.status(503).json({error:{code:'BUSY',message:'Please try again in a moment.'}});return;}
     if(['23503','23514','42501'].includes(code||'')){res.status(code==='42501'?403:400).json({error:{code:code==='42501'?'FORBIDDEN':'INVALID_RESOURCE_SCOPE',message:'The resource does not belong to an allowed company or scope.'}});return;}
     if(error instanceof HttpException){res.status(error.getStatus()).json({error:{code:'INVALID_REQUEST',message:'The request is not valid.'}});return;}
     res.status(500).json({error:{code:'INTERNAL_ERROR',message:'The request could not be completed.'}});
@@ -191,7 +192,14 @@ class BoardingController {
  @Post('companies/:cid/trips/:tid/events') event(@Req() req:Request,@Param('cid') cid:string,@Param('tid') tid:string,@Body() data:unknown){return this.boarding.event(token(req),cid,tid,data).then(reply);}
  @Post('companies/:cid/trips/:tid/incidents') incident(@Req() req:Request,@Param('cid') cid:string,@Param('tid') tid:string,@Body() data:unknown){return this.boarding.incident(token(req),cid,tid,data).then(reply);}
 }
-@Module({controllers:[IdentityController,CompanyController,LuggageController,TicketingController,BookingController,RouteController,FleetController,TripSeatController,TripController,ReservationController,PublicController,PublicProfileController,BoardingController],providers:[Database,IdentityService,CompanyService,RouteService,FleetService,TripService,PublicService,ReservationService,TicketingService,LuggageService,BoardingService]})
+@Controller('api/v1/companies/:id/finance')
+class FinanceController {
+ constructor(private readonly finance:FinanceService){}
+ @Get('options') options(@Req() req:Request,@Param('id') id:string){return this.finance.options(token(req),id).then(reply);}
+ @Get() report(@Req() req:Request,@Param('id') id:string,@Query() query:unknown){return this.finance.report(token(req),id,query).then(reply);}
+ @Post('export') export(@Req() req:Request,@Param('id') id:string,@Body() data:unknown){return this.finance.report(token(req),id,data,true).then(reply);}
+}
+@Module({controllers:[FinanceController,IdentityController,CompanyController,LuggageController,TicketingController,BookingController,RouteController,FleetController,TripSeatController,TripController,ReservationController,PublicController,PublicProfileController,BoardingController],providers:[Database,IdentityService,CompanyService,RouteService,FleetService,TripService,PublicService,ReservationService,TicketingService,LuggageService,BoardingService,FinanceService]})
 export class IdentityModule {}
 
 export async function createIdentityApi({port=4321,webOrigin='http://127.0.0.1:4320'}:{port?:number;webOrigin?:string}={}){

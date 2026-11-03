@@ -1,9 +1,9 @@
 {
   "name": "safeer",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "private": true,
   "type": "module",
-  "description": "Section 12 local driver boarding, passenger luggage, station ticketing, passenger details, seat holds, marketplace, trips, fleet, routes and company management for Safeer",
+  "description": "Section 13 local financial reports, driver boarding, passenger luggage, station ticketing, passenger details, seat holds, marketplace, trips, fleet, routes and company management for Safeer",
   "engines": {
     "node": ">=24"
   },
@@ -43,7 +43,9 @@
     "test:boarding": "node --test tests/boarding.integration.mjs",
     "test:boarding:browser": "node tests/boarding.browser.mjs",
     "test:luggage": "node --test tests/luggage.integration.mjs",
-    "test:luggage:browser": "node tests/luggage.browser.mjs"
+    "test:luggage:browser": "node tests/luggage.browser.mjs",
+    "test:finance": "node --test tests/finance.integration.mjs",
+    "test:finance:browser": "node tests/finance.browser.mjs"
   },
   "license": "UNLICENSED",
   "dependencies": {

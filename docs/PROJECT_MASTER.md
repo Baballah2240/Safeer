@@ -1,6 +1,10 @@
 # Safeer / Sudan Transport - project master
 
-## Section 12 implementation — 2026-11-03 (D36)
+## Section 13 — 2026-11-03 (D37)
+
+Section 13 is complete. Safeer runs locally at 0.14.0 with all thirteen migrations applied. All 118 automated checks passed (15 unit/server and 103 native PostgreSQL), including scoped read-only financial access and a 20,002-movement pagination/export-limit fixture. Source and built Finance browser workflows passed 16 layouts each. The private backup matched 1532 files and passed a protected restore/start/stop check; the existing account, settings and 49 legacy tables passed integrity comparisons. Existing financial rules are unchanged. See [financial reports](workflows/FINANCIAL_REPORTS.md) and [Section 13](archive/SECTION_13_FINANCE.md). Stop before Section 14.
+
+## Historical Section 12 checkpoint — 2026-11-03 (D36)
 
 Section 12 is complete. The local app runs 0.13.0 with all twelve migrations applied and the original account/settings preserved. It adds the owner-approved responsive driver workspace, assigned-trip manifests, printed ticket QRs, separate verification/boarding, journey events and incidents. All 109 automated checks passed (13 unit/server and 96 native PostgreSQL). Source and built driver workflows passed 32 language/theme/viewport combinations; the built station regression passed another 32. The private backup matched 1512 files, passed a protected restore/start/stop check, and the upgraded account/credentials/settings and 45 legacy tables passed integrity comparisons. Flutter remains deferred. See [driver workflow](workflows/DRIVER_BOARDING.md) and [Section 12](archive/SECTION_12_BOARDING.md). Stop before Section 13. Earlier per-section entries retain historical results.
 
@@ -22,12 +26,12 @@ An expired hold does not authorize payment or boarding. One booking initially be
 
 ## Architecture: target versus current source
 
-| Layer | Target decision | Implemented now (Sections 01-12) |
+| Layer | Target decision | Implemented now (Sections 01-13) |
 | --- | --- | --- |
 | Public marketplace, company pages, dashboards, station PWA | Next.js/React with TypeScript | Existing responsive JavaScript prototype retained, freight removed; no Next.js app installed |
 | Passenger and driver apps | Flutter/Dart clients | Responsive local driver workspace implemented by owner choice; no native project or build |
-| Backend | NestJS/TypeScript modular monolith, versioned APIs | NestJS identity/company/route/fleet/trip/marketplace/booking/ticketing/luggage/boarding APIs, same-origin local proxy and separate fictional passenger example |
-| Durable data | PostgreSQL 18, explicit SQL migrations | Twelve migrations and 53 application tables; private details follow the agreed erasure policies, while financial history is preserved |
+| Backend | NestJS/TypeScript modular monolith, versioned APIs | NestJS identity/company/route/fleet/trip/marketplace/booking/ticketing/luggage/boarding/finance APIs, same-origin local proxy and separate fictional passenger example |
+| Durable data | PostgreSQL 18, explicit SQL migrations | Thirteen migrations and 53 application tables; private details follow the agreed erasure policies, while financial history is preserved |
 | Jobs/cache/events | Redis, idempotent workers and WebSocket availability updates | Interfaces and consistency requirements documented; services not installed |
 | Documents/storage/notifications | S3-compatible private storage, FCM where applicable | Ownership, outbox and access requirements documented; no accounts or integrations |
 

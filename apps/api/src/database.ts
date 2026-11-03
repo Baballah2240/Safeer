@@ -27,6 +27,8 @@ export class Database implements OnModuleDestroy {
     if(security.rows[0].n!==14)throw Error('Apply the Section 04 migration with row security before starting the API.');
     const boarding=await this.pool.query("SELECT count(*)::int AS n,bool_or(has_table_privilege(current_user,c.oid,'SELECT,INSERT,UPDATE,DELETE')) AS direct_access FROM pg_class c JOIN pg_namespace ns ON ns.oid=c.relnamespace WHERE ns.nspname='safeer' AND c.relrowsecurity AND c.relname IN ('ticket_credentials','boarding_records','journey_events','journey_incidents')");
     if(boarding.rows[0].n!==4||boarding.rows[0].direct_access)throw Error('Apply the Section 12 migration and restricted journey function grants before starting the API.');
+    const finance=await this.pool.query("SELECT has_function_privilege(current_user,to_regprocedure('safeer.finance_report(uuid,date,date,uuid,uuid,text,integer,integer,timestamptz,boolean)'),'EXECUTE') AS ready");
+    if(finance.rows[0].ready!==true)throw Error('Apply the Section 13 migration and restricted financial projection grants before starting the API.');
   }
   async transaction<T>(action:(client:PoolClient)=>Promise<T>,write=true):Promise<T>{
     const client=await this.pool.connect();

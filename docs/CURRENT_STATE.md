@@ -1,48 +1,52 @@
 # Current state — read this first
 
-Updated: 2026-11-03. Safeer / Sudan Transport, version **0.13.0**. Section 12 is complete under D35-D36. Stop before Section 13 financial reporting/reconciliation until the owner approves it.
+Updated: 2026-11-03. Safeer / Sudan Transport **0.14.0**. Sections 01-13 and the private local upgrade are complete. Latest authorization: D37. Stop before Section 14 until the owner approves it.
 
-## Running local application
+## Running application
 
-- Staff and company management: http://127.0.0.1:4320/staff
-- Driver workspace: http://127.0.0.1:4320/driver
+- Staff/company management and Finance: http://127.0.0.1:4320/staff
+- Assigned-driver workspace: http://127.0.0.1:4320/driver
 - Real local marketplace: http://127.0.0.1:4320/marketplace
-- Fictional passenger design preview: http://127.0.0.1:4320/
+- Separate fictional passenger design preview: http://127.0.0.1:4320/
 
-The API reports 0.13.0 and database connected. All services remain bound to 127.0.0.1. No remote phone/laptop connection, native Flutter app, external payment gateway or production deployment exists. The owner explicitly chose local web first and mobile later.
+Health reports 0.14.0/database connected. Services remain on 127.0.0.1. No remote phone/laptop access, Flutter app, external payment gateway or hosting deployment exists. The owner chose local web now, mobile later.
 
-## Current features and authority
+## Section 13 Finance
 
-Sections 01-11 remain implemented: identity and protected Super Administrator; private companies, branches/stations, roles/members and audited support grants; shared cities and company routes; immutable seat layouts, buses/drivers; published trips and assignments; opt-in marketplace; atomic seat holds; guest passenger details; station offline payment recording, tickets/receipts/refunds; and passenger luggage registration, tags, custody and exceptions.
+Companies → company → Finance adds date/station/employee/method filters; per-currency gross payments, refunds, net collections and ticket counts; daily/employee/station/trip breakdowns; paginated transaction history and cash reconciliation; CSV export and current-page printing. It reads permanent station payments/refunds/receipts/tickets/cash sessions, adds no new money tables, and changes no financial policy. Net collections are not profit because operating costs are absent.
 
-Section 12 connects these to the responsive Arabic/English driver workspace. Drivers use existing staff accounts and see only current trips assigned to an active driver record linked to their active same-company member. The new company.driver.operate permission is required. Company-wide supervisors use company.journeys.manage; Super Administrator retains platform access. Existing company-role copies receive no automatic new grants. New companies receive an Assigned driver template and updated administrator capabilities.
+The new company.finance.read capability follows the originating cash session's permitted company/branch/station. Super Administrator retains access. Drivers and support grants gain none; Finance read access cannot refund or close sessions. New company/branch/station manager templates include it, while existing company-role copies require an explicit grant. UI access also needs the existing company.profile.read capability. The runtime has one existing account and zero companies; create/select the company's records before its Finance menu/report is available. No sample company or real customer data was seeded.
 
-Manifests contain names, seats, ticket/boarding state and journey/incident records without contact numbers, payment references or luggage collection proof. Station ticket prints include stable opaque per-ticket QRs; copies keep the same QR. A check does not board someone. Committing boarding rechecks payment, refund, cancellation, trip and assignment state under locks and records a ticket only once. Use a keyboard scanner or paste a QR value; camera and offline boarding are absent.
+Posting dates use the company's timezone and an inclusive range of at most 31 days. Currencies remain separate with integer minor-unit amounts, and refunds use their own posting dates. Cash-session rows overlap the chosen dates but display each session's full lifetime up to the snapshot, unaffected by payment-method filters. Closing/counting remains under Station with its existing permissions. D32-D33's refund, currency, forgotten-session and custody policies are unchanged; the owner will revisit the financial questions in [Section 10](archive/SECTION_10_TICKETING.md).
 
-Boarding opens 24 hours before scheduled departure and closes at actual departure or scheduled arrival. Departure waits until scheduled departure; arrival follows recorded departure. Actual events do not overwrite the schedule. After actual departure assignments cannot change; actual arrival blocks cancellation to reopen refunds. Financial refund cutoffs remain scheduled-time D32 rules, including cancellation refunds. Luggage rules remain D33. Notes are bounded/idempotent and cleared 90 days after scheduled arrival; passenger erasure is preserved. See [driver setup/use](workflows/DRIVER_BOARDING.md) and [business decisions](DECISIONS.md).
+Report snapshots preserve microseconds and timezone offsets across pages/exports. Each request rechecks current authority. There are 75 transaction and 50 session rows/page with complete totals/counts. CSV exports all matching movements up to 10,000 and refuses larger results. Printing rechecks access and labels current pages; it does not claim the entire ledger was printed. Report/export content omits passenger names/contacts, transaction references, free-text reasons and QR values. Reads/exports are audited within authorized scope. See [financial workflow](workflows/FINANCIAL_REPORTS.md).
 
-## Local data, startup and recovery
+## Earlier modules retained
 
-The private runtime has one existing account and zero companies. The existing login/password was preserved; no new default password was created or printed. Account/credential/settings/first-login records and all 45 legacy tables passed integrity comparisons. Keep runtime/ intact; do not reset it to fix access.
+Protected identity/Super Administrator; company approval, branches/stations, tenant roles/members and scoped audited support; cities/routes; immutable seat maps, buses/drivers; trip publication/assignments; opt-in marketplace; atomic guest seat holds/passenger details; station offline payments, tickets, receipts/refunds; passenger luggage tracking/custody/exceptions; and assigned-driver QR verification, boarding, journey events and incidents remain implemented.
 
-Use Node 24+, npm.cmd ci when dependencies are absent, then npm.cmd run local. The launcher applies append-only migrations with the private owner and runs the API as a restricted role. On a fresh database only, the generated first-login details are saved privately to runtime/first-login.txt. See [identity setup/recovery](database/IDENTITY_SETUP.md).
+The driver workspace uses existing staff identity and active same-company driver/member links. Drivers act only on current assignments with company.driver.operate; company.journeys.manage grants company-wide supervision. Stable ticket QRs appear on station prints/copies. Checking does not board someone; committing rechecks validity under locks. Existing scheduled-time financial/luggage rules and 90-day passenger/incident erasure remain intact. See [driver workflow](workflows/DRIVER_BOARDING.md).
 
-Managers must create company/trip data before drivers have assignments to display. Link a driver to a staff member and grant its explicit role before assigning the driver to a published trip. Real customer data was not seeded. The / preview is fictional and separate from durable bookings.
+## Data, startup and recovery
 
-## Database, API and build
+The existing account/password, private settings/first-login file, global role labels and 49 legacy tables passed pre/post-upgrade integrity comparisons. No account was reset or new default password printed. Keep runtime/ intact.
 
-Migrations 0001-0012 are applied and checksum-verified with none pending. There are **53 application tables, 45 RLS tables, 32 permissions, 85 API paths / 98 operations and 29 public assets**. Migration 0012 adds ticket_credentials, boarding_records, journey_events and journey_incidents; runtime has fixed function grants and no direct access to the four new tables. It backfills opaque codes for existing tickets and preserves all earlier migration files. See [schema](DATABASE_SCHEMA.md) and [API contracts](api/CONTRACTS.md).
+Use Node 24+, npm.cmd ci when dependencies are absent, then npm.cmd run local. The launcher applies append-only migrations with the private owner and starts the API as a restricted role. Only a fresh database generates a private runtime/first-login.txt. See [identity setup/recovery](database/IDENTITY_SETUP.md). Old source checkpoints and private backups remain separate and intact.
 
-## Verification and checkpoints
+## Schema, contracts and build
 
-All **109 automated checks passed**: 13 unit/server and 96 native PostgreSQL checks, including seven boarding tests. The native suite uses disposable databases/restricted roles. No failures or skips. Source and built driver workflows each passed 16 Arabic/English, dark/light, desktop/mobile layouts at 1920, 1366, 390 and 320 pixels. The existing built station regression passed 32 layouts and payment/refund/walk-in/original-copy-print workflows. No browser errors were observed; desktop and Arabic mobile screenshots were inspected. The API/frontend build and 21 mandatory-document checks passed.
+Migrations 0001-0013 are checksum-verified/applied with none pending. Current totals: **53 application tables, 45 RLS tables, 33 permissions, 88 API paths / 101 operations, 32 public assets**. Migration 0013 adds scoped projection/options/audit functions and date/opening indexes; it does not rewrite earlier migrations or grant runtime access to financial tables. Monetary JSON fields are integer minor-unit strings. Read [schema](DATABASE_SCHEMA.md), [API contracts](api/CONTRACTS.md) and [decisions](DECISIONS.md).
 
-The pre-upgrade private backup matched **1512 files** and passed a protected restore/start/stop check. The restore copy was safely removed after clean stop; the backup remains under runtime/backups/, separate from source archives. Existing Section 11 backups/checkpoints remain intact. Private backup retention still needs owner management because backups can retain erased details.
+## Verification and backup
 
-Source checkpoint: archives/Safeer-0.13.0-Section-12-2026-11-03.zip, with exact commit/files in ARCHIVE-MANIFEST.json, a .sha256 sidecar and archive verification receipt. Source archives exclude accounts, credentials, runtime/backups, node_modules and generated native files. See [Section 12 handover](archive/SECTION_12_BOARDING.md). The last Section 11 local-update checkpoint remains separate.
+All **118 automated checks passed**: 15 unit/server and 103 native PostgreSQL checks, including seven finance integration checks and a 20,002-movement fixture. Tests use isolated databases/restricted roles, not the persistent runtime. No failures or skips in the final full run. Finance source and built browser workflows each passed 16 Arabic/English, dark/light layouts at 1920, 1366, 390 and 320 pixels, with CSV/print/filter checks and no recorded product browser errors. One built sign-in wait timed out during parallel load; the separate rerun passed. Screenshots were inspected. The build and 22 mandatory-document/link checks passed.
 
-Changes are committed locally. Do not push the monorepo's unpublished portfolio history without resolving the owner's keep-local instruction; GitHub authentication was also unavailable at the prior handover. A GitHub push would neither deploy hosting nor install a mobile app.
+Volume testing found a slow join with stale bulk-history statistics. Authorized stations are now materialized and indexes/statistics initialized; cash totals are computed for the displayed session page. The isolated 20,002-movement report measured 426 ms after the fix, and the full integration suite passed under the unchanged eight-second query timeout. Keep autovacuum/statistics maintenance enabled and analyze after bulk import/restore.
+
+The pre-upgrade private backup matched **1532 files** and passed a protected restore/start/stop check with the existing account. Its temporary restore was safely removed after clean stop; the original backup remains under runtime/backups/. Private backups can retain erased details, so their retention still needs owner management.
+
+Source archive: archives/Safeer-0.14.0-Section-13-2026-11-03.zip, with exact commit/file hashes in ARCHIVE-MANIFEST.json, a .sha256 sidecar and verification receipt. Accounts, credentials, runtime/backups, node_modules and native caches are excluded. See [Section 13 handover](archive/SECTION_13_FINANCE.md). Git changes remain local because the shared branch contains unpublished portfolio history the owner requested to keep local; a push would not deploy hosting or install an app.
 
 ## Remaining boundaries
 
-Section 13 financial reports/reconciliation needs a new approval. The owner will revisit payment-policy questions in [Section 10](archive/SECTION_10_TICKETING.md). Freight/parcels remain excluded from release 1. Remote secure hosting, native Flutter clients, camera scanning, offline boarding, emergency assignment correction and receipt/legal/retention review remain future work. No production-readiness claim is made by this local checkpoint.
+Section 14 platform administration/notifications/global analytics needs the next approval. Financial policy decisions, receipt wording and legal/retention review remain open in the Section 10 handover. Freight/parcels remain excluded from release 1. Flutter, secure remote hosting, camera/offline scanning, emergency assignment correction and production security preparation remain future work. No production-readiness claim is made.
