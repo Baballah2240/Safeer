@@ -1,5 +1,10 @@
 # System architecture
 
+## Section 14 architecture (D38)
+
+PlatformService and fixed PostgreSQL projections add global aggregates/notice management behind reserved Super Administrator checks. Notification capture occurs inside existing source transactions through six database triggers; a shared metadata event feed and per-user read receipts form the durable local delivery mechanism. Actor context derives from the validated session token and current database authority. No caller-supplied user/company/admin flag authorizes global reporting or delivery. Runtime receives six function grants without access to new raw tables or internal trigger/visibility helpers. The shared bilingual staff/driver/public src/ uses same-origin request/refresh delivery. No Redis/WebSocket worker or external notification service is introduced. [Platform workflow](workflows/PLATFORM_ADMINISTRATION.md) documents refresh and retention boundaries.
+
+
 ## Section 13 — 2026-11-03 (D37)
 
 Section 13 is complete. Safeer runs locally at 0.14.0 with all thirteen migrations applied. All 118 automated checks passed (15 unit/server and 103 native PostgreSQL), including scoped read-only financial access and a 20,002-movement pagination/export-limit fixture. Source and built Finance browser workflows passed 16 layouts each. The private backup matched 1532 files and passed a protected restore/start/stop check; the existing account, settings and 49 legacy tables passed integrity comparisons. Existing financial rules are unchanged. See [financial reports](workflows/FINANCIAL_REPORTS.md) and [Section 13](archive/SECTION_13_FINANCE.md). Stop before Section 14.

@@ -1,8 +1,8 @@
 # Safeer / Sudan Transport
 
-Version 0.12.0, Section 11: passenger luggage registration, QR tags, tracking, problems and collection, built on the existing ticketing, passenger details, seat holds, marketplace, trip, fleet, company, route and identity system. This independent Sudan passenger-transport project does not modify Stocrant or the school application.
+Version 0.15.0, Section 14: Super Administrator platform overview, global collections, protected bilingual public notice and current-access notification inbox, alongside finance, driver boarding, luggage, station ticketing and company management. This independent Sudan passenger-transport project does not modify Stocrant or the school application.
 
-Start continuation at [CURRENT_STATE](docs/CURRENT_STATE.md). Section 11 and the owner-approved local upgrade are complete: the existing runtime now runs 0.12.0 with its original account unchanged. Stop before Section 12 until approved. For a future local update, stop the launcher, verify npm.cmd run local:backup -- Section-11, then run npm.cmd run local.
+Start continuation at [CURRENT_STATE](docs/CURRENT_STATE.md) and [platform workflow](docs/workflows/PLATFORM_ADMINISTRATION.md). Preserve runtime/ and the existing account. Section 14 is verified and running locally with the existing account unchanged; see CURRENT_STATE and the Section 14 handover. Stop before Section 15. A source ZIP never contains existing users/passwords/history.
 
 ## Run locally on Windows
 
@@ -21,7 +21,7 @@ The launcher creates a persistent private PostgreSQL development database, appli
 - Sign-in/out, mandatory temporary-password change, active-session list/revocation and password reset by authorized administrators.
 - User creation/edit/deactivation, platform role assignment and configurable platform roles/permissions; protected owner/last-owner rules and audited privileged changes.
 - Adaptive salted scrypt, bounded hashing, durable throttling, strict inputs, opaque hashed sessions, expiry/revocation, Origin/CSRF protection and same-origin HttpOnly cookies.
-- Eight built-in templates. Platform assignments stay separate from company/branch/station memberships; trip roles wait for real trips. Support has no default finance access.
+- Nine built-in templates. Platform assignments stay separate from company/branch/station memberships; trip roles wait for real trips. Support has no default finance access.
 
 This is local development, not remote production deployment. Loopback HTTP cookies intentionally omit Secure. HTTPS/proxy trust, MFA, email/SMS reset delivery, mobile token/keychain flows and final load/security auditing require further work before remote use.
 

@@ -1,5 +1,10 @@
 # Implemented API contracts
 
+## Section 14 additions
+
+OpenAPI 0.15.0 now has 93 paths / 107 operations. GET public/notice anonymously returns enabled plus translations only when enabled. GET platform/dashboard accepts from/to (at most 31 inclusive UTC dates) and optional nonnegative page; GET/PUT platform/settings require Super Administrator, with currentPassword/version/CSRF on PUT. GET notifications accepts optional bigint-string before cursor; POST notifications/{event}/read accepts an empty object and records only the current user's receipt after a fresh visibility check. Pages contain at most 50 companies/events. Financial amounts and event IDs remain decimal strings. Global reads/notice changes are audited. No passenger details, transaction references, free-text reasons or QR secrets appear in the new projections. See [workflow](../workflows/PLATFORM_ADMINISTRATION.md). Earlier per-section summaries retain their historical counts.
+
+
 Canonical OpenAPI 3.1: [src/contracts/openapi.json](../../src/contracts/openapi.json), version 0.14.0, 88 paths/101 operations. It records implemented operations, request fields, cookies/CSRF, envelopes and response schemas. Requests are strict JSON with an 8 KiB limit. Responses use {data: ...} or {error:{code,message}}; no SQL, token or password details are logged in errors. Successful one-time credential responses are explicit exceptions intended only for the authorized administrator. D34 applied the existing contracts to the upgraded local runtime without changing operation behavior.
 
 ## Section 02 routes

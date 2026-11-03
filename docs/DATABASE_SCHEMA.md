@@ -1,5 +1,10 @@
 # Database schema and migration status
 
+## Section 14 schema - migration 0014_platform.sql
+
+Adds three private RLS tables: platform_settings (one versioned bilingual notice), notification_events (identity bigint, company/event/source/revision/time with deduplication) and notification_reads (user/event primary key and read time). Runtime has no raw table privileges. Fixed projections/capture helpers are SECURITY DEFINER with trusted search paths and PUBLIC revocation. Six callable entry functions alone are granted. Six source-table trigger bindings generate seven event types transactionally. Posting-date indexes support global payment/refund aggregates. Existing tables, credentials, roles and financial policies are unchanged. Expected totals: 56 application tables, 48 RLS tables and 33 permissions. See [current verification](CURRENT_STATE.md) and [workflow](workflows/PLATFORM_ADMINISTRATION.md).
+
+
 ## Section 13 — 2026-11-03 (D37)
 
 Section 13 is complete. Safeer runs locally at 0.14.0 with all thirteen migrations applied. All 118 automated checks passed (15 unit/server and 103 native PostgreSQL), including scoped read-only financial access and a 20,002-movement pagination/export-limit fixture. Source and built Finance browser workflows passed 16 layouts each. The private backup matched 1532 files and passed a protected restore/start/stop check; the existing account, settings and 49 legacy tables passed integrity comparisons. Existing financial rules are unchanged. See [financial reports](workflows/FINANCIAL_REPORTS.md) and [Section 13](archive/SECTION_13_FINANCE.md). Stop before Section 14.

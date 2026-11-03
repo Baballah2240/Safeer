@@ -30,5 +30,6 @@ export async function grantIdentityRuntime(client,role){
     REVOKE EXECUTE ON FUNCTION safeer.erase_due_passenger_data_before_boarding() FROM "${role}";
     GRANT EXECUTE ON FUNCTION safeer.finance_report(uuid,date,date,uuid,uuid,text,integer,integer,timestamptz,boolean),safeer.finance_options(uuid),safeer.finance_audit(uuid,text) TO "${role}";
     GRANT EXECUTE ON FUNCTION safeer.driver_trips(),safeer.driver_manifest(uuid,uuid),safeer.driver_verify(uuid,uuid,text,boolean),safeer.driver_event(uuid,uuid,text),safeer.driver_incident(uuid,uuid,text,text,text,text),safeer.ticket_codes(uuid,uuid) TO "${role}";
+    GRANT EXECUTE ON FUNCTION safeer.platform_notice(),safeer.platform_settings_read(),safeer.platform_settings_save(boolean,text,text,integer),safeer.platform_dashboard(date,date,integer),safeer.notifications_list(bigint),safeer.notification_read(bigint) TO "${role}";
     GRANT EXECUTE ON FUNCTION safeer.company_actor(),safeer.company_super(),safeer.company_can(uuid,text,uuid,uuid),safeer.company_has(uuid,text),safeer.member_visible(uuid,uuid,boolean),safeer.assignment_allowed(uuid,uuid,uuid,uuid) TO "${role}";`);
 }

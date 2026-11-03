@@ -10,6 +10,17 @@ if (!process.env.SAFEER_TEST_DATABASE_URL) throw Error('Set SAFEER_TEST_DATABASE
 const config = databaseConfig(process.env.SAFEER_TEST_DATABASE_URL);
 const migrations = await readMigrations();
 
+test('Section 14 upgrades thirteen migrations without changing identities, companies, role grants or financial history',async()=>fixture(async client=>{
+ await runMigrations(client,migrations.slice(0,13));
+ const uid=randomUUID();await client.query('INSERT INTO safeer.users(id,normalized_login,display_name,password_hash,must_change_password) VALUES($1,$2,$3,$4,false)',[uid,'platform-upgrade@safeer.local','Fictional Existing Owner',await hashPassword(randomUUID()+randomUUID())]);
+ await client.query("INSERT INTO safeer.companies(id,slug,name_en,name_ar,status) VALUES($1,'platform-upgrade','Fictional Existing','Fictional Existing','archived')",[randomUUID()]);
+ const tables=(await client.query("SELECT tablename FROM pg_tables WHERE schemaname='safeer' ORDER BY tablename")).rows.map(x=>x.tablename);
+ const snapshot=async()=>{const result={};for(const t of tables)result[t]=(await client.query(`SELECT to_jsonb(x) AS row FROM safeer.${t} x ORDER BY to_jsonb(x)::text`)).rows;return result;};
+ const before=await snapshot();await runMigrations(client,migrations);assert.deepEqual(await snapshot(),before);
+ assert.equal((await client.query('SELECT count(*)::integer n FROM safeer.notification_events')).rows[0].n,0,'No historical alerts are backfilled.');
+ assert.equal((await client.query('SELECT notice_enabled FROM safeer.platform_settings')).rows[0].notice_enabled,false);
+}));
+
 test('Section 03 upgrades an existing identity database without changing users, credentials or sessions',async()=>fixture(async client=>{
   await runMigrations(client,migrations.slice(0,2));
   const id=randomUUID(),sid=randomUUID(),encoded=await hashPassword(randomUUID()+randomUUID()),tokenHash=createHash('sha256').update(randomUUID()).digest('hex');
@@ -137,7 +148,7 @@ test('foundation schemas and migration ledger grant no public access', async () 
   const result = await client.query("SELECT count(*)::int AS count FROM pg_namespace n CROSS JOIN LATERAL aclexplode(n.nspacl) acl WHERE n.nspname IN ('safeer', 'safeer_meta') AND acl.grantee = 0");
   assert.equal(result.rows[0].count, 0);
   const tables = await client.query("SELECT tablename FROM pg_tables WHERE schemaname = 'safeer'");
-  assert.deepEqual(tables.rows.map(r=>r.tablename).sort(), ['users','sessions','roles','permissions','role_permissions','platform_user_roles','identity_audit','auth_throttles','companies','company_settings','branches','stations','company_roles','company_role_permissions','company_users','company_user_roles','support_access_grants','support_access_grant_permissions','company_audit','cities','routes','route_stops','seat_layouts','seat_layout_revisions','seat_layout_seats','buses','drivers','trips','trip_stops','trip_assignments','company_public_profiles','bookings','seat_allocations','booking_events','booking_contacts','booking_passengers','company_payment_settings','station_counters','cash_sessions','document_sequences','payments','receipts','tickets','refunds','document_prints','luggage_records','luggage_tags','luggage_events','luggage_exceptions','ticket_credentials','boarding_records','journey_events','journey_incidents'].sort());
+  assert.deepEqual(tables.rows.map(r=>r.tablename).sort(), ['users','sessions','roles','permissions','role_permissions','platform_user_roles','identity_audit','auth_throttles','companies','company_settings','branches','stations','company_roles','company_role_permissions','company_users','company_user_roles','support_access_grants','support_access_grant_permissions','company_audit','cities','routes','route_stops','seat_layouts','seat_layout_revisions','seat_layout_seats','buses','drivers','trips','trip_stops','trip_assignments','company_public_profiles','bookings','seat_allocations','booking_events','booking_contacts','booking_passengers','company_payment_settings','station_counters','cash_sessions','document_sequences','payments','receipts','tickets','refunds','document_prints','luggage_records','luggage_tags','luggage_events','luggage_exceptions','ticket_credentials','boarding_records','journey_events','journey_incidents','platform_settings','notification_events','notification_reads'].sort());
 }));
 
 test('migration CLI reports pending/applied status without echoing credentials', async () => fixture(async (client, url) => {

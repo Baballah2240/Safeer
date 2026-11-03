@@ -1,5 +1,12 @@
 # Business rules
 
+## Section 14 rules (D38)
+
+Global dashboard/settings are reserved Super Administrator authority; tenant roles/support grants gain none. Reports include retained company history, separate currencies and at most 31 inclusive UTC posting dates. Recorded net collections are not profit. Scheduled published departure counts do not assert actual departure. Company Finance retains company-timezone reporting. Dashboard pagination starts fresh snapshots.
+
+Only the bilingual public service notice is configurable here; it is plain text, at most 500 characters/language, initially disabled, and requires current password/version/audit. It cannot stop bookings. Current access controls notification visibility and each receipt write; company approval, current driver assignment, station finance scope and company-wide incident/luggage capability remain enforced. Newly authorized users can see relevant events from the last 90 days. No historical alert backfill or external delivery. Read means acknowledged, not resolved. Metadata/receipt physical cleanup and private backup retention remain maintenance work. See [workflow](workflows/PLATFORM_ADMINISTRATION.md).
+
+
 ## Section 13 — 2026-11-03 (D37)
 
 Section 13 is complete. Safeer runs locally at 0.14.0 with all thirteen migrations applied. All 118 automated checks passed (15 unit/server and 103 native PostgreSQL), including scoped read-only financial access and a 20,002-movement pagination/export-limit fixture. Source and built Finance browser workflows passed 16 layouts each. The private backup matched 1532 files and passed a protected restore/start/stop check; the existing account, settings and 49 legacy tables passed integrity comparisons. Existing financial rules are unchanged. See [financial reports](workflows/FINANCIAL_REPORTS.md) and [Section 13](archive/SECTION_13_FINANCE.md). Stop before Section 14.

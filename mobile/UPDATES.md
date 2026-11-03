@@ -1,5 +1,10 @@
 # Safeer mobile status
 
+## 0.15.0 - 2026-11-03, Section 14
+
+Shared responsive src/ adds the Super Administrator dashboard, bilingual service notice and permission-scoped notification inbox. Drivers can open their inbox from /driver using the same local account. Current authority is checked server-side on every request. Arabic/English and both themes support desktop/mobile widths. No Flutter/native package, phone installation, external delivery or remote connectivity is included. See docs/CURRENT_STATE.md for final test and local-upgrade evidence.
+
+
 ## 0.14.0 — 2026-11-03, Section 13 Finance
 
 Add the shared responsive Finance section under Companies for scoped sales/refunds, currency/method/day/staff/station/trip breakdowns, cash-session reconciliation, CSV export and current-page print. Server checks current station/branch authority on every request. Existing money controls remain unchanged. Verification and local runtime upgrade are recorded in docs/CURRENT_STATE.md. No native app/build or remote access is included.

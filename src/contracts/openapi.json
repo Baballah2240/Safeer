@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Safeer local passenger transport API",
-    "version": "0.14.0",
-    "description": "Local-only passenger transport API through Section 13: scoped financial reports and cash reconciliation over immutable station records, alongside identity, company isolation, ticketing, luggage and driver boarding. No external hosting, online gateway or native app."
+    "version": "0.15.0",
+    "description": "Local-only passenger transport API through Section 14: Super Administrator dashboard, service notice and scoped in-app notifications alongside finance, identity, company isolation, ticketing, luggage and driver boarding. No external hosting, online gateway or native app."
   },
   "servers": [
     {
@@ -12851,6 +12851,341 @@
           }
         }
       }
+    },
+    "/api/v1/public/notice": {
+      "get": {
+        "operationId": "publicNotice",
+        "tags": [
+          "Platform"
+        ],
+        "description": "Anonymous plain-text service notice; disabled notices omit text.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/PublicNotice"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sign in required"
+          },
+          "403": {
+            "description": "Current authority required"
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/v1/platform/dashboard": {
+      "get": {
+        "operationId": "platformDashboard",
+        "tags": [
+          "Platform"
+        ],
+        "description": "Super Administrator only. Inclusive range of at most 31 UTC posting dates. Net collections are not profit. All company statuses included; financial currencies remain separate.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "from",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/PlatformDashboard"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sign in required"
+          },
+          "403": {
+            "description": "Current authority required"
+          }
+        },
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ]
+      }
+    },
+    "/api/v1/platform/settings": {
+      "get": {
+        "operationId": "platformSettings",
+        "tags": [
+          "Platform"
+        ],
+        "description": "Super Administrator only.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/PlatformSettings"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sign in required"
+          },
+          "403": {
+            "description": "Current authority required"
+          }
+        },
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ]
+      },
+      "put": {
+        "operationId": "savePlatformSettings",
+        "tags": [
+          "Platform"
+        ],
+        "description": "Super Administrator, reauthentication, CSRF and optimistic version required. Plain-text public notice only.",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/PlatformSettings"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Current Super Administrator required"
+          },
+          "409": {
+            "description": "Stale version"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlatformNoticeWrite"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ]
+      }
+    },
+    "/api/v1/notifications": {
+      "get": {
+        "operationId": "notifications",
+        "tags": [
+          "Platform"
+        ],
+        "description": "Current authority on every read. Last 90 days, newest first; 50/page. Newly authorized users can see earlier relevant events. No external delivery.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "before",
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9]\\d{0,18}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/NotificationFeed"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sign in required"
+          },
+          "403": {
+            "description": "Current authority required"
+          }
+        },
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ]
+      }
+    },
+    "/api/v1/notifications/{event}/read": {
+      "post": {
+        "operationId": "notificationRead",
+        "tags": [
+          "Platform"
+        ],
+        "description": "Idempotent receipt for the current signed-in user only. Rechecks event visibility.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "event",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9]\\d{0,18}$"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "read"
+                      ],
+                      "properties": {
+                        "read": {
+                          "const": true
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sign in required"
+          },
+          "403": {
+            "description": "Event not currently visible"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -14668,6 +15003,309 @@
           "version": {
             "type": "integer",
             "minimum": 0
+          }
+        }
+      },
+      "PublicNotice": {
+        "type": "object",
+        "required": [
+          "enabled"
+        ],
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "textEn": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "textAr": {
+            "type": "string",
+            "maxLength": 500
+          }
+        }
+      },
+      "PlatformSettings": {
+        "type": "object",
+        "required": [
+          "enabled",
+          "textEn",
+          "textAr",
+          "version"
+        ],
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "textEn": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "textAr": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "PlatformNoticeWrite": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "enabled",
+          "textEn",
+          "textAr",
+          "version",
+          "currentPassword"
+        ],
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "textEn": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "textAr": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "currentPassword": {
+            "type": "string",
+            "format": "password",
+            "writeOnly": true
+          }
+        }
+      },
+      "PlatformMoney": {
+        "type": "object",
+        "required": [
+          "currency",
+          "salesMinor",
+          "refundMinor",
+          "netMinor"
+        ],
+        "properties": {
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "salesMinor": {
+            "type": "string",
+            "pattern": "^\\d+$"
+          },
+          "refundMinor": {
+            "type": "string",
+            "pattern": "^\\d+$"
+          },
+          "netMinor": {
+            "type": "string",
+            "pattern": "^-?\\d+$"
+          }
+        }
+      },
+      "PlatformDashboard": {
+        "type": "object",
+        "required": [
+          "from",
+          "to",
+          "timezone",
+          "asOf",
+          "page",
+          "companyCount",
+          "summary",
+          "totals",
+          "companies"
+        ],
+        "properties": {
+          "from": {
+            "type": "string",
+            "format": "date"
+          },
+          "to": {
+            "type": "string",
+            "format": "date"
+          },
+          "timezone": {
+            "const": "UTC"
+          },
+          "asOf": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "page": {
+            "type": "integer"
+          },
+          "companyCount": {
+            "type": "integer"
+          },
+          "summary": {
+            "type": "object",
+            "required": [
+              "pending",
+              "approved",
+              "listed",
+              "activeUsers",
+              "departures",
+              "bookings"
+            ],
+            "properties": {
+              "pending": {
+                "type": "integer"
+              },
+              "approved": {
+                "type": "integer"
+              },
+              "listed": {
+                "type": "integer"
+              },
+              "activeUsers": {
+                "type": "integer"
+              },
+              "departures": {
+                "type": "integer"
+              },
+              "bookings": {
+                "type": "integer"
+              }
+            }
+          },
+          "totals": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlatformMoney"
+            }
+          },
+          "companies": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "nameEn",
+                "nameAr",
+                "status",
+                "listed",
+                "createdAt",
+                "totals"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "nameEn": {
+                  "type": "string"
+                },
+                "nameAr": {
+                  "type": "string"
+                },
+                "status": {
+                  "enum": [
+                    "pending",
+                    "approved",
+                    "suspended",
+                    "archived"
+                  ]
+                },
+                "listed": {
+                  "type": "boolean"
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "totals": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PlatformMoney"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "NotificationFeed": {
+        "type": "object",
+        "required": [
+          "unreadCount",
+          "items",
+          "nextCursor"
+        ],
+        "properties": {
+          "unreadCount": {
+            "type": "integer"
+          },
+          "nextCursor": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[1-9]\\d{0,18}$"
+          },
+          "items": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "code",
+                "companyId",
+                "companyEn",
+                "companyAr",
+                "sourceId",
+                "at",
+                "read"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[1-9]\\d{0,18}$"
+                },
+                "code": {
+                  "enum": [
+                    "company.registered",
+                    "company.status",
+                    "marketplace.changed",
+                    "trip.canceled",
+                    "journey.incident",
+                    "cash.difference",
+                    "luggage.exception"
+                  ]
+                },
+                "companyId": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "companyEn": {
+                  "type": "string"
+                },
+                "companyAr": {
+                  "type": "string"
+                },
+                "sourceId": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "read": {
+                  "type": "boolean"
+                }
+              }
+            }
           }
         }
       }

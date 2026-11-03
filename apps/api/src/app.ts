@@ -16,6 +16,7 @@ import {TicketingService} from './ticketing.service.js';
 import {LuggageService} from './luggage.service.js';
 import {BoardingService} from './boarding.service.js';
 import {FinanceService} from './finance.service.js';
+import {PlatformService} from './platform.service.js';
 import {IdentityError,sessionToken,validCsrf,fail} from './security.js';
 
 const version=JSON.parse(readFileSync(new URL('../../package.json',import.meta.url),'utf8')).version;
@@ -199,7 +200,17 @@ class FinanceController {
  @Get() report(@Req() req:Request,@Param('id') id:string,@Query() query:unknown){return this.finance.report(token(req),id,query).then(reply);}
  @Post('export') export(@Req() req:Request,@Param('id') id:string,@Body() data:unknown){return this.finance.report(token(req),id,data,true).then(reply);}
 }
-@Module({controllers:[FinanceController,IdentityController,CompanyController,LuggageController,TicketingController,BookingController,RouteController,FleetController,TripSeatController,TripController,ReservationController,PublicController,PublicProfileController,BoardingController],providers:[Database,IdentityService,CompanyService,RouteService,FleetService,TripService,PublicService,ReservationService,TicketingService,LuggageService,BoardingService,FinanceService]})
+@Controller('api/v1')
+class PlatformController {
+ constructor(private readonly platform:PlatformService){}
+ @Get('public/notice') notice(){return this.platform.notice().then(reply);}
+ @Get('platform/dashboard') dashboard(@Req() req:Request,@Query() query:Record<string,unknown>){return this.platform.dashboard(token(req),query).then(reply);}
+ @Get('platform/settings') settings(@Req() req:Request){return this.platform.settings(token(req)).then(reply);}
+ @Put('platform/settings') save(@Req() req:Request,@Body() data:unknown){return this.platform.save(token(req),data).then(reply);}
+ @Get('notifications') notifications(@Req() req:Request,@Query('before') before:string|undefined){return this.platform.notifications(token(req),before).then(reply);}
+ @Post('notifications/:event/read') read(@Req() req:Request,@Param('event') id:string,@Body() data:unknown){return this.platform.read(token(req),id,data).then(reply);}
+}
+@Module({controllers:[PlatformController,FinanceController,IdentityController,CompanyController,LuggageController,TicketingController,BookingController,RouteController,FleetController,TripSeatController,TripController,ReservationController,PublicController,PublicProfileController,BoardingController],providers:[Database,IdentityService,CompanyService,RouteService,FleetService,TripService,PublicService,ReservationService,TicketingService,LuggageService,BoardingService,FinanceService,PlatformService]})
 export class IdentityModule {}
 
 export async function createIdentityApi({port=4321,webOrigin='http://127.0.0.1:4320'}:{port?:number;webOrigin?:string}={}){

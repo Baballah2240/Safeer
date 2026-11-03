@@ -1,5 +1,10 @@
 # Safeer / Sudan Transport - project master
 
+## Section 14 - 2026-11-03 (D38)
+
+Safeer 0.15.0 adds Super Administrator platform controls/global analytics, a protected bilingual public notice and current-authority in-app notifications. Payment, refund, company membership and driver assignment rules are unchanged. Global reports use UTC posting dates and separate currencies. Existing company approval, marketplace listing, users, roles and audit workflows remain authoritative. See [platform workflow](workflows/PLATFORM_ADMINISTRATION.md) and [current state](CURRENT_STATE.md) for measured verification/local-upgrade status. Earlier section entries are historical. Stop before Section 15.
+
+
 ## Section 13 — 2026-11-03 (D37)
 
 Section 13 is complete. Safeer runs locally at 0.14.0 with all thirteen migrations applied. All 118 automated checks passed (15 unit/server and 103 native PostgreSQL), including scoped read-only financial access and a 20,002-movement pagination/export-limit fixture. Source and built Finance browser workflows passed 16 layouts each. The private backup matched 1532 files and passed a protected restore/start/stop check; the existing account, settings and 49 legacy tables passed integrity comparisons. Existing financial rules are unchanged. See [financial reports](workflows/FINANCIAL_REPORTS.md) and [Section 13](archive/SECTION_13_FINANCE.md). Stop before Section 14.

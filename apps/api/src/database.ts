@@ -29,6 +29,10 @@ export class Database implements OnModuleDestroy {
     if(boarding.rows[0].n!==4||boarding.rows[0].direct_access)throw Error('Apply the Section 12 migration and restricted journey function grants before starting the API.');
     const finance=await this.pool.query("SELECT has_function_privilege(current_user,to_regprocedure('safeer.finance_report(uuid,date,date,uuid,uuid,text,integer,integer,timestamptz,boolean)'),'EXECUTE') AS ready");
     if(finance.rows[0].ready!==true)throw Error('Apply the Section 13 migration and restricted financial projection grants before starting the API.');
+    const platform=await this.pool.query("SELECT count(*)::int AS n,bool_or(has_table_privilege(current_user,c.oid,'SELECT,INSERT,UPDATE,DELETE')) AS direct_access FROM pg_class c JOIN pg_namespace ns ON ns.oid=c.relnamespace WHERE ns.nspname='safeer' AND c.relrowsecurity AND c.relname IN ('platform_settings','notification_events','notification_reads')");
+    if(platform.rows[0].n!==3||platform.rows[0].direct_access)throw Error('Apply the Section 14 migration with restricted platform/notification access before starting the API.');
+    const projections=await this.pool.query("SELECT bool_and(has_function_privilege(current_user,to_regprocedure(signature),'EXECUTE')) AS ready FROM unnest(ARRAY['safeer.platform_notice()','safeer.platform_dashboard(date,date,integer)','safeer.platform_settings_read()','safeer.platform_settings_save(boolean,text,text,integer)','safeer.notifications_list(bigint)','safeer.notification_read(bigint)']) signature");
+    if(projections.rows[0].ready!==true)throw Error('Apply restricted Section 14 function grants before starting the API.');
   }
   async transaction<T>(action:(client:PoolClient)=>Promise<T>,write=true):Promise<T>{
     const client=await this.pool.connect();

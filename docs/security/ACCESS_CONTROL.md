@@ -1,5 +1,12 @@
 # Security and access-control design
 
+## Section 14 enforcement
+
+Reserved active Super Administrator assignment, independent of editable grant labels/list, controls global analytics and notice settings. No tenant/support grant inherits it. Notice writes reauthenticate, check optimistic version, use Origin/CSRF and audit action/actor only. Text is bounded, rejects controls and is HTML-escaped in all public/staff views; disabled anonymous responses omit text.
+
+New tables are private and RLS-enabled with no runtime raw privileges. Fixed SECURITY DEFINER functions use pg_catalog search paths, qualified objects and PUBLIC revocation. Internal trigger/visibility helpers are not granted to runtime. Inbox list/read derives the actor from a current valid session and checks current company/role/resource/driver assignment; receipts cannot name another recipient. Metadata contains no passenger or free-text operational details. Seven event codes are captured transactionally by six source bindings. Read receipts are idempotent. Local manual refresh is explicit; this is not external/guaranteed real-time delivery. See [operational access matrix](../workflows/PLATFORM_ADMINISTRATION.md).
+
+
 **Status:** Section 02 implements local identity/platform authorization. Section 03 implements company memberships, scoped roles, tenant RLS and authenticated company APIs. The separate passenger prototype remains fictional; its company switch is not a security control.
 
 ## Implemented identity protections

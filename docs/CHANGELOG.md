@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.15.0 - 2026-11-03 - Section 14 (D38)
+
+Add Super Administrator platform overview/global collection reporting, company/user/role/audit navigation, bilingual public notice and scoped in-app notifications with idempotent read receipts. Append migration 0014 with three RLS tables, fixed least-privilege functions, transactional capture and posting indexes. Add Arabic/English shared responsive screens and driver inbox link. Correct desktop filter specificity and UTC snapshot formatting after visual review. Existing money rules, tenant-role copies and accounts remain unchanged. Final evidence is recorded in [current state](CURRENT_STATE.md) and [Section 14](archive/SECTION_14_PLATFORM.md). Stop before Section 15.
+
+
 ## 0.14.0 — 2026-11-03 — Section 13 (D37)
 
 Section 13 is complete. Safeer runs locally at 0.14.0 with all thirteen migrations applied. All 118 automated checks passed (15 unit/server and 103 native PostgreSQL), including scoped read-only financial access and a 20,002-movement pagination/export-limit fixture. Source and built Finance browser workflows passed 16 layouts each. The private backup matched 1532 files and passed a protected restore/start/stop check; the existing account, settings and 49 legacy tables passed integrity comparisons. Existing financial rules are unchanged. See [financial reports](workflows/FINANCIAL_REPORTS.md) and [Section 13](archive/SECTION_13_FINANCE.md). Stop before Section 14.
