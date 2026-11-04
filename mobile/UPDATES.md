@@ -1,5 +1,8 @@
 # Safeer mobile status
 
+D49 shared web refresh: 12px desktop/10px mobile sticky header gap reveals the curve; glass has softer tint and broad reflections. Scroll clearance accounts for the gap. Existing USB apps load shared web assets on Refresh; no APK build/install or physical phone capture is claimed. See [handover](../docs/archive/FLOATING_HEADER_2026-11-05.md).
+
+
 D48 shared web follow-up: staff/preview toggle moved above the sidebar; a visible corner control restores collapsed navigation. Native Driver/Booking have no sidebar and no APK changes. No install/physical phone check is claimed. See [handover](../docs/archive/SIDEBAR_POSITION_2026-11-05.md).
 
 

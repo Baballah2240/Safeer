@@ -1,7 +1,7 @@
 /* Shared glass material. Data panels stay nearly opaque; navigation, controls
    and summary tiles use translucent lenses. Page files retain states/printing. */
 @media screen {
-  html{scroll-padding-block-start:calc(var(--sticky-header-height,150px) + 16px)}
+  html{scroll-padding-block-start:calc(var(--sticky-header-height,150px) + var(--header-gap) + 16px)}
   html body{background:var(--page-art),var(--page);color:var(--ink);line-height:1.5}
   html body :is(h1,h2,h3,button,.metric strong,.staff-summary strong){text-shadow:none}
   html body :is(h1,h2,h3){letter-spacing:-.025em}
@@ -35,7 +35,7 @@
   html body .staff-secret{color:var(--ink);background:var(--accent-wash);border-color:var(--border);box-shadow:none}
 
   /* Floating navigation glass; fill remains readable on devices without blur. */
-  html body :is(.staff-topbar,.driver-header,.market-bar,.topbar){position:sticky;top:0;z-index:40;background:linear-gradient(125deg,var(--header-reflection),transparent 35%,transparent 70%,var(--glass-sheen)),var(--header-glass);backdrop-filter:blur(28px) saturate(150%) brightness(1.04);-webkit-backdrop-filter:blur(28px) saturate(150%) brightness(1.04);border:1px solid var(--header-edge);box-shadow:0 12px 32px var(--glass-shadow),inset 0 1px 0 var(--glass-highlight),inset 1px 0 0 var(--glass-sheen),inset 0 -1px 0 #00000014;border-radius:26px}
+  html body :is(.staff-topbar,.driver-header,.market-bar,.topbar){position:sticky;top:var(--header-gap);z-index:40;background:radial-gradient(ellipse at 18% -45%,var(--header-reflection),transparent 65%),linear-gradient(130deg,#ffffff12,transparent 45%,var(--glass-sheen)),var(--header-glass);backdrop-filter:blur(28px) saturate(175%) brightness(1.08);-webkit-backdrop-filter:blur(28px) saturate(175%) brightness(1.08);border:1px solid var(--header-edge);box-shadow:0 14px 40px var(--glass-shadow),0 2px 7px var(--glass-shadow),inset 0 1px 0 var(--glass-highlight),inset 1px 0 0 var(--glass-sheen),inset 0 -1px 0 var(--glass-sheen);border-radius:30px}
   html body .staff-shell{grid-template-columns:256px minmax(0,1fr);padding-inline-start:14px}
   html body :is(.staff-sidebar,.sidebar){background:linear-gradient(145deg,var(--sidebar-sheen),transparent 38%,#100b082e),var(--sidebar-glass);color:#f0e4d8;border:1px solid #fff2df47;border-radius:26px;box-shadow:0 12px 40px #120b0824,inset 0 1px 0 #fff4e85c,inset 1px 0 0 #fff4e81a;backdrop-filter:blur(24px) saturate(130%);-webkit-backdrop-filter:blur(24px) saturate(130%)}
   /* The sidebar remains dark in both themes so its navigation contrast is stable. */
@@ -178,7 +178,7 @@
     html body .staff-sidebar{position:relative;top:0;height:auto;margin:12px 12px 0;padding:18px;gap:14px;border-radius:22px}
     html body .staff-sidebar .staff-nav{gap:6px}
     html body .staff-sidebar .staff-nav button{font-size:12px;padding:10px;min-height:46px;gap:9px}
-    html body .staff-topbar{width:auto;max-width:none;margin:0 12px;padding:16px;border-radius:20px;gap:12px}
+    html body .staff-topbar{width:auto;max-width:none;margin:0 12px;padding:16px;border-radius:24px;gap:12px}
     html body .staff-main{padding:16px 12px}
     html body .staff-welcome{padding:22px;gap:12px}
     html body .staff-summary{gap:8px}
@@ -231,6 +231,8 @@
 }
 .theme-toggle{white-space:nowrap}
 @media screen{
+  html body :is(.staff-topbar,.driver-header,.market-bar,.topbar){margin-block-start:var(--header-gap)}
+  @media(max-width:760px){:root{--header-gap:10px}html body :is(.driver-header,.market-bar,.topbar){border-radius:24px}}
   html body .sidebar-column{position:sticky;top:0;align-self:flex-start;display:flex;flex-direction:column;height:100dvh;min-width:0}
   html body .sidebar-toolbar{display:flex;align-items:center;justify-content:center;flex:0 0 68px}
   html body .sidebar-column .staff-sidebar{position:relative;top:0;flex:1;min-height:0;height:auto;margin:0 0 14px}

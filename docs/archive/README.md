@@ -1,5 +1,8 @@
 # Section archives and source checkpoints
 
+Latest header follow-up: [D49 floating header](FLOATING_HEADER_2026-11-05.md), checkpoint archives/Safeer-0.16.0-Floating-Header-2026-11-05.zip.
+
+
 Latest placement follow-up: [D48 sidebar position](SIDEBAR_POSITION_2026-11-05.md), checkpoint archives/Safeer-0.16.0-Sidebar-Position-2026-11-05.zip.
 
 

@@ -1,5 +1,8 @@
 # Safeer / Sudan Transport
 
+Headers now float 12px below the top (10px on phones), with softer translucent glass and visible rounded edges. See [D49 handover](docs/archive/FLOATING_HEADER_2026-11-05.md).
+
+
 The circular sidebar button now sits above navigation, staying in the upper leading corner while collapsed. See [D48 handover](docs/archive/SIDEBAR_POSITION_2026-11-05.md).
 
 

@@ -35,9 +35,10 @@ try{await identityFixture(async f=>{
     assert.ok(start.max>start.y+2,label+' must have real scrollable content');
     await evaluate(`scrollTo(0,${Math.min(start.max,start.y+240)})`);await settle();
     const state=await evaluate(`(()=>{const n=document.querySelector('${selector}'),r=n.getBoundingClientRect(),c=getComputedStyle(n);return {top:r.top,bottom:r.bottom,left:r.left,right:r.right,height:r.height,position:c.position,blur:c.backdropFilter,measured:parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sticky-header-height')),padding:parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop)};})()`);
-    assert.equal(state.position,'sticky',label);assert.ok(Math.abs(state.top)<=1,label+' header must stay at viewport top');
+    const gap=width<=760?10:12;
+    assert.equal(state.position,'sticky',label);assert.ok(Math.abs(state.top-gap)<=1,label+' header must keep its floating top gap');
     assert.ok(state.left>=-1&&state.right<=width+1,label+' header clipped');assert.ok(state.bottom<=height,label+' header too tall');
-    assert.ok(Math.abs(state.measured-state.height)<=1&&state.padding>=state.height,label+' focus offset follows header height');assert.match(state.blur,/blur\(28px\)/,label+' glass');
+    assert.ok(Math.abs(state.measured-state.height)<=1&&state.padding>=state.height+gap,label+' focus offset follows header height and top gap');assert.match(state.blur,/blur\(28px\)/,label+' glass');
     // Check the actual hit target too: DOM click alone cannot detect an overlay.
     assert.ok(await evaluate('(()=>{const b=document.querySelector("[data-theme-toggle]"),r=b.getBoundingClientRect();return document.elementFromPoint(r.left+r.width/2,r.top+r.height/2)?.closest("[data-theme-toggle]")===b;})()'),label+' navigation hit target');
     await evaluate('document.querySelector("[data-theme-toggle]").click()');assert.notEqual(await evaluate('document.documentElement.dataset.theme'),theme,label+' interaction');

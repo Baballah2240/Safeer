@@ -4,7 +4,7 @@
   --ink:#251c16;--muted:#716052;--accent:#754a31;--warning:#926414;--warning-fill:#e9bd62;--border:#d8c8b9;--paper:#fffaf5;--page:#f1e9e0;
   --surface:#fffaf5ed;--surface-soft:#fffbf5b8;--glass-control:#fffaf54d;--glass-highlight:#ffffffa6;--glass-edge:#ffffffa6;--glass-shadow:#3923151c;--accent-wash:#8b5d3b12;
   --page-art:radial-gradient(ellipse at 88% 8%,#b98c5e70,transparent 48%),radial-gradient(ellipse at 12% 56%,#ad8a6652,transparent 46%),radial-gradient(ellipse at 68% 92%,#fffdf8b3,transparent 50%);
-  --header-glass:#fffaf557;--header-reflection:#ffffff66;--header-edge:#ffffffb3;
+  --header-gap:12px;--header-glass:#fffaf540;--header-reflection:#ffffff8c;--header-edge:#ffffffbf;
   --glass-tile:#fffaf58c;--glass-sheen:#ffffff45;--glass-rim:#ffffffb3;
   --sidebar-glass:#251a12d9;--sidebar-sheen:#fff4e82e;
   /* Compatibility aliases keep page components on the same material system. */
@@ -16,7 +16,7 @@
     color-scheme:dark;--ink:#f2e8de;--muted:#bda996;--accent:#ddb990;--warning:#efc879;--warning-fill:#efc879;--border:#49392e;--paper:#211a15;--page:#100e0c;
     --surface:#251c16ed;--surface-soft:#34271db3;--glass-control:#fff4e80d;--glass-highlight:#fff6e84d;--glass-edge:#fff2df47;--glass-shadow:#00000030;--accent-wash:#ddb99014;
     --page-art:radial-gradient(ellipse at 88% 8%,#94694680,transparent 48%),radial-gradient(ellipse at 8% 56%,#79553666,transparent 46%),radial-gradient(ellipse at 68% 94%,#3e2e2070,transparent 50%);
-    --header-glass:#211a154d;--header-reflection:#fff4e829;--header-edge:#fff3e461;
+    --header-glass:#211a1538;--header-reflection:#fff4e845;--header-edge:#fff3e473;
     --glass-tile:#2b221b70;--glass-sheen:#fff5e814;--glass-rim:#fff4e84d;
     --sidebar-glass:#19120e59;--sidebar-sheen:#fff4e81c;
     --material-navy:linear-gradient(130deg,#302219,#100d0b);--shadow-panel:0 12px 36px #00000028,inset 0 1px 0 #ffe6cc14;--shadow-inset:inset 0 1px 4px #00000020;

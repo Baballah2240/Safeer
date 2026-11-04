@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-11-05 - Floating header clearance and softer glass
+
+D49: The owner wants a small gap above the header to reveal its full curve, and a more liquid Apple-inspired appearance. Add a 12px desktop/10px mobile top gap that remains while sticky, account for it in focus-scroll clearance, and refine translucent tint, broad highlights, rounded corners and edge/shadow depth without animated distortion. Preserve black/brown, readable text, above-sidebar toggle, RTL/LTR, both themes, opaque accessibility fallbacks and printing. Verify actual sticky top gaps, scrolling, focus/header replacement and sidebar restore across existing responsive suites. Build shared assets, document/archive a scoped local checkpoint; no native, data, API or remote publishing changes under the private portfolio restriction.
+
 ## 2026-11-05 - Sidebar button above navigation
 
 D48: The owner clarifies that the circular toggle belongs above the sidebar, not among header actions. Put a separate toolbar above each staff/preview sidebar in a navigation column. Keep the control outside the hidden aside; when collapsed, pin it to the leading screen corner and reserve header space so it can restore navigation without covering controls. Preserve circular glass styling, 44px target, saved preference, keyboard/ARIA, RTL/LTR, responsive and print behavior. Verify sidebar placement, hide/restore and existing sticky-header regression. No native/data/backend or remote publication; document/archive and commit scoped source locally under the private portfolio restriction.

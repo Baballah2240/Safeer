@@ -1,5 +1,8 @@
 # Safeer
 
+- D49 supersedes D43 top:0: preserve a 12px desktop/10px mobile floating header gap, include it in focus scroll clearance, and keep the above-sidebar toggle clear of actions. Existing header/sidebar regressions cover this layout.
+
+
 - D48 places the toggle above navigation in .sidebar-column, outside the hidden aside/header actions. Keep restoration visible without covering header controls, responsive RTL/LTR and print isolation. Run sidebar and sticky-header regressions for layout changes.
 
 
@@ -17,7 +20,7 @@
 
 - Independent Sudan passenger-transport project. Do not edit Stocrant or the school-display application for Safeer work.
 - Current authorized stage: Section 15 (D39), USB Android apps (D40) and the verified bento/liquid-glass shared UI refresh (D41) are complete locally. Keep the service loopback-only and preserve users/data. No hosting or store release is authorized; stop pending the owner's next instruction.
-- D43 adds verified sticky Apple-inspired glass headers in the shared theme. Keep top:0 at mobile widths, preserve wrapped-height focus offsets and black/brown; npm.cmd run test:headers:browser covers the regression.
+- D43 adds verified sticky Apple-inspired glass headers in the shared theme. D49 uses a floating top gap; preserve wrapped-height focus offsets and black/brown; npm.cmd run test:headers:browser covers the regression.
 - Keep the service on 127.0.0.1. No deployment, external accounts, SMS delivery or online payment integration is authorized yet.
 - Owner's current visual palette is black and brown (D42): near-black/espresso dark mode, cream/brown light mode, brown branding/actions and native Android shell. Preserve the bento/glass layout and semantic warning/error/seat distinctions.
 - Follow docs/decisions/MASTER_INSTRUCTIONS_2026-10-30.md. Release 1 is passenger transport and passenger luggage only; freight/parcels are deferred. Record changes in docs/DECISIONS.md before implementing them.
