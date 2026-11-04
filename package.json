@@ -1,9 +1,9 @@
 {
   "name": "safeer",
-  "version": "0.15.0",
+  "version": "0.16.0",
   "private": true,
   "type": "module",
-  "description": "Section 14 local platform administration, notifications, global analytics, financial reports, driver boarding, passenger luggage, station ticketing, passenger details, seat holds, marketplace, trips, fleet, routes and company management for Safeer",
+  "description": "Section 15 verified local passenger transport with security configuration checks, maintenance health and release/recovery tooling",
   "engines": {
     "node": ">=24"
   },
@@ -47,7 +47,10 @@
     "test:platform": "node --test tests/platform.integration.mjs",
     "test:platform:browser": "node tests/platform.browser.mjs",
     "test:finance": "node --test tests/finance.integration.mjs",
-    "test:finance:browser": "node tests/finance.browser.mjs"
+    "test:finance:browser": "node tests/finance.browser.mjs",
+    "test:security": "node --test tests/security.integration.mjs",
+    "test:journey": "node --test tests/connected.integration.mjs",
+    "verify:release": "node scripts/verify-release.mjs"
   },
   "license": "UNLICENSED",
   "dependencies": {

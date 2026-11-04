@@ -1,5 +1,10 @@
 # Safeer / Sudan Transport - project master
 
+## Section 15 - 2026-11-04 (D39)
+
+Section 15 (D39) adds verified database-security policy, maintenance health, bounded HTTP work, connected/security/recovery tests and an offline release command. The passenger scope, company isolation and financial rules are unchanged. No migration, native app or remote deployment. Final evidence and current local-update state are authoritative in CURRENT_STATE; earlier entries below are historical. See [security review](security/SECTION_15_REVIEW.md), [release operations](RELEASE_READINESS.md) and [Section 15](archive/SECTION_15_RELEASE.md).
+
+
 ## Section 14 - 2026-11-03 (D38)
 
 Safeer 0.15.0 adds Super Administrator platform controls/global analytics, a protected bilingual public notice and current-authority in-app notifications. Payment, refund, company membership and driver assignment rules are unchanged. Global reports use UTC posting dates and separate currencies. Existing company approval, marketplace listing, users, roles and audit workflows remain authoritative. See [platform workflow](workflows/PLATFORM_ADMINISTRATION.md) and [current state](CURRENT_STATE.md) for measured verification/local-upgrade status. Earlier section entries are historical. Stop before Section 15.

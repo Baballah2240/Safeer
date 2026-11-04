@@ -1,8 +1,24 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {get} from 'node:http';
+import {get,createServer,Agent} from 'node:http';
 import {readFile} from 'node:fs/promises';
 import {startServer} from '../server.mjs';
+
+test('proxy separates connection headers while rotating limited keepalive sockets',async()=>{
+ const requests=[],perSocket=new WeakMap();let backendConnections=0,webConnections=0;
+ const backend=createServer((req,res)=>{const count=(perSocket.get(req.socket)||0)+1;perSocket.set(req.socket,count);requests.push(req.headers);res.writeHead(200,{'Content-Type':'application/json',Connection:(count===3?'close':'keep-alive')+', x-response-hop','X-Response-Hop':'remove-me'});res.end('{"data":{"ok":true}}');});
+ backend.on('connection',()=>backendConnections++);
+ await new Promise(r=>backend.listen(0,'127.0.0.1',r));backend.maxRequestsPerSocket=3;
+ const web=await startServer({port:0,identityApiUrl:'http://127.0.0.1:'+backend.address().port}),agent=new Agent({keepAlive:true,maxSockets:1});web.server.maxRequestsPerSocket=5;
+ web.server.on('connection',()=>webConnections++);
+ try{for(let i=0;i<12;i++){
+  const result=await new Promise((resolve,reject)=>{get(web.origin+'/api/v1/health',{agent,headers:{Connection:'keep-alive, x-request-hop','X-Request-Hop':'remove-me',Cookie:'fictional=sent',Origin:web.origin,'X-CSRF-Token':'fictional-sent'}},res=>{let body='';res.on('data',x=>body+=x);res.on('end',()=>resolve({status:res.statusCode,headers:res.headers,body}));}).on('error',reject);});
+  assert.equal(result.status,200,'Request '+(i+1)+': '+JSON.stringify(result));assert.equal(result.headers['x-response-hop'],undefined);assert.deepEqual(JSON.parse(result.body),{data:{ok:true}});
+ }
+ assert.equal(requests.length,12);assert.ok(requests.every(r=>!r['x-request-hop']&&r.cookie==='fictional=sent'&&r.origin===web.origin&&r['x-csrf-token']==='fictional-sent'));
+ assert.equal(backendConnections,4);assert.equal(webConnections,3);
+ }finally{agent.destroy();await web.close();await new Promise(r=>backend.close(r));}
+});
 
 test('prototype serves only explicit public assets, locally, without a write API or private file access', async () => {
   const app=await startServer({port:0});

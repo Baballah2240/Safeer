@@ -1,5 +1,12 @@
 # Changelog
 
+## Section 15 - 2026-11-04 (D39)
+
+Version 0.16.0, Section 15 (D39): fail-closed full schema/grant/function startup checks; safe maintenance health and retry/overlap/shutdown handling; bounded HTTP/header/socket settings, denied unused device permissions and removed Express fingerprint; security and connected race/clone consistency regressions; executable offline release verification and local/remote preparation guide. No new dependency, migration, account/role/money policy or hosted/native release. See [security review](security/SECTION_15_REVIEW.md), [release operations](RELEASE_READINESS.md) and [Section 15](archive/SECTION_15_RELEASE.md).
+
+Correct connection-specific proxy header forwarding in both directions. Regression coverage verifies independent client/API socket rotation while preserving cookie/Origin/CSRF headers, without automatic mutation retries. Refresh historical Identity browser assertions for current navigation and role catalog; retain paid-booking failure diagnostics.
+
+
 ## 0.15.0 - 2026-11-03 - Section 14 (D38)
 
 Add Super Administrator platform overview/global collection reporting, company/user/role/audit navigation, bilingual public notice and scoped in-app notifications with idempotent read receipts. Append migration 0014 with three RLS tables, fixed least-privilege functions, transactional capture and posting indexes. Add Arabic/English shared responsive screens and driver inbox link. Correct desktop filter specificity and UTC snapshot formatting after visual review. Existing money rules, tenant-role copies and accounts remain unchanged. Final evidence is recorded in [current state](CURRENT_STATE.md) and [Section 14](archive/SECTION_14_PLATFORM.md). Stop before Section 15.

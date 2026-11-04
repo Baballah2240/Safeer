@@ -1,8 +1,10 @@
 # Safeer / Sudan Transport
 
-Version 0.15.0, Section 14: Super Administrator platform overview, global collections, protected bilingual public notice and current-access notification inbox, alongside finance, driver boarding, luggage, station ticketing and company management. This independent Sudan passenger-transport project does not modify Stocrant or the school application.
+Version 0.16.0, Section 15: verified local passenger transport with full database-security checks, safe maintenance health, connected/recovery tests and release tooling. Existing company, station, driver, luggage, finance and platform workflows are preserved.
 
-Start continuation at [CURRENT_STATE](docs/CURRENT_STATE.md) and [platform workflow](docs/workflows/PLATFORM_ADMINISTRATION.md). Preserve runtime/ and the existing account. Section 14 is verified and running locally with the existing account unchanged; see CURRENT_STATE and the Section 14 handover. Stop before Section 15. A source ZIP never contains existing users/passwords/history.
+Start continuation at [CURRENT_STATE](docs/CURRENT_STATE.md) and [platform workflow](docs/workflows/PLATFORM_ADMINISTRATION.md). Preserve runtime/ and the existing account. Section 15 is verified and running locally with the existing account preserved; see CURRENT_STATE and the Section 15 handover for measured evidence. Deployment and later features require a new instruction. A source ZIP never contains existing users/passwords/history.
+
+Run the complete offline verification with npm.cmd run verify:release. See [release operations](docs/RELEASE_READINESS.md) for required local tools, health, backup/recovery and remote-release prerequisites.
 
 ## Run locally on Windows
 
@@ -21,7 +23,7 @@ The launcher creates a persistent private PostgreSQL development database, appli
 - Sign-in/out, mandatory temporary-password change, active-session list/revocation and password reset by authorized administrators.
 - User creation/edit/deactivation, platform role assignment and configurable platform roles/permissions; protected owner/last-owner rules and audited privileged changes.
 - Adaptive salted scrypt, bounded hashing, durable throttling, strict inputs, opaque hashed sessions, expiry/revocation, Origin/CSRF protection and same-origin HttpOnly cookies.
-- Nine built-in templates. Platform assignments stay separate from company/branch/station memberships; trip roles wait for real trips. Support has no default finance access.
+- Nine built-in templates. Platform assignments stay separate from company/branch/station memberships and current driver-trip assignments. Support has no default finance access.
 
 This is local development, not remote production deployment. Loopback HTTP cookies intentionally omit Secure. HTTPS/proxy trust, MFA, email/SMS reset delivery, mobile token/keychain flows and final load/security auditing require further work before remote use.
 
@@ -33,7 +35,7 @@ npm start serves this example alone without identity. The staff route displays a
 
 ## Approved release model and remaining sections
 
-One central marketplace, company public booking pages and independent private operations. Release 1 is passenger transport and linked passenger luggage; freight/parcels are deferred. Real bookings must support guest full-name/mobile entry and multiple passengers/seats. Authorized station employees confirm offline payment before official tickets/receipts. These business modules, company RLS/memberships, Next.js and Flutter clients are not implemented yet; follow the [15-section roadmap](docs/DEVELOPMENT_ROADMAP.md).
+One central marketplace, company public booking pages and independent private operations. Release 1 is passenger transport and linked passenger luggage; freight/parcels are deferred. The local responsive app implements guest multi-passenger booking, company RLS/memberships, station offline payment/tickets/receipts, luggage, driver operations, finance and platform administration. Next.js migration and Flutter clients are not implemented. Follow the [15-section roadmap](docs/DEVELOPMENT_ROADMAP.md) and [current state](docs/CURRENT_STATE.md) for the verified checkpoint and remote-release prerequisites.
 
 ## Checks and records
 

@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Safeer local passenger transport API",
-    "version": "0.15.0",
-    "description": "Local-only passenger transport API through Section 14: Super Administrator dashboard, service notice and scoped in-app notifications alongside finance, identity, company isolation, ticketing, luggage and driver boarding. No external hosting, online gateway or native app."
+    "version": "0.16.0",
+    "description": "Local-only passenger transport API through Section 15 (security and recovery verification): Super Administrator dashboard, service notice and scoped in-app notifications alongside finance, identity, company isolation, ticketing, luggage and driver boarding. No external hosting, online gateway or native app."
   },
   "servers": [
     {
@@ -35,7 +35,8 @@
                         "service",
                         "version",
                         "mode",
-                        "database"
+                        "database",
+                        "maintenance"
                       ],
                       "properties": {
                         "service": {
@@ -57,6 +58,68 @@
                             "not-connected",
                             "connected"
                           ]
+                        },
+                        "maintenance": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "holds",
+                            "retention"
+                          ],
+                          "properties": {
+                            "holds": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "state",
+                                "lastSuccessAt"
+                              ],
+                              "properties": {
+                                "state": {
+                                  "enum": [
+                                    "disabled",
+                                    "starting",
+                                    "running",
+                                    "ok",
+                                    "failed"
+                                  ]
+                                },
+                                "lastSuccessAt": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ],
+                                  "format": "date-time"
+                                }
+                              }
+                            },
+                            "retention": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "state",
+                                "lastSuccessAt"
+                              ],
+                              "properties": {
+                                "state": {
+                                  "enum": [
+                                    "disabled",
+                                    "starting",
+                                    "running",
+                                    "ok",
+                                    "failed"
+                                  ]
+                                },
+                                "lastSuccessAt": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ],
+                                  "format": "date-time"
+                                }
+                              }
+                            }
+                          }
                         }
                       }
                     }
@@ -131,8 +194,12 @@
                 }
               }
             }
+          },
+          "503": {
+            "description": "Database unavailable; safe DATABASE_UNAVAILABLE error without SQL/credentials."
           }
-        }
+        },
+        "description": "Local liveness/database connectivity plus safe hold/retention job state and last success. No credentials, counts or raw errors. Disabled jobs identify the separate prototype; a failed job needs operator attention even when the database is connected."
       }
     },
     "/api/v1/auth/login": {

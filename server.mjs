@@ -6,13 +6,20 @@ import {pathToFileURL} from 'node:url';
 import {publicAssets} from './config/assets.mjs';
 
 const {version} = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
+// Connection options apply only to one hop. Each HTTP server owns its socket
+// lifetime/framing; forwarding these fields can contradict its own close limit.
+const forwardedHeaders=headers=>{
+  const excluded=new Set(['connection','keep-alive','proxy-connection','proxy-authenticate','proxy-authorization','te','trailer','transfer-encoding','upgrade',...String(headers.connection||'').split(',').map(x=>x.trim().toLowerCase())]);
+  return Object.fromEntries(Object.entries(headers).filter(([name])=>!excluded.has(name.toLowerCase())));
+};
 
 export async function startServer({port = 4320, built = false, identityApiUrl} = {}) {
   if (!Number.isInteger(port) || port < 0 || port > 65535) throw Error('Choose a valid local port.');
-  const server = createServer(async (request, response) => {
+  const server = createServer({headersTimeout:10000,requestTimeout:15000,connectionsCheckingInterval:1000},async (request, response) => {
     response.setHeader('X-Content-Type-Options', 'nosniff');
     response.setHeader('Referrer-Policy', 'no-referrer');
     response.setHeader('Cache-Control', 'no-store');
+    response.setHeader('Permissions-Policy','camera=(), microphone=(), geolocation=(), payment=(), usb=()');
     response.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'");
     if (request.headers.host !== `127.0.0.1:${server.address().port}`) {
       response.writeHead(403); response.end('Open the local 127.0.0.1 address.'); return;
@@ -28,8 +35,8 @@ export async function startServer({port = 4320, built = false, identityApiUrl} =
       try{target=new URL(apiUrl);if(target.protocol!=='http:'||target.hostname!=='127.0.0.1'||target.username||target.password||target.pathname!=='/'||target.search||target.hash)throw Error();}
       catch{response.writeHead(503,{'Content-Type':'application/json'});response.end(JSON.stringify({error:{code:'IDENTITY_UNAVAILABLE',message:'Review the local identity API configuration.'}}));return;}
       if(Number(request.headers['content-length']||0)>8192){response.writeHead(413);response.end('Request too large');return;}
-      const upstream=upstreamRequest({hostname:target.hostname,port:target.port,method:request.method,path:request.url,headers:{...request.headers,host:target.host}},incoming=>{
-        response.writeHead(incoming.statusCode,incoming.headers);incoming.pipe(response);
+      const upstream=upstreamRequest({hostname:target.hostname,port:target.port,method:request.method,path:request.url,headers:{...forwardedHeaders(request.headers),host:target.host}},incoming=>{
+        response.writeHead(incoming.statusCode,forwardedHeaders(incoming.headers));incoming.pipe(response);
       });
       upstream.setTimeout(10000,()=>upstream.destroy());
       upstream.on('error',()=>{if(!response.headersSent){response.writeHead(503,{'Content-Type':'application/json'});response.end(JSON.stringify({error:{code:'IDENTITY_UNAVAILABLE',message:'Start the local identity service.'}}));}else response.destroy();});
@@ -45,7 +52,7 @@ export async function startServer({port = 4320, built = false, identityApiUrl} =
     try {
       if (path === '/api/v1/health') {
         response.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
-        response.end(request.method === 'HEAD' ? undefined : JSON.stringify({data: {service: 'safeer', version, mode: 'local-prototype', database: 'not-connected'}}));
+        response.end(request.method === 'HEAD' ? undefined : JSON.stringify({data: {service: 'safeer', version, mode: 'local-prototype', database: 'not-connected', maintenance:{holds:{state:'disabled',lastSuccessAt:null},retention:{state:'disabled',lastSuccessAt:null}}}}));
         return;
       }
       // Company, seat and hold pages are the same static page; the public API checks each identifier.
@@ -61,6 +68,7 @@ export async function startServer({port = 4320, built = false, identityApiUrl} =
       response.writeHead(500); response.end('Could not open this prototype page.');
     }
   });
+  server.keepAliveTimeout=5000;server.maxHeadersCount=40;server.maxRequestsPerSocket=100;server.setTimeout(15000,socket=>socket.destroy());
   await new Promise((accept, reject) => { server.once('error', reject); server.listen(port, '127.0.0.1', accept); });
   return {server, origin: `http://127.0.0.1:${server.address().port}`, close: () => new Promise(accept => server.close(accept))};
 }

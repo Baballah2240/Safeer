@@ -1,0 +1,409 @@
+{
+  "description": "Expected local schema security for Sections 01-15. Add reviewed objects explicitly with their owning migration; do not generate this from a live database.",
+  "tables": {
+    "auth_throttles": {
+      "rls": false,
+      "privileges": [
+        "SELECT",
+        "INSERT",
+        "UPDATE",
+        "DELETE"
+      ]
+    },
+    "boarding_records": {
+      "rls": true,
+      "privileges": []
+    },
+    "booking_contacts": {
+      "rls": true,
+      "privileges": []
+    },
+    "booking_events": {
+      "rls": true,
+      "privileges": []
+    },
+    "booking_passengers": {
+      "rls": true,
+      "privileges": []
+    },
+    "bookings": {
+      "rls": true,
+      "privileges": []
+    },
+    "branches": {
+      "rls": true,
+      "privileges": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ]
+    },
+    "buses": {
+      "rls": true,
+      "privileges": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ]
+    },
+    "cash_sessions": {
+      "rls": true,
+      "privileges": []
+    },
+    "cities": {
+      "rls": true,
+      "privileges": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ]
+    },
+    "companies": {
+      "rls": true,
+      "privileges": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ]
+    },
+    "company_audit": {
+      "rls": true,
+      "privileges": [
+        "SELECT",
+        "INSERT"
+      ]
+    },
+    "company_payment_settings": {
+      "rls": true,
+      "privileges": []
+    },
+    "company_public_profiles": {
+      "rls": true,
+      "privileges": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ]
+    },
+    "company_role_permissions": {
+      "rls": true,
+      "privileges": [
+        "SELECT",
+        "INSERT",
+        "DELETE"
+      ]
+    },
+    "company_roles": {
+      "rls": true,
+      "privileges": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ]
+    },
+    "company_settings": {
+      "rls": true,
+      "privileges": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ]
+    },
+    "company_user_roles": {
+      "rls": true,
+      "privileges": [
+        "SELECT",
+        "INSERT",
+        "DELETE"
+      ]
+    },
+    "company_users": {
+      "rls": true,
+      "privileges": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ]
+    },
+    "document_prints": {
+      "rls": true,
+      "privileges": []
+    },
+    "document_sequences": {
+      "rls": true,
+      "privileges": []
+    },
+    "drivers": {
+      "rls": true,
+      "privileges": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ]
+    },
+    "identity_audit": {
+      "rls": false,
+      "privileges": [
+        "SELECT",
+        "INSERT"
+      ]
+    },
+    "journey_events": {
+      "rls": true,
+      "privileges": []
+    },
+    "journey_incidents": {
+      "rls": true,
+      "privileges": []
+    },
+    "luggage_events": {
+      "rls": true,
+      "privileges": []
+    },
+    "luggage_exceptions": {
+      "rls": true,
+      "privileges": []
+    },
+    "luggage_records": {
+      "rls": true,
+      "privileges": []
+    },
+    "luggage_tags": {
+      "rls": true,
+      "privileges": []
+    },
+    "notification_events": {
+      "rls": true,
+      "privileges": []
+    },
+    "notification_reads": {
+      "rls": true,
+      "privileges": []
+    },
+    "payments": {
+      "rls": true,
+      "privileges": []
+    },
+    "permissions": {
+      "rls": false,
+      "privileges": [
+        "SELECT"
+      ]
+    },
+    "platform_settings": {
+      "rls": true,
+      "privileges": []
+    },
+    "platform_user_roles": {
+      "rls": false,
+      "privileges": [
+        "SELECT",
+        "INSERT",
+        "DELETE"
+      ]
+    },
+    "receipts": {
+      "rls": true,
+      "privileges": []
+    },
+    "refunds": {
+      "rls": true,
+      "privileges": []
+    },
+    "role_permissions": {
+      "rls": false,
+      "privileges": [
+        "SELECT",
+        "INSERT",
+        "DELETE"
+      ]
+    },
+    "roles": {
+      "rls": false,
+      "privileges": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ]
+    },
+    "route_stops": {
+      "rls": true,
+      "privileges": [
+        "SELECT",
+        "INSERT",
+        "DELETE"
+      ]
+    },
+    "routes": {
+      "rls": true,
+      "privileges": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ]
+    },
+    "seat_allocations": {
+      "rls": true,
+      "privileges": []
+    },
+    "seat_layout_revisions": {
+      "rls": true,
+      "privileges": [
+        "SELECT",
+        "INSERT"
+      ]
+    },
+    "seat_layout_seats": {
+      "rls": true,
+      "privileges": [
+        "SELECT",
+        "INSERT"
+      ]
+    },
+    "seat_layouts": {
+      "rls": true,
+      "privileges": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ]
+    },
+    "sessions": {
+      "rls": false,
+      "privileges": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ]
+    },
+    "station_counters": {
+      "rls": true,
+      "privileges": []
+    },
+    "stations": {
+      "rls": true,
+      "privileges": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ]
+    },
+    "support_access_grant_permissions": {
+      "rls": true,
+      "privileges": [
+        "SELECT",
+        "INSERT"
+      ]
+    },
+    "support_access_grants": {
+      "rls": true,
+      "privileges": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ]
+    },
+    "ticket_credentials": {
+      "rls": true,
+      "privileges": []
+    },
+    "tickets": {
+      "rls": true,
+      "privileges": []
+    },
+    "trip_assignments": {
+      "rls": true,
+      "privileges": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ]
+    },
+    "trip_stops": {
+      "rls": true,
+      "privileges": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ]
+    },
+    "trips": {
+      "rls": true,
+      "privileges": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ]
+    },
+    "users": {
+      "rls": false,
+      "privileges": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ]
+    }
+  },
+  "functions": [
+    "safeer.route_manage(uuid)",
+    "safeer.fleet_manage(uuid)",
+    "safeer.driver_manage(uuid)",
+    "safeer.trip_manage(uuid)",
+    "safeer.public_trips(text,text,date,text)",
+    "safeer.public_cities()",
+    "safeer.public_companies(text)",
+    "safeer.public_trip(uuid)",
+    "safeer.public_book(uuid,text[],uuid,text,text,text,text,jsonb)",
+    "safeer.public_booking(text,text)",
+    "safeer.public_booking_by_key(text)",
+    "safeer.public_lookup(text,text)",
+    "safeer.public_release(text,text)",
+    "safeer.public_release_by_mobile(text,text)",
+    "safeer.expire_due_holds()",
+    "safeer.erase_due_passenger_data()",
+    "safeer.staff_seat_map(uuid,uuid)",
+    "safeer.staff_release(uuid,uuid,uuid,uuid,text)",
+    "safeer.staff_bookings(uuid,text,text,text)",
+    "safeer.staff_booking(uuid,uuid)",
+    "safeer.staff_update_travelers(uuid,uuid,uuid,integer,text,jsonb,text)",
+    "safeer.counter_overview(uuid)",
+    "safeer.counter_trip(uuid,uuid)",
+    "safeer.save_payment_settings(uuid,uuid,boolean,boolean,integer)",
+    "safeer.save_counter(uuid,uuid,uuid,uuid,text,text,boolean,integer)",
+    "safeer.open_session(uuid,uuid,uuid,integer)",
+    "safeer.close_session(uuid,uuid,uuid,bigint,text)",
+    "safeer.counter_pay(uuid,uuid,uuid,text,text,text,text,text)",
+    "safeer.counter_sale(uuid,uuid,uuid,text[],uuid,text,text,text,text,jsonb,text,text,text)",
+    "safeer.counter_refund(uuid,uuid,uuid,text,text,text,text)",
+    "safeer.record_print(uuid,uuid,uuid,text)",
+    "safeer.luggage_find(uuid,text,text)",
+    "safeer.luggage_register(uuid,uuid,text,text,integer,integer,text,text,text,text)",
+    "safeer.luggage_update(uuid,uuid,uuid,text,integer,integer,text,text,integer)",
+    "safeer.luggage_tag(uuid,uuid,uuid,text,text,integer)",
+    "safeer.luggage_move(uuid,uuid,uuid,text,text,integer)",
+    "safeer.luggage_collect(uuid,uuid,uuid,text,text,text,integer)",
+    "safeer.luggage_report(uuid,uuid,uuid,text,text)",
+    "safeer.luggage_resolve(uuid,uuid,uuid,uuid,text,text)",
+    "safeer.finance_report(uuid,date,date,uuid,uuid,text,integer,integer,timestamptz,boolean)",
+    "safeer.finance_options(uuid)",
+    "safeer.finance_audit(uuid,text)",
+    "safeer.driver_trips()",
+    "safeer.driver_manifest(uuid,uuid)",
+    "safeer.driver_verify(uuid,uuid,text,boolean)",
+    "safeer.driver_event(uuid,uuid,text)",
+    "safeer.driver_incident(uuid,uuid,text,text,text,text)",
+    "safeer.ticket_codes(uuid,uuid)",
+    "safeer.platform_notice()",
+    "safeer.platform_settings_read()",
+    "safeer.platform_settings_save(boolean,text,text,integer)",
+    "safeer.platform_dashboard(date,date,integer)",
+    "safeer.notifications_list(bigint)",
+    "safeer.notification_read(bigint)",
+    "safeer.company_actor()",
+    "safeer.company_super()",
+    "safeer.company_can(uuid,text,uuid,uuid)",
+    "safeer.company_has(uuid,text)",
+    "safeer.member_visible(uuid,uuid,boolean)",
+    "safeer.assignment_allowed(uuid,uuid,uuid,uuid)"
+  ]
+}

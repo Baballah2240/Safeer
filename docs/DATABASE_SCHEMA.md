@@ -1,5 +1,10 @@
 # Database schema and migration status
 
+## Section 15 - 2026-11-04 (D39)
+
+No Section 15 schema migration. Existing migrations 0001-0014, 56 tables, 48 RLS tables and 33 permissions remain. Reviewed config/database-security.json checks all table/RLS and effective table/column privileges plus exactly 60 callable signatures. Runtime-owned functions, PUBLIC execution, unsafe SECURITY DEFINER paths and missing functions are rejected at startup. This does not rewrite existing policies/records/grants. See [security review](security/SECTION_15_REVIEW.md), [release operations](RELEASE_READINESS.md) and [Section 15](archive/SECTION_15_RELEASE.md).
+
+
 ## Section 14 schema - migration 0014_platform.sql
 
 Adds three private RLS tables: platform_settings (one versioned bilingual notice), notification_events (identity bigint, company/event/source/revision/time with deduplication) and notification_reads (user/event primary key and read time). Runtime has no raw table privileges. Fixed projections/capture helpers are SECURITY DEFINER with trusted search paths and PUBLIC revocation. Six callable entry functions alone are granted. Six source-table trigger bindings generate seven event types transactionally. Posting-date indexes support global payment/refund aggregates. Existing tables, credentials, roles and financial policies are unchanged. Expected totals: 56 application tables, 48 RLS tables and 33 permissions. See [current verification](CURRENT_STATE.md) and [workflow](workflows/PLATFORM_ADMINISTRATION.md).

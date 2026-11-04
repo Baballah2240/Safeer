@@ -43,8 +43,8 @@ class Errors implements ExceptionFilter {
 }
 @Controller('api/v1')
 class IdentityController {
-  constructor(private readonly identity:IdentityService,private readonly db:Database){}
-  @Get('health') async health(){await this.db.pool.query('SELECT 1');return reply({service:'safeer',version,mode:'local-identity',database:'connected'});}
+  constructor(private readonly identity:IdentityService,private readonly db:Database,private readonly reservations:ReservationService){}
+  @Get('health') async health(){try{await this.db.pool.query('SELECT 1');}catch{fail('DATABASE_UNAVAILABLE',503,'The local database is unavailable.');}return reply({service:'safeer',version,mode:'local-identity',database:'connected',maintenance:this.reservations.maintenance()});}
   @Post('auth/login') async login(@Body() data:unknown,@Req() req:Request,@Res({passthrough:true}) res:Response){
     const {token:session,...result}=await this.identity.login(data,req.socket.remoteAddress||'local');res.setHeader('Set-Cookie',cookie(session));return reply(result);
   }
@@ -217,9 +217,12 @@ export async function createIdentityApi({port=4321,webOrigin='http://127.0.0.1:4
   const origin=new URL(webOrigin);
   if(origin.protocol!=='http:'||origin.hostname!=='127.0.0.1'||origin.username||origin.password||origin.pathname!=='/'||origin.search||origin.hash||!Number.isInteger(port)||port<0||port>65535)throw Error('Use a loopback web origin and valid identity port.');
   const app=await NestFactory.create(IdentityModule,{logger:false,bodyParser:false,abortOnError:false});
+  app.getHttpAdapter().getInstance().disable('x-powered-by');
+  const http=app.getHttpServer();http.headersTimeout=10000;http.requestTimeout=15000;http.keepAliveTimeout=5000;http.maxHeadersCount=40;http.maxRequestsPerSocket=100;http.setTimeout(15000,(socket:import('node:net').Socket)=>socket.destroy());
   app.useGlobalFilters(new Errors());
   app.use((req:Request,res:Response,next:()=>void)=>{
     res.setHeader('Cache-Control','no-store');res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','no-referrer');
+    res.setHeader('Permissions-Policy','camera=(), microphone=(), geolocation=(), payment=(), usb=()');
     res.setHeader('Content-Security-Policy',"default-src 'none'; frame-ancestors 'none'");
     const address=app.getHttpServer().address();
     if(req.headers.host!==`127.0.0.1:${address?.port}`||req.headers.authorization||req.headers['sec-fetch-site']==='cross-site')return res.status(403).json({error:{code:'FORBIDDEN',message:'Request not permitted.'}});

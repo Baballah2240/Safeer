@@ -1,5 +1,10 @@
 # Development roadmap
 
+## Section 15 - 2026-11-04 (D39)
+
+Section 15 is complete and verified locally: 138 automated checks, six browser workflows/220 language-theme-layout combinations and the full release gate passed. A protected private backup/restore and all 52 existing table fingerprints/account settings passed the local update. Stop after the verified Section 15 checkpoint. Deployment and later features require a new instruction. See [security review](security/SECTION_15_REVIEW.md), [release operations](RELEASE_READINESS.md) and [Section 15](archive/SECTION_15_RELEASE.md).
+
+
 ## Section 14 - 2026-11-03 (D38)
 
 Platform administration, local notification inbox and global analytics implemented in 0.15.0. Complete and verified locally: 128 automated checks, 32 source and 32 built platform/inbox layouts plus 16 built driver layouts passed. The 1535-file private backup passed protected restoration; the existing account/settings and 49 legacy tables passed upgrade fingerprints. See CURRENT_STATE and the Section 14 handover. No mobile build or remote service. Section 15 remains gated.
@@ -33,7 +38,7 @@ Updated 2026-11-03. Sections 01-12 and the verified local upgrades (D34, D36) ar
 | 12 | Local driver client, assigned-trip manifest, QR verification, boarding/departure/arrival | 05-06, 10-11 | Complete and verified locally under D36; Flutter deferred |
 | 13 | Company financial reports and read-only cash reconciliation | 10 | Complete and verified locally under D37 |
 | 14 | Platform administration, company approval UI, notifications, global analytics | Existing module APIs through 13 | Complete and verified locally under D38; see CURRENT_STATE |
-| 15 | Security audit, integration/concurrency/recovery tests, optimization and production preparation | All preceding sections | Not started |
+| 15 | Security audit, integration/concurrency/recovery tests, optimization and production preparation | All preceding sections | Complete and verified locally under D39; remote release prerequisites remain explicit |
 
 ## Resolving dependencies without breaking the order
 

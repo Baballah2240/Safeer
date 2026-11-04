@@ -1,5 +1,10 @@
 # Business rules
 
+## Section 15 - 2026-11-04 (D39)
+
+D39 changes no company membership, driver assignment, money/refund/currency, ticket, custody or retention rule. Maintenance health makes existing expiry/90-day erasure failures visible without private contents; worker concurrency is bounded. Safe health output and a tested release gate are operational controls. Remote release, off-site retention/restore, legal/financial choices and physical hardware validation remain explicit prerequisites. See [security review](security/SECTION_15_REVIEW.md), [release operations](RELEASE_READINESS.md) and [Section 15](archive/SECTION_15_RELEASE.md).
+
+
 ## Section 14 rules (D38)
 
 Global dashboard/settings are reserved Super Administrator authority; tenant roles/support grants gain none. Reports include retained company history, separate currencies and at most 31 inclusive UTC posting dates. Recorded net collections are not profit. Scheduled published departure counts do not assert actual departure. Company Finance retains company-timezone reporting. Dashboard pagination starts fresh snapshots.

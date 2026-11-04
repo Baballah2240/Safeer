@@ -31,7 +31,7 @@ try{
     assert.equal(await evaluate('document.documentElement.dataset.theme'),'light');
     await click('[data-theme-toggle]');assert.equal(await evaluate('document.documentElement.dataset.theme'),'dark');
     assert.equal(await evaluate('document.querySelectorAll(".staff-summary article").length'),3);
-    assert.equal(await evaluate('document.querySelectorAll(".staff-shortcuts button").length'),6);
+    assert.deepEqual(await evaluate('[...document.querySelectorAll(".staff-shortcuts button")].map(b=>b.dataset.tab).sort()'),['audit','cities','companies','notifications','platform','roles','sessions','users']);
     await click('.staff-shortcuts [data-tab=users]');await until('Boolean(document.querySelector("[data-create-user]"))');
     await tab('users','[data-create-user]');await click('[data-create-user]');
     await fill('#staff-dialog [name=displayName]','Fictional <img src=x onerror="window.__xss=true">');
@@ -51,11 +51,12 @@ try{
     assert.ok(await evaluate('document.querySelector(".staff-record:not([hidden]) .staff-role-link").textContent.includes("support")'));
     await click('.staff-record:not([hidden]) .staff-role-link');await until('Boolean(document.querySelector("#staff-scope"))');
     await evaluate('(()=>{const n=document.querySelector("#staff-scope");n.value="company";n.dispatchEvent(new Event("change"));})()');
-    assert.equal(await evaluate('document.querySelectorAll(".staff-record:not([hidden])").length'),1);
+    const currentRoles=(await f.admin.request('identity/roles')).data.items;
+    assert.equal(await evaluate('document.querySelectorAll(".staff-record:not([hidden])").length'),currentRoles.filter(r=>r.scope==='company').length);
     await fill('#staff-search','no such role');assert.equal(await evaluate('document.querySelectorAll(".staff-record:not([hidden])").length'),0);
     await fill('#staff-search','');await evaluate('(()=>{const n=document.querySelector("#staff-scope");n.value="all";n.dispatchEvent(new Event("change"));})()');
     await tab('roles','[data-create-role]');
-    assert.equal(await evaluate('document.querySelectorAll("[data-edit-role]").length'),8);
+    assert.deepEqual(await evaluate('[...document.querySelectorAll("[data-edit-role]")].map(b=>b.dataset.editRole).sort()'),currentRoles.map(r=>r.id).sort());
     for(const [id,name] of [['00000000-0000-4000-8000-000000000001','Platform owner'],['00000000-0000-4000-8000-000000000003','Company team administrator']]){
       await click(`[data-edit-role="${id}"]`);await until('Boolean(document.querySelector("#staff-dialog [name=displayName]"))');
       if(id.endsWith('1'))assert.equal(await evaluate('document.querySelector("#staff-dialog [name=active]").disabled'),true);
@@ -80,7 +81,7 @@ try{
       if(await evaluate('document.documentElement.dataset.theme')!==theme)await click('[data-theme-toggle]');
       for(const lang of ['en','ar']){
       if(await evaluate('document.documentElement.lang')!==lang)await click('#staff-language');
-      assert.equal(await evaluate('new URL(document.querySelector(".staff-preview:last-of-type").href).searchParams.get("lang")'),lang);
+      assert.equal(await evaluate('new URL(document.querySelector(\'.staff-preview[href^="/?lang="]\').href).searchParams.get("lang")'),lang);
       for(const [name,ready] of [['profile','#change-password'],['users','[data-create-user]'],['roles','[data-create-role]'],['sessions','[data-revoke]'],['audit','.staff-table']]){
         await tab(name,ready);
         for(const [width,height] of [[1920,1080],[1366,768],[390,844]]){
@@ -91,7 +92,7 @@ try{
     }
     }
     if(await evaluate('document.documentElement.dataset.theme')!=='dark')await click('[data-theme-toggle]');
-    await click('.staff-preview:last-of-type');await until('Boolean(document.querySelector("#app .metrics"))');
+    await click('.staff-preview[href^="/?lang="]');await until('Boolean(document.querySelector("#app .metrics"))');
     assert.equal(await evaluate('document.documentElement.lang'),'ar');
     assert.equal(await evaluate('document.documentElement.dataset.theme'),'dark');
     await click('a[href^="/staff"]');await until('Boolean(document.querySelector("#change-password"))');

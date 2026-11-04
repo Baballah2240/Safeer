@@ -48,18 +48,25 @@ export const saleTravelers=(value:unknown,labels:string[])=>travelers(value,labe
 export class ReservationService implements OnModuleInit,OnModuleDestroy {
  private timer?:NodeJS.Timeout;
  private eraser?:NodeJS.Timeout;
+ private jobs={holds:{state:'starting',lastSuccessAt:null as string|null},retention:{state:'starting',lastSuccessAt:null as string|null}};
+ private tasks:Partial<Record<'holds'|'retention',Promise<void>>>={};
  constructor(private readonly db:Database,private readonly identity:IdentityService){}
  // Holds stop counting the moment they expire. This job only tidies the records and releases the rows for reporting.
  onModuleInit(){void this.sweep();this.timer=setInterval(()=>void this.sweep(),30000);this.timer.unref();void this.erase();this.eraser=setInterval(()=>void this.erase(),3600000);this.eraser.unref();}
- onModuleDestroy(){clearInterval(this.timer);clearInterval(this.eraser);}
+ async onModuleDestroy(){clearInterval(this.timer);clearInterval(this.eraser);await Promise.all(Object.values(this.tasks));}
+ maintenance(){return {holds:{...this.jobs.holds},retention:{...this.jobs.retention}};}
+ private job(name:'holds'|'retention',action:()=>Promise<void>){
+  if(this.tasks[name])return this.tasks[name]!;
+  this.jobs[name].state='running';
+  const task=(async()=>{try{await action();this.jobs[name].state='ok';this.jobs[name].lastSuccessAt=new Date().toISOString();}catch{this.jobs[name].state='failed';}finally{delete this.tasks[name];}})();
+  this.tasks[name]=task;return task;
+ }
  // Retention: names and numbers go 90 days after the trip ends (D31). Runs on start and hourly. Short batches drain a backlog without one long transaction.
- async erase(){
-  try{
+ erase(){return this.job('retention',async()=>{
    for(let batch=0;batch<200;batch++){if((await this.db.pool.query('SELECT safeer.erase_due_passenger_data() AS n')).rows[0].n<500)break;}
    await this.db.pool.query('DELETE FROM safeer.auth_throttles WHERE resets_at<=clock_timestamp()');
-  }catch{/* The next run retries. */}
- }
- sweep(){return this.db.pool.query('SELECT safeer.expire_due_holds()').catch(()=>{/* The next run retries. Availability never depends on this job. */});}
+  });}
+ sweep(){return this.job('holds',async()=>{await this.db.pool.query('SELECT safeer.expire_due_holds()');});}
  private one(sql:string,values:unknown[]){return this.db.pool.query(sql,values).then(result=>result.rows[0]?.row??null);}
  async trip(id:string){uuid(id);const row=await this.one('SELECT safeer.public_trip($1) AS row',[id]);if(!row)fail('NOT_FOUND',404);return row;}
  // Counts seats, not requests, so one client cannot hold whole buses a few requests at a time.

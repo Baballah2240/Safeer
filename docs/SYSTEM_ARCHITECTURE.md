@@ -1,5 +1,10 @@
 # System architecture
 
+## Section 15 - 2026-11-04 (D39)
+
+Add a source-reviewed security manifest consumed by verifyDatabaseSecurity at startup, replacing partial RLS/function checks. The modular local NestJS/PostgreSQL stack is unchanged. Expiry/retention workers share active promises and expose only state/last-success health; both HTTP servers use bounded resource settings. The offline release runner creates a protected disposable PostgreSQL cluster, runs all native and selected source/built browser workflows, records evidence and clean-stops/guards cleanup. It never accesses runtime/ or deploys. See [security review](security/SECTION_15_REVIEW.md), [release operations](RELEASE_READINESS.md) and [Section 15](archive/SECTION_15_RELEASE.md).
+
+
 ## Section 14 architecture (D38)
 
 PlatformService and fixed PostgreSQL projections add global aggregates/notice management behind reserved Super Administrator checks. Notification capture occurs inside existing source transactions through six database triggers; a shared metadata event feed and per-user read receipts form the durable local delivery mechanism. Actor context derives from the validated session token and current database authority. No caller-supplied user/company/admin flag authorizes global reporting or delivery. Runtime receives six function grants without access to new raw tables or internal trigger/visibility helpers. The shared bilingual staff/driver/public src/ uses same-origin request/refresh delivery. No Redis/WebSocket worker or external notification service is introduced. [Platform workflow](workflows/PLATFORM_ADMINISTRATION.md) documents refresh and retention boundaries.

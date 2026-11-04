@@ -1,5 +1,10 @@
 # Safeer mobile status
 
+## 0.16.0 - 2026-11-04, Section 15
+
+Shared API health adds safe expiry/retention worker state and last success. Startup verifies the complete reviewed database privilege policy; HTTP limits and denied unused device permissions apply to responsive clients too. Existing keyboard/paste scanner workflows, company/driver scope and UI remain unchanged. No native build, phone update or remote connection was created. Final source/built browser verification is recorded in docs/CURRENT_STATE.md.
+
+
 ## 0.15.0 - 2026-11-03, Section 14
 
 Shared responsive src/ adds the Super Administrator dashboard, bilingual service notice and permission-scoped notification inbox. Drivers can open their inbox from /driver using the same local account. Current authority is checked server-side on every request. Arabic/English and both themes support desktop/mobile widths. No Flutter/native package, phone installation, external delivery or remote connectivity is included. See docs/CURRENT_STATE.md for final test and local-upgrade evidence.

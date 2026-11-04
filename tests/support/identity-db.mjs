@@ -36,7 +36,7 @@ export async function identityFixture(action,{webOrigin='http://127.0.0.1:4320'}
     const password=randomBytes(24).toString('base64url');
     const changed=await admin.request('auth/password','POST',{currentPassword:initial.temporaryPassword,newPassword:password});
     if(changed.status!==201)throw Error('Fixture owner password change failed.');
-    await action({api,migration,owner,runtimeUrl:runtimeUrl.href,ownerUrl:ownerUrl.href,admin,password,initial,client});
+    await action({api,migration,owner,runtimeUrl:runtimeUrl.href,ownerUrl:ownerUrl.href,admin,password,initial,client,disconnectSource:async()=>{await api?.close();api=undefined;await migration?.end();migration=undefined;}});
   }finally{
     await api?.close();await migration?.end();
     await owner.query(`DROP DATABASE IF EXISTS "${name}" WITH (FORCE)`);
