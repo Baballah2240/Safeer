@@ -1,5 +1,8 @@
 # Safeer / Sudan Transport
 
+The circular sidebar button now sits above navigation, staying in the upper leading corner while collapsed. See [D48 handover](docs/archive/SIDEBAR_POSITION_2026-11-05.md).
+
+
 The sidebar toggle is now a circular icon-only glass button matching the supplied reference. See [D47 handover](docs/archive/CIRCULAR_SIDEBAR_2026-11-04.md).
 
 

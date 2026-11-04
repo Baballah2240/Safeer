@@ -25,12 +25,14 @@ try{await identityFixture(async f=>{
    if(await evaluate('document.documentElement.dataset.theme')!==theme)await evaluate('document.querySelector("[data-theme-toggle]").click()');
    if(await evaluate('document.documentElement.dataset.sidebarHidden')==='true')await evaluate('document.querySelector("[data-sidebar-toggle]").click()');
    await settle();
+   assert.ok(await evaluate(`(()=>{const b=document.querySelector('[data-sidebar-toggle]'),s=document.getElementById(b.getAttribute('aria-controls'));return b.getBoundingClientRect().bottom<=s.getBoundingClientRect().top+1&&!b.closest('header');})()`),name+' toggle above sidebar');
    const before=await evaluate(`document.querySelector('${content}').getBoundingClientRect().width`);
    await evaluate(`window.__field=document.querySelector('${field}');window.__value=__field.value;window.__expected=__field.tagName==='SELECT'?__value:'unchanged';window.__field.value=__expected;document.querySelector('[data-sidebar-toggle]').focus()`);
    await key('Enter','Enter',13);await settle();
    assert.equal(await evaluate('document.querySelector("[data-sidebar-toggle]").getAttribute("aria-expanded")'),'false',name);
    assert.ok(await evaluate(`(()=>{const b=document.querySelector('[data-sidebar-toggle]'),s=document.getElementById(b.getAttribute('aria-controls'));return getComputedStyle(s).display==='none'&&s.getClientRects().length===0&&b.getBoundingClientRect().width>=44&&document.activeElement===b;})()`),name+' hidden navigation / keyboard');
    assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth+2'),name+' hidden overflow');
+   assert.ok(await evaluate(`(()=>{const b=document.querySelector('[data-sidebar-toggle]'),r=b.getBoundingClientRect();return r.top>=0&&r.left>=0&&r.right<=innerWidth&&document.elementFromPoint(r.left+r.width/2,r.top+r.height/2)?.closest('[data-sidebar-toggle]')===b;})()`),name+' restore button visible and clickable');
    assert.ok(await evaluate(`document.querySelector('${field}')===window.__field&&__field.value===window.__expected`),name+' preserve form');
    await evaluate('window.__field.value=window.__value');
    if(width>760)assert.ok(await evaluate(`document.querySelector('${content}').getBoundingClientRect().width`)>before+150,name+' workspace expands');

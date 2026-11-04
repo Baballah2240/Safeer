@@ -231,14 +231,28 @@
 }
 .theme-toggle{white-space:nowrap}
 @media screen{
+  html body .sidebar-column{position:sticky;top:0;align-self:flex-start;display:flex;flex-direction:column;height:100dvh;min-width:0}
+  html body .sidebar-toolbar{display:flex;align-items:center;justify-content:center;flex:0 0 68px}
+  html body .sidebar-column .staff-sidebar{position:relative;top:0;flex:1;min-height:0;height:auto;margin:0 0 14px}
+  html body .shell>.sidebar-column{width:240px;flex-shrink:0}
+  html body .sidebar-column .sidebar{position:relative;top:0;flex:1;min-height:0;width:100%;height:auto}
   html[data-sidebar-hidden=true] body :is(.staff-sidebar,.sidebar){display:none}
   html[data-sidebar-hidden=true] body .staff-shell{grid-template-columns:minmax(0,1fr);padding-inline-start:0}
+  html[data-sidebar-hidden=true] body :is(.staff-shell,.shell)>.sidebar-column{position:fixed;top:12px;inset-inline-start:14px;width:44px;height:44px;z-index:50}
+  html[data-sidebar-hidden=true] body .sidebar-toolbar{flex-basis:44px}
+  html[data-sidebar-hidden=true] body :is(.staff-topbar,.topbar){padding-inline-start:70px}
   html body button.sidebar-toggle{display:inline-flex;align-items:center;justify-content:center;flex:0 0 44px;width:44px;height:44px;min-width:44px;min-height:44px;padding:0;border-radius:50%;cursor:pointer;box-shadow:inset 0 1px 0 var(--glass-highlight),0 3px 10px var(--glass-shadow)}
   html body .sidebar-toggle svg{width:16px;height:16px;flex-shrink:0}
   html body .sidebar-toggle span{display:none}
+  @media(max-width:1150px){html body .shell>.sidebar-column{width:205px}}
+  @media(max-width:760px){
+    html body .staff-shell>.sidebar-column{position:relative;height:auto}
+    html body .sidebar-column .staff-sidebar{flex:auto;margin:0 12px 12px}
+  }
+  @media(max-width:600px){html body .shell>.sidebar-column{position:relative;height:auto;width:100%}}
 }
 @media print{
-  .sidebar-toggle{display:none!important}
+  .sidebar-toggle,.sidebar-column{display:none!important}
   html{color-scheme:light}body,.reference-sheet,dialog[open]{color:#251c16;background:#fff;box-shadow:none}
   .reference-sheet :is(p,dt,dd,h2),.reference-heading,.reference-large{color:#251c16!important;text-shadow:none}.theme-toggle{display:none!important}
 }

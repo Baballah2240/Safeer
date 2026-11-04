@@ -1,5 +1,8 @@
 # Safeer
 
+- D48 places the toggle above navigation in .sidebar-column, outside the hidden aside/header actions. Keep restoration visible without covering header controls, responsive RTL/LTR and print isolation. Run sidebar and sticky-header regressions for layout changes.
+
+
 - D47 makes the sidebar toggle circular and icon-only, retaining 44px targets, accessible translated labels and D44 behavior. Preserve this reference style and run the targeted sidebar regression for behavior changes.
 
 

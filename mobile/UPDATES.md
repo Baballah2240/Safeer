@@ -1,5 +1,8 @@
 # Safeer mobile status
 
+D48 shared web follow-up: staff/preview toggle moved above the sidebar; a visible corner control restores collapsed navigation. Native Driver/Booking have no sidebar and no APK changes. No install/physical phone check is claimed. See [handover](../docs/archive/SIDEBAR_POSITION_2026-11-05.md).
+
+
 D47 shared web follow-up: staff/preview sidebar toggles are circular icon-only glass controls with accessible labels and 44px targets. Driver/Booking have no sidebar. Native packages are unchanged; no APK build/install or phone recapture is required. See [handover](../docs/archive/CIRCULAR_SIDEBAR_2026-11-04.md).
 
 

@@ -1,5 +1,8 @@
 # Section archives and source checkpoints
 
+Latest placement follow-up: [D48 sidebar position](SIDEBAR_POSITION_2026-11-05.md), checkpoint archives/Safeer-0.16.0-Sidebar-Position-2026-11-05.zip.
+
+
 Latest reference follow-up: [D47 circular sidebar button](CIRCULAR_SIDEBAR_2026-11-04.md), checkpoint archives/Safeer-0.16.0-Circular-Sidebar-2026-11-04.zip.
 
 
