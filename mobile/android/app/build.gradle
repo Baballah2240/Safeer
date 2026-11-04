@@ -1,0 +1,34 @@
+plugins { id 'com.android.application' }
+
+android {
+    namespace 'sd.safeer.mobile'
+    compileSdk 35
+    defaultConfig {
+        minSdk 26
+        targetSdk 35
+        versionCode 16001
+        versionName '0.16.0-usb.1'
+    }
+    buildFeatures { buildConfig true }
+    flavorDimensions += 'workspace'
+    productFlavors {
+        driver {
+            dimension 'workspace'
+            applicationId 'sd.safeer.driver'
+            resValue 'string', 'app_name', 'Safeer Driver'
+            buildConfigField 'String', 'START_PATH', '"/driver"'
+        }
+        booking {
+            dimension 'workspace'
+            applicationId 'sd.safeer.booking'
+            resValue 'string', 'app_name', 'Safeer Booking'
+            buildConfigField 'String', 'START_PATH', '"/marketplace"'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    // This local testing channel has no production signing configuration.
+    buildTypes { release { minifyEnabled false } }
+}

@@ -1,5 +1,10 @@
 # Changelog
 
+## Android USB follow-up - 2026-11-04 (D40)
+
+Add and install separate local-test Safeer Driver/Booking Android WebView apps over the existing shared src/ and loopback API through USB reverse port 4320. All company, driver assignment, session and offline-payment rules remain unchanged; no schema/API authority changes, account seeding, camera/offline queue, Flutter or hosted release. See [USB installation evidence](archive/ANDROID_USB_2026-11-04.md) and [mobile setup](../mobile/README.md). Earlier section entries below are historical.
+
+
 ## Section 15 - 2026-11-04 (D39)
 
 Version 0.16.0, Section 15 (D39): fail-closed full schema/grant/function startup checks; safe maintenance health and retry/overlap/shutdown handling; bounded HTTP/header/socket settings, denied unused device permissions and removed Express fingerprint; security and connected race/clone consistency regressions; executable offline release verification and local/remote preparation guide. No new dependency, migration, account/role/money policy or hosted/native release. See [security review](security/SECTION_15_REVIEW.md), [release operations](RELEASE_READINESS.md) and [Section 15](archive/SECTION_15_RELEASE.md).

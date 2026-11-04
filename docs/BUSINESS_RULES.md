@@ -1,5 +1,10 @@
 # Business rules
 
+## Android USB follow-up - 2026-11-04 (D40)
+
+Add and install separate local-test Safeer Driver/Booking Android WebView apps over the existing shared src/ and loopback API through USB reverse port 4320. All company, driver assignment, session and offline-payment rules remain unchanged; no schema/API authority changes, account seeding, camera/offline queue, Flutter or hosted release. See [USB installation evidence](archive/ANDROID_USB_2026-11-04.md) and [mobile setup](../mobile/README.md). Earlier section entries below are historical.
+
+
 ## Section 15 - 2026-11-04 (D39)
 
 D39 changes no company membership, driver assignment, money/refund/currency, ticket, custody or retention rule. Maintenance health makes existing expiry/90-day erasure failures visible without private contents; worker concurrency is bounded. Safe health output and a tested release gate are operational controls. Remote release, off-site retention/restore, legal/financial choices and physical hardware validation remain explicit prerequisites. See [security review](security/SECTION_15_REVIEW.md), [release operations](RELEASE_READINESS.md) and [Section 15](archive/SECTION_15_RELEASE.md).

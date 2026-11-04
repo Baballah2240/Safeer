@@ -2,6 +2,12 @@
 
 Updated: 2026-11-04 (Asia/Riyadh). Safeer / Sudan Transport **0.16.0**. Sections 01-15 and the verified local update are complete under D39. Stop here; deployment and later features require a new owner instruction.
 
+## Android USB follow-up - D40
+
+The owner subsequently requested installing Driver and Booking on the USB-connected phone. Separate local-test Android apps **Safeer Driver** (sd.safeer.driver) and **Safeer Booking** (sd.safeer.booking), version 0.16.0-usb.1/16001, are now built/linted and installed with verified package versions on LGN-NX1/API 36. These WebView launchers reuse src/ and the running loopback application through ADB reverse tcp:4320. Real Driver sign-in and Booking screens, independent app storage and disconnected/Retry recovery are checked. Existing accounts/permissions and business records are not reset or seeded. The driver signs in separately and needs a current linked driver assignment; the existing zero-company marketplace stays empty until configured.
+
+Keep the computer, local server and USB connection active. Run npm.cmd run mobile:usb after reconnecting; saved APKs/checksums/manifest are under ignored mobile/releases/. Read [mobile setup](../mobile/README.md). No Flutter, remote hosting, offline synchronization, production signing/store release or camera scanning was introduced. Android lint passes with zero errors and two known target/back-attribute compatibility warnings. Physical printing and full operational phone acceptance remain untested. Section 15 evidence below predates this scoped follow-up; its native-build exclusions describe that original checkpoint.
+
 ## Running application
 
 - Staff/company/platform management: http://127.0.0.1:4320/staff
@@ -9,7 +15,7 @@ Updated: 2026-11-04 (Asia/Riyadh). Safeer / Sudan Transport **0.16.0**. Sections
 - Real local marketplace: http://127.0.0.1:4320/marketplace
 - Separate fictional passenger design preview: http://127.0.0.1:4320/
 
-Health reports 0.16.0/database connected with both maintenance workers successful. Existing account/password are unchanged. The persistent installation has one existing account, zero companies and no seeded notification events. Everything remains on 127.0.0.1; no remote hosting, phone update, native build, gateway or external notification delivery occurred.
+Health reports 0.16.0/database connected with both maintenance workers successful. Existing account/password are unchanged. The persistent installation has one existing account, zero companies and no seeded notification events. Everything remains on 127.0.0.1; D40 adds only the USB Android test apps described above. No remote hosting, gateway or external notification delivery occurred.
 
 ## Section 15 changes
 

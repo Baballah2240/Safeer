@@ -1,13 +1,13 @@
 # Safeer
 
 - Independent Sudan passenger-transport project. Do not edit Stocrant or the school-display application for Safeer work.
-- Current authorized stage: SECTION 15 security audit, connected tests, measured optimization and production preparation (D39), completed and verified locally alongside Sections 01-14. Stop at this checkpoint pending the owner's next phase. Keep it local; do not imply native apps or production deployment exist.
+- Current authorized stage: Section 15 is complete (D39); D40 authorizes separate local-test Android Driver/Booking launchers and installation on the authorized USB phone. Keep the existing service loopback-only and preserve users/data. No hosting or store release is authorized.
 - Keep the service on 127.0.0.1. No deployment, external accounts, SMS delivery or online payment integration is authorized yet.
 - Follow docs/decisions/MASTER_INSTRUCTIONS_2026-10-30.md. Release 1 is passenger transport and passenger luggage only; freight/parcels are deferred. Record changes in docs/DECISIONS.md before implementing them.
 - Support multiple companies from the start. Production access must be enforced on the server using authenticated company membership, never a browser company selector.
 - Companies choose unpaid-reservation deadlines. Calculate expiry from timestamps and release seats when a hold expires.
 - Online purchases and payment collection are outside the passenger app's scope. Issue a reservation reference first; only authorized staff may confirm offline payment, after which the final travel ticket and payment receipt can be issued. Follow the implemented D32 payment controls; later financial policy changes need explicit agreement.
-- Keep responsive web/mobile-facing code together in src/. Record mobile-facing changes in mobile/UPDATES.md; no native mobile build is requested yet.
+- Keep responsive web/mobile-facing code together in src/. Android local USB launchers live in mobile/android/ and reuse the running shared web application. Update mobile/UPDATES.md, build/lint, run npm.cmd run mobile:save, and verify install on the intended USB device. Never commit APKs, Gradle caches, SDK paths or signing material.
 - Use invented demonstration data only. Do not store passenger IDs, real customer data, tokens or credentials in fixtures or source control.
 - Work one numbered section at a time. The owner's latest "next" approves SECTION 15 (D39), preserving existing money rules and scoped driver/finance controls. Test, document and archive the completed local checkpoint, then stop. Deployment or later features need a new owner instruction.
 - Owner-authorized follow-up: the passenger prototype collects a luggage yes/no declaration and required description (1-300 trimmed characters when yes). This does not authorize full Section 11 operations or Section 02; see D16 in docs/DECISIONS.md.

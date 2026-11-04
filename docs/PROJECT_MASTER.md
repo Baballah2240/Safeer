@@ -1,5 +1,10 @@
 # Safeer / Sudan Transport - project master
 
+## Android USB follow-up - 2026-11-04 (D40)
+
+Add and install separate local-test Safeer Driver/Booking Android WebView apps over the existing shared src/ and loopback API through USB reverse port 4320. All company, driver assignment, session and offline-payment rules remain unchanged; no schema/API authority changes, account seeding, camera/offline queue, Flutter or hosted release. See [USB installation evidence](archive/ANDROID_USB_2026-11-04.md) and [mobile setup](../mobile/README.md). Earlier section entries below are historical.
+
+
 ## Section 15 - 2026-11-04 (D39)
 
 Section 15 (D39) adds verified database-security policy, maintenance health, bounded HTTP work, connected/security/recovery tests and an offline release command. The passenger scope, company isolation and financial rules are unchanged. No migration, native app or remote deployment. Final evidence and current local-update state are authoritative in CURRENT_STATE; earlier entries below are historical. See [security review](security/SECTION_15_REVIEW.md), [release operations](RELEASE_READINESS.md) and [Section 15](archive/SECTION_15_RELEASE.md).

@@ -1,5 +1,10 @@
 # Database schema and migration status
 
+## Android USB follow-up - 2026-11-04 (D40)
+
+Add and install separate local-test Safeer Driver/Booking Android WebView apps over the existing shared src/ and loopback API through USB reverse port 4320. All company, driver assignment, session and offline-payment rules remain unchanged; no schema/API authority changes, account seeding, camera/offline queue, Flutter or hosted release. See [USB installation evidence](archive/ANDROID_USB_2026-11-04.md) and [mobile setup](../mobile/README.md). Earlier section entries below are historical.
+
+
 ## Section 15 - 2026-11-04 (D39)
 
 No Section 15 schema migration. Existing migrations 0001-0014, 56 tables, 48 RLS tables and 33 permissions remain. Reviewed config/database-security.json checks all table/RLS and effective table/column privileges plus exactly 60 callable signatures. Runtime-owned functions, PUBLIC execution, unsafe SECURITY DEFINER paths and missing functions are rejected at startup. This does not rewrite existing policies/records/grants. See [security review](security/SECTION_15_REVIEW.md), [release operations](RELEASE_READINESS.md) and [Section 15](archive/SECTION_15_RELEASE.md).

@@ -50,7 +50,11 @@
     "test:finance:browser": "node tests/finance.browser.mjs",
     "test:security": "node --test tests/security.integration.mjs",
     "test:journey": "node --test tests/connected.integration.mjs",
-    "verify:release": "node scripts/verify-release.mjs"
+    "verify:release": "node scripts/verify-release.mjs",
+    "mobile:build": "node mobile/build.mjs",
+    "mobile:save": "node mobile/save.mjs",
+    "mobile:usb": "node mobile/usb.mjs",
+    "mobile:install": "node mobile/install.mjs"
   },
   "license": "UNLICENSED",
   "dependencies": {

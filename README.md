@@ -6,6 +6,8 @@ Start continuation at [CURRENT_STATE](docs/CURRENT_STATE.md) and [platform workf
 
 Run the complete offline verification with npm.cmd run verify:release. See [release operations](docs/RELEASE_READINESS.md) for required local tools, health, backup/recovery and remote-release prerequisites.
 
+The D40 USB follow-up adds installed **Safeer Driver** and **Safeer Booking** Android test apps using this same local service. Keep the computer/cable connected and run npm.cmd run mobile:usb after reconnecting. See [Android setup, builds and installation](mobile/README.md). This does not publish Safeer online or create driver accounts automatically.
+
 ## Run locally on Windows
 
 Install Node 24+, then from this folder:
