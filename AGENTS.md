@@ -1,5 +1,8 @@
 # Safeer
 
+- D47 makes the sidebar toggle circular and icon-only, retaining 44px targets, accessible translated labels and D44 behavior. Preserve this reference style and run the targeted sidebar regression for behavior changes.
+
+
 - D46 refines the public marketplace service notice. Keep bilingual admin settings, plain-text escaping, aligned margins, long-message wrapping and opaque/print fallbacks; tests/platform.browser.mjs covers the notice workflow. No new ad integration.
 
 

@@ -35,7 +35,7 @@ try{sidebarHidden=localStorage.getItem(sidebarKey)==='1';}catch{/* Layout remain
 const sidebarLabel=language=>language==='ar'
   ?(sidebarHidden?'إظهار القائمة الجانبية':'إخفاء القائمة الجانبية')
   :(sidebarHidden?'Show sidebar':'Hide sidebar');
-export const sidebarButton=(language,id)=>`<button type="button" class="secondary sidebar-toggle" data-sidebar-toggle aria-controls="${id}" aria-expanded="${!sidebarHidden}" aria-label="${sidebarLabel(language)}" title="${sidebarLabel(language)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg><span>${sidebarLabel(language)}</span></button>`;
+export const sidebarButton=(language,id)=>`<button type="button" class="secondary sidebar-toggle" data-sidebar-toggle aria-controls="${id}" aria-expanded="${!sidebarHidden}" aria-label="${sidebarLabel(language)}" title="${sidebarLabel(language)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M6 9h12M6 15h12"/></svg><span>${sidebarLabel(language)}</span></button>`;
 function applySidebar(){
   document.documentElement.dataset.sidebarHidden=String(sidebarHidden);
   document.querySelectorAll('[data-sidebar-toggle]').forEach(button=>{

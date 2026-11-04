@@ -1,5 +1,8 @@
 # Safeer mobile status
 
+D47 shared web follow-up: staff/preview sidebar toggles are circular icon-only glass controls with accessible labels and 44px targets. Driver/Booking have no sidebar. Native packages are unchanged; no APK build/install or phone recapture is required. See [handover](../docs/archive/CIRCULAR_SIDEBAR_2026-11-04.md).
+
+
 D46 shared Booking web update: the public announcement has aligned margins, an SVG icon, translated label and safe message wrapping on narrow screens. Existing native packages are unchanged; Refresh loads served web changes. No APK build/install or physical phone capture is claimed. See [handover](../docs/archive/MARKETPLACE_NOTICE_2026-11-04.md).
 
 

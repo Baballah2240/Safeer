@@ -1,5 +1,8 @@
 # Section archives and source checkpoints
 
+Latest reference follow-up: [D47 circular sidebar button](CIRCULAR_SIDEBAR_2026-11-04.md), checkpoint archives/Safeer-0.16.0-Circular-Sidebar-2026-11-04.zip.
+
+
 Latest follow-up: [D46 marketplace notice](MARKETPLACE_NOTICE_2026-11-04.md). Source checkpoint: archives/Safeer-0.16.0-Marketplace-Notice-2026-11-04.zip, excluding private runtime/credentials.
 
 

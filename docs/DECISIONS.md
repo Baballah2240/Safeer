@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-11-04 - Circular sidebar toggle reference
+
+D47: Match the owner's sidebar-button reference with an icon-only circular glass control and a small two-line menu glyph in staff and preview headers. Keep a 44px touch target, translated accessible name/title, keyboard support, aria-expanded/controls and the existing saved hide/restore behavior. Remove the visible text label at every width without changing navigation or forms. Preserve both themes, RTL/LTR, fallback/print behavior and sticky layout. Build and run the existing targeted sidebar checks, document/archive a scoped local checkpoint; no native, data or hosting changes and no publishing private portfolio history.
+
 ## 2026-11-04 - Refined marketplace announcement
 
 D46: Interpret the owner's screenshot and "add section" request as the public service announcement above trip search. Replace the edge-to-edge plain strip with a compact aligned glass notice, a decorative announcement icon, translated Travel update label and readable wrapping message. Keep the admin's existing enabled/bilingual plain-text settings and safe escaping; no advertising service, image upload, dismissal or backend change. Handle long text, RTL/LTR, mobile, both themes, accessibility and print/opaque fallbacks. Verify the actual settings-to-public workflow and responsive notice layouts on disposable data, build shared assets and document/archive a scoped local checkpoint. No native APK or publication; preserve private portfolio history.

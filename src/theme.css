@@ -233,9 +233,9 @@
 @media screen{
   html[data-sidebar-hidden=true] body :is(.staff-sidebar,.sidebar){display:none}
   html[data-sidebar-hidden=true] body .staff-shell{grid-template-columns:minmax(0,1fr);padding-inline-start:0}
-  html body .sidebar-toggle{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-width:44px;min-height:44px;cursor:pointer}
-  html body .sidebar-toggle svg{width:20px;height:20px;flex-shrink:0}
-  @media(max-width:760px){html body .sidebar-toggle span{display:none}}
+  html body button.sidebar-toggle{display:inline-flex;align-items:center;justify-content:center;flex:0 0 44px;width:44px;height:44px;min-width:44px;min-height:44px;padding:0;border-radius:50%;cursor:pointer;box-shadow:inset 0 1px 0 var(--glass-highlight),0 3px 10px var(--glass-shadow)}
+  html body .sidebar-toggle svg{width:16px;height:16px;flex-shrink:0}
+  html body .sidebar-toggle span{display:none}
 }
 @media print{
   .sidebar-toggle{display:none!important}
