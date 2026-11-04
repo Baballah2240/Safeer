@@ -4,6 +4,7 @@
   --ink:#251c16;--muted:#716052;--accent:#754a31;--warning:#926414;--warning-fill:#e9bd62;--border:#d8c8b9;--paper:#fffaf5;--page:#f1e9e0;
   --surface:#fffaf5ed;--surface-soft:#fffbf5b8;--glass-control:#fff8efb8;--glass-highlight:#ffffffde;--glass-edge:#fff5e8ed;--glass-shadow:#39231514;--accent-wash:#8b5d3b12;
   --page-art:radial-gradient(ellipse at 80% 0%,#cba57b40,transparent 48%),radial-gradient(ellipse at 0% 65%,#dbc8b345,transparent 50%);
+  --header-glass:#fffaf5cf;--header-reflection:#ffffffb3;--header-edge:#ffffffde;
   /* Compatibility aliases keep page components on the same material system. */
   --material-paper:var(--surface);--material-control:var(--glass-control);--material-enamel:linear-gradient(135deg,#70442c,#4b2d1e);--material-navy:linear-gradient(130deg,#302219,#100d0b);
   --shadow-panel:0 10px 32px #3923150c,inset 0 1px 0 #ffffffa6;--shadow-control:0 4px 14px var(--glass-shadow),inset 0 1px 0 var(--glass-highlight);--shadow-inset:inset 0 1px 3px #39231508;
@@ -13,6 +14,7 @@
     color-scheme:dark;--ink:#f2e8de;--muted:#bda996;--accent:#ddb990;--warning:#efc879;--warning-fill:#efc879;--border:#49392e;--paper:#211a15;--page:#100e0c;
     --surface:#251c16ed;--surface-soft:#34271db3;--glass-control:#67483266;--glass-highlight:#ffe6cc26;--glass-edge:#ead0b32e;--glass-shadow:#00000030;--accent-wash:#ddb99014;
     --page-art:radial-gradient(ellipse at 85% 0%,#79502e30,transparent 48%),radial-gradient(ellipse at 0% 65%,#4e342330,transparent 50%);
+    --header-glass:#211a15c4;--header-reflection:#ffe6cc21;--header-edge:#ffe6cc40;
     --material-navy:linear-gradient(130deg,#302219,#100d0b);--shadow-panel:0 12px 36px #00000028,inset 0 1px 0 #ffe6cc14;--shadow-inset:inset 0 1px 4px #00000020;
   }
 }

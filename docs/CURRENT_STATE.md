@@ -1,5 +1,10 @@
 # Current state - read this first
 
+## Sticky headers - D43
+
+The owner-requested Apple-inspired glass headers now stick at top:0 across all four pages on desktop/mobile, retaining black/brown. Header height tracking follows wrapping and app re-rendering, keeping scrolled form fields clear. All 64 scrolling/accessibility/print combinations and 60 existing Identity/modal combinations pass, plus 17 unit/server checks, build/docs and all 33 served asset hashes. Existing USB apps receive the shared change on refresh; no APK or business data change. See [D43 evidence](archive/STICKY_HEADERS_2026-11-04.md).
+
+
 ## Current palette - black and brown (D42)
 
 The owner specified black and brown. The current shared UI uses near-black/espresso surfaces, brown glass actions, warm cream text and a cream/brown light theme; bento layout and all business behavior remain. Both matching local Android apps 0.16.0-usb.2/16002 are built/linted, saved and installed with verified versions. Browser checks cover 68 responsive/language/theme combinations plus preview/print, 17 unit/server checks pass, and all 33 served asset hashes match. The phone was locked at the final capture attempt; D42 phone rendering was not visually rechecked. Read [D42 evidence](archive/BLACK_BROWN_2026-11-04.md).

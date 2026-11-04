@@ -1,5 +1,10 @@
 # Safeer mobile status
 
+## Shared sticky headers - 2026-11-04, D43
+
+Driver and Booking headers now stick at the top while scrolling, with layered reflections and stronger backdrop blur in the black/brown palette. Wrapped header height is observed so scrolled fields stay below it. Desktop/mobile, Arabic/English, both themes, reduced motion/transparency, forced colors and print isolation pass. Existing 0.16.0-usb.2 apps load the shared web update after Refresh; no APK build/install or physical phone recapture occurred in D43. See [header evidence](../docs/archive/STICKY_HEADERS_2026-11-04.md).
+
+
 ## 0.16.0-usb.2 - 2026-11-04, D42
 
 Apply the requested black/brown palette to shared web pages, logo, Android toolbar/status/navigation bars, disconnected view and launcher icon. Retain bento/glass, Arabic/English, both themes and all business/assignment rules. Both APKs build/lint, pass signature verification and install with version 16002 on the authorized USB phone without clearing data. APKs/checksums/manifest stay in ignored releases/. Final physical capture was blocked by the phone lock; targeted built-browser color checks pass. See [D42 handover](../docs/archive/BLACK_BROWN_2026-11-04.md).

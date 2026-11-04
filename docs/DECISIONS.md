@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-11-04 - Sticky Apple-inspired glass headers
+
+D43: The owner requests headers that stick to the top with an Apple-inspired liquid-glass finish. Apply sticky top:0 to staff, Driver, Booking/marketplace and preview headers at desktop/mobile widths, preserving black/brown, bilingual layout, responsive wrapping and all functionality. Use layered reflections, restrained translucency/blur and edge highlights with opaque reduced-transparency/unsupported-blur/forced-color and print fallbacks. Observe actual header height to keep focused/scrolled content below it, reconnecting the size observer when app rendering replaces a header. Verify real scrolling, navigation and modal/print behavior using fictional disposable data. This shared web update reaches existing USB apps on refresh; no native package, business/API/database change or remote publication. Commit scoped source locally under the existing private portfolio restriction.
+
 ## 2026-11-04 - Black and brown palette
 
 D42: The owner specifies black and brown as the project colors. Retain D41's bento/glass layout and interactions; replace the shared navy/teal decorative palette with near-black/espresso surfaces, brown primary actions and warm neutral text, plus cream/brown light mode. Match the existing logo mark and Android shell/status/navigation colors, preserving semantic error/warning/availability and seat-state distinctions. Bump only the local Android patch to 0.16.0-usb.2/16002, build/lint/save its artifacts and update the authorized connected phone without clearing app data. Reuse shared src/ and existing permissions/business rules. No migration, account reset, hosting or financial-policy change. Verify both themes/languages/mobile sizes, contrast and actual phone rendering when available; commit scoped source locally under the private portfolio publishing restriction.

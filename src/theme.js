@@ -28,3 +28,22 @@ addEventListener('storage',event=>{
   theme=valid(event.newValue)?event.newValue:'dark';apply();
 });
 apply();
+
+// App renders replace their header nodes. Follow the current one so keyboard
+// focus and scrollIntoView clear the actual wrapped height at every viewport.
+if(typeof ResizeObserver==='function'){
+  let header;
+  const sizes=new ResizeObserver(entries=>{
+    const height=Math.ceil(entries[0].target.getBoundingClientRect().height);
+    document.documentElement.style.setProperty('--sticky-header-height',height+'px');
+  });
+  const followHeader=()=>{
+    const current=document.querySelector('.staff-topbar,.driver-header,.market-bar,.topbar');
+    if(current===header)return;
+    sizes.disconnect();header=current;
+    if(header)sizes.observe(header);
+  };
+  const renders=new MutationObserver(followHeader);
+  renders.observe(document.body,{childList:true,subtree:true});
+  followHeader();
+}

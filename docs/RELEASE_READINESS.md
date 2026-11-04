@@ -44,3 +44,7 @@ The source ZIP contains code/evidence, not accounts/passwords/business records. 
 - Separate native/mobile scope and delivery, if requested. Flutter, offline scanning, remote notifications and freight remain unimplemented.
 
 Section 15 completes a verifiable local checkpoint and documented preparation. Deployment, policy changes and later features require a new owner instruction.
+
+## Focused sticky-header regression
+
+After the normal build, set SAFEER_TEST_DATABASE_URL to an explicitly disposable loopback PostgreSQL owner and SAFEER_BROWSER_BUILT=1, then run npm.cmd run test:headers:browser. This separate focused workflow checks actual header scrolling/hit targets, field clearance, replacement/resize tracking, accessibility and print isolation across four pages and 64 combinations. It is not automatically added to the original Section 15 release gate; its eight-phase evidence remains historical.

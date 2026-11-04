@@ -1,6 +1,7 @@
 /* Shared finishing layer. Cards stay nearly opaque for reading; blur is limited
    to navigation and controls. Page files retain layout, semantic states/printing. */
 @media screen {
+  html{scroll-padding-block-start:calc(var(--sticky-header-height,150px) + 16px)}
   html body{background:var(--page-art),var(--page);color:var(--ink);line-height:1.5}
   html body :is(h1,h2,h3,button,.metric strong,.staff-summary strong){text-shadow:none}
   html body :is(h1,h2,h3){letter-spacing:-.025em}
@@ -34,7 +35,7 @@
   html body .staff-secret{color:var(--ink);background:var(--accent-wash);border-color:var(--border);box-shadow:none}
 
   /* Floating navigation glass; fill remains readable on devices without blur. */
-  html body :is(.staff-topbar,.driver-header,.market-bar,.topbar){background:linear-gradient(130deg,var(--glass-highlight),transparent 75%),var(--surface-soft);backdrop-filter:blur(22px) saturate(150%);-webkit-backdrop-filter:blur(22px) saturate(150%);border:1px solid var(--glass-edge);box-shadow:0 8px 30px var(--glass-shadow),inset 0 1px 0 var(--glass-highlight);border-radius:22px}
+  html body :is(.staff-topbar,.driver-header,.market-bar,.topbar){position:sticky;top:0;z-index:40;background:linear-gradient(115deg,var(--header-reflection),transparent 42%,#d2a8790a 85%),var(--header-glass);backdrop-filter:blur(28px) saturate(170%) brightness(1.04);-webkit-backdrop-filter:blur(28px) saturate(170%) brightness(1.04);border:1px solid var(--header-edge);box-shadow:0 10px 32px var(--glass-shadow),inset 0 1px 0 var(--glass-highlight),inset 0 -1px 0 #0000000d;border-radius:22px}
   html body .staff-shell{grid-template-columns:256px minmax(0,1fr);padding-inline-start:14px}
   html body :is(.staff-sidebar,.sidebar){background:linear-gradient(140deg,#3b2b20d9,#15110ff2);color:#f0e4d8;border:1px solid #e6c7a52e;border-radius:24px;box-shadow:0 12px 40px #120b0824,inset 0 1px 0 #ffead226;backdrop-filter:blur(24px) saturate(140%);-webkit-backdrop-filter:blur(24px) saturate(140%)}
   html body .staff-sidebar{top:14px;height:calc(100dvh - 28px);margin-block:14px;padding:24px 16px;gap:18px;scrollbar-width:thin;scrollbar-color:#ffffff30 transparent}
@@ -50,7 +51,7 @@
   html body .staff-sidebar-foot{border-top:1px solid #ffffff18;padding-top:18px;color:#e2cdb8}
   html body .staff-connection{background:#9be6c8;box-shadow:0 0 0 4px #9be6c811;border:0}
   /* Same width as the .staff-main content box (1500px less its 24px padding), so tile edges line up. */
-  html body .staff-topbar{position:sticky;top:14px;z-index:20;margin:14px auto 0;width:calc(100% - 48px);max-width:1452px;padding:16px 22px;min-height:78px}
+  html body .staff-topbar{margin:0 auto;width:calc(100% - 48px);max-width:1452px;padding:16px 22px;min-height:78px}
   html body .staff-main{padding:24px;max-width:1500px}
   html body .staff-panel{padding:24px}
   html body .staff-welcome{padding:26px;background:linear-gradient(120deg,var(--accent-wash),transparent),var(--surface);border:1px solid var(--border);border-radius:24px;box-shadow:var(--shadow-panel)}
@@ -83,7 +84,7 @@
   html body .finance-summary strong{font-size:clamp(20px,2vw,28px)}
 
   /* Passenger and driver spaces reuse the same modules. */
-  html body :is(.driver-header,.market-bar){margin:16px clamp(12px,3vw,32px) 0;padding:16px 22px;gap:16px}
+  html body :is(.driver-header,.market-bar){margin:0 clamp(12px,3vw,32px);padding:16px 22px;gap:16px}
   /* Matches the driver main content box (1440px less its 24px padding). */
   html body .driver-header{width:calc(100% - 48px);max-width:1392px;margin-inline:auto}
   html body .driver-header nav{gap:8px}
@@ -174,7 +175,7 @@
     html body .staff-sidebar{position:relative;top:0;height:auto;margin:12px 12px 0;padding:18px;gap:14px;border-radius:22px}
     html body .staff-sidebar .staff-nav{gap:6px}
     html body .staff-sidebar .staff-nav button{font-size:12px;padding:10px;min-height:46px;gap:9px}
-    html body .staff-topbar{position:relative;top:0;width:auto;max-width:none;margin:12px 12px 0;padding:16px;border-radius:20px;gap:12px}
+    html body .staff-topbar{width:auto;max-width:none;margin:0 12px;padding:16px;border-radius:20px;gap:12px}
     html body .staff-main{padding:16px 12px}
     html body .staff-welcome{padding:22px;gap:12px}
     html body .staff-summary{gap:8px}

@@ -1,5 +1,10 @@
 # Safeer / Sudan Transport
 
+## Sticky glass navigation
+
+The black/brown glass headers stay at the top while scrolling on desktop and mobile. The existing USB apps receive the shared update on Refresh. See [header verification](docs/archive/STICKY_HEADERS_2026-11-04.md).
+
+
 ## Current appearance
 
 Black and brown: espresso/near-black surfaces, brown glass actions and a cream/brown light theme. The bento layout is retained, and both USB phone apps are updated to 0.16.0-usb.2. See [palette evidence](docs/archive/BLACK_BROWN_2026-11-04.md).
