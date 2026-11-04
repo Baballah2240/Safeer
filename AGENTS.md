@@ -3,6 +3,7 @@
 - Independent Sudan passenger-transport project. Do not edit Stocrant or the school-display application for Safeer work.
 - Current authorized stage: Section 15 (D39), USB Android apps (D40) and the verified bento/liquid-glass shared UI refresh (D41) are complete locally. Keep the service loopback-only and preserve users/data. No hosting or store release is authorized; stop pending the owner's next instruction.
 - Keep the service on 127.0.0.1. No deployment, external accounts, SMS delivery or online payment integration is authorized yet.
+- Owner's current visual palette is black and brown (D42): near-black/espresso dark mode, cream/brown light mode, brown branding/actions and native Android shell. Preserve the bento/glass layout and semantic warning/error/seat distinctions.
 - Follow docs/decisions/MASTER_INSTRUCTIONS_2026-10-30.md. Release 1 is passenger transport and passenger luggage only; freight/parcels are deferred. Record changes in docs/DECISIONS.md before implementing them.
 - Support multiple companies from the start. Production access must be enforced on the server using authenticated company membership, never a browser company selector.
 - Companies choose unpaid-reservation deadlines. Calculate expiry from timestamps and release seats when a hold expires.

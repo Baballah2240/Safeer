@@ -33,3 +33,5 @@ To continue, extract into a new folder, read docs/CURRENT_STATE.md first, run np
 [Section 12 boarding](SECTION_12_BOARDING.md), [Section 13 finance](SECTION_13_FINANCE.md), [Section 14 platform](SECTION_14_PLATFORM.md) and [Section 15 release](SECTION_15_RELEASE.md) record the driver workspace, financial reports, platform administration and release checks.
 
 [Android USB](ANDROID_USB_2026-11-04.md) records the D40 Driver and Booking phone apps. [Bento grid and liquid glass](BENTO_GLASS_2026-11-04.md) records the D41 visual refresh.
+
+[Black and brown palette](BLACK_BROWN_2026-11-04.md) records D42 and the matching USB Android patch.

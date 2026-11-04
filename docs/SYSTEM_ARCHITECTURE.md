@@ -1,5 +1,10 @@
 # System architecture
 
+## Black and brown - 2026-11-04 (D42)
+
+D42 changes the current visual palette to black/espresso and brown, with cream/brown light mode, retaining the bento/glass layout, language support, business rules and schema/API. Matching Android shell/icon patches 0.16.0-usb.2 are installed locally. Targeted browser/build/native evidence and limitations are in [the palette handover](archive/BLACK_BROWN_2026-11-04.md). Earlier entries are historical.
+
+
 ## Bento grid and liquid glass - 2026-11-04 (D41)
 
 The verified shared UI refresh adds bento tiles and glass controls/headers/sidebar in both themes and languages, including the existing USB Android web clients. No migration, API, company/driver authority, money policy or native package changes. Nine built-browser workflows, 256 layout/language/theme combinations plus the preview, accessibility preferences and actual phone screens are verified. Read [D41 handover](archive/BENTO_GLASS_2026-11-04.md) and [current state](CURRENT_STATE.md); earlier section entries are historical.

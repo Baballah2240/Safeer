@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-11-04 - Black and brown palette
+
+D42: The owner specifies black and brown as the project colors. Retain D41's bento/glass layout and interactions; replace the shared navy/teal decorative palette with near-black/espresso surfaces, brown primary actions and warm neutral text, plus cream/brown light mode. Match the existing logo mark and Android shell/status/navigation colors, preserving semantic error/warning/availability and seat-state distinctions. Bump only the local Android patch to 0.16.0-usb.2/16002, build/lint/save its artifacts and update the authorized connected phone without clearing app data. Reuse shared src/ and existing permissions/business rules. No migration, account reset, hosting or financial-policy change. Verify both themes/languages/mobile sizes, contrast and actual phone rendering when available; commit scoped source locally under the private portfolio publishing restriction.
+
 ## 2026-11-04 - Bento grid and liquid glass
 
 D41: The owner requests a project-wide bento-grid style with liquid-glass buttons, headers and sidebar. Refresh shared tokens/theme across staff/company/finance/platform, Driver, Booking/marketplace and fictional preview. Preserve data, existing DOM/control behavior, server authority, all business/financial rules, bilingual RTL/LTR, both themes, seat-state distinctions and print output. Use the same 33 assets with theme.css last, readable fallbacks, keyboard focus, touch targets, forced colors and reduced motion. Verify affected fictional real-data browser workflows and mobile widths; build shared dist/ assets so the running local server and USB Android apps receive the design without new APKs. No account/database migration, native package or hosting change. Document and commit locally without publishing private portfolio history.

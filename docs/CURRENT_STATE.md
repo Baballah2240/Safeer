@@ -1,5 +1,10 @@
 # Current state - read this first
 
+## Current palette - black and brown (D42)
+
+The owner specified black and brown. The current shared UI uses near-black/espresso surfaces, brown glass actions, warm cream text and a cream/brown light theme; bento layout and all business behavior remain. Both matching local Android apps 0.16.0-usb.2/16002 are built/linted, saved and installed with verified versions. Browser checks cover 68 responsive/language/theme combinations plus preview/print, 17 unit/server checks pass, and all 33 served asset hashes match. The phone was locked at the final capture attempt; D42 phone rendering was not visually rechecked. Read [D42 evidence](archive/BLACK_BROWN_2026-11-04.md).
+
+
 Updated: 2026-11-04 (Asia/Riyadh). Safeer / Sudan Transport **0.16.0**. Sections 01-15 and the verified local update are complete under D39, followed by the D40 USB phone apps and the D41 visual refresh. Stop here; deployment and later features require a new owner instruction.
 
 ## Bento grid and liquid glass - D41

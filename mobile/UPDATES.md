@@ -1,5 +1,10 @@
 # Safeer mobile status
 
+## 0.16.0-usb.2 - 2026-11-04, D42
+
+Apply the requested black/brown palette to shared web pages, logo, Android toolbar/status/navigation bars, disconnected view and launcher icon. Retain bento/glass, Arabic/English, both themes and all business/assignment rules. Both APKs build/lint, pass signature verification and install with version 16002 on the authorized USB phone without clearing data. APKs/checksums/manifest stay in ignored releases/. Final physical capture was blocked by the phone lock; targeted built-browser color checks pass. See [D42 handover](../docs/archive/BLACK_BROWN_2026-11-04.md).
+
+
 ## Web refresh - 2026-11-04, D41
 
 The shared responsive src/ adopts the bento-grid and liquid-glass design for /driver and /marketplace, along with the website. The installed 0.16.0-usb.1 Driver and Booking apps load these pages from the running local server, which sends assets with no-store. They receive the design after the dist/ rebuild without a new APK: reopen a screen or press Refresh. Server authority, driver assignment, booking and money rules are unchanged. No APK was built or installed; both existing apps were refreshed and their actual dark Booking/light Driver screens inspected on the USB-connected LGN-NX1/API 36 phone. Nine affected built-browser workflows pass with 256 responsive/language/theme combinations plus the preview workflow. See [the D41 handover](../docs/archive/BENTO_GLASS_2026-11-04.md).

@@ -1,5 +1,10 @@
 # Changelog
 
+## Black and brown - 2026-11-04 (D42)
+
+D42 changes the current visual palette to black/espresso and brown, with cream/brown light mode, retaining the bento/glass layout, language support, business rules and schema/API. Matching Android shell/icon patches 0.16.0-usb.2 are installed locally. Targeted browser/build/native evidence and limitations are in [the palette handover](archive/BLACK_BROWN_2026-11-04.md). Earlier entries are historical.
+
+
 ## Bento grid and liquid glass - 2026-11-04 (D41)
 
 Refresh the shared tokens and theme for staff, company, finance, platform, Driver, Booking/marketplace and the fictional preview with bento tiles, glass controls, a floating top bar and a dark-glass sidebar in both themes. Fix review findings: primary emphasis, sidebar current page and light-mode legibility, held-seat contrast, preview seat states and key, driver header and staff top bar alignment, and the missing Cities & destinations description. Update the marketplace layout test to the tile layout. No schema, API, permission, money or native package change. See [D41 handover](archive/BENTO_GLASS_2026-11-04.md).

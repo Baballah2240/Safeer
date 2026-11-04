@@ -1,18 +1,18 @@
 /* Shared bento / glass palette for the website and USB Android clients. */
 :root {
   color-scheme:light;font-family:"Segoe UI",Tahoma,Arial,sans-serif;font-synthesis:none;color:var(--ink);background:var(--page);
-  --ink:#183344;--muted:#536d7b;--accent:#087f83;--warning:#9b6b17;--warning-fill:#e9bd62;--border:#ccdce2;--paper:#f9fcff;--page:#eaf1f6;
-  --surface:#f7fbfee8;--surface-soft:#ffffffa6;--glass-control:#ffffffb8;--glass-highlight:#ffffffed;--glass-edge:#ffffffed;--glass-shadow:#29476010;--accent-wash:#087f8310;
-  --page-art:radial-gradient(ellipse at 80% 0%,#a8dcd94d,transparent 48%),radial-gradient(ellipse at 0% 65%,#bfd6f345,transparent 50%);
+  --ink:#251c16;--muted:#716052;--accent:#754a31;--warning:#926414;--warning-fill:#e9bd62;--border:#d8c8b9;--paper:#fffaf5;--page:#f1e9e0;
+  --surface:#fffaf5ed;--surface-soft:#fffbf5b8;--glass-control:#fff8efb8;--glass-highlight:#ffffffde;--glass-edge:#fff5e8ed;--glass-shadow:#39231514;--accent-wash:#8b5d3b12;
+  --page-art:radial-gradient(ellipse at 80% 0%,#cba57b40,transparent 48%),radial-gradient(ellipse at 0% 65%,#dbc8b345,transparent 50%);
   /* Compatibility aliases keep page components on the same material system. */
-  --material-paper:var(--surface);--material-control:var(--glass-control);--material-enamel:linear-gradient(135deg,#16939c,#086571);--material-navy:linear-gradient(130deg,#193f50,#102b3d);
-  --shadow-panel:0 10px 32px #29476009,inset 0 1px 0 #ffffffa6;--shadow-control:0 4px 14px var(--glass-shadow),inset 0 1px 0 var(--glass-highlight);--shadow-inset:inset 0 1px 3px #18334406;
+  --material-paper:var(--surface);--material-control:var(--glass-control);--material-enamel:linear-gradient(135deg,#70442c,#4b2d1e);--material-navy:linear-gradient(130deg,#302219,#100d0b);
+  --shadow-panel:0 10px 32px #3923150c,inset 0 1px 0 #ffffffa6;--shadow-control:0 4px 14px var(--glass-shadow),inset 0 1px 0 var(--glass-highlight);--shadow-inset:inset 0 1px 3px #39231508;
 }
 @media screen {
   :root:not([data-theme="light"]) {
-    color-scheme:dark;--ink:#e8f2f6;--muted:#a4bdc9;--accent:#87e0d1;--warning:#efc879;--warning-fill:#efc879;--border:#34505f;--paper:#162e3d;--page:#0b1c29;
-    --surface:#193444ed;--surface-soft:#203f50b3;--glass-control:#31566c66;--glass-highlight:#d3efff26;--glass-edge:#c7e8fa2b;--glass-shadow:#00000020;--accent-wash:#87e0d114;
-    --page-art:radial-gradient(ellipse at 85% 0%,#17697738,transparent 48%),radial-gradient(ellipse at 0% 65%,#30447330,transparent 50%);
-    --material-navy:linear-gradient(130deg,#173b4e,#102534);--shadow-panel:0 12px 36px #00000018,inset 0 1px 0 #d3efff12;--shadow-inset:inset 0 1px 4px #00000018;
+    color-scheme:dark;--ink:#f2e8de;--muted:#bda996;--accent:#ddb990;--warning:#efc879;--warning-fill:#efc879;--border:#49392e;--paper:#211a15;--page:#100e0c;
+    --surface:#251c16ed;--surface-soft:#34271db3;--glass-control:#67483266;--glass-highlight:#ffe6cc26;--glass-edge:#ead0b32e;--glass-shadow:#00000030;--accent-wash:#ddb99014;
+    --page-art:radial-gradient(ellipse at 85% 0%,#79502e30,transparent 48%),radial-gradient(ellipse at 0% 65%,#4e342330,transparent 50%);
+    --material-navy:linear-gradient(130deg,#302219,#100d0b);--shadow-panel:0 12px 36px #00000028,inset 0 1px 0 #ffe6cc14;--shadow-inset:inset 0 1px 4px #00000020;
   }
 }

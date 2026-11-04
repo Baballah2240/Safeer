@@ -7,7 +7,9 @@ Two independent installed apps reuse the real responsive web application in src/
 | Safeer Driver | sd.safeer.driver | /driver |
 | Safeer Booking | sd.safeer.booking | /marketplace |
 
-Version: 0.16.0-usb.1 (16001), debug-signed local test channel, Android 8/API 26 or later. Tested on the connected LGN-NX1 Android 16/API 36 phone. No Flutter client, camera scan, offline queue, online payment, remote server or store release is included. All booking, payment, session, company and assigned-driver rules remain enforced by the existing backend. The phone has separate app cookies/storage; it does not automatically inherit a computer sign-in.
+Version: 0.16.0-usb.2 (16002), debug-signed local test channel, Android 8/API 26 or later. Tested on the connected LGN-NX1 Android 16/API 36 phone. No Flutter client, camera scan, offline queue, online payment, remote server or store release is included. All booking, payment, session, company and assigned-driver rules remain enforced by the existing backend. The phone has separate app cookies/storage; it does not automatically inherit a computer sign-in.
+
+The current owner-selected palette is black and brown, with cream/brown light mode. The native shell and icon match the shared bento/glass web UI.
 
 ## Use the installed apps
 

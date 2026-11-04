@@ -10,9 +10,9 @@ const apps=[];
 for(const flavor of ['driver','booking']){
  const source=new URL(`./android/app/build/outputs/apk/${flavor}/debug/app-${flavor}-debug.apk`,import.meta.url),bytes=readFileSync(source);
  if(bytes.length<1000||bytes.readUInt32LE(0)!==0x04034b50)throw Error('Invalid built APK.');
- const filename=`Safeer-${flavor==='driver'?'Driver':'Booking'}-0.16.0-usb.1.apk`,sha256=createHash('sha256').update(bytes).digest('hex');
+ const filename=`Safeer-${flavor==='driver'?'Driver':'Booking'}-0.16.0-usb.2.apk`,sha256=createHash('sha256').update(bytes).digest('hex');
  copyFileSync(source,new URL(filename,out));writeFileSync(new URL(filename+'.sha256',out),`${sha256}  ${filename}\n`);
- apps.push({applicationId:'sd.safeer.'+flavor,versionName:'0.16.0-usb.1',versionCode:16001,filename,bytes:bytes.length,sha256});
+ apps.push({applicationId:'sd.safeer.'+flavor,versionName:'0.16.0-usb.2',versionCode:16002,filename,bytes:bytes.length,sha256});
 }
 writeFileSync(new URL('latest.json',out),JSON.stringify({channel:'debug-usb-local',builtAt:new Date().toISOString(),sourceCommit:dirty?null:git('rev-parse','HEAD'),packagingCommit:git('rev-parse','HEAD'),sourceDirty:dirty,serverOrigin:'http://127.0.0.1:4320',requiresRunningComputerAndUsbTunnel:true,apps},null,2)+'\n');
 console.log('Saved both Safeer APKs, SHA-256 sidecars and mobile/releases/latest.json.');

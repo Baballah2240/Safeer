@@ -1,5 +1,10 @@
 # Safeer / Sudan Transport
 
+## Current appearance
+
+Black and brown: espresso/near-black surfaces, brown glass actions and a cream/brown light theme. The bento layout is retained, and both USB phone apps are updated to 0.16.0-usb.2. See [palette evidence](docs/archive/BLACK_BROWN_2026-11-04.md).
+
+
 Version 0.16.0, Section 15: verified local passenger transport with full database-security checks, safe maintenance health, connected/recovery tests and release tooling. Existing company, station, driver, luggage, finance and platform workflows are preserved.
 
 Start continuation at [CURRENT_STATE](docs/CURRENT_STATE.md) and [platform workflow](docs/workflows/PLATFORM_ADMINISTRATION.md). Preserve runtime/ and the existing account. Section 15 is verified and running locally with the existing account preserved; see CURRENT_STATE and the Section 15 handover for measured evidence. Deployment and later features require a new instruction. A source ZIP never contains existing users/passwords/history.

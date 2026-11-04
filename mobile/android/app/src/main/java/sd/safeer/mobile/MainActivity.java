@@ -60,7 +60,7 @@ public final class MainActivity extends Activity {
         super.onCreate(state);
         LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
-        root.setBackgroundColor(Color.rgb(21,49,61));
+        root.setBackgroundColor(Color.rgb(22,17,14));
         // Target 35 draws edge-to-edge: preserve system bar/cutout and keyboard insets.
         root.setOnApplyWindowInsetsListener((v, insets) -> {
             if (android.os.Build.VERSION.SDK_INT >= 30) {
@@ -109,10 +109,10 @@ public final class MainActivity extends Activity {
         error.setOrientation(LinearLayout.VERTICAL);
         error.setGravity(android.view.Gravity.CENTER);
         error.setPadding(dp(28),dp(28),dp(28),dp(28));
-        error.setBackgroundColor(Color.rgb(232,238,242));
+        error.setBackgroundColor(Color.rgb(241,233,224));
         TextView message = new TextView(this);
         message.setText(text("Connect to Safeer\n\nKeep this computer's Safeer app running and connect this phone by USB. Ask the operator to restore the USB connection, then retry.","الاتصال بسفير\n\nشغّل سفير على الكمبيوتر ووصل الهاتف بكابل USB. اطلب من المسؤول إعادة اتصال USB ثم أعد المحاولة."));
-        message.setTextColor(Color.rgb(21,49,61));
+        message.setTextColor(Color.rgb(22,17,14));
         message.setTextSize(18);
         error.addView(message);
         Button retry = new Button(this);
