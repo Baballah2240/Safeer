@@ -1,6 +1,12 @@
 # Current state - read this first
 
-Updated: 2026-11-04 (Asia/Riyadh). Safeer / Sudan Transport **0.16.0**. Sections 01-15 and the verified local update are complete under D39. Stop here; deployment and later features require a new owner instruction.
+Updated: 2026-11-04 (Asia/Riyadh). Safeer / Sudan Transport **0.16.0**. Sections 01-15 and the verified local update are complete under D39, followed by the D40 USB phone apps and the D41 visual refresh. Stop here; deployment and later features require a new owner instruction.
+
+## Bento grid and liquid glass - D41
+
+The owner requested a project-wide bento-grid style with liquid-glass buttons, headers and sidebar. Shared src/tokens.css and src/theme.css, loaded last on every page, now give staff/company/finance/platform, Driver, Booking/marketplace and the fictional preview rounded tiles, glass controls, a floating top bar and a dark-glass sidebar in both themes. Data, DOM/control behavior, server authority, business and money rules, Arabic/English layouts, seat states and print output are unchanged. No migration, API, permission or native package change. The same 33 public assets are served.
+
+Review fixes before release: primary buttons regained their teal emphasis, sidebar menus regained the current-page highlight and light-mode legibility, held seats use a readable amber fill, the preview's seat states and key match, the driver header and staff top bar line up with the content, and the Cities & destinations shortcut no longer shows "undefined". All nine affected built-browser workflows pass, covering 256 responsive/language/theme combinations plus the passenger preview, including 320px and keyboard/reduced-motion/reduced-transparency/forced-color checks. The 17 unit/server checks, build and docs pass. The existing installed USB apps were refreshed and their dark Booking/light Driver screens visually verified; no new APK is necessary. Read the [D41 handover](archive/BENTO_GLASS_2026-11-04.md).
 
 ## Android USB follow-up - D40
 

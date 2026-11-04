@@ -1,23 +1,18 @@
-/* Shared visual vocabulary. Future clients consume equivalent documented tokens. */
+/* Shared bento / glass palette for the website and USB Android clients. */
 :root {
-  --ink: #172e3c;
-  --muted: #536570;
-  --accent: #086d77;
-  --border: #cdd1cc;
-  --paper: #fafaf7;
-  --warning: #d59d37;
-  --page: #e9ece9;
-  /* Shared physical materials: paper, enamel, brushed metal and recessed wells. */
-  --material-paper: linear-gradient(155deg, #fffffc, #f5f5ef);
-  --material-control: linear-gradient(#fffffd, #f0f1eb);
-  --material-enamel: linear-gradient(#17828a, #08636d);
-  --material-navy: radial-gradient(#ffffff09 .65px, transparent .8px) 0 0 / 4px 4px, linear-gradient(110deg, #233e4a, #142b37);
-  --shadow-panel: inset 0 1px 0 #fff, 0 2px 3px #172e3c0a, 0 8px 20px #172e3c08;
-  --shadow-control: inset 0 1px 0 #fff, 0 2px 0 #bac3bf, 0 3px 4px #172e3c14;
-  --shadow-inset: inset 0 2px 4px #172e3c14, 0 1px 0 #fff;
-  font-family: "Segoe UI", Tahoma, Arial, sans-serif;
-  color: #243644;
-  background: var(--page);
-  font-synthesis: none;
-  color-scheme: light;
+  color-scheme:light;font-family:"Segoe UI",Tahoma,Arial,sans-serif;font-synthesis:none;color:var(--ink);background:var(--page);
+  --ink:#183344;--muted:#536d7b;--accent:#087f83;--warning:#9b6b17;--warning-fill:#e9bd62;--border:#ccdce2;--paper:#f9fcff;--page:#eaf1f6;
+  --surface:#f7fbfee8;--surface-soft:#ffffffa6;--glass-control:#ffffffb8;--glass-highlight:#ffffffed;--glass-edge:#ffffffed;--glass-shadow:#29476010;--accent-wash:#087f8310;
+  --page-art:radial-gradient(ellipse at 80% 0%,#a8dcd94d,transparent 48%),radial-gradient(ellipse at 0% 65%,#bfd6f345,transparent 50%);
+  /* Compatibility aliases keep page components on the same material system. */
+  --material-paper:var(--surface);--material-control:var(--glass-control);--material-enamel:linear-gradient(135deg,#16939c,#086571);--material-navy:linear-gradient(130deg,#193f50,#102b3d);
+  --shadow-panel:0 10px 32px #29476009,inset 0 1px 0 #ffffffa6;--shadow-control:0 4px 14px var(--glass-shadow),inset 0 1px 0 var(--glass-highlight);--shadow-inset:inset 0 1px 3px #18334406;
+}
+@media screen {
+  :root:not([data-theme="light"]) {
+    color-scheme:dark;--ink:#e8f2f6;--muted:#a4bdc9;--accent:#87e0d1;--warning:#efc879;--warning-fill:#efc879;--border:#34505f;--paper:#162e3d;--page:#0b1c29;
+    --surface:#193444ed;--surface-soft:#203f50b3;--glass-control:#31566c66;--glass-highlight:#d3efff26;--glass-edge:#c7e8fa2b;--glass-shadow:#00000020;--accent-wash:#87e0d114;
+    --page-art:radial-gradient(ellipse at 85% 0%,#17697738,transparent 48%),radial-gradient(ellipse at 0% 65%,#30447330,transparent 50%);
+    --material-navy:linear-gradient(130deg,#173b4e,#102534);--shadow-panel:0 12px 36px #00000018,inset 0 1px 0 #d3efff12;--shadow-inset:inset 0 1px 4px #00000018;
+  }
 }

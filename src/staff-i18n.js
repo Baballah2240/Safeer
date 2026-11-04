@@ -61,7 +61,7 @@ const ar={
   'Manage access, review activity and keep your account secure.':'أدر الصلاحيات وراجع النشاط وحافظ على أمان حسابك.',
   'Full platform access':'كامل صلاحيات المنصة','Permission-based access':'الوصول حسب الصلاحيات',
   'Assigned roles':'الأدوار المعينة','Effective permissions':'الصلاحيات الفعلية','Account status':'حالة الحساب','Quick access':'وصول سريع',
-  'Manage accounts and their access':'إدارة الحسابات وصلاحياتها','Adjust names and permissions':'تعديل الأسماء والصلاحيات',
+  'Manage accounts and their access':'إدارة الحسابات وصلاحياتها','Adjust names and permissions':'تعديل الأسماء والصلاحيات','Shared city catalog for routes':'دليل المدن المشترك للمسارات',
   'Review devices and sign-ins':'مراجعة الأجهزة والجلسات','Trace recent account changes':'متابعة آخر تعديلات الحسابات',
   'Search roles':'البحث في الأدوار','Search this page':'البحث في هذه الصفحة','Name or permission':'الاسم أو الصلاحية',
   'Name, email or role':'الاسم أو البريد أو الدور','All scopes':'كل النطاقات','shown':'معروض',

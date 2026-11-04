@@ -17,7 +17,7 @@ try{
     await send('Page.enable');await send('Page.bringToFront');
     await send('Page.addScriptToEvaluateOnNewDocument',{source:'window.__errors=[];addEventListener("error",e=>window.__errors.push(e.message));addEventListener("unhandledrejection",e=>window.__errors.push(String(e.reason)));'});
     const click=selector=>evaluate(`document.querySelector(${JSON.stringify(selector)}).click()`);
-    const fill=async(selector,value)=>{await until(`Boolean(document.querySelector(${JSON.stringify(selector)}))`);return evaluate(`(()=>{const n=document.querySelector(${JSON.stringify(selector)});n.value=${JSON.stringify(value)};n.dispatchEvent(new Event('input',{bubbles:true}));})()`);};
+    const fill=async(selector,value)=>{await until(`Boolean(document.querySelector(${JSON.stringify(selector)}))${selector.startsWith('#staff-dialog')?'&&document.querySelector("#staff-dialog").open':''}`);return evaluate(`(()=>{const n=document.querySelector(${JSON.stringify(selector)});n.value=${JSON.stringify(value)};n.dispatchEvent(new Event('input',{bubbles:true}));})()`);};
     const submit=selector=>evaluate(`document.querySelector(${JSON.stringify(selector)}).requestSubmit()`);
     const shot=async name=>writeFileSync(join(directory,name+'.png'),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
     const signIn=async(email,pass)=>{await until('Boolean(document.querySelector("#staff-login"))');await fill('[name=login]',email);await fill('[name=password]',pass);await submit('#staff-login');try{await until('Boolean(document.querySelector("#change-password"))');}catch(error){throw Error('Sign-in did not finish: '+await evaluate('document.querySelector("[role=alert]")?.textContent||document.querySelector(".staff-main").textContent')+'; JS errors: '+JSON.stringify(await evaluate('window.__errors')));}};
@@ -58,7 +58,7 @@ try{
     await tab('roles','[data-create-role]');
     assert.deepEqual(await evaluate('[...document.querySelectorAll("[data-edit-role]")].map(b=>b.dataset.editRole).sort()'),currentRoles.map(r=>r.id).sort());
     for(const [id,name] of [['00000000-0000-4000-8000-000000000001','Platform owner'],['00000000-0000-4000-8000-000000000003','Company team administrator']]){
-      await click(`[data-edit-role="${id}"]`);await until('Boolean(document.querySelector("#staff-dialog [name=displayName]"))');
+      await click(`[data-edit-role="${id}"]`);await until('document.querySelector("#staff-dialog").open&&Boolean(document.querySelector("#staff-dialog [name=displayName]"))');
       if(id.endsWith('1'))assert.equal(await evaluate('document.querySelector("#staff-dialog [name=active]").disabled'),true);
       await fill('#staff-dialog [name=displayName]',name);
       await evaluate('document.querySelectorAll("#staff-dialog [name=permissions]").forEach(n=>n.checked=false)');

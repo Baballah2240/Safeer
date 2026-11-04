@@ -8,6 +8,8 @@ Run the complete offline verification with npm.cmd run verify:release. See [rele
 
 The D40 USB follow-up adds installed **Safeer Driver** and **Safeer Booking** Android test apps using this same local service. Keep the computer/cable connected and run npm.cmd run mobile:usb after reconnecting. See [Android setup, builds and installation](mobile/README.md). This does not publish Safeer online or create driver accounts automatically.
 
+The shared interface now uses bento-grid tiles and liquid-glass controls, headers and sidebar. Both themes, Arabic/English and the installed USB apps are verified; refresh the existing app screen to load the new design. See [the visual refresh handover](docs/archive/BENTO_GLASS_2026-11-04.md).
+
 ## Run locally on Windows
 
 Install Node 24+, then from this folder:

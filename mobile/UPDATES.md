@@ -1,5 +1,9 @@
 # Safeer mobile status
 
+## Web refresh - 2026-11-04, D41
+
+The shared responsive src/ adopts the bento-grid and liquid-glass design for /driver and /marketplace, along with the website. The installed 0.16.0-usb.1 Driver and Booking apps load these pages from the running local server, which sends assets with no-store. They receive the design after the dist/ rebuild without a new APK: reopen a screen or press Refresh. Server authority, driver assignment, booking and money rules are unchanged. No APK was built or installed; both existing apps were refreshed and their actual dark Booking/light Driver screens inspected on the USB-connected LGN-NX1/API 36 phone. Nine affected built-browser workflows pass with 256 responsive/language/theme combinations plus the preview workflow. See [the D41 handover](../docs/archive/BENTO_GLASS_2026-11-04.md).
+
 ## 0.16.0-usb.1 - 2026-11-04, D40
 
 Add separate Safeer Driver and Safeer Booking Android local-test WebView packages, opening the existing shared /driver and /marketplace application over USB reverse port 4320. Preserve all server authentication, company/assignment and money rules. Include guarded navigation/resources, private app storage/backup exclusions, disconnected Retry, system insets, accessible Home/Refresh/Print and native print handoff. No JS bridge, camera permission, offline queue or hosting. Both debug APKs build/lint and install with verified versions on the authorized LGN-NX1/API 36 phone; Driver sign-in, Booking lookup/marketplace and USB disconnect/retry are checked. APKs, SHA-256 sidecars and build manifest stay ignored in mobile/releases/. See [mobile setup](README.md). Physical printing and full assigned-trip/booking operations on a phone remain staff acceptance work; no fictional data was seeded into the real installation.

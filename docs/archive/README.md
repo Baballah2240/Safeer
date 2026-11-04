@@ -29,3 +29,7 @@ To continue, extract into a new folder, read docs/CURRENT_STATE.md first, run np
 [Section 10 ticketing](SECTION_10_TICKETING.md) records counters, payments, tickets, refunds, final verification, questions for the owner and the open local upgrade step. Stop before Section 11 until approved.
 
 [Section 11 luggage](SECTION_11_LUGGAGE.md) records bags, tags, tracking, problems, final verification and the open local upgrade step. Stop before Section 12 until approved.
+
+[Section 12 boarding](SECTION_12_BOARDING.md), [Section 13 finance](SECTION_13_FINANCE.md), [Section 14 platform](SECTION_14_PLATFORM.md) and [Section 15 release](SECTION_15_RELEASE.md) record the driver workspace, financial reports, platform administration and release checks.
+
+[Android USB](ANDROID_USB_2026-11-04.md) records the D40 Driver and Booking phone apps. [Bento grid and liquid glass](BENTO_GLASS_2026-11-04.md) records the D41 visual refresh.

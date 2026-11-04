@@ -1,5 +1,9 @@
 # Changelog
 
+## Bento grid and liquid glass - 2026-11-04 (D41)
+
+Refresh the shared tokens and theme for staff, company, finance, platform, Driver, Booking/marketplace and the fictional preview with bento tiles, glass controls, a floating top bar and a dark-glass sidebar in both themes. Fix review findings: primary emphasis, sidebar current page and light-mode legibility, held-seat contrast, preview seat states and key, driver header and staff top bar alignment, and the missing Cities & destinations description. Update the marketplace layout test to the tile layout. No schema, API, permission, money or native package change. See [D41 handover](archive/BENTO_GLASS_2026-11-04.md).
+
 ## Android USB follow-up - 2026-11-04 (D40)
 
 Add and install separate local-test Safeer Driver/Booking Android WebView apps over the existing shared src/ and loopback API through USB reverse port 4320. All company, driver assignment, session and offline-payment rules remain unchanged; no schema/API authority changes, account seeding, camera/offline queue, Flutter or hosted release. See [USB installation evidence](archive/ANDROID_USB_2026-11-04.md) and [mobile setup](../mobile/README.md). Earlier section entries below are historical.
