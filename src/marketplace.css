@@ -39,5 +39,13 @@
 @media (max-width:900px){.market-booking{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:640px){.market-seats{grid-template-columns:repeat(var(--market-columns,4),minmax(0,1fr))}.market-ticket>button,.market-ticket>.market-book{justify-self:stretch}.market-confirm button{flex:1}}
 @media(forced-colors:active){.market-seat.selected{outline:2px solid Highlight}.market-seat.taken{color:GrayText}}
-.market-service-notice{padding:16px 20px;margin-bottom:20px;border:1px solid var(--border);border-inline-start:4px solid var(--accent);border-radius:12px;background:var(--paper);color:var(--ink);overflow-wrap:anywhere;white-space:pre-wrap}
+.market-service-notice{display:flex;align-items:flex-start;gap:14px;min-width:0;margin:18px clamp(12px,3vw,32px) 0;padding:18px 22px;border:1px solid var(--border);border-radius:22px;background:var(--paper);color:var(--ink)}
+.market-notice-icon{display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;border:1px solid var(--border);border-radius:14px;background:var(--accent-wash);color:var(--accent)}
+.market-notice-icon svg{width:22px;height:22px}
+.market-notice-copy{min-width:0;align-self:center;display:grid;gap:5px}
+.market-notice-label{font-size:.72rem;line-height:1.5;font-weight:700;letter-spacing:.06em;color:var(--accent)}
+.market-notice-message{margin:0;color:var(--ink);font-size:.95rem;line-height:1.65;overflow-wrap:anywhere;white-space:pre-wrap;unicode-bidi:plaintext}
+[dir=rtl] .market-notice-label{letter-spacing:normal}
+@media(max-width:760px){.market-service-notice{margin-top:12px;padding:16px;gap:12px;border-radius:20px}.market-notice-icon{flex-basis:36px;width:36px;height:36px;border-radius:12px}.market-notice-icon svg{width:20px;height:20px}.market-notice-message{font-size:.9rem}}
+@media print{.market-service-notice{display:none}}
 .market-travelers{display:grid;gap:10px;margin:14px 0 0;padding:0;border:0;min-width:0}.market-travelers legend{padding:0;margin-bottom:8px;color:var(--ink);font-weight:700}.market-travelers label,.market-lookup label{display:grid;gap:4px;font-size:.85rem;font-weight:600}.market-travelers input,.market-lookup input{width:100%;min-height:44px}.market-lookup{display:grid;gap:12px}.market-subhead{margin:6px 0 4px;font-size:1rem}.market-aside .market-rows li{align-items:center}.market-aside .market-rows button{min-height:44px;margin-inline-start:auto}

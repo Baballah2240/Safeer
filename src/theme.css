@@ -98,6 +98,8 @@
   html body .driver-metrics{padding:18px;border:1px solid var(--border);border-radius:18px;background:var(--accent-wash)}
   html body .driver-check{border-radius:18px;background:var(--accent-wash)}
   html body .market-wrap{max-width:1240px}
+  html body .platform-notice-message{overflow-wrap:anywhere;white-space:pre-wrap}
+  html body .market-service-notice{background:linear-gradient(120deg,var(--glass-sheen),transparent 55%),var(--glass-tile);border-color:var(--glass-rim);box-shadow:0 8px 24px var(--glass-shadow),inset 0 1px 0 var(--glass-highlight);backdrop-filter:blur(20px) saturate(125%);-webkit-backdrop-filter:blur(20px) saturate(125%)}
   html body .market-band{margin:20px clamp(12px,3vw,32px) 0;border-radius:28px;background:radial-gradient(ellipse at 90% 0%,#94674445,transparent 65%),var(--material-navy);border:1px solid #bc91643d;box-shadow:0 12px 36px var(--glass-shadow);padding-block:32px}
   html body .market-band h1{font-size:clamp(28px,3.6vw,46px);letter-spacing:-.035em;line-height:1.2}
   html[dir=rtl] body .market-band h1{letter-spacing:normal}
@@ -210,7 +212,7 @@
   @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
     html body :is(.staff-topbar,.driver-header,.market-bar,.topbar,button,.staff-link){background-color:var(--paper)}
     html body :is(.staff-sidebar,.sidebar){background:#211711}
-    html body :is(.staff-welcome,.staff-summary article,.metric){background:var(--paper)}
+    html body :is(.staff-welcome,.staff-summary article,.metric,.market-service-notice){background:var(--paper)}
   }
   @media(prefers-reduced-motion:reduce){
     html body *,html body *::before,html body *::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}
@@ -219,11 +221,11 @@
   @media(prefers-reduced-transparency:reduce){
     html body :is(button,.staff-link,.staff-topbar,.driver-header,.market-bar,.topbar){background-color:var(--paper);backdrop-filter:none;-webkit-backdrop-filter:none}
     html body :is(.staff-sidebar,.sidebar){background:#211711;backdrop-filter:none;-webkit-backdrop-filter:none}
-    html body :is(.staff-welcome,.staff-summary article,.metric){background:var(--paper);backdrop-filter:none;-webkit-backdrop-filter:none}
+    html body :is(.staff-welcome,.staff-summary article,.metric,.market-service-notice){background:var(--paper);backdrop-filter:none;-webkit-backdrop-filter:none}
   }
   @media(forced-colors:active){
     html body *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;box-shadow:none!important;text-shadow:none!important}
-    html body :is(button,.staff-link,.staff-nav button,.staff-panel,.staff-record,.staff-topbar,.staff-sidebar,.sidebar,.staff-welcome,.staff-summary article,.metric,.driver-header,.market-bar,.market-card){border:1px solid CanvasText;background:Canvas;color:CanvasText}
+    html body :is(button,.staff-link,.staff-nav button,.staff-panel,.staff-record,.staff-topbar,.staff-sidebar,.sidebar,.staff-welcome,.staff-summary article,.metric,.market-service-notice,.driver-header,.market-bar,.market-card){border:1px solid CanvasText;background:Canvas;color:CanvasText}
     html body button[aria-current],html body .staff-sidebar .staff-nav button[aria-current=page]{outline:2px solid Highlight;color:Highlight}
   }
 }

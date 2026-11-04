@@ -1,5 +1,8 @@
 # Section archives and source checkpoints
 
+Latest follow-up: [D46 marketplace notice](MARKETPLACE_NOTICE_2026-11-04.md). Source checkpoint: archives/Safeer-0.16.0-Marketplace-Notice-2026-11-04.zip, excluding private runtime/credentials.
+
+
 Latest material follow-up: [D45 reference glass](REFERENCE_GLASS_2026-11-04.md), with source checkpoint archives/Safeer-0.16.0-Reference-Glass-2026-11-04.zip. Earlier checkpoints remain historical; source archives exclude runtime and credentials.
 
 

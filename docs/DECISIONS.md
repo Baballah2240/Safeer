@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-11-04 - Refined marketplace announcement
+
+D46: Interpret the owner's screenshot and "add section" request as the public service announcement above trip search. Replace the edge-to-edge plain strip with a compact aligned glass notice, a decorative announcement icon, translated Travel update label and readable wrapping message. Keep the admin's existing enabled/bilingual plain-text settings and safe escaping; no advertising service, image upload, dismissal or backend change. Handle long text, RTL/LTR, mobile, both themes, accessibility and print/opaque fallbacks. Verify the actual settings-to-public workflow and responsive notice layouts on disposable data, build shared assets and document/archive a scoped local checkpoint. No native APK or publication; preserve private portfolio history.
+
 ## 2026-11-04 - Reference-led frosted liquid glass
 
 D45: The owner supplies a frosted translucent widget reference as the intended liquid-glass appearance. Refine the shared material with neutral translucent lenses, diffused warm backdrop variation, thin illuminated edges, subtle inner refraction and pill controls, retaining black/brown identity and bento structure. Apply the material to headers, sidebar, controls and summary tiles; keep operational tables/forms readable and all actions/semantic states unchanged. Use CSS gradients/blur rather than a photo or expensive animated distortion. Preserve D43 sticky headers, D44 toggle, RTL/LTR, both themes, accessibility/opaque fallbacks and print. Verify affected responsive workflows and inspect actual screenshots, build shared assets and save a scoped local checkpoint. No native APK, business-data or hosting change; preserve private portfolio publishing restrictions.

@@ -1,5 +1,8 @@
 # Safeer mobile status
 
+D46 shared Booking web update: the public announcement has aligned margins, an SVG icon, translated label and safe message wrapping on narrow screens. Existing native packages are unchanged; Refresh loads served web changes. No APK build/install or physical phone capture is claimed. See [handover](../docs/archive/MARKETPLACE_NOTICE_2026-11-04.md).
+
+
 D45 shared web refresh: reference-led frosted headers/sidebar, pill controls and glass summary tiles, retaining black/brown and all behavior. Existing local USB clients load the shared design on Refresh; no native rebuild/install or physical phone verification is claimed. See [D45 handover](../docs/archive/REFERENCE_GLASS_2026-11-04.md).
 
 

@@ -1,5 +1,8 @@
 # Safeer / Sudan Transport
 
+Marketplace notices now align with the header/search and use a compact accessible glass announcement. See [D46 handover](docs/archive/MARKETPLACE_NOTICE_2026-11-04.md).
+
+
 The shared interface now follows the owner?s frosted-glass reference: translucent lenses, fine highlights and rounded pill controls. See [D45 handover](docs/archive/REFERENCE_GLASS_2026-11-04.md).
 
 

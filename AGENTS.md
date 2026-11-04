@@ -1,5 +1,8 @@
 # Safeer
 
+- D46 refines the public marketplace service notice. Keep bilingual admin settings, plain-text escaping, aligned margins, long-message wrapping and opaque/print fallbacks; tests/platform.browser.mjs covers the notice workflow. No new ad integration.
+
+
 - D45 refines shared tokens/theme to the owner?s frosted-glass reference. Preserve contrast, opaque accessibility/unsupported-blur fallbacks, sticky headers, sidebar toggle and operational panel readability. No native change.
 
 
