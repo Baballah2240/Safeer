@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-11-04 - Reference-led frosted liquid glass
+
+D45: The owner supplies a frosted translucent widget reference as the intended liquid-glass appearance. Refine the shared material with neutral translucent lenses, diffused warm backdrop variation, thin illuminated edges, subtle inner refraction and pill controls, retaining black/brown identity and bento structure. Apply the material to headers, sidebar, controls and summary tiles; keep operational tables/forms readable and all actions/semantic states unchanged. Use CSS gradients/blur rather than a photo or expensive animated distortion. Preserve D43 sticky headers, D44 toggle, RTL/LTR, both themes, accessibility/opaque fallbacks and print. Verify affected responsive workflows and inspect actual screenshots, build shared assets and save a scoped local checkpoint. No native APK, business-data or hosting change; preserve private portfolio publishing restrictions.
+
 ## 2026-11-04 - Hide and restore the sidebar
 
 D44: Add a persistent, bilingual sidebar toggle to the always-visible sticky header in staff and the fictional preview. Hide the entire navigation and expand the content without re-rendering forms. Keep keyboard access, descriptive labels, aria-expanded/controls, RTL/LTR, both themes and narrow screens. Store only this device's layout preference, with graceful storage failure. Driver/Booking have no sidebar and need no toggle. Preserve all authorization, business data and print behavior. Verify hide/restore, keyboard, persistence and responsive layouts; build shared web assets, update continuation documentation and archive a scoped local source checkpoint. No native APK or remote publication; preserve the existing private portfolio publishing restriction.

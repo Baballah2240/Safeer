@@ -1,5 +1,8 @@
 # Safeer / Sudan Transport
 
+The shared interface now follows the owner?s frosted-glass reference: translucent lenses, fine highlights and rounded pill controls. See [D45 handover](docs/archive/REFERENCE_GLASS_2026-11-04.md).
+
+
 The staff and fictional-preview headers include a Hide sidebar / Show sidebar button, with a saved device preference. See [D44 handover](docs/archive/SIDEBAR_TOGGLE_2026-11-04.md).
 
 

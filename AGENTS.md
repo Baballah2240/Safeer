@@ -1,5 +1,8 @@
 # Safeer
 
+- D45 refines shared tokens/theme to the owner?s frosted-glass reference. Preserve contrast, opaque accessibility/unsupported-blur fallbacks, sticky headers, sidebar toggle and operational panel readability. No native change.
+
+
 - D44 adds a header sidebar toggle in staff and fictional preview. Preserve saved visibility, no-form-re-render behavior, keyboard/ARIA and RTL/LTR. Run tests/sidebar.browser.mjs with disposable fixtures for regression. No native change.
 
 

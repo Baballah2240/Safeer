@@ -1,5 +1,5 @@
-/* Shared finishing layer. Cards stay nearly opaque for reading; blur is limited
-   to navigation and controls. Page files retain layout, semantic states/printing. */
+/* Shared glass material. Data panels stay nearly opaque; navigation, controls
+   and summary tiles use translucent lenses. Page files retain states/printing. */
 @media screen {
   html{scroll-padding-block-start:calc(var(--sticky-header-height,150px) + 16px)}
   html body{background:var(--page-art),var(--page);color:var(--ink);line-height:1.5}
@@ -8,8 +8,8 @@
   html[dir=rtl] body :is(h1,h2,h3){letter-spacing:normal}
   /* Sidebar menus keep their own dark-glass rules below; :where adds no specificity. */
   html body :is(button,.staff-link,.workspace-link,.market-link,.market-book):where(:not(.seat,.market-seat,.trip-seat)):where(:not(.staff-nav button,.sidebar .nav-item)){
-    min-height:44px;border:1px solid var(--glass-edge);border-radius:14px;background:linear-gradient(145deg,var(--glass-highlight),transparent 65%),var(--glass-control);color:var(--ink);box-shadow:var(--shadow-control);text-decoration:none;
-    backdrop-filter:blur(12px) saturate(140%);-webkit-backdrop-filter:blur(12px) saturate(140%);cursor:pointer;
+    min-height:44px;border:1px solid var(--glass-edge);border-radius:999px;background:linear-gradient(155deg,var(--glass-sheen),transparent 48%,#ffffff08 85%),var(--glass-control);color:var(--ink);box-shadow:var(--shadow-control);text-decoration:none;
+    backdrop-filter:blur(16px) saturate(130%);-webkit-backdrop-filter:blur(16px) saturate(130%);cursor:pointer;
     transition:background-color 180ms ease,border-color 180ms ease,box-shadow 180ms ease,transform 180ms ease;
   }
   /* Same specificity as the generic control rule, placed later, so primary actions keep their fill. */
@@ -35,9 +35,10 @@
   html body .staff-secret{color:var(--ink);background:var(--accent-wash);border-color:var(--border);box-shadow:none}
 
   /* Floating navigation glass; fill remains readable on devices without blur. */
-  html body :is(.staff-topbar,.driver-header,.market-bar,.topbar){position:sticky;top:0;z-index:40;background:linear-gradient(115deg,var(--header-reflection),transparent 42%,#d2a8790a 85%),var(--header-glass);backdrop-filter:blur(28px) saturate(170%) brightness(1.04);-webkit-backdrop-filter:blur(28px) saturate(170%) brightness(1.04);border:1px solid var(--header-edge);box-shadow:0 10px 32px var(--glass-shadow),inset 0 1px 0 var(--glass-highlight),inset 0 -1px 0 #0000000d;border-radius:22px}
+  html body :is(.staff-topbar,.driver-header,.market-bar,.topbar){position:sticky;top:0;z-index:40;background:linear-gradient(125deg,var(--header-reflection),transparent 35%,transparent 70%,var(--glass-sheen)),var(--header-glass);backdrop-filter:blur(28px) saturate(150%) brightness(1.04);-webkit-backdrop-filter:blur(28px) saturate(150%) brightness(1.04);border:1px solid var(--header-edge);box-shadow:0 12px 32px var(--glass-shadow),inset 0 1px 0 var(--glass-highlight),inset 1px 0 0 var(--glass-sheen),inset 0 -1px 0 #00000014;border-radius:26px}
   html body .staff-shell{grid-template-columns:256px minmax(0,1fr);padding-inline-start:14px}
-  html body :is(.staff-sidebar,.sidebar){background:linear-gradient(140deg,#3b2b20d9,#15110ff2);color:#f0e4d8;border:1px solid #e6c7a52e;border-radius:24px;box-shadow:0 12px 40px #120b0824,inset 0 1px 0 #ffead226;backdrop-filter:blur(24px) saturate(140%);-webkit-backdrop-filter:blur(24px) saturate(140%)}
+  html body :is(.staff-sidebar,.sidebar){background:linear-gradient(145deg,var(--sidebar-sheen),transparent 38%,#100b082e),var(--sidebar-glass);color:#f0e4d8;border:1px solid #fff2df47;border-radius:26px;box-shadow:0 12px 40px #120b0824,inset 0 1px 0 #fff4e85c,inset 1px 0 0 #fff4e81a;backdrop-filter:blur(24px) saturate(130%);-webkit-backdrop-filter:blur(24px) saturate(130%)}
+  /* The sidebar remains dark in both themes so its navigation contrast is stable. */
   html body .staff-sidebar{top:14px;height:calc(100dvh - 28px);margin-block:14px;padding:24px 16px;gap:18px;scrollbar-width:thin;scrollbar-color:#ffffff30 transparent}
   html body .staff-brand{font-size:18px;color:#fff4e8}
   html body .staff-brand img{width:38px;height:38px;border-radius:12px;box-shadow:none}
@@ -60,7 +61,7 @@
   html body .staff-summary{gap:16px}
   html body .staff-panel+.staff-summary{margin-top:16px}
   html body .staff-summary article{padding:22px;min-height:130px;display:flex;flex-direction:column;justify-content:space-between;gap:10px;border-top:1px solid var(--border)}
-  html body .staff-summary article:first-child{background:linear-gradient(120deg,var(--accent-wash),transparent),var(--surface)}
+  html body :is(.staff-welcome,.staff-summary article,.metric){background:linear-gradient(145deg,var(--glass-sheen),transparent 45%),var(--glass-tile);border-color:var(--glass-rim);box-shadow:0 10px 28px var(--glass-shadow),inset 0 1px 0 var(--glass-highlight),inset 1px 0 0 var(--glass-sheen);backdrop-filter:blur(20px) saturate(125%);-webkit-backdrop-filter:blur(20px) saturate(125%)}
   html body .staff-summary strong{font-size:30px;font-weight:650;line-height:1.2;margin:0;font-variant-numeric:tabular-nums}
   html body .staff-main:has(>.staff-shortcuts){display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:20px;align-items:start}
   html body .staff-main:has(>.staff-shortcuts)>:is(.staff-welcome,.staff-summary,.staff-alert,.staff-workspace-footer){grid-column:1/-1;margin:0}
@@ -208,7 +209,8 @@
   html body :is(button,.staff-link,.workspace-link,.market-link):active:not(:disabled){transform:translateY(0);box-shadow:inset 0 1px 3px #00000016}
   @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
     html body :is(.staff-topbar,.driver-header,.market-bar,.topbar,button,.staff-link){background-color:var(--paper)}
-    html body .staff-sidebar{background:#211711}
+    html body :is(.staff-sidebar,.sidebar){background:#211711}
+    html body :is(.staff-welcome,.staff-summary article,.metric){background:var(--paper)}
   }
   @media(prefers-reduced-motion:reduce){
     html body *,html body *::before,html body *::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}
@@ -216,11 +218,12 @@
   }
   @media(prefers-reduced-transparency:reduce){
     html body :is(button,.staff-link,.staff-topbar,.driver-header,.market-bar,.topbar){background-color:var(--paper);backdrop-filter:none;-webkit-backdrop-filter:none}
-    html body .staff-sidebar{background:#211711;backdrop-filter:none;-webkit-backdrop-filter:none}
+    html body :is(.staff-sidebar,.sidebar){background:#211711;backdrop-filter:none;-webkit-backdrop-filter:none}
+    html body :is(.staff-welcome,.staff-summary article,.metric){background:var(--paper);backdrop-filter:none;-webkit-backdrop-filter:none}
   }
   @media(forced-colors:active){
     html body *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;box-shadow:none!important;text-shadow:none!important}
-    html body :is(button,.staff-link,.staff-nav button,.staff-panel,.staff-record,.staff-topbar,.staff-sidebar,.driver-header,.market-bar,.market-card){border:1px solid CanvasText;background:Canvas;color:CanvasText}
+    html body :is(button,.staff-link,.staff-nav button,.staff-panel,.staff-record,.staff-topbar,.staff-sidebar,.sidebar,.staff-welcome,.staff-summary article,.metric,.driver-header,.market-bar,.market-card){border:1px solid CanvasText;background:Canvas;color:CanvasText}
     html body button[aria-current],html body .staff-sidebar .staff-nav button[aria-current=page]{outline:2px solid Highlight;color:Highlight}
   }
 }

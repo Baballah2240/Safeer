@@ -1,5 +1,8 @@
 # Safeer mobile status
 
+D45 shared web refresh: reference-led frosted headers/sidebar, pill controls and glass summary tiles, retaining black/brown and all behavior. Existing local USB clients load the shared design on Refresh; no native rebuild/install or physical phone verification is claimed. See [D45 handover](../docs/archive/REFERENCE_GLASS_2026-11-04.md).
+
+
 Shared web follow-up D44: staff and fictional preview now have a persistent header sidebar toggle. Driver/Booking have no sidebar and remain unchanged; no APK build/install is needed. Refresh shared pages for the update. See [handover](../docs/archive/SIDEBAR_TOGGLE_2026-11-04.md).
 
 

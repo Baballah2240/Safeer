@@ -1,5 +1,8 @@
 # Section archives and source checkpoints
 
+Latest material follow-up: [D45 reference glass](REFERENCE_GLASS_2026-11-04.md), with source checkpoint archives/Safeer-0.16.0-Reference-Glass-2026-11-04.zip. Earlier checkpoints remain historical; source archives exclude runtime and credentials.
+
+
 ## Latest follow-up: sidebar visibility
 
 Read [D44 handover](SIDEBAR_TOGGLE_2026-11-04.md). The source checkpoint is archives/Safeer-0.16.0-Sidebar-Toggle-2026-11-04.zip, separate from private business backups. Earlier checkpoints remain historical.
