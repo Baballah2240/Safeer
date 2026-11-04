@@ -1,5 +1,10 @@
 # Section archives and source checkpoints
 
+## Latest follow-up: sidebar visibility
+
+Read [D44 handover](SIDEBAR_TOGGLE_2026-11-04.md). The source checkpoint is archives/Safeer-0.16.0-Sidebar-Toggle-2026-11-04.zip, separate from private business backups. Earlier checkpoints remain historical.
+
+
 2026-11-02 update: D34 closes the historical local-upgrade items for Sections 05-11 below. The existing runtime is verified at 0.12.0 with all migrations applied and its account preserved. The original Section 11 checkpoint remains unchanged; a separate local-update source checkpoint records the backup safeguard/documentation changes. Private runtime backups are excluded from both.
 
 Numbered Markdown entries in this directory are permanent source-controlled handovers. Compressed source ZIPs live under the ignored project `archives/` folder, with SHA-256 sidecars and per-file manifests. The source repository retains history; ZIPs do not include its entire .git database.

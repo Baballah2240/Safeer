@@ -225,7 +225,15 @@
   }
 }
 .theme-toggle{white-space:nowrap}
+@media screen{
+  html[data-sidebar-hidden=true] body :is(.staff-sidebar,.sidebar){display:none}
+  html[data-sidebar-hidden=true] body .staff-shell{grid-template-columns:minmax(0,1fr);padding-inline-start:0}
+  html body .sidebar-toggle{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-width:44px;min-height:44px;cursor:pointer}
+  html body .sidebar-toggle svg{width:20px;height:20px;flex-shrink:0}
+  @media(max-width:760px){html body .sidebar-toggle span{display:none}}
+}
 @media print{
+  .sidebar-toggle{display:none!important}
   html{color-scheme:light}body,.reference-sheet,dialog[open]{color:#251c16;background:#fff;box-shadow:none}
   .reference-sheet :is(p,dt,dd,h2),.reference-heading,.reference-large{color:#251c16!important;text-shadow:none}.theme-toggle{display:none!important}
 }

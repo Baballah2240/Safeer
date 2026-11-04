@@ -1,5 +1,8 @@
 # Safeer / Sudan Transport
 
+The staff and fictional-preview headers include a Hide sidebar / Show sidebar button, with a saved device preference. See [D44 handover](docs/archive/SIDEBAR_TOGGLE_2026-11-04.md).
+
+
 ## Sticky glass navigation
 
 The black/brown glass headers stay at the top while scrolling on desktop and mobile. The existing USB apps receive the shared update on Refresh. See [header verification](docs/archive/STICKY_HEADERS_2026-11-04.md).

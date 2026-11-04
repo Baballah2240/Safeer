@@ -1,5 +1,10 @@
 # Current state - read this first
 
+## Sidebar visibility - D44
+
+A header button hides/restores the staff and fictional-preview sidebars, expanding the workspace without re-rendering forms. A device-local preference survives navigation/reload; Arabic/English labels, keyboard operation and hidden-navigation focus are supported. No API, schema, authority, money, account or native package change. Read [D44 handover](archive/SIDEBAR_TOGGLE_2026-11-04.md) for verification and the local source checkpoint. Earlier evidence below is historical.
+
+
 ## Sticky headers - D43
 
 The owner-requested Apple-inspired glass headers now stick at top:0 across all four pages on desktop/mobile, retaining black/brown. Header height tracking follows wrapping and app re-rendering, keeping scrolled form fields clear. All 64 scrolling/accessibility/print combinations and 60 existing Identity/modal combinations pass, plus 17 unit/server checks, build/docs and all 33 served asset hashes. Existing USB apps receive the shared change on refresh; no APK or business data change. See [D43 evidence](archive/STICKY_HEADERS_2026-11-04.md).

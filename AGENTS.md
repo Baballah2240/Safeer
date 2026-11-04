@@ -1,5 +1,8 @@
 # Safeer
 
+- D44 adds a header sidebar toggle in staff and fictional preview. Preserve saved visibility, no-form-re-render behavior, keyboard/ARIA and RTL/LTR. Run tests/sidebar.browser.mjs with disposable fixtures for regression. No native change.
+
+
 - Independent Sudan passenger-transport project. Do not edit Stocrant or the school-display application for Safeer work.
 - Current authorized stage: Section 15 (D39), USB Android apps (D40) and the verified bento/liquid-glass shared UI refresh (D41) are complete locally. Keep the service loopback-only and preserve users/data. No hosting or store release is authorized; stop pending the owner's next instruction.
 - D43 adds verified sticky Apple-inspired glass headers in the shared theme. Keep top:0 at mobile widths, preserve wrapped-height focus offsets and black/brown; npm.cmd run test:headers:browser covers the regression.

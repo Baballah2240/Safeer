@@ -1,5 +1,8 @@
 # Safeer mobile status
 
+Shared web follow-up D44: staff and fictional preview now have a persistent header sidebar toggle. Driver/Booking have no sidebar and remain unchanged; no APK build/install is needed. Refresh shared pages for the update. See [handover](../docs/archive/SIDEBAR_TOGGLE_2026-11-04.md).
+
+
 ## Shared sticky headers - 2026-11-04, D43
 
 Driver and Booking headers now stick at the top while scrolling, with layered reflections and stronger backdrop blur in the black/brown palette. Wrapped header height is observed so scrolled fields stay below it. Desktop/mobile, Arabic/English, both themes, reduced motion/transparency, forced colors and print isolation pass. Existing 0.16.0-usb.2 apps load the shared web update after Refresh; no APK build/install or physical phone recapture occurred in D43. See [header evidence](../docs/archive/STICKY_HEADERS_2026-11-04.md).

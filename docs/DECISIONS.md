@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-11-04 - Hide and restore the sidebar
+
+D44: Add a persistent, bilingual sidebar toggle to the always-visible sticky header in staff and the fictional preview. Hide the entire navigation and expand the content without re-rendering forms. Keep keyboard access, descriptive labels, aria-expanded/controls, RTL/LTR, both themes and narrow screens. Store only this device's layout preference, with graceful storage failure. Driver/Booking have no sidebar and need no toggle. Preserve all authorization, business data and print behavior. Verify hide/restore, keyboard, persistence and responsive layouts; build shared web assets, update continuation documentation and archive a scoped local source checkpoint. No native APK or remote publication; preserve the existing private portfolio publishing restriction.
+
 ## 2026-11-04 - Sticky Apple-inspired glass headers
 
 D43: The owner requests headers that stick to the top with an Apple-inspired liquid-glass finish. Apply sticky top:0 to staff, Driver, Booking/marketplace and preview headers at desktop/mobile widths, preserving black/brown, bilingual layout, responsive wrapping and all functionality. Use layered reflections, restrained translucency/blur and edge highlights with opaque reduced-transparency/unsupported-blur/forced-color and print fallbacks. Observe actual header height to keep focused/scrolled content below it, reconnecting the size observer when app rendering replaces a header. Verify real scrolling, navigation and modal/print behavior using fictional disposable data. This shared web update reaches existing USB apps on refresh; no native package, business/API/database change or remote publication. Commit scoped source locally under the existing private portfolio restriction.
