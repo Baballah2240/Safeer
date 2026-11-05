@@ -20,7 +20,11 @@ try{
   await runMigrations(migration,await readMigrations());
   // The password is a generated secret limited to safe characters above, so it can be quoted directly.
   const exists=(await migration.query("SELECT 1 FROM pg_roles WHERE rolname='safeer_app'")).rowCount;
-  await migration.query(`${exists?'ALTER':'CREATE'} ROLE safeer_app LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS PASSWORD '${appPassword}'`);
+  // Hosted owners are not superusers: create with the limited attributes, but later only refresh LOGIN/PASSWORD,
+  // because restating SUPERUSER/BYPASSRLS/REPLICATION attributes needs superuser.
+  await migration.query(exists?`ALTER ROLE safeer_app WITH LOGIN PASSWORD '${appPassword}'`:`CREATE ROLE safeer_app LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS PASSWORD '${appPassword}'`);
+  const role=(await migration.query("SELECT rolsuper OR rolcreatedb OR rolcreaterole OR rolbypassrls OR rolreplication AS elevated FROM pg_roles WHERE rolname='safeer_app'")).rows[0];
+  if(role.elevated)fail('Role safeer_app has elevated attributes; remove them before starting Safeer.');
   await migration.query(`GRANT CONNECT ON DATABASE "${ownerUrl.pathname.slice(1)}" TO safeer_app`);
   await grantIdentityRuntime(migration,'safeer_app');
 }finally{await migration.end();}
