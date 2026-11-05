@@ -1,5 +1,8 @@
 # Safeer
 
+- D52 supersedes Driver toolbar retention: both clients now use shared sidebar/Settings and immersive fullscreen with normal swipe-reveal/exit, safe cutout/IME insets and drawer-first Back. Version .5/16005. Keep assigned-driver authority and operational actions intact; run Driver/Booking drawer, boarding and header checks.
+
+
 - D51 Booking uses an accessible modal drawer with Settings and no native title/Home/Refresh/Print toolbar; Driver retains its toolbar. Native version .4/16004. Preserve Escape/focus return, entered forms, RTL and flavor-specific security/recovery. Run the Booking menu and affected public/reservation/header browser checks.
 
 

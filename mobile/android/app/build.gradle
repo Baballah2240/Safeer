@@ -6,8 +6,8 @@ android {
     defaultConfig {
         minSdk 26
         targetSdk 35
-        versionCode 16004
-        versionName '0.16.0-usb.4'
+        versionCode 16005
+        versionName '0.16.0-usb.5'
     }
     buildFeatures { buildConfig true }
     flavorDimensions += 'workspace'

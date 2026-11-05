@@ -1,5 +1,10 @@
 # Safeer mobile status
 
+## 0.16.0-usb.5 - 2026-11-05, D52
+
+Driver gains the same sidebar and appearance/language Settings as Booking, keeping notifications, company access, Refresh and Sign out. Both native clients remove top toolbars and use immersive fullscreen with transient system-bar swipe reveal, cutout/keyboard safety and drawer-first Back handling. Shared drawer binding avoids duplicate focus/dismissal logic. Rebuild/lint/save/install preserving data; binaries remain ignored. See [D52 handover](../docs/archive/MOBILE_FULLSCREEN_2026-11-05.md).
+
+
 ## 0.16.0-usb.4 - 2026-11-05, D51
 
 Booking removes the native title and Home/Refresh/Print row. Public Booking pages use a compact menu and accessible sidebar containing navigation and language/appearance Settings. Driver retains its native tools. Preserve all origin/permission, system-inset, error-recovery and data rules. Build/lint/save and replace both local packages without clearing data. See [D51 handover](../docs/archive/BOOKING_SIDEBAR_2026-11-05.md).

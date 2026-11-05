@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.print.PrintManager;
 import android.view.View;
 import android.view.WindowInsets;
 import android.webkit.CookieManager;
@@ -17,7 +16,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -42,16 +40,28 @@ public final class MainActivity extends Activity {
 
     private int dp(int value) { return Math.round(value * getResources().getDisplayMetrics().density); }
 
-    private void button(LinearLayout bar, int icon, String label, Runnable action) {
-        ImageButton button = new ImageButton(this);
-        button.setImageResource(icon);
-        button.setBackgroundColor(Color.TRANSPARENT);
-        button.setContentDescription(label);
-        button.setOnClickListener(v -> action.run());
-        bar.addView(button, new LinearLayout.LayoutParams(dp(48), dp(48)));
+    private void home() { web.loadUrl(ORIGIN + BuildConfig.START_PATH); }
+
+    private void fullscreen() {
+        if (android.os.Build.VERSION.SDK_INT >= 30) {
+            getWindow().setDecorFitsSystemWindows(false);
+            android.view.WindowInsetsController controller = getWindow().getInsetsController();
+            if (controller != null) {
+                controller.setSystemBarsBehavior(android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+                controller.hide(WindowInsets.Type.systemBars());
+            }
+        } else {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+        }
     }
 
-    private void home() { web.loadUrl(ORIGIN + BuildConfig.START_PATH); }
+    @Override public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) fullscreen();
+    }
 
     // The shared app requires JavaScript. Only the fixed origin can navigate or
     // load resources, its server sets CSP, and no native JavaScript bridge exists.
@@ -61,34 +71,22 @@ public final class MainActivity extends Activity {
         LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
         root.setBackgroundColor(Color.rgb(22,17,14));
-        // Target 35 draws edge-to-edge: preserve system bar/cutout and keyboard insets.
+        // Hide bars, but keep controls away from cutouts and the visible keyboard.
         root.setOnApplyWindowInsetsListener((v, insets) -> {
             if (android.os.Build.VERSION.SDK_INT >= 30) {
                 android.graphics.Insets bars = insets.getInsets(WindowInsets.Type.systemBars() | WindowInsets.Type.displayCutout() | WindowInsets.Type.ime());
                 v.setPadding(bars.left,bars.top,bars.right,bars.bottom);
-            } else v.setPadding(insets.getSystemWindowInsetLeft(),insets.getSystemWindowInsetTop(),insets.getSystemWindowInsetRight(),insets.getSystemWindowInsetBottom());
+            } else {
+                int left=insets.getSystemWindowInsetLeft(),top=insets.getSystemWindowInsetTop(),right=insets.getSystemWindowInsetRight(),bottom=insets.getSystemWindowInsetBottom();
+                if (android.os.Build.VERSION.SDK_INT >= 28 && insets.getDisplayCutout() != null) {
+                    android.view.DisplayCutout cutout=insets.getDisplayCutout();
+                    left=Math.max(left,cutout.getSafeInsetLeft());top=Math.max(top,cutout.getSafeInsetTop());
+                    right=Math.max(right,cutout.getSafeInsetRight());bottom=Math.max(bottom,cutout.getSafeInsetBottom());
+                }
+                v.setPadding(left,top,right,bottom);
+            }
             return insets;
         });
-        // Booking uses the shared web sidebar; Driver retains its native tools.
-        if (!"booking".equals(BuildConfig.FLAVOR)) {
-            LinearLayout bar = new LinearLayout(this);
-            bar.setGravity(android.view.Gravity.CENTER_VERTICAL);
-            TextView title = new TextView(this);
-            title.setText(getString(R.string.app_name));
-            title.setTextColor(Color.WHITE);
-            title.setTextSize(17);
-            title.setPadding(dp(16),0,0,0);
-            bar.addView(title,new LinearLayout.LayoutParams(0,dp(48),1));
-            button(bar,R.drawable.ic_home,text("Home","الرئيسية"),this::home);
-            button(bar,R.drawable.ic_refresh,text("Refresh","تحديث"),() -> web.reload());
-            button(bar,R.drawable.ic_print,text("Print / save PDF","طباعة / حفظ PDF"),() -> {
-                if (!failed && allowed(Uri.parse(web.getUrl() == null ? "" : web.getUrl()))) {
-                    PrintManager manager = (PrintManager)getSystemService(PRINT_SERVICE);
-                    manager.print(getString(R.string.app_name),web.createPrintDocumentAdapter("Safeer"),null);
-                }
-            });
-            root.addView(bar);
-        }
         progress = new ProgressBar(this,null,android.R.attr.progressBarStyleHorizontal);
         progress.setMax(100);
         root.addView(progress,new LinearLayout.LayoutParams(-1,dp(3)));
@@ -148,14 +146,15 @@ public final class MainActivity extends Activity {
             @Override public void onPageFinished(WebView view,String url) { CookieManager.getInstance().flush(); }
         });
         setContentView(root);
+        fullscreen();
         home();
     }
 
     @Override public void onBackPressed() {
-        if ("booking".equals(BuildConfig.FLAVOR) && allowed(Uri.parse(web.getUrl() == null ? "" : web.getUrl()))) {
+        if (allowed(Uri.parse(web.getUrl() == null ? "" : web.getUrl()))) {
             // Close the same-origin web drawer before navigating away. No Java
             // interface or credentials are exposed to JavaScript.
-            web.evaluateJavascript("(()=>{const d=document.getElementById('market-menu');if(d&&d.open){d.close();return true;}return false;})()", result -> {
+            web.evaluateJavascript("(()=>{const d=document.querySelector('dialog[data-app-drawer][open]');if(d&&d.open){d.close();return true;}return false;})()", result -> {
                 if (!isFinishing() && !isDestroyed() && !"true".equals(result)) navigateBack();
             });
         } else navigateBack();

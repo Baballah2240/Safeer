@@ -57,7 +57,8 @@
     "mobile:install": "node mobile/install.mjs",
     "test:headers:browser": "node tests/headers.browser.mjs",
     "test:sidebar:browser": "node tests/sidebar.browser.mjs",
-    "test:booking-menu:browser": "node tests/booking-menu.browser.mjs"
+    "test:booking-menu:browser": "node tests/booking-menu.browser.mjs",
+    "test:driver-menu:browser": "node tests/driver-menu.browser.mjs"
   },
   "license": "UNLICENSED",
   "dependencies": {

@@ -1,5 +1,8 @@
 # Safeer / Sudan Transport
 
+Both local Android clients now use fullscreen sidebar navigation and Settings; Driver retains its scoped operational actions inside the sidebar. USB version 0.16.0-usb.5/16005. See [D52 handover](docs/archive/MOBILE_FULLSCREEN_2026-11-05.md).
+
+
 Booking now uses an accessible sidebar with Settings, without the native title/Home/Refresh/Print toolbar. Local USB version 0.16.0-usb.4/16004. See [D51 handover](docs/archive/BOOKING_SIDEBAR_2026-11-05.md).
 
 

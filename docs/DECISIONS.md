@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-11-05 - Driver sidebar and fullscreen mobile apps
+
+D52: Apply Booking's sidebar/Settings design to Driver, preserve refresh/logout/notifications/company access and assigned-trip authority, and remove the remaining native toolbar. Both local Android clients use immersive fullscreen with swipe-reveal system bars, safe camera-cutout/keyboard insets and normal Android exit behavior, not a locked kiosk. Share drawer focus/dismissal handling, keep RTL/LTR, both themes, input drafts on open/close and all boarding/incident/money rules. Native Back dismisses the open same-origin app drawer before navigation. Build/lint/save/install USB patch .5/16005 preserving app data; verify Driver workflows, Booking regressions, fullscreen and actual foreground phone screens. Document/archive scoped source, excluding private runtime/APKs/signing/device details. No hosting or private portfolio publication.
+
 ## 2026-11-05 - Booking sidebar and settings
 
 D51: The owner requests removing Booking's native title/Home/Refresh/Print toolbar and moving public header navigation into a professional sidebar with Settings. Keep Driver's native controls. Replace Booking/public marketplace navigation with a compact menu trigger and accessible modal side drawer containing trip search, My booking, staff access and appearance/language settings. Preserve live search/holds, entered values on drawer open/close, bilingual/RTL, focus return/Escape, both themes and security boundaries. Native flavor-specific toolbar removal retains system insets, loading/error recovery, same-origin restrictions and data. Build/lint/save local USB patch .4/16004, install preserving app data and inspect phone screens. Test real drawer/settings and affected public/booking/header workflows on disposable data, document/archive source and keep APKs/private data out of Git. No remote hosting or portfolio publication.

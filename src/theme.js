@@ -60,6 +60,17 @@ addEventListener('storage',event=>{
 });
 applySidebar();
 
+// Shared modal navigation: no page re-render when opening or closing a drawer.
+export const drawerIcon=path=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${path}"/></svg>`;
+export function bindSideDrawer(root,id,triggerId,closeId){
+  const menu=root.querySelector('#'+id),toggle=root.querySelector('#'+triggerId);
+  toggle.onclick=()=>{menu.showModal();toggle.setAttribute('aria-expanded','true');};
+  root.querySelector('#'+closeId).onclick=()=>menu.close();
+  menu.addEventListener('close',()=>{toggle.setAttribute('aria-expanded','false');toggle.focus({preventScroll:true});});
+  menu.addEventListener('click',event=>{if(event.target!==menu)return;const r=menu.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)menu.close();});
+  menu.querySelectorAll('a[href^="#"]').forEach(link=>link.addEventListener('click',()=>menu.close()));
+}
+
 // App renders replace their header nodes. Follow the current one so keyboard
 // focus and scrollIntoView clear the actual wrapped height at every viewport.
 if(typeof ResizeObserver==='function'){

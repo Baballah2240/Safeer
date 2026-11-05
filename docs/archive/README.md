@@ -1,5 +1,8 @@
 # Section archives and source checkpoints
 
+Latest mobile follow-up: [D52 Driver sidebar/fullscreen](MOBILE_FULLSCREEN_2026-11-05.md), source checkpoint archives/Safeer-0.16.0-Mobile-Fullscreen-2026-11-05.zip.
+
+
 Latest Booking follow-up: [D51 sidebar and Settings](BOOKING_SIDEBAR_2026-11-05.md), source checkpoint archives/Safeer-0.16.0-Booking-Sidebar-2026-11-05.zip. APKs and private runtime remain separate ignored artifacts.
 
 

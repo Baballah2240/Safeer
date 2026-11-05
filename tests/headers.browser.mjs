@@ -40,12 +40,13 @@ try{await identityFixture(async f=>{
     assert.ok(state.left>=-1&&state.right<=width+1,label+' header clipped');assert.ok(state.bottom<=height,label+' header too tall');
     assert.ok(Math.abs(state.measured-state.height)<=1&&state.padding>=state.height+gap,label+' focus offset follows header height and top gap');assert.match(state.blur,/blur\(28px\)/,label+' glass');
     // Check the actual hit target too: DOM click alone cannot detect an overlay.
-    const navigation=page==='booking'?'#market-menu-toggle':'[data-theme-toggle]';
+    const drawer=page==='booking'?'market':page==='driver'?'driver':null;
+    const navigation=drawer?`#${drawer}-menu-toggle`:'[data-theme-toggle]';
     assert.ok(await evaluate(`(()=>{const b=document.querySelector(${JSON.stringify(navigation)}),r=b.getBoundingClientRect();return document.elementFromPoint(r.left+r.width/2,r.top+r.height/2)?.closest(${JSON.stringify(navigation)})===b;})()`),label+' navigation hit target');
-    if(page==='booking')await evaluate('document.querySelector("#market-menu-toggle").click();document.querySelector("#market-settings").open=true');
+    if(drawer)await evaluate(`document.querySelector('#${drawer}-menu-toggle').click();document.querySelector('#${drawer}-settings').open=true`);
     await evaluate('document.querySelector("[data-theme-toggle]").click()');assert.notEqual(await evaluate('document.documentElement.dataset.theme'),theme,label+' interaction');
     await evaluate('document.querySelector("[data-theme-toggle]").click()');
-    if(page==='booking')await evaluate('document.querySelector("#market-menu-close").click()');
+    if(drawer)await evaluate(`document.querySelector('#${drawer}-menu-close').click()`);
     const field={staff:'#change-password [name=currentPassword]',driver:'#driver-incident textarea',booking:'#market-date',preview:'#reservation-form [name=passengerName]'}[page];
     await evaluate(`document.querySelector(${JSON.stringify(field)}).scrollIntoView({block:'start'})`);await settle();
     assert.ok(await evaluate(`document.querySelector(${JSON.stringify(field)}).getBoundingClientRect().top>=document.querySelector('${selector}').getBoundingClientRect().bottom-1`),label+' scrolled form field must clear header');
