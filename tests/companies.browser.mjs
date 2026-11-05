@@ -1,0 +1,48 @@
+﻿import assert from 'node:assert/strict';
+import {randomBytes} from 'node:crypto';
+import {mkdtempSync,mkdirSync,writeFileSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join,resolve} from 'node:path';
+import {chrome} from './support/chrome.mjs';
+import {identityFixture} from './support/identity-db.mjs';
+import {startServer} from '../server.mjs';
+let apiOrigin='',browser;const built=process.env.SAFEER_BROWSER_BUILT==='1',web=await startServer({port:0,built,identityApiUrl:()=>apiOrigin});
+const shots=resolve('.qa/section-03-browser-'+(built?'built':'source'));mkdirSync(shots,{recursive:true});
+try{await identityFixture(async f=>{
+ apiOrigin=f.api.origin;browser=await chrome(mkdtempSync(join(tmpdir(),'safeer-s03-')));const {send,evaluate,until}=browser;
+ await send('Page.enable');await send('Page.addScriptToEvaluateOnNewDocument',{source:'window.__errors=[];addEventListener("error",e=>window.__errors.push(e.message));addEventListener("unhandledrejection",e=>window.__errors.push(String(e.reason)));'});
+ const click=s=>evaluate(`document.querySelector(${JSON.stringify(s)}).click()`);
+ const fill=async(s,value)=>{await until(`Boolean(document.querySelector(${JSON.stringify(s)}))`);await evaluate(`(()=>{const n=document.querySelector(${JSON.stringify(s)});n.value=${JSON.stringify(value)};n.dispatchEvent(new Event('input',{bubbles:true}));n.dispatchEvent(new Event('change',{bubbles:true}));})()`);};
+ const submit=()=>evaluate('document.querySelector("#staff-dialog form").requestSubmit()');
+ const saved=async()=>{try{await until('!document.querySelector("#staff-dialog").open');}catch{throw Error('Save failed: '+await evaluate('document.querySelector(".staff-dialog-error")?.textContent||document.body.textContent'));}};
+ const password=()=>fill('#staff-dialog [name=currentPassword]',f.password);
+ const tab=async(section)=>{await click(`[data-company-section="${section}"]`);await until('Boolean(document.querySelector(".company-nav [aria-current=page]"))');};
+ const signIn=async(email,pass)=>{await until('Boolean(document.querySelector("#staff-login"))');await fill('[name=login]',email);await fill('[name=password]',pass);await evaluate('document.querySelector("#staff-login").requestSubmit()');await until('Boolean(document.querySelector("#change-password"))');};
+ await send('Emulation.setDeviceMetricsOverride',{width:1366,height:900,deviceScaleFactor:1,mobile:false});await send('Page.navigate',{url:web.origin+'/staff'});await signIn('owner@safeer.local',f.password);
+ await click('[data-tab=companies]');await until('Boolean(document.querySelector("[data-company-create]"))');await click('[data-company-create]');
+ await fill('#staff-dialog [name=nameEn]','Fictional Nile Company');await fill('#staff-dialog [name=nameAr]','\u0634\u0631\u0643\u0629 \u0627\u0644\u0646\u064a\u0644 \u0627\u0644\u062a\u062c\u0631\u064a\u0628\u064a\u0629');await fill('#staff-dialog [name=slug]','browser-nile');await password();await submit();await saved();
+ await until('Boolean(document.querySelector("[data-company-edit]"))');const cid=(await f.admin.request('companies')).data.items[0].id;
+ await click('[data-company-edit]');await fill('#staff-dialog [name=status]','approved');await fill('#staff-dialog [name=timezone]','UTC');await password();await submit();await saved();
+ assert.equal((await f.admin.request('companies/'+cid)).data.company.status,'approved');
+ await tab('resources');await click('[data-resource-create=branches]');await fill('#staff-dialog [name=nameEn]','Fictional Main Branch');await fill('#staff-dialog [name=nameAr]','\u0641\u0631\u0639 \u062a\u062c\u0631\u064a\u0628\u064a');await fill('#staff-dialog [name=code]','MAIN');await password();await submit();await saved();
+ const branch=(await f.admin.request('companies/'+cid)).data.branches[0];await click('[data-resource-create=stations]');await fill('#staff-dialog [name=nameEn]','Fictional Main Station');await fill('#staff-dialog [name=nameAr]','\u0645\u062d\u0637\u0629 \u062a\u062c\u0631\u064a\u0628\u064a\u0629');await fill('#staff-dialog [name=code]','ST01');await fill('#staff-dialog [name=branchId]',branch.id);await password();await submit();await saved();
+ let w=(await f.admin.request('companies/'+cid)).data;const station=w.stations[0],stationRole=w.roles.find(r=>r.code==='station_manager');
+ await click(`[data-resource-edit="stations:${station.id}"]`);assert.equal(await evaluate('document.querySelector("#staff-dialog [name=branchId]").type'),'hidden');await fill('#staff-dialog [name=nameEn]','Fictional Updated Station');await password();await submit();await saved();
+ await tab('roles');await click('[data-company-role-create]');await fill('#staff-dialog [name=displayName]','Fictional Profile Reader');await evaluate(`document.querySelector('#staff-dialog input[value="company.profile.read"]').checked=true`);await password();await submit();await saved();
+ w=(await f.admin.request('companies/'+cid)).data;const role=w.roles.find(r=>r.code.startsWith('custom_'));await click(`[data-company-role-edit="${role.id}"]`);await fill('#staff-dialog [name=displayName]','Fictional Profile Reviewer');await password();await submit();await saved();
+ await tab('members');await click('[data-member-create]');await fill('#staff-dialog [name=displayName]','Fictional Station Manager');await fill('#staff-dialog [name=login]','station-browser@safeer.local');await fill('#staff-dialog [name=roleId]',stationRole.id);await fill('#staff-dialog [name=branchId]',branch.id);await fill('#staff-dialog [name=stationId]',station.id);await password();await submit();await until('Boolean(document.querySelector(".staff-secret"))');
+ const temporary=await evaluate('document.querySelector(".staff-secret").textContent');assert.ok(temporary.length>=24);await click('[data-close-secret]');await until('!document.querySelector("#staff-dialog").open');
+ const support=(await f.admin.request('identity/users','POST',{displayName:'Fictional Support',login:'support-browser@safeer.local',currentPassword:f.password})).data;
+ assert.equal((await f.admin.request(`identity/users/${support.user.id}/roles`,'PUT',{roleIds:['00000000-0000-4000-8000-000000000002'],version:support.user.version,currentPassword:f.password})).status,200);
+ await tab('support');await click('[data-support-create]');await fill('#staff-dialog [name=login]',support.user.login);await fill('#staff-dialog [name=reason]','Fictional station setup review');await password();await submit();await saved();
+ const grant=(await f.admin.request('companies/'+cid)).data.grants[0];assert.ok(await evaluate(`document.querySelector('.staff-main').textContent.includes(${JSON.stringify(new Intl.DateTimeFormat('en-GB',{dateStyle:'medium',timeStyle:'short',timeZone:'UTC'}).format(new Date(grant.expiresAt)))})`),'company timezone is used for support expiry');
+ await click('[data-support-revoke]');await password();await submit();await saved();assert.ok((await f.admin.request('companies/'+cid)).data.grants[0].revokedAt);
+ for(const theme of ['dark','light']){if(await evaluate('document.documentElement.dataset.theme')!==theme)await click('[data-theme-toggle]');for(const lang of ['en','ar']){if(await evaluate('document.documentElement.lang')!==lang)await click('#staff-language');for(const section of ['overview','resources','members','roles','support','audit']){await tab(section);for(const [width,height]of [[1920,1080],[1366,768],[390,844]]){await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width<700});assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth+2'),theme+' '+lang+' '+section+' '+width);writeFileSync(join(shots,`${theme}-${lang}-${section}-${width}.png`),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));}}}}
+ const other=await f.admin.request('companies','POST',{nameEn:'Other Private Operator',nameAr:'Other Private Operator',slug:'other-private',holdMinutes:30,timezone:'Africa/Khartoum',locale:'en',currentPassword:f.password});assert.equal(other.status,201,other.raw);
+ await click('#staff-logout');await signIn('station-browser@safeer.local',temporary);
+ const fresh=randomBytes(24).toString('hex');await fill('#change-password [name=currentPassword]',temporary);await fill('#change-password [name=newPassword]',fresh);await fill('#change-password [name=confirmPassword]',fresh);await evaluate('document.querySelector("#change-password").requestSubmit()');await until('Boolean(document.querySelector("[data-tab=companies]"))');
+ await click('[data-tab=companies]');await until('Boolean(document.querySelector(".company-nav"))');assert.equal(await evaluate('document.querySelector("[data-company-back]")'),null);assert.equal(await evaluate('document.querySelector("[data-company-edit]")'),null);assert.equal(await evaluate('document.querySelector("[data-tab=users]")'),null);assert.equal(await evaluate('document.body.textContent.includes("Other Private Operator")'),false);
+ await tab('resources');assert.equal(await evaluate('document.querySelector("[data-resource-create]")'),null);assert.equal(await evaluate('document.querySelectorAll("[data-resource-edit]").length'),1);
+ assert.equal(await evaluate(`fetch('/api/v1/companies/${other.data.id}').then(r=>r.status)`),404);
+ assert.deepEqual(await evaluate('window.__errors'),[]);console.log(`Section 03 ${built?'built':'source'} browser passed: create/approve company, branch/station, company role create/edit, staff credentials, scoped assignment, support grant/revoke, 72 bilingual/theme/layout combinations, account switching and single-company station isolation.`);
+ },{webOrigin:web.origin});}finally{await browser?.close();await web.close();}

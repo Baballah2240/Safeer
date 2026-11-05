@@ -1,0 +1,189 @@
+# Safeer / Sudan Transport - project master
+
+## Driver sidebar and mobile fullscreen - D52
+
+Driver now matches Booking with sidebar navigation and appearance/language Settings; operational refresh/logout and assigned-trip rules remain. Both local Android clients remove native toolbars and use immersive fullscreen with swipe-reveal system controls and safe cutout/keyboard insets. USB patch .5/16005 preserves app data. No schema/API, authority, money or hosting change. See [D52 handover](archive/MOBILE_FULLSCREEN_2026-11-05.md); prior evidence is historical.
+
+
+## Booking sidebar and settings - D51
+
+Booking removes its native title/Home/Refresh/Print toolbar. Shared public Booking navigation now uses a compact menu trigger and accessible side drawer with trip search, My booking, staff access and appearance/language Settings. Driver keeps its native tools. Local USB patch .4/16004 preserves app data and server permissions; no schema, money or hosting change. See [D51 handover](archive/BOOKING_SIDEBAR_2026-11-05.md); prior evidence is historical.
+
+
+## USB mobile update - D50
+
+The owner requests installing the current shared UI into both USB Android clients. Local test version is 0.16.0-usb.3/16003; build/lint/save and replacement installation preserve app data and existing server accounts. Keep the computer, Safeer service and USB tunnel connected. No schema/API, roles, money or hosting change. See [D50 handover](archive/ANDROID_UPDATE_2026-11-05.md) for verified results; prior evidence is historical.
+
+
+## Floating header curve and glass - D49
+
+Headers now leave 12px desktop/10px mobile top clearance, retained while sticky, so the full rounded edge is visible. Softer tint, broad reflections, brighter edges and layered shadows refine the glass; scroll clearance includes the gap. Above-sidebar controls, bilingual layout and accessibility remain. No schema/API, authority, account, money or native change. See [D49 handover](archive/FLOATING_HEADER_2026-11-05.md); earlier evidence is historical.
+
+
+## Toggle above the sidebar - D48
+
+The circular button now sits in its own toolbar above the staff/preview sidebar, outside header actions. When collapsed it stays in the leading top corner, with reserved header space for safe restoration. Saved preference, keyboard/ARIA and responsive RTL/LTR behavior remain. No schema/API, authority, business data or native change. See [D48 handover](archive/SIDEBAR_POSITION_2026-11-05.md); older evidence below is historical.
+
+
+## Circular sidebar button - D47
+
+The header sidebar toggle follows the supplied reference: circular glass, small two-line menu icon and no visible text. A 44px target, translated accessible name/title and all saved hide/restore behavior remain. No API, schema, account, permission, money or native change. See [D47 handover](archive/CIRCULAR_SIDEBAR_2026-11-04.md); prior evidence below is historical.
+
+
+## Marketplace announcement - D46
+
+The public notice is now a compact aligned glass announcement with an SVG icon, translated Travel update label and wrapping message. Existing protected bilingual settings and plain-text escaping remain. No schema, API, account, permission, financial or native-code change. Read [D46 handover](archive/MARKETPLACE_NOTICE_2026-11-04.md) for verification/checkpoint details; prior evidence below is historical.
+
+
+## Frosted reference glass - D45
+
+The supplied visual reference guides clearer translucent headers/sidebar, pill controls and frosted summary tiles over warm ambient gradients. Black/brown identity, readable operational panels, sticky headers and the saved sidebar toggle remain. No schema, API, authority, account, money or native-package change. See [D45 handover](archive/REFERENCE_GLASS_2026-11-04.md) for verification and the local checkpoint; prior evidence below is historical.
+
+
+## Sidebar visibility - D44
+
+A header button hides/restores the staff and fictional-preview sidebars, expanding the workspace without re-rendering forms. A device-local preference survives navigation/reload; Arabic/English labels, keyboard operation and hidden-navigation focus are supported. No API, schema, authority, money, account or native package change. Read [D44 handover](archive/SIDEBAR_TOGGLE_2026-11-04.md) for verification and the local source checkpoint. Earlier evidence below is historical.
+
+
+## Sticky liquid-glass headers - 2026-11-04 (D43)
+
+D43 keeps staff, Driver, Booking/marketplace and preview headers at the viewport top on scroll, using Apple-inspired layered glass within the black/brown palette. Actual header height protects scrolled form fields; no schema/API, business, account or native package change. Targeted scrolling (64 combinations) and Identity/modal (60) checks pass. See [header evidence](archive/STICKY_HEADERS_2026-11-04.md); earlier entries are historical.
+
+
+## Black and brown - 2026-11-04 (D42)
+
+D42 changes the current visual palette to black/espresso and brown, with cream/brown light mode, retaining the bento/glass layout, language support, business rules and schema/API. Matching Android shell/icon patches 0.16.0-usb.2 are installed locally. Targeted browser/build/native evidence and limitations are in [the palette handover](archive/BLACK_BROWN_2026-11-04.md). Earlier entries are historical.
+
+
+## Bento grid and liquid glass - 2026-11-04 (D41)
+
+The verified shared UI refresh adds bento tiles and glass controls/headers/sidebar in both themes and languages, including the existing USB Android web clients. No migration, API, company/driver authority, money policy or native package changes. Nine built-browser workflows, 256 layout/language/theme combinations plus the preview, accessibility preferences and actual phone screens are verified. Read [D41 handover](archive/BENTO_GLASS_2026-11-04.md) and [current state](CURRENT_STATE.md); earlier section entries are historical.
+
+
+## Android USB follow-up - 2026-11-04 (D40)
+
+Add and install separate local-test Safeer Driver/Booking Android WebView apps over the existing shared src/ and loopback API through USB reverse port 4320. All company, driver assignment, session and offline-payment rules remain unchanged; no schema/API authority changes, account seeding, camera/offline queue, Flutter or hosted release. See [USB installation evidence](archive/ANDROID_USB_2026-11-04.md) and [mobile setup](../mobile/README.md). Earlier section entries below are historical.
+
+
+## Section 15 - 2026-11-04 (D39)
+
+Section 15 (D39) adds verified database-security policy, maintenance health, bounded HTTP work, connected/security/recovery tests and an offline release command. The passenger scope, company isolation and financial rules are unchanged. No migration, native app or remote deployment. Final evidence and current local-update state are authoritative in CURRENT_STATE; earlier entries below are historical. See [security review](security/SECTION_15_REVIEW.md), [release operations](RELEASE_READINESS.md) and [Section 15](archive/SECTION_15_RELEASE.md).
+
+
+## Section 14 - 2026-11-03 (D38)
+
+Safeer 0.15.0 adds Super Administrator platform controls/global analytics, a protected bilingual public notice and current-authority in-app notifications. Payment, refund, company membership and driver assignment rules are unchanged. Global reports use UTC posting dates and separate currencies. Existing company approval, marketplace listing, users, roles and audit workflows remain authoritative. See [platform workflow](workflows/PLATFORM_ADMINISTRATION.md) and [current state](CURRENT_STATE.md) for measured verification/local-upgrade status. Earlier section entries are historical. Stop before Section 15.
+
+
+## Section 13 — 2026-11-03 (D37)
+
+Section 13 is complete. Safeer runs locally at 0.14.0 with all thirteen migrations applied. All 118 automated checks passed (15 unit/server and 103 native PostgreSQL), including scoped read-only financial access and a 20,002-movement pagination/export-limit fixture. Source and built Finance browser workflows passed 16 layouts each. The private backup matched 1532 files and passed a protected restore/start/stop check; the existing account, settings and 49 legacy tables passed integrity comparisons. Existing financial rules are unchanged. See [financial reports](workflows/FINANCIAL_REPORTS.md) and [Section 13](archive/SECTION_13_FINANCE.md). Stop before Section 14.
+
+## Historical Section 12 checkpoint — 2026-11-03 (D36)
+
+Section 12 is complete. The local app runs 0.13.0 with all twelve migrations applied and the original account/settings preserved. It adds the owner-approved responsive driver workspace, assigned-trip manifests, printed ticket QRs, separate verification/boarding, journey events and incidents. All 109 automated checks passed (13 unit/server and 96 native PostgreSQL). Source and built driver workflows passed 32 language/theme/viewport combinations; the built station regression passed another 32. The private backup matched 1512 files, passed a protected restore/start/stop check, and the upgraded account/credentials/settings and 45 legacy tables passed integrity comparisons. Flutter remains deferred. See [driver workflow](workflows/DRIVER_BOARDING.md) and [Section 12](archive/SECTION_12_BOARDING.md). Stop before Section 13. Earlier per-section entries retain historical results.
+
+Updated: 2026-11-03. **Sections 01-12 and their local upgrades are complete** (D33-D36). The current local app runs 0.13.0 with all twelve migrations applied and its account preserved. Read [CURRENT_STATE.md](CURRENT_STATE.md), [master instructions](decisions/MASTER_INSTRUCTIONS_2026-10-30.md) and [DECISIONS.md](DECISIONS.md). Stop before Section 13. Earlier section summaries below are historical; CURRENT_STATE is authoritative.
+
+Owner-authorized 0.2.1 follow-up: collect and display a passenger luggage yes/no declaration and required description in the local prototype. This scoped change (D16) does not begin authentication or full station luggage management.
+
+## Vision and approved business model
+
+A reliable Sudan intercity passenger-transport platform: one central marketplace, individual public company booking pages, and independent private company management systems. Approved operators publish trips and fares. Passengers may book as guests; a passenger account is never mandatory. Company staff run stations, buses, passenger/luggage operations and finances within their own authorized scope.
+
+Release 1 includes passenger search, seats, temporary holds, passenger information, station payments, official tickets and receipts, linked passenger luggage, boarding, trip completion and reports. Freight, parcels and cargo delivery are excluded. Their future extension point is a separate module using approved company/route/fleet interfaces; no unused freight code or schema is built now.
+
+## Passenger and station workflow
+
+Search across approved companies -> select trip/seats -> enter full names/mobile details -> receive a temporary booking reference/countdown -> pay an authorized office/station -> employee confirms payment -> issue official tickets and payment receipt -> register/tag luggage -> verify boarding -> complete trip and luggage collection.
+
+An expired hold does not authorize payment or boarding. One booking initially belongs to one company and one trip, with multiple passengers/seats. Cross-company travel uses separate bookings; no interline settlement or combined checkout is implied.
+
+## Architecture: target versus current source
+
+| Layer | Target decision | Implemented now (Sections 01-13) |
+| --- | --- | --- |
+| Public marketplace, company pages, dashboards, station PWA | Next.js/React with TypeScript | Existing responsive JavaScript prototype retained, freight removed; no Next.js app installed |
+| Passenger and driver apps | Flutter/Dart clients | Responsive local driver workspace implemented by owner choice; no native project or build |
+| Backend | NestJS/TypeScript modular monolith, versioned APIs | NestJS identity/company/route/fleet/trip/marketplace/booking/ticketing/luggage/boarding/finance APIs, same-origin local proxy and separate fictional passenger example |
+| Durable data | PostgreSQL 18, explicit SQL migrations | Thirteen migrations and 53 application tables; private details follow the agreed erasure policies, while financial history is preserved |
+| Jobs/cache/events | Redis, idempotent workers and WebSocket availability updates | Interfaces and consistency requirements documented; services not installed |
+| Documents/storage/notifications | S3-compatible private storage, FCM where applicable | Ownership, outbox and access requirements documented; no accounts or integrations |
+
+Node 24 is retained. NestJS 12.3.2 and TypeScript 6.0.3 are pinned for the implemented identity module. Next.js/Flutter/Redis remain staged for their owning sections. The passenger demo remains a design/reference aid, separate from the real staff identity interface at `/staff`.
+
+## Modules and roles
+
+Module owners: platform administration; identity/access; companies/branches/stations; cities/routes/stops; fleet/layouts/drivers; trips; public marketplace; inventory/holds; bookings/passengers; station ticketing/payments/documents; passenger luggage; boarding; finance/reconciliation; notifications/reporting/audit.
+
+Approved initial roles: platform super administrator, platform support administrator, company administrator, branch manager, station manager, ticketing employee, boarding employee and driver. Permissions must be configurable and resource-scoped. Support financial access requires explicit authorization; driver access is limited to assigned trips and necessary passenger data. See [security design](security/ACCESS_CONTROL.md).
+
+## Development principles
+
+1. Follow the exact 15-section [roadmap](DEVELOPMENT_ROADMAP.md), one section at a time.
+2. Preserve tested work; record intentional breaking changes before editing it.
+3. Separate domain rules from transports/UI. Enforce security and consistency on the server/database.
+4. Never use mock data as live operations. Never issue a paid document without a committed valid payment.
+5. Scope private data by company and authorized branch/station/trip. Public data uses a separate approved projection.
+6. Use immutable financial/audit history, explicit state transitions, idempotency and transactional constraints.
+7. Support Arabic/English, RTL/LTR, accessible controls, low-bandwidth clients and clear errors. Do not promise offline seat sales until conflict policy is implemented and tested.
+8. Test, fix, document and archive before handing off. Do not mark proposed schema or target frameworks as implemented.
+
+Section 11 ends at its verified luggage handover. Section 12 requires explicit owner approval. No production deployment, school-app changes, restaurant/mobile changes, real passenger data or external service enrollment is authorized by this section.
+
+
+## 0.3.1 - Super Administrator role editing
+
+Owner-authorized D20 follow-up: Super Administrators can edit names, permissions and status of all eight built-in role templates and custom platform roles. Reserved owner codes/scopes remain immutable, owner authority always includes the permission catalog, and disabling the last active owner is rejected atomically. Other administrators remain restricted. Company/resource assignment remains deferred to Section 03; no schema migration or company access is added. The role editor supports Arabic/English and mobile layouts.
+
+
+## 0.3.2 - Connected workspace layout
+
+Owner-authorized D21 follow-up improves the implemented staff/passenger workspace: shared navy/teal styling, sidebar, account overview, permission-aware shortcuts, user-role navigation and language-preserving links. Business modules remain at their existing stage.
+
+
+## 0.3.3 - Skeuomorphic styling (2026-10-31)
+
+D22 owner-authorized visual follow-up: restrained skeuomorphic materials across the existing staff and passenger interfaces. Navigation and implemented scope are unchanged.
+
+
+## 0.3.4 - Dark mode (2026-10-31)
+
+D23: shared dark skeuomorphic mode is now the default across existing staff and passenger screens, with a bilingual light/dark switch. Existing implementation scope and access rules remain unchanged.
+
+
+## Section 03 implementation
+
+Authenticated company workspaces now include approval/profile/settings, branches/stations, company-owned roles, scoped staff memberships, time-limited read-only support access and company audit. Super Admin controls all companies; other staff access is derived from server-side memberships/resource scope. The passenger example remains fictional. See [company workflow](workflows/COMPANY_ACCESS.md) and [Section 03 handover](archive/SECTION_03_COMPANIES.md).
+
+## Section 04 implementation
+
+Completed and verified: Super Admin-managed city catalog, station-city assignment, company-wide route permissions and atomic route/ordered-stop planning. Route and resource constraints protect company/city links and active resources. Local upgrade and private restore verification preserve existing identities and company records. Stop before Section 05; see [route workflow](workflows/ROUTE_PLANNING.md).
+
+## Section 05 implementation
+
+Completed and verified in source: company-private buses, immutable seat-layout revisions and driver records with separate company-wide fleet and driver permissions. The real local database has not been upgraded yet; see the owner step in [Section 05](archive/SECTION_05_FLEET.md).
+
+## Section 06 implementation
+
+Completed and verified in source: company trip scheduling, stop and seat-layout snapshots, bus and driver assignment with history, publication and cancellation. The real local database has not been upgraded yet; see the owner step in [Section 06](archive/SECTION_06_TRIPS.md).
+
+## Section 07 implementation
+
+Completed and verified in source: anonymous marketplace search, company pages and company-managed public profiles over fixed database projections. The real local database has not been upgraded yet; see the owner step in [Section 07](archive/SECTION_07_MARKETPLACE.md).
+
+## Section 08 implementation
+
+Completed and verified in source: live seat maps, all-or-none anonymous holds with references and countdowns, database-clock expiry and passenger and staff release. A hold cannot yet become a ticket. The real local database has not been upgraded yet; see the owner step in [Section 08](archive/SECTION_08_RESERVATIONS.md).
+
+## Section 09 implementation
+
+Completed and verified in source: passenger details with each hold, retrieval by reference and mobile, staff booking management and automatic erasure. A hold cannot yet become a ticket. The real local database has not been upgraded yet; see the owner step in [Section 09](archive/SECTION_09_PASSENGERS.md).
+
+## Section 10 implementation
+
+Completed and verified in source: counter sessions, payments, walk-in sales, tickets, receipts, refunds and marked reprints. No real payment system is connected, and receipt wording, tax and legal retention are undecided. The real local database has not been upgraded yet; see the owner step in [Section 10](archive/SECTION_10_TICKETING.md).
+
+## Section 11 implementation
+
+Completed and verified in source: traveler luggage declarations, bag registration, QR tags, tracking, problems and collection. There is no allowance or fee, and no camera scanning. The real local database has not been upgraded yet; see the owner step in [Section 11](archive/SECTION_11_LUGGAGE.md).

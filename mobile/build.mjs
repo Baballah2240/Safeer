@@ -1,0 +1,14 @@
+import {existsSync,readdirSync,readFileSync} from 'node:fs';
+import {resolve,join} from 'node:path';
+import {spawnSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
+const android=fileURLToPath(new URL('./android/',import.meta.url));
+const jdks=join(process.env.USERPROFILE||'','.gradle/jdks');
+const candidates=[process.env.JAVA_HOME,...(existsSync(jdks)?readdirSync(jdks).map(n=>join(jdks,n)):[]),'C:/Program Files/Android/Android Studio/jbr'].filter(Boolean);
+const javaHome=candidates.find(p=>existsSync(join(p,'bin/java.exe'))&&existsSync(join(p,'release'))&&/JAVA_VERSION="(?:17|21)(?:\.|\")/.test(readFileSync(join(p,'release'),'utf8')));
+if(process.platform!=='win32')throw Error('Use mobile/android/gradlew assembleDriverDebug assembleBookingDebug on your Android build environment.');
+if(!javaHome)throw Error('Set JAVA_HOME to a compatible JDK 17 or 21.');
+const sdk=process.env.ANDROID_HOME||process.env.ANDROID_SDK_ROOT||join(process.env.LOCALAPPDATA||'','Android/Sdk');
+if(!existsSync(join(sdk,'platforms/android-35/android.jar')))throw Error('Install Android SDK platform 35 first.');
+const r=spawnSync(process.env.ComSpec||'cmd.exe',['/d','/c','gradlew.bat','--offline','--no-daemon','assembleDriverDebug','assembleBookingDebug','lintDriverDebug','lintBookingDebug'],{cwd:android,windowsHide:true,stdio:'inherit',env:{...process.env,DEBUG:'',JAVA_HOME:javaHome,ANDROID_HOME:resolve(sdk)}});
+process.exitCode=r.status??1;

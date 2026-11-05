@@ -1,0 +1,311 @@
+# Database schema and migration status
+
+## Driver sidebar and mobile fullscreen - D52
+
+Driver now matches Booking with sidebar navigation and appearance/language Settings; operational refresh/logout and assigned-trip rules remain. Both local Android clients remove native toolbars and use immersive fullscreen with swipe-reveal system controls and safe cutout/keyboard insets. USB patch .5/16005 preserves app data. No schema/API, authority, money or hosting change. See [D52 handover](archive/MOBILE_FULLSCREEN_2026-11-05.md); prior evidence is historical.
+
+
+## Booking sidebar and settings - D51
+
+Booking removes its native title/Home/Refresh/Print toolbar. Shared public Booking navigation now uses a compact menu trigger and accessible side drawer with trip search, My booking, staff access and appearance/language Settings. Driver keeps its native tools. Local USB patch .4/16004 preserves app data and server permissions; no schema, money or hosting change. See [D51 handover](archive/BOOKING_SIDEBAR_2026-11-05.md); prior evidence is historical.
+
+
+## USB mobile update - D50
+
+The owner requests installing the current shared UI into both USB Android clients. Local test version is 0.16.0-usb.3/16003; build/lint/save and replacement installation preserve app data and existing server accounts. Keep the computer, Safeer service and USB tunnel connected. No schema/API, roles, money or hosting change. See [D50 handover](archive/ANDROID_UPDATE_2026-11-05.md) for verified results; prior evidence is historical.
+
+
+## Floating header curve and glass - D49
+
+Headers now leave 12px desktop/10px mobile top clearance, retained while sticky, so the full rounded edge is visible. Softer tint, broad reflections, brighter edges and layered shadows refine the glass; scroll clearance includes the gap. Above-sidebar controls, bilingual layout and accessibility remain. No schema/API, authority, account, money or native change. See [D49 handover](archive/FLOATING_HEADER_2026-11-05.md); earlier evidence is historical.
+
+
+## Toggle above the sidebar - D48
+
+The circular button now sits in its own toolbar above the staff/preview sidebar, outside header actions. When collapsed it stays in the leading top corner, with reserved header space for safe restoration. Saved preference, keyboard/ARIA and responsive RTL/LTR behavior remain. No schema/API, authority, business data or native change. See [D48 handover](archive/SIDEBAR_POSITION_2026-11-05.md); older evidence below is historical.
+
+
+## Circular sidebar button - D47
+
+The header sidebar toggle follows the supplied reference: circular glass, small two-line menu icon and no visible text. A 44px target, translated accessible name/title and all saved hide/restore behavior remain. No API, schema, account, permission, money or native change. See [D47 handover](archive/CIRCULAR_SIDEBAR_2026-11-04.md); prior evidence below is historical.
+
+
+## Marketplace announcement - D46
+
+The public notice is now a compact aligned glass announcement with an SVG icon, translated Travel update label and wrapping message. Existing protected bilingual settings and plain-text escaping remain. No schema, API, account, permission, financial or native-code change. Read [D46 handover](archive/MARKETPLACE_NOTICE_2026-11-04.md) for verification/checkpoint details; prior evidence below is historical.
+
+
+## Frosted reference glass - D45
+
+The supplied visual reference guides clearer translucent headers/sidebar, pill controls and frosted summary tiles over warm ambient gradients. Black/brown identity, readable operational panels, sticky headers and the saved sidebar toggle remain. No schema, API, authority, account, money or native-package change. See [D45 handover](archive/REFERENCE_GLASS_2026-11-04.md) for verification and the local checkpoint; prior evidence below is historical.
+
+
+## Sidebar visibility - D44
+
+A header button hides/restores the staff and fictional-preview sidebars, expanding the workspace without re-rendering forms. A device-local preference survives navigation/reload; Arabic/English labels, keyboard operation and hidden-navigation focus are supported. No API, schema, authority, money, account or native package change. Read [D44 handover](archive/SIDEBAR_TOGGLE_2026-11-04.md) for verification and the local source checkpoint. Earlier evidence below is historical.
+
+
+## Sticky liquid-glass headers - 2026-11-04 (D43)
+
+D43 keeps staff, Driver, Booking/marketplace and preview headers at the viewport top on scroll, using Apple-inspired layered glass within the black/brown palette. Actual header height protects scrolled form fields; no schema/API, business, account or native package change. Targeted scrolling (64 combinations) and Identity/modal (60) checks pass. See [header evidence](archive/STICKY_HEADERS_2026-11-04.md); earlier entries are historical.
+
+
+## Black and brown - 2026-11-04 (D42)
+
+D42 changes the current visual palette to black/espresso and brown, with cream/brown light mode, retaining the bento/glass layout, language support, business rules and schema/API. Matching Android shell/icon patches 0.16.0-usb.2 are installed locally. Targeted browser/build/native evidence and limitations are in [the palette handover](archive/BLACK_BROWN_2026-11-04.md). Earlier entries are historical.
+
+
+## Bento grid and liquid glass - 2026-11-04 (D41)
+
+The verified shared UI refresh adds bento tiles and glass controls/headers/sidebar in both themes and languages, including the existing USB Android web clients. No migration, API, company/driver authority, money policy or native package changes. Nine built-browser workflows, 256 layout/language/theme combinations plus the preview, accessibility preferences and actual phone screens are verified. Read [D41 handover](archive/BENTO_GLASS_2026-11-04.md) and [current state](CURRENT_STATE.md); earlier section entries are historical.
+
+
+## Android USB follow-up - 2026-11-04 (D40)
+
+Add and install separate local-test Safeer Driver/Booking Android WebView apps over the existing shared src/ and loopback API through USB reverse port 4320. All company, driver assignment, session and offline-payment rules remain unchanged; no schema/API authority changes, account seeding, camera/offline queue, Flutter or hosted release. See [USB installation evidence](archive/ANDROID_USB_2026-11-04.md) and [mobile setup](../mobile/README.md). Earlier section entries below are historical.
+
+
+## Section 15 - 2026-11-04 (D39)
+
+No Section 15 schema migration. Existing migrations 0001-0014, 56 tables, 48 RLS tables and 33 permissions remain. Reviewed config/database-security.json checks all table/RLS and effective table/column privileges plus exactly 60 callable signatures. Runtime-owned functions, PUBLIC execution, unsafe SECURITY DEFINER paths and missing functions are rejected at startup. This does not rewrite existing policies/records/grants. See [security review](security/SECTION_15_REVIEW.md), [release operations](RELEASE_READINESS.md) and [Section 15](archive/SECTION_15_RELEASE.md).
+
+
+## Section 14 schema - migration 0014_platform.sql
+
+Adds three private RLS tables: platform_settings (one versioned bilingual notice), notification_events (identity bigint, company/event/source/revision/time with deduplication) and notification_reads (user/event primary key and read time). Runtime has no raw table privileges. Fixed projections/capture helpers are SECURITY DEFINER with trusted search paths and PUBLIC revocation. Six callable entry functions alone are granted. Six source-table trigger bindings generate seven event types transactionally. Posting-date indexes support global payment/refund aggregates. Existing tables, credentials, roles and financial policies are unchanged. Expected totals: 56 application tables, 48 RLS tables and 33 permissions. See [current verification](CURRENT_STATE.md) and [workflow](workflows/PLATFORM_ADMINISTRATION.md).
+
+
+## Section 13 — 2026-11-03 (D37)
+
+Section 13 is complete. Safeer runs locally at 0.14.0 with all thirteen migrations applied. All 118 automated checks passed (15 unit/server and 103 native PostgreSQL), including scoped read-only financial access and a 20,002-movement pagination/export-limit fixture. Source and built Finance browser workflows passed 16 layouts each. The private backup matched 1532 files and passed a protected restore/start/stop check; the existing account, settings and 49 legacy tables passed integrity comparisons. Existing financial rules are unchanged. See [financial reports](workflows/FINANCIAL_REPORTS.md) and [Section 13](archive/SECTION_13_FINANCE.md). Stop before Section 14.
+
+## Historical Section 12 checkpoint — 2026-11-03 (D36)
+
+Section 12 is complete. The local app runs 0.13.0 with all twelve migrations applied and the original account/settings preserved. It adds the owner-approved responsive driver workspace, assigned-trip manifests, printed ticket QRs, separate verification/boarding, journey events and incidents. All 109 automated checks passed (13 unit/server and 96 native PostgreSQL). Source and built driver workflows passed 32 language/theme/viewport combinations; the built station regression passed another 32. The private backup matched 1512 files, passed a protected restore/start/stop check, and the upgraded account/credentials/settings and 45 legacy tables passed integrity comparisons. Flutter remains deferred. See [driver workflow](workflows/DRIVER_BOARDING.md) and [Section 12](archive/SECTION_12_BOARDING.md). Stop before Section 13. Earlier per-section entries retain historical results.
+
+## Historical local upgrade (D34)
+
+Verified 2026-11-02: migrations 0001-0011 are applied to the existing private local database. It contains 49 application tables, 41 RLS tables and 30 permissions. The original account/credential records and 18 legacy tables passed pre/post-upgrade integrity comparisons. Earlier per-section counts below describe historical checkpoints. No existing company role copies were granted extra capabilities automatically.
+
+## Implemented Section 04 (D25)
+
+Migration 0004_routes.sql adds cities (global authenticated catalog; Super Admin writes), routes (company_id, unique code, bilingual names, different endpoint city FKs, active, edit version) and route_stops (company_id/route_id/stop_index PK, city FK, optional station FK matching company and city). Stops range 0-29; deferred triggers require 2-30 contiguous stops matching endpoints. Duplicate city/station pairs are unique including NULL station. Station city_id is nullable on upgrade, with an indexed FK and unique(company_id,id,city_id) for stop references. Existing station IDs/data and tenant role copies are preserved.
+
+Routes/stops have company-wide RLS; cities use authenticated reads/Super Admin writes. Limited runtime receives no city/route DELETE or stop UPDATE. Fixed-search-path owner helpers validate full routes and guard active resource references. Runtime adds route_manage(uuid) execution only. Capacity/resource checks serialize with the existing authorization advisory lock. City changes enter identity audit; routes enter company audit. Total: 22 application tables, 14 RLS tables, 17 permissions. Existing company-role copies are not silently granted new permissions. Current route uniqueness is company/code, with an optimistic version counter; future trips require immutable snapshots.
+
+
+## Implemented Section 01 objects
+
+PostgreSQL 18. The migration runner creates private `safeer_meta.schema_migrations(version integer PK, name text UNIQUE, checksum text, applied_at timestamptz)`. Migration `0001_foundation.sql` creates the private `safeer` namespace. PUBLIC receives no namespace/ledger access. Section 02 adds identity objects below; company objects are added by Section 03; reservation, financial and registered luggage tables remain deferred.
+
+The passenger prototype still uses memory. Staff access uses the identity service and a limited PostgreSQL runtime login. Native tests use disposable databases; the optional local launcher creates a separate persistent development database under ignored `runtime/`. No school, restaurant or production database is used.
+
+## Implemented Section 02 objects
+
+Migration [0002_identity.sql](../database/migrations/0002_identity.sql) creates eight identity tables: users, sessions, roles, permissions, role_permissions, platform_user_roles, identity_audit and auth_throttles. Users have normalized unique email login, salted scrypt hash, active/temporary-password flags, optimistic version and credential version. Sessions have only token hashes, credential version, absolute expiry, last activity and revocation; idle expiry is checked at request time. No plaintext password or session token is persisted in the database.
+
+Eight built-in role templates and six implemented identity permissions are seeded. Only platform-scope roles can be assigned here: a composite role/scope FK plus a platform-only check rejects company/branch/station/trip assignments. Company memberships/custom company roles/support grants are implemented in Section 03, and later permission catalogs are not seeded as fake working grants.
+
+The global identity mutation advisory lock `(94106,2)` serializes authorization-sensitive changes, with a shared lock for reads. It makes last-active-owner checks and reauthorization atomic across sessions/role changes. Login limits use hashed keys and database reset instants. Identity audit contains UUID actor/target, action and timestamp only; the runtime role cannot update/delete audit records or mutate the permission catalog. This is identity consistency, not a business inventory/tenant isolation implementation.
+
+[runtime-grants.mjs](../database/runtime-grants.mjs) grants only the DML needed by this module. The API refuses superuser/BYPASSRLS or schema-CREATE connections; the local developer launcher uses separate migration-owner and runtime credentials. Section 03 adds RLS for company resources.
+
+The 0.2.1 prototype adds in-memory reservation fields `hasLuggage` (boolean) and `luggageDescription` (trimmed text, required at 1-300 characters when true, empty when false). No SQL migration or luggage record is created. In Section 09 persist the equivalent `has_luggage` / `luggage_description` declaration on each booking passenger, with an invariant enforcing the same rules; existing historical data needs an explicit migration policy. Section 11 registration remains a separate verified record linked to that passenger.
+
+## Implemented Section 03 objects
+
+[0003_companies.sql](../database/migrations/0003_companies.sql) adds companies, company_settings, branches, stations, company_roles, company_role_permissions, company_users, company_user_roles, support_access_grants, support_access_grant_permissions and company_audit (11 new / 19 total application tables).
+
+Company slugs are globally unique; branch/station codes are company-unique. Company settings store hold minutes (5-1440), IANA timezone and language. Companies have pending/approved/suspended/archived state. Members are unique per company/global user and keep a company-local display name and active flag. Up to ten role assignments bind company, branch or station scope, with composite company/member/role/scope/resource FKs and NULLS NOT DISTINCT uniqueness. Stations' (company,branch,id) keys prevent mixing branches in assignments. No trip assignment, city catalog, counter or currency/money table is introduced here.
+
+All eleven tables enable RLS. company_actor validates a raw transaction-local session against hashed sessions, active credentials, first-password change and absolute/idle expiry. company_can/company_has evaluate the current scope, active parent resources and explicit expiring support grants; platform permission names alone do not confer company membership. Security-definer helpers use a fixed pg_catalog path and fully qualified names; execution is revoked from PUBLIC and selectively granted to the non-owner runtime login. No GUC actor ID/company ID/super flag can bypass those checks.
+
+Policies restrict tenant reads/writes and grant ceilings. Immutable-ownership triggers reject transferring existing tenant rows. Deferred last-company-administrator constraints check final transactional state, including global user deactivation, under the shared authorization lock. A capable company administrator retains company-scoped profile/staff/role read and staff/role management permissions. Company audit is append-only for runtime. Only Super Admin changes approval/slug or support grants. Support permissions are restricted by CHECK to profile/resources/audit reads, with maximum 24-hour expiry and reason/approver/history.
+
+Local capacities are enforced by owner-defined insert triggers (serialized with the authorization lock): 200 companies; per company 100 branches, 200 stations, 500 members, 50 roles, 500 support-history rows; 10 assignments/member. Lists are complete within these bounds; audit returns the latest 100 permitted events. Global templates receive the nine new company permissions and version increments to invalidate stale editors; existing user/credential/session rows remain unchanged. Tenant copies only inherit templates at company creation.
+
+## Naming, keys and ownership for future migrations
+
+- UUID surrogate IDs. Each company-owned table has non-null company_id, FK companies(id), and UNIQUE(company_id,id). Child references to private parents use `(company_id,parent_id) -> parent(company_id,id)`; checking only a UUID is insufficient to prevent cross-company links.
+- Global identity/catalog rows are explicitly designated below. Passengers/customer history are company-private, even when the same phone appears at several operators. Public projections never expose these tables directly.
+- Use timestamptz for instants, a separate IANA timezone for local schedule interpretation, and ordered stop indexes for journey segments. Avoid hard deletion of operational/financial history; explicit status/event records control lifecycle.
+- Amounts use bigint minor units, currency_code and immutable exponent/price snapshots. API amounts are integer strings. Quantities/weights use suitable checked integer/numeric fields, not formatted text.
+- FK delete defaults are RESTRICT; cascades are allowed only for documented nonhistorical child/config records. Index referencing FK columns and tenant/time access paths. Unique constraints are authoritative, not pre-insert UI checks.
+
+The catalog below remains the full target contract. The eight Section 02 tables listed above are implemented; company-role/membership rows marked 02/03 and Section 03 tables above are implemented; later business tables remain proposed. Their owning sections add migrations, constraints, repositories and authorization/RLS tests before use. Actual Section 02/03/04 DDL is authoritative where the earlier catalog is abbreviated.
+
+## Complete planned entity catalog
+
+| Owner section | Entity | Important fields and relationships | Keys, constraints and primary indexes |
+| --- | --- | --- | --- |
+| 02 | users (global identity) | id, normalized_login, password_hash, active, credential_version, created_at | Unique normalized login where applicable; no shared company customer listing |
+| 02 | sessions (identity-private) | user_id, token_hash, expires_at, revoked_at, device metadata | Unique token hash; user/expiry index; tokens never plaintext |
+| 02 | roles (global built-in templates) | code, scope(platform/company/branch/station/trip), label keys | Unique code; immutable template scope |
+| 02 | permissions (global catalog) | code, module, sensitivity | Unique permission code; no caller-defined grants |
+| 02 | role_permissions (global templates) | role_id, permission_id | Composite PK; FK to both catalogs |
+| 02/03 | company_roles | company_id, template_id optional, code, display_name | Unique(company_id,code); custom definitions stay tenant-owned |
+| 02/03 | company_role_permissions | company_id, company_role_id, permission_id | Same-company role FK; unique role/permission pair |
+| 02/03 | company_users | company_id, user_id, branch_id/station_id optional, active, employee profile | Unique(company_id,user_id); scoped resource FKs; user index |
+| 02/03 | company_user_roles | company_id, company_user_id, company_role_id, resource_scope | Same-company FKs; unique assignment; scope validated against resource owner |
+| 02 | platform_user_roles (platform-private) | user_id, role_id, assignment actor/time | Restrict to platform role scope; separate from company membership |
+| 03 | companies | id, slug, names, approval_status, active, contact/logo document refs | Unique normalized slug; approval/status index; audit approval changes |
+| 03 | company_settings | company_id, hold_seconds, timezone, locale, policy_version | One row per company; positive bounded hold; enabled money catalogs use normalized child rows |
+| 03/10 | company_currencies | company_id, currency_code, enabled, is_default | Unique company/currency; global currency FK; at most one enabled default; historical money retains exponent snapshots |
+| 10 | company_payment_methods | company_id, method_code, enabled, evidence_policy | Unique company/method; approved method codes; validate current enablement in payment use case without invalidating historical records |
+| 03 | branches | company_id, code, names, contact, active | Unique(company_id,code) |
+| 03 | stations | company_id, branch_id, city_id, code, names, location, active | Same-company branch FK; unique(company_id,code); city FK |
+| 03/10 | counters | company_id, station_id, code, active | Same-company station FK; unique(company_id,station_id,code) |
+| 03 | support_access_grants (platform-controlled/private) | company_id, support_user_id, permissions, reason, approved_by, expires_at, revoked_at | Expiry/revocation checks; company/user/time indexes; changes audited |
+| 03 | support_access_grant_permissions | company_id, grant_id, permission_id | Same-company grant FK and global permission FK; unique grant/permission; no unvalidated free-form permission list |
+| 04 | cities (global approved catalog) | id, canonical_code, name_ar/en, country_code, active | Unique canonical code; localized search indexes as measured |
+| 04 | routes | company_id, code, origin_city_id, destination_city_id, active, version | Different endpoints; city FKs; unique(company_id,code); optimistic edit version (D25) |
+| 04 | route_stops | company_id, route_id, stop_index, city_id, station_id optional | Unique(company_id,route_id,stop_index); stop order/range checks; same-company station |
+| 05 | seat_layouts | company_id, code, version, rows/configuration, immutable_at | Unique(company_id,code,version); prohibit in-place edits once used |
+| 05 | seats | company_id, seat_layout_id, label, row/column, class, active | Unique(company_id,seat_layout_id,label); valid positions |
+| 05 | buses | company_id, code, registration, bus_category, seat_layout_id, active | Same-company layout; unique company fleet code/registration as approved |
+| 05 | drivers | company_id, company_user_id optional, employee_code, required operational details | Same-company employee FK; unique company driver code |
+| 06 | trips | company_id, route_id/version, service_date, departure_at, arrival_at, timezone, status, fare/currency snapshot | Valid times; company/departure/status index; published search projection |
+| 06 | trip_assignments | company_id, trip_id, bus_id, driver_id, assigned_at, replaced_at, reason | Same-company FKs; one active bus assignment/trip; assignment history preserved |
+| 06 | trip_stops | company_id, trip_id, stop_index, source_route_stop_id, city/station/time snapshot | Unique(company_id,trip_id,stop_index); immutable after sales except controlled changes |
+| 06/08 | trip_seat_inventory | company_id, trip_id, source_seat_id, seat_label/class snapshot | Unique(company_id,trip_id,seat_label); row is a stable lock anchor, not a cached availability truth |
+| 09 | passengers | company_id, full_name, mobile_normalized, optional user link, retention metadata | Company/mobile search index; phone is not universally unique |
+| 08/09 | bookings | company_id, trip_id, reference, guest_access_hash, status, expires_at, policy/fare/currency/amount snapshots | Unique reference; unique access hash; company/status/expiry indexes; one owning company/trip |
+| 09 | booking_passengers | company_id, booking_id, passenger_id, name/contact snapshot, travel category | Same-company FKs; stable per-traveler identity and document links |
+| 08 | seat_allocations | company_id, trip_id, trip_seat_id, booking_id, booking_passenger_id optional, segment int4range, status, expires_at | Active held/confirmed allocations exclude overlapping seat ranges; company/trip/seat index |
+| 08 | seat_holds | company_id, booking_id, allocation_id, created_at, expires_at, released_at/reason | Same-company allocation/booking; unique allocation hold; due-expiry partial index |
+| 10 | tickets | company_id, booking_id, booking_passenger_id, allocation_id, ticket_number, qr_token_hash, status, issue snapshot | Unique company ticket number and QR hash; one valid ticket per travel allocation; paid-allocation invariant |
+| 10 | payments | company_id, booking_id, station/counter/session_id, method, amount_minor, currency/exponent, status, actor, confirmed_at, reversal_of_id | Positive posted amount; same-company/currency invariants; immutable posted records; company/station/time index |
+| 10 | payment_allocations | company_id, payment_id, booking_id, amount_minor, currency | Same-company FKs; positive values; totals validated under booking/payment locks |
+| 10 | receipts | company_id, payment_id, receipt_number, issued_by, document_id, snapshot | Unique company receipt number; unique original receipt/payment; reprints reference original |
+| 10 | refunds | company_id, original_payment_id, amount_minor, reason, actor, approved_by, reversal_movement_id | Positive value; cumulative eligible maximum checked under lock; immutable posted refund |
+| 10/13 | cash_sessions | company_id, station_id, counter_id, opened_by/at, opening_minor, closed_by/at, declared/expected totals | Unique active session per company/counter; close cannot precede open; currency policy explicit |
+| 10/13 | cash_movements | company_id, session_id, payment/refund/reversal link, direction/type, amount_minor, currency, actor, occurred_at | Same-company FK; unique source movement; immutable after posting; session/time index |
+| 10 | document_sequences | company_id, document_type, scope/fiscal_period, next_value | Unique company/type/scope; lock when allocating numbers; no assumed gap-free numbering |
+| 11 | luggage_records | company_id, booking_id, booking_passenger_id, ticket_id optional until issued, trip_id, bus snapshot, luggage_number, category, quantity, weight_kg, description, handling, lifecycle_status | Unique company luggage number; same-company and matching passenger/trip validation; checked nonnegative weight/positive quantity |
+| 11 | luggage_tags | company_id, luggage_record_id, tag_number, qr_token_hash, document_id, issued_at, replaced_by_id | Unique tag and QR hash; replacements preserve history |
+| 11 | luggage_events | company_id, luggage_record_id, prior/new state, event_type, actor, station, time, reason | Append-only transitions; exception/resolution independent of lifecycle; luggage/time index |
+| 12 | boarding_records | company_id, trip_id, ticket_id, passenger_id, boarding_station_id, actor, boarded_at, verification result | Unique successful boarding per ticket/journey; authorized assigned trip; scan retries idempotent |
+| 12 | trip_events / incidents | company_id, trip_id, type(departure/arrival/completion/incident), actor/time, details | Same-company trip FK; valid lifecycle transitions; incident data access limited |
+| 10-14 | documents | company_id, type, owner record link, private object key, content hash, render/version/locale, created_at | Unique object key/hash policy; owner FK via typed association tables; no unvalidated polymorphic orphan IDs |
+| 08+ | idempotency_records | company_id, principal/capability_hash, operation, key_hash, request_hash, result record refs, status, expires_at | Unique company/principal/operation/key; atomically tied to operation; retention longer than retry window |
+| 08+ | outbox_events | company_id, event_id/type/version, aggregate id, payload, created_at, delivered_at, attempts | Unique event ID; pending/time index; payload excludes unnecessary PII |
+| 14 | notifications | company_id, recipient/capability reference, channel, template/version, status, provider id, dedupe key | Same-company recipient ownership; unique dedupe key; retry/time index; no plaintext tokens in logs |
+| 02+ | audit_logs | company_id for company events, actor, action, resource id, scoped metadata, request/correlation id, occurred_at | Append-only; company/time and actor/time indexes; no passwords/tokens/full passenger payloads |
+| 02+ | platform_audit_logs (platform-private) | actor, action, affected_company_id optional, reason/grant, correlation/time | Separate from company-owned audit; global access explicitly authorized |
+| 03/10 | currencies (global configurable catalog) | code, exponent, label keys, active | Unique code, checked exponent; money snapshots prevent later catalog changes rewriting history |
+
+## Relationship overview
+
+```mermaid
+erDiagram
+  COMPANIES ||--o{ COMPANY_USERS : authorizes
+  USERS ||--o{ COMPANY_USERS : joins
+  COMPANIES ||--o{ BRANCHES : owns
+  BRANCHES ||--o{ STATIONS : contains
+  COMPANIES ||--o{ ROUTES : publishes
+  ROUTES ||--o{ ROUTE_STOPS : orders
+  ROUTES ||--o{ TRIPS : schedules
+  TRIPS ||--o{ TRIP_SEAT_INVENTORY : snapshots
+  TRIPS ||--o{ BOOKINGS : receives
+  BOOKINGS ||--o{ BOOKING_PASSENGERS : includes
+  BOOKINGS ||--o{ SEAT_ALLOCATIONS : claims
+  TRIP_SEAT_INVENTORY ||--o{ SEAT_ALLOCATIONS : protects
+  SEAT_ALLOCATIONS ||--o{ SEAT_HOLDS : records
+  BOOKINGS ||--o{ PAYMENT_ALLOCATIONS : settles
+  PAYMENTS ||--o{ PAYMENT_ALLOCATIONS : allocates
+  PAYMENTS ||--o{ RECEIPTS : documents
+  BOOKING_PASSENGERS ||--o{ TICKETS : travels
+  BOOKING_PASSENGERS ||--o{ LUGGAGE_RECORDS : carries
+  LUGGAGE_RECORDS ||--o{ LUGGAGE_TAGS : identifies
+  LUGGAGE_RECORDS ||--o{ LUGGAGE_EVENTS : tracks
+  TICKETS ||--o{ BOARDING_RECORDS : verifies
+```
+
+Every private relationship above includes the owning company, even where the diagram omits it for readability.
+
+## Seat and payment integrity strategy
+
+One allocation table represents both held and confirmed inventory so overlapping claims are constrained in one place. Planned exclusion: company equality + trip equality + trip-seat equality + overlapping `int4range` for active statuses. The `btree_gist` extension is introduced only with that tested migration in Section 08. Never build an index predicate using `now()` to simulate expiry. Transition expired claims under the same ordered seat locks before allocating replacements; a delayed job cannot block legitimate reassignment forever.
+
+Payment confirmation locks the booking and allocations, reads a fresh database clock after any wait, then validates active ownership and balance. Commit money/allocation/ticket/receipt/cash/audit/outbox records together. Cross-row totals, paid-ticket eligibility and matching passenger/trip links need transactional services and, where suitable, database triggers; a CHECK constraint alone cannot express arbitrary cross-table totals.
+
+## Migration history and policy
+
+| Migration | Executable changes | Owning section |
+| --- | --- | --- |
+| 0001_foundation.sql | Private safeer namespace; migration runner manages private checksum ledger | 01 |
+| 0002_identity.sql | Identity tables, role templates, sessions and audit | 02 |
+| 0003_companies.sql | Eleven company tables, scoped access, RLS and administrator guards | 03 |
+| 0004_routes.sql | Cities, station city links, company routes and ordered stops with RLS/consistency guards | 04 |
+| 0005_fleet.sql | Seat layouts, immutable revisions and seats, buses and drivers with RLS/consistency guards | 05 |
+| 0006_trips.sql | Trips, stop and assignment snapshots with RLS, status rules and overlap protection | 06 |
+| 0007_marketplace.sql | Company public profiles and fixed anonymous read projections | 07 |
+| 0008_reservations.sql | Seat holds, allocations with an exclusion constraint, hold history and fixed projections | 08 |
+| 0009_passengers.sql | Passenger details apart from booking history, retrieval, staff booking access and erasure | 09 |
+| 0010_ticketing.sql | Counters, cash sessions, numbered documents, payments, receipts, tickets, refunds and print records | 10 |
+| 0011_luggage.sql | Traveler declaration, bags, QR tags, append-only events, exceptions and the refund block | 11 |
+| Future sequential files | Only the implemented module's reviewed DDL/constraints/indexes/policies | 10 onward |
+
+Use append-only sequential `0001_name.sql` files. The runner normalizes CRLF, hashes contents, checks applied names/versions/checksums, obtains a transaction-level advisory lock, and commits all pending files with their ledger rows atomically. SQL files must not contain their own transaction control or nontransactional statements. Drift/unknown history fails closed. No automatic down-migrations or edits to applied files; use reviewed forward corrections. Keep schema-owner and application credentials separate.
+
+See [database operations](database/MIGRATIONS.md) for local commands, test setup, upgrade/backfill and recovery requirements.
+
+
+## 0.3.1 - Super Administrator role editing
+
+Owner-authorized D20 follow-up: Super Administrators can edit names, permissions and status of all eight built-in role templates and custom platform roles. Reserved owner codes/scopes remain immutable, owner authority always includes the permission catalog, and disabling the last active owner is rejected atomically. Other administrators remain restricted. Company/resource assignment remains deferred to Section 03; no schema migration or company access is added. The role editor supports Arabic/English and mobile layouts.
+
+
+## 0.3.2 - Connected workspace layout
+
+No schema or grants change in this layout update. User-role names are resolved from the existing authorized roles endpoint. Search filters the currently loaded page only; it does not imply a global user search.
+
+
+## 0.3.3 - Skeuomorphic styling (2026-10-31)
+
+No database, migration, grants or stored data changes. All material styling is CSS-only.
+
+
+## 0.3.4 - Dark mode (2026-10-31)
+
+No schema, grants or runtime records change. Only the non-sensitive theme preference (safeer.theme: dark/light) is persisted in browser local storage, with a blocked-storage fallback.
+
+## Implemented Section 05 (D26)
+
+Migration 0005_fleet.sql adds seat_layouts (stable code, bilingual names, active, edit version, latest_revision), seat_layout_revisions (revision, row_count, column_count, seat_count, created_by), seat_layout_seats (row, column, unique case-insensitive label), buses (code, registration, same-company layout revision FK) and drivers (employee code, bilingual names, optional phone, optional same-company member FK).
+
+All five have company-wide RLS. Limited runtime receives no DELETE on any of them and no UPDATE on revisions or seats. Owner-level triggers also reject revision and seat UPDATE, DELETE and TRUNCATE, so history is protected from the database owner too. Seats can only join a revision created in the same transaction, which seals it at commit. Deferred validation requires a latest revision whose seat count matches. There are 27 application tables plus the migration ledger and 19 RLS tables.
+
+## Implemented Section 06 (D27)
+
+Migration 0006_trips.sql adds trips (route snapshot, status, timezone, departure and arrival, fare in minor units, currency, cancel reason), trip_stops (stop index, minutes after departure, city and station snapshot) and trip_assignments (bus, driver, seat-layout revision, seat count and name snapshots, replaced_at, replaced_reason, one current assignment per trip).
+
+All three have company-wide RLS. Limited runtime receives no DELETE. Owner-level triggers fill snapshots, enforce status rules and publish conditions, reject overlapping buses or drivers and keep assignment history from being rewritten or deleted. Deferred validation requires every route stop, strictly increasing minutes from 0 and an arrival matching the last stop. There are 30 application tables plus the migration ledger and 22 RLS tables.
+
+## Implemented Section 07 (D28)
+
+Migration 0007_marketplace.sql adds company_public_profiles (listed, bilingual about text, public phone, email and address, version) with RLS, and the projections public_trips, public_cities and public_companies. There are 31 application tables plus the migration ledger and 23 RLS tables.
+
+## Implemented Section 08 (D30)
+
+Migration 0008_reservations.sql adds the btree_gist extension and the tables bookings, seat_allocations and booking_events, all with row security and no runtime grants. There are 34 application tables plus the migration ledger and 26 RLS tables. This differs from the plan above in three ways: the trip row is the lock anchor, so trip_seat_inventory is not created; expires_at on bookings and allocations replaces seat_holds; and allocation seats are identified by row and column in the assignment's layout revision. Bookings hold no passenger data and no guest_access token, only a hash of the browser's key.
+
+## Implemented Section 09 (D31)
+
+Migration 0009_passengers.sql adds booking_contacts (mobile, erase_at, erased_at, version) and booking_passengers (one row per allocation with full_name and optional mobile), with row security and no runtime grants. There are 36 application tables plus the migration ledger and 28 RLS tables. It allows erasure to clear staff reasons on otherwise immutable history, and replaces booking_view and staff_seat_map. This differs from the plan above: there is no shared passengers table, because each booking keeps its own details and they are erased with it.
+
+## Implemented Section 10 (D32)
+
+Migration 0010_ticketing.sql adds company_payment_settings, station_counters, cash_sessions, document_sequences, payments, receipts, tickets, refunds and document_prints, all with row security and no runtime grants. There are 45 application tables plus the migration ledger and 37 RLS tables. Bookings gain the statuses confirmed and refunded, and seat claims stay exclusive through seat_allocations_no_sharing. Guards refuse changes to money records. This differs from the plan above: payment_allocations and cash_movements are not created, because a payment settles exactly one booking and expected cash is worked out from the permanent payment and refund records. Names on tickets follow the 90-day erasure; financial records are kept.
+
+## Implemented Section 11 (D33)
+
+Migration 0011_luggage.sql adds luggage_records, luggage_tags (only a hash of the QR value, with replacement history), luggage_events (append-only) and luggage_exceptions (at most one open per bag, beside the lifecycle), all with row security and no runtime grants. There are 49 application tables plus the migration ledger and 41 RLS tables. booking_passengers gains luggage_note, erased with the name. This replaces the earlier has_luggage / luggage_description plan with one optional note, where empty means none. A trigger on refunds refuses a refund while a bag on that booking is neither collected nor lost.
+
+## Section 12 schema
+
+Migration 0012 adds ticket_credentials (same-company ticket FK, stable opaque QR, private access); boarding_records (same-company trip/ticket FKs, unique ticket boarding, actor/database time); journey_events (unique departure/arrival per trip); and journey_incidents (bounded note, kind, idempotency key/request digest, actor/time). New tables have RLS enabled and no runtime table grants. Trusted SQL helpers derive authority from the session and current assignment. Total after application: 53 application tables, 45 RLS tables, 32 permissions. Prior financial/migration history is preserved. The previous erasure routine is wrapped to clear incident notes without losing passenger/luggage cleanup.
+
+## Section 13 financial projections
+
+Migration 0013_finance.sql adds company.finance.read, finance_movements/report/options/audit functions and posting/opening-time indexes on existing financial tables. It adds no tables: the current schema remains 53 application tables/45 RLS tables. Runtime gets only the report/options/audit entry points; no financial table grants or raw movement helper grant. Amounts are integer minor-unit strings in API results. Projections scope by each cash session station, preserve company-local posting dates, separate currencies, snapshot pagination and full-lifetime cash-session calculations.
