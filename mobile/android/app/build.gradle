@@ -1,5 +1,12 @@
 plugins { id 'com.android.application' }
 
+// Store builds: -PsafeerOrigin=https://your.domain (HTTPS only). Upload signing comes from a private
+// properties file outside Git (default %USERPROFILE%/.android/safeer-upload.properties).
+def storeOrigin = (project.findProperty('safeerOrigin') ?: '').toString()
+def uploadFile = file((project.findProperty('safeerUploadProperties') ?: System.getProperty('user.home') + '/.android/safeer-upload.properties').toString())
+def upload = new Properties()
+if (uploadFile.exists()) uploadFile.withInputStream { upload.load(it) }
+
 android {
     namespace 'sd.safeer.mobile'
     compileSdk 35
@@ -7,9 +14,19 @@ android {
         minSdk 26
         targetSdk 35
         versionCode 16005
-        versionName '0.16.0-usb.5'
+        versionName '0.16.0'
     }
     buildFeatures { buildConfig true }
+    signingConfigs {
+        play {
+            if (upload.storeFile) {
+                storeFile file(upload.storeFile)
+                storePassword upload.storePassword
+                keyAlias upload.keyAlias
+                keyPassword upload.keyPassword
+            }
+        }
+    }
     flavorDimensions += 'workspace'
     productFlavors {
         driver {
@@ -29,6 +46,15 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
-    // This local testing channel has no production signing configuration.
-    buildTypes { release { minifyEnabled false } }
+    buildTypes {
+        debug {
+            // USB test channel: the computer's loopback service through adb reverse.
+            buildConfigField 'String', 'ORIGIN', '"http://127.0.0.1:4320"'
+        }
+        release {
+            minifyEnabled false
+            buildConfigField 'String', 'ORIGIN', '"' + storeOrigin + '"'
+            if (upload.storeFile) signingConfig signingConfigs.play
+        }
+    }
 }

@@ -24,7 +24,7 @@ export function databaseConfig(value) {
   if (!value) throw Error('Set SAFEER_DATABASE_URL for an isolated local PostgreSQL database.');
   let url;
   try { url = new URL(value); } catch { throw Error('Invalid database URL.'); }
-  if (!['postgres:', 'postgresql:'].includes(url.protocol) || !['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname)) {
+  if (!['postgres:', 'postgresql:'].includes(url.protocol) || !(process.env.SAFEER_DATABASE_HOSTED === '1' || ['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname))) {
     throw Error('Section 01 database tooling accepts loopback PostgreSQL only.');
   }
   if (url.search || url.hash || !/^\/[a-zA-Z0-9_]+$/.test(url.pathname)) throw Error('Use a local database name without URL options.');

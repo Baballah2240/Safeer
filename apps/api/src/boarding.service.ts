@@ -16,8 +16,11 @@ export class BoardingService {
   const row=(await c.query('SELECT safeer.driver_manifest($1,$2) AS row',[cid,tid])).rows[0].row;if(!row)fail('NOT_FOUND',404);return row;
  });}
  verify(token:string,cid:string,tid:string,input:unknown,board=false){
-  uuid(cid);uuid(tid);const data=body(input,['token']),qr=text(data.token,2,66);
-  if(!/^TQ[0-9a-f]{64}$/.test(qr))fail('TICKET_INVALID',409);
+  uuid(cid);uuid(tid);const data=body(input,['token','ticketNumber']);
+  if(('token' in data)===('ticketNumber' in data))fail('INVALID_INPUT');
+  const manual='ticketNumber' in data,qr=manual?text(data.ticketNumber,1,16).toUpperCase():text(data.token,2,66);
+  if(manual){if(!/^TKT-[0-9]{8,12}$/.test(qr))fail('INVALID_INPUT');}
+  else if(!/^TQ[0-9a-f]{64}$/.test(qr))fail('TICKET_INVALID',409);
   return this.run(token,async c=>(await c.query('SELECT safeer.driver_verify($1,$2,$3,$4) AS row',[cid,tid,qr,board])).rows[0].row);
  }
  event(token:string,cid:string,tid:string,input:unknown){

@@ -20,8 +20,12 @@ import {PlatformService} from './platform.service.js';
 import {IdentityError,sessionToken,validCsrf,fail} from './security.js';
 
 const version=JSON.parse(readFileSync(new URL('../../package.json',import.meta.url),'utf8')).version;
-const cookie=(token:string)=>`safeer_session=${token}; Path=/api/v1; HttpOnly; SameSite=Strict; Max-Age=43200`;
-const clearCookie='safeer_session=; Path=/api/v1; HttpOnly; SameSite=Strict; Max-Age=0';
+// Hosted HTTPS deployments add Secure; loopback development cannot use it over http.
+let secure='';
+const cookie=(token:string)=>`safeer_session=${token}; Path=/api/v1; HttpOnly; SameSite=Strict; Max-Age=43200${secure}`;
+const clearCookie=()=>`safeer_session=; Path=/api/v1; HttpOnly; SameSite=Strict; Max-Age=0${secure}`;
+// The web proxy is the only caller (loopback host check) and sets this from the hosting edge.
+const client=(request:Request)=>{const value=request.headers['x-safeer-client'];return typeof value==='string'&&/^[0-9a-fA-F:.]{2,45}$/.test(value)?value:request.socket.remoteAddress||'local';};
 const token=(request:Request)=>sessionToken(request.headers.cookie);
 const reply=(data:unknown)=>({data});
 @Catch()
@@ -46,13 +50,13 @@ class IdentityController {
   constructor(private readonly identity:IdentityService,private readonly db:Database,private readonly reservations:ReservationService){}
   @Get('health') async health(){try{await this.db.pool.query('SELECT 1');}catch{fail('DATABASE_UNAVAILABLE',503,'The local database is unavailable.');}return reply({service:'safeer',version,mode:'local-identity',database:'connected',maintenance:this.reservations.maintenance()});}
   @Post('auth/login') async login(@Body() data:unknown,@Req() req:Request,@Res({passthrough:true}) res:Response){
-    const {token:session,...result}=await this.identity.login(data,req.socket.remoteAddress||'local');res.setHeader('Set-Cookie',cookie(session));return reply(result);
+    const {token:session,...result}=await this.identity.login(data,client(req));res.setHeader('Set-Cookie',cookie(session));return reply(result);
   }
   @Get('auth/me') async me(@Req() req:Request){return reply(await this.identity.session(token(req)));}
-  @Post('auth/logout') async logout(@Req() req:Request,@Res({passthrough:true}) res:Response){const data=await this.identity.logout(token(req));res.setHeader('Set-Cookie',clearCookie);return reply(data);}
+  @Post('auth/logout') async logout(@Req() req:Request,@Res({passthrough:true}) res:Response){const data=await this.identity.logout(token(req));res.setHeader('Set-Cookie',clearCookie());return reply(data);}
   @Post('auth/password') async password(@Body() data:unknown,@Req() req:Request,@Res({passthrough:true}) res:Response){const {token:session,...result}=await this.identity.changePassword(token(req),data);res.setHeader('Set-Cookie',cookie(session));return reply(result);}
   @Get('auth/sessions') async sessions(@Req() req:Request){return reply(await this.identity.sessions(token(req)));}
-  @Delete('auth/sessions/:id') async revoke(@Param('id') id:string,@Req() req:Request,@Res({passthrough:true}) res:Response){const data=await this.identity.revokeSession(token(req),id);if(data.current)res.setHeader('Set-Cookie',clearCookie);return reply(data);}
+  @Delete('auth/sessions/:id') async revoke(@Param('id') id:string,@Req() req:Request,@Res({passthrough:true}) res:Response){const data=await this.identity.revokeSession(token(req),id);if(data.current)res.setHeader('Set-Cookie',clearCookie());return reply(data);}
   @Get('identity/users') async users(@Query('after') after:string|undefined,@Req() req:Request){return reply(await this.identity.users(token(req),after));}
   @Post('identity/users') async createUser(@Body() data:unknown,@Req() req:Request){return reply(await this.identity.createUser(token(req),data));}
   @Patch('identity/users/:id') async updateUser(@Param('id') id:string,@Body() data:unknown,@Req() req:Request){return reply(await this.identity.updateUser(token(req),id,data));}
@@ -215,7 +219,9 @@ export class IdentityModule {}
 
 export async function createIdentityApi({port=4321,webOrigin='http://127.0.0.1:4320'}:{port?:number;webOrigin?:string}={}){
   const origin=new URL(webOrigin);
-  if(origin.protocol!=='http:'||origin.hostname!=='127.0.0.1'||origin.username||origin.password||origin.pathname!=='/'||origin.search||origin.hash||!Number.isInteger(port)||port<0||port>65535)throw Error('Use a loopback web origin and valid identity port.');
+  const hosted=origin.protocol==='https:'&&!['127.0.0.1','localhost'].includes(origin.hostname);
+  if(!(hosted||origin.protocol==='http:'&&origin.hostname==='127.0.0.1')||origin.username||origin.password||origin.pathname!=='/'||origin.search||origin.hash||!Number.isInteger(port)||port<0||port>65535)throw Error('Use a loopback or hosted https web origin and valid identity port.');
+  secure=hosted?'; Secure':'';
   const app=await NestFactory.create(IdentityModule,{logger:false,bodyParser:false,abortOnError:false});
   app.getHttpAdapter().getInstance().disable('x-powered-by');
   const http=app.getHttpServer();http.headersTimeout=10000;http.requestTimeout=15000;http.keepAliveTimeout=5000;http.maxHeadersCount=40;http.maxRequestsPerSocket=100;http.setTimeout(15000,(socket:import('node:net').Socket)=>socket.destroy());

@@ -13,7 +13,9 @@ const forwardedHeaders=headers=>{
   return Object.fromEntries(Object.entries(headers).filter(([name])=>!excluded.has(name.toLowerCase())));
 };
 
-export async function startServer({port = 4320, built = false, identityApiUrl} = {}) {
+export async function startServer({port = 4320, built = false, identityApiUrl, publicOrigin} = {}) {
+  const hosted = publicOrigin ? new URL(publicOrigin) : null;
+  if (hosted && (hosted.protocol !== 'https:' || hosted.pathname !== '/' || hosted.search || hosted.username)) throw Error('The public origin must be https:// with no path.');
   if (!Number.isInteger(port) || port < 0 || port > 65535) throw Error('Choose a valid local port.');
   const server = createServer({headersTimeout:10000,requestTimeout:15000,connectionsCheckingInterval:1000},async (request, response) => {
     response.setHeader('X-Content-Type-Options', 'nosniff');
@@ -21,7 +23,10 @@ export async function startServer({port = 4320, built = false, identityApiUrl} =
     response.setHeader('Cache-Control', 'no-store');
     response.setHeader('Permissions-Policy','camera=(), microphone=(), geolocation=(), payment=(), usb=()');
     response.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'");
-    if (request.headers.host !== `127.0.0.1:${server.address().port}`) {
+    if (hosted) response.setHeader('Strict-Transport-Security', 'max-age=31536000');
+    // Hosting health checks reach the service by its internal address.
+    const healthCheck = hosted && request.url === '/api/v1/health' && request.method === 'GET';
+    if (!healthCheck && request.headers.host !== (hosted ? hosted.host : `127.0.0.1:${server.address().port}`)) {
       response.writeHead(403); response.end('Open the local 127.0.0.1 address.'); return;
     }
     let path;
@@ -35,7 +40,7 @@ export async function startServer({port = 4320, built = false, identityApiUrl} =
       try{target=new URL(apiUrl);if(target.protocol!=='http:'||target.hostname!=='127.0.0.1'||target.username||target.password||target.pathname!=='/'||target.search||target.hash)throw Error();}
       catch{response.writeHead(503,{'Content-Type':'application/json'});response.end(JSON.stringify({error:{code:'IDENTITY_UNAVAILABLE',message:'Review the local identity API configuration.'}}));return;}
       if(Number(request.headers['content-length']||0)>8192){response.writeHead(413);response.end('Request too large');return;}
-      const upstream=upstreamRequest({hostname:target.hostname,port:target.port,method:request.method,path:request.url,headers:{...forwardedHeaders(request.headers),host:target.host}},incoming=>{
+      const upstream=upstreamRequest({hostname:target.hostname,port:target.port,method:request.method,path:request.url,headers:{...forwardedHeaders(request.headers),host:target.host,'x-safeer-client':hosted?String(request.headers['x-forwarded-for']||'').split(',').pop().trim():request.socket.remoteAddress}},incoming=>{
         response.writeHead(incoming.statusCode,forwardedHeaders(incoming.headers));incoming.pipe(response);
       });
       upstream.setTimeout(10000,()=>upstream.destroy());
@@ -69,7 +74,7 @@ export async function startServer({port = 4320, built = false, identityApiUrl} =
     }
   });
   server.keepAliveTimeout=5000;server.maxHeadersCount=40;server.maxRequestsPerSocket=100;server.setTimeout(15000,socket=>socket.destroy());
-  await new Promise((accept, reject) => { server.once('error', reject); server.listen(port, '127.0.0.1', accept); });
+  await new Promise((accept, reject) => { server.once('error', reject); server.listen(port, hosted ? '0.0.0.0' : '127.0.0.1', accept); });
   return {server, origin: `http://127.0.0.1:${server.address().port}`, close: () => new Promise(accept => server.close(accept))};
 }
 

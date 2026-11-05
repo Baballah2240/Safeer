@@ -1,0 +1,29 @@
+# Render Blueprint: New > Blueprint, pick this repository. Then add the custom domain in the service settings.
+services:
+  - type: web
+    name: safeer
+    runtime: node
+    plan: starter
+    region: frankfurt
+    buildCommand: npm ci --omit=optional && npm run build
+    startCommand: node scripts/production.mjs
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: SAFEER_PUBLIC_ORIGIN
+        value: https://safeer.mohbaba.online
+      - key: SAFEER_APP_DB_PASSWORD
+        generateValue: true
+      - key: SAFEER_OWNER_LOGIN
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: safeer-db
+          property: connectionString
+databases:
+  - name: safeer-db
+    plan: basic-256mb
+    region: frankfurt
+    databaseName: safeer
+    postgresVersion: "16"

@@ -55,6 +55,8 @@
     "mobile:save": "node mobile/save.mjs",
     "mobile:usb": "node mobile/usb.mjs",
     "mobile:install": "node mobile/install.mjs",
+    "mobile:upload-key": "node mobile/upload-key.mjs",
+    "mobile:release": "node mobile/release.mjs",
     "test:headers:browser": "node tests/headers.browser.mjs",
     "test:sidebar:browser": "node tests/sidebar.browser.mjs",
     "test:booking-menu:browser": "node tests/booking-menu.browser.mjs",

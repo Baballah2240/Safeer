@@ -11711,17 +11711,36 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": [
-                  "token"
-                ],
-                "properties": {
-                  "token": {
-                    "type": "string",
-                    "pattern": "^TQ[0-9a-f]{64}$"
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "token"
+                    ],
+                    "properties": {
+                      "token": {
+                        "type": "string",
+                        "pattern": "^TQ[0-9a-f]{64}$"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "ticketNumber"
+                    ],
+                    "properties": {
+                      "ticketNumber": {
+                        "type": "string",
+                        "pattern": "^[Tt][Kk][Tt]-[0-9]{8,12}$",
+                        "maxLength": 16,
+                        "description": "Printed ticket number; same assigned-trip validation as QR."
+                      }
+                    }
                   }
-                }
+                ]
               }
             }
           }
@@ -11828,17 +11847,36 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": [
-                  "token"
-                ],
-                "properties": {
-                  "token": {
-                    "type": "string",
-                    "pattern": "^TQ[0-9a-f]{64}$"
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "token"
+                    ],
+                    "properties": {
+                      "token": {
+                        "type": "string",
+                        "pattern": "^TQ[0-9a-f]{64}$"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "ticketNumber"
+                    ],
+                    "properties": {
+                      "ticketNumber": {
+                        "type": "string",
+                        "pattern": "^[Tt][Kk][Tt]-[0-9]{8,12}$",
+                        "maxLength": 16,
+                        "description": "Printed ticket number; same assigned-trip validation as QR."
+                      }
+                    }
                   }
-                }
+                ]
               }
             }
           }

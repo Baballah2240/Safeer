@@ -48,11 +48,35 @@ function applySidebar(){
     button.querySelector('span').textContent=text;
   });
 }
+// Slide the sidebar out/in and glide the content into place (FLIP). Reduced motion snaps.
+let sidebarMoving=false;
+const sidebarEase='cubic-bezier(.22,1,.36,1)';
+async function toggleSidebar(button){
+  const sidebar=document.getElementById(button.getAttribute('aria-controls'));
+  const shell=sidebar?.closest('.staff-shell,.shell');
+  const still=matchMedia('(prefers-reduced-motion: reduce)').matches||!sidebar?.animate;
+  const save=()=>{try{localStorage.setItem(sidebarKey,sidebarHidden?'1':'0');}catch{/* Preserve in-memory preference. */}};
+  if(still||!shell){sidebarHidden=!sidebarHidden;save();applySidebar();return;}
+  sidebarMoving=true;
+  const away=(document.documentElement.dir==='rtl'?1:-1)*48+'px';
+  const content=[...shell.children].filter(node=>!node.contains(sidebar));
+  const before=content.map(node=>node.getBoundingClientRect());
+  const out=[{opacity:1,transform:'none',filter:'blur(0)'},{opacity:0,transform:`translateX(${away}) scale(.96)`,filter:'blur(6px)'}];
+  try{
+    if(!sidebarHidden)await sidebar.animate(out,{duration:240,easing:'cubic-bezier(.4,0,1,1)'}).finished;
+    sidebarHidden=!sidebarHidden;save();applySidebar();
+    content.forEach((node,i)=>{
+      const after=node.getBoundingClientRect(),dx=before[i].left-after.left;
+      if(Math.abs(dx)>1)node.animate([{transform:`translateX(${dx}px)`},{transform:'none'}],{duration:420,easing:sidebarEase});
+    });
+    if(!sidebarHidden)await sidebar.animate([...out].reverse(),{duration:380,easing:sidebarEase}).finished;
+  }catch{/* An interrupted animation leaves the final state applied. */}
+  finally{sidebarMoving=false;}
+}
 document.addEventListener('click',event=>{
-  if(!event.target.closest?.('[data-sidebar-toggle]'))return;
-  sidebarHidden=!sidebarHidden;
-  try{localStorage.setItem(sidebarKey,sidebarHidden?'1':'0');}catch{/* Preserve in-memory preference. */}
-  applySidebar();
+  const button=event.target.closest?.('[data-sidebar-toggle]');
+  if(!button||sidebarMoving)return;
+  void toggleSidebar(button);
 });
 addEventListener('storage',event=>{
   if(event.key!==sidebarKey&&event.key!==null)return;
@@ -89,3 +113,42 @@ if(typeof ResizeObserver==='function'){
   renders.observe(document.body,{childList:true,subtree:true});
   followHeader();
 }
+
+// Layout motion. Only transform/opacity animate, so text, data and controls stay untouched.
+const calm=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+const tiles='.staff-welcome,.staff-summary article,.staff-shortcuts button,.staff-panel,.staff-record,.metric,.panel,.market-band,.market-trip,.market-card,.market-companies article,.driver-trip,.driver-detail>*';
+let viewKey='';
+function revealView(){
+  // Replays only when the page or section heading changes, not on ordinary refreshes.
+  const heading=document.querySelector('.staff-topbar strong,.topbar h1,main h1,.market-band h1,.driver-header strong');
+  const key=location.pathname+location.search+'|'+(heading?.textContent||'')+'|'+(document.querySelector('[aria-current=page]')?.textContent||'');
+  if(key===viewKey)return;viewKey=key;
+  if(calm()||!document.body.animate)return;
+  [...document.querySelectorAll(tiles)].filter(node=>node.getBoundingClientRect().top<innerHeight&&!node.querySelector('.market-seats,.trip-seat-map,.seat-map,.bus')).slice(0,24).forEach((node,i)=>{
+    node.animate([{opacity:0,transform:'translateY(14px)'},{opacity:1,transform:'none'}],{duration:460,delay:Math.min(i*38,420),easing:'cubic-bezier(.22,1,.36,1)',fill:'backwards'});
+  });
+}
+let revealQueued=false;
+new MutationObserver(()=>{if(revealQueued)return;revealQueued=true;requestAnimationFrame(()=>{revealQueued=false;revealView();});}).observe(document.body,{childList:true,subtree:true});
+revealView();
+
+// Stronger header glass once the page scrolls under it.
+const markScroll=()=>document.documentElement.classList.toggle('page-scrolled',scrollY>8);
+addEventListener('scroll',markScroll,{passive:true});markScroll();
+
+// Soft ripple from the press point on buttons (not seats, whose colours carry meaning).
+document.addEventListener('pointerdown',event=>{
+  const button=event.target.closest?.('button:not(:disabled):not(.seat):not(.market-seat):not(.trip-seat),.workspace-link,.market-book');
+  if(!button||calm()||!button.animate)return;
+  const box=button.getBoundingClientRect(),size=Math.max(box.width,box.height)*2,dot=document.createElement('span');
+  dot.className='press-ripple';dot.setAttribute('aria-hidden','true');
+  dot.style.cssText=`width:${size}px;height:${size}px;left:${event.clientX-box.left-size/2}px;top:${event.clientY-box.top-size/2}px`;
+  button.append(dot);
+  dot.animate([{transform:'scale(0)',opacity:.35},{transform:'scale(1)',opacity:0}],{duration:520,easing:'ease-out'}).finished.finally(()=>dot.remove());
+});
+
+// Store-required notices shown wherever someone signs in or gives personal details.
+export const legalLinks=language=>{
+  const ar=language==='ar',q='?lang='+(ar?'ar':'en');
+  return `<p class="legal-links"><a href="/privacy${q}">${ar?'سياسة الخصوصية':'Privacy policy'}</a><span aria-hidden="true"> · </span><a href="/account-deletion${q}">${ar?'حذف الحساب والبيانات':'Delete account and data'}</a></p>`;
+};

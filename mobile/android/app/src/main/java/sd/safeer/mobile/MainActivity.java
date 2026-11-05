@@ -24,14 +24,17 @@ import java.util.Locale;
 
 /** Two isolated launchers for the same local web application; never an authority boundary. */
 public final class MainActivity extends Activity {
-    private static final String ORIGIN = "http://127.0.0.1:4320";
+    // Debug: USB loopback. Release: the HTTPS origin passed at build time (see build.gradle).
+    private static final String ORIGIN = BuildConfig.ORIGIN;
+    private static final Uri ORIGIN_URI = Uri.parse(ORIGIN);
     private WebView web;
     private LinearLayout error;
     private ProgressBar progress;
     private boolean failed;
 
     static boolean allowed(Uri uri) {
-        return "http".equals(uri.getScheme()) && "127.0.0.1:4320".equals(uri.getEncodedAuthority());
+        return ORIGIN_URI.getScheme() != null && ORIGIN_URI.getScheme().equals(uri.getScheme())
+            && ORIGIN_URI.getEncodedAuthority() != null && ORIGIN_URI.getEncodedAuthority().equals(uri.getEncodedAuthority());
     }
 
     private String text(String en, String ar) {

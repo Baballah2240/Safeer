@@ -1,5 +1,13 @@
 # Safeer mobile status
 
+## Render hosting - 2026-11-05
+
+The web app can now run hosted at https://safeer.mohbaba.online from `render.yaml` and `scripts/production.mjs`: one fixed HTTPS origin, Secure cookies, HSTS, hosted PostgreSQL with a limited runtime role, and migrations on start. Store builds use `--origin https://safeer.mohbaba.online` once the site is live. See [hosting](../docs/HOSTING.md).
+
+## Play preparation - 2026-11-05
+
+Add signed Google Play release bundles for both apps. The server address is a build setting: debug keeps the USB loopback, while release requires a public HTTPS origin with system certificates only. The private upload key is created outside Git. The privacy policy and account/data deletion pages are linked from staff sign-in, driver sign-in and the booking form, in Arabic and English. Not yet publishable: hosting, the support contact in src/legal.js and legal review are still needed. See [Play steps](PLAY_STORE.md).
+
 ## 0.16.0-usb.5 - 2026-11-05, D52
 
 Driver gains the same sidebar and appearance/language Settings as Booking, keeping notifications, company access, Refresh and Sign out. Both native clients remove top toolbars and use immersive fullscreen with transient system-bar swipe reveal, cutout/keyboard safety and drawer-first Back handling. Shared drawer binding avoids duplicate focus/dismissal logic. Rebuild/lint/save/install preserving data; binaries remain ignored. See [D52 handover](../docs/archive/MOBILE_FULLSCREEN_2026-11-05.md).

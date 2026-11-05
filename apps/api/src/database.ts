@@ -5,7 +5,7 @@ import {verifyDatabaseSecurity} from './database-security.js';
 export function localDatabase(value: string|undefined): string {
   if(!value)throw Error('Set SAFEER_AUTH_DATABASE_URL for the local identity runtime role.');
   const url=new URL(value);
-  if(!['postgres:','postgresql:'].includes(url.protocol)||!['127.0.0.1','localhost','[::1]'].includes(url.hostname)||url.search||url.hash||!/^\/[a-zA-Z0-9_]+$/.test(url.pathname))throw Error('Identity database must use an explicit loopback PostgreSQL URL without options.');
+  if(!['postgres:','postgresql:'].includes(url.protocol)||!(process.env.SAFEER_DATABASE_HOSTED==='1'||['127.0.0.1','localhost','[::1]'].includes(url.hostname))||url.search||url.hash||!/^\/[a-zA-Z0-9_]+$/.test(url.pathname))throw Error('Identity database must use an explicit loopback PostgreSQL URL without options.');
   return url.href;
 }
 @Injectable()
