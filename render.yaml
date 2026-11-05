@@ -26,4 +26,4 @@ databases:
     plan: basic-256mb
     region: frankfurt
     databaseName: safeer
-    postgresVersion: "16"
+    postgresMajorVersion: "16"
