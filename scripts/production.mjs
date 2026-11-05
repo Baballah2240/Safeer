@@ -22,7 +22,9 @@ try{
   const exists=(await migration.query("SELECT 1 FROM pg_roles WHERE rolname='safeer_app'")).rowCount;
   // Hosted owners are not superusers: create with the limited attributes, but later only refresh LOGIN/PASSWORD,
   // because restating SUPERUSER/BYPASSRLS/REPLICATION attributes needs superuser.
-  await migration.query(exists?`ALTER ROLE safeer_app WITH LOGIN PASSWORD '${appPassword}'`:`CREATE ROLE safeer_app LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS PASSWORD '${appPassword}'`);
+  // If the role already signs in with the current password, leave it alone (ALTER ROLE may be refused on hosted PostgreSQL).
+  const signsIn=exists&&await (async()=>{const u=new URL(ownerUrl.href);u.username='safeer_app';u.password=appPassword;const c=new pg.Client({connectionString:u.href,connectionTimeoutMillis:10000});try{await c.connect();return true;}catch{return false;}finally{await c.end().catch(()=>{});}})();
+  if(!signsIn)await migration.query(exists?`ALTER ROLE safeer_app WITH LOGIN PASSWORD '${appPassword}'`:`CREATE ROLE safeer_app LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS PASSWORD '${appPassword}'`);
   const role=(await migration.query("SELECT rolsuper OR rolcreatedb OR rolcreaterole OR rolbypassrls OR rolreplication AS elevated FROM pg_roles WHERE rolname='safeer_app'")).rows[0];
   if(role.elevated)fail('Role safeer_app has elevated attributes; remove them before starting Safeer.');
   await migration.query(`GRANT CONNECT ON DATABASE "${ownerUrl.pathname.slice(1)}" TO safeer_app`);
