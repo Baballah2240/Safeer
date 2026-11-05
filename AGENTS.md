@@ -1,5 +1,8 @@
 # Safeer
 
+- D51 Booking uses an accessible modal drawer with Settings and no native title/Home/Refresh/Print toolbar; Driver retains its toolbar. Native version .4/16004. Preserve Escape/focus return, entered forms, RTL and flavor-specific security/recovery. Run the Booking menu and affected public/reservation/header browser checks.
+
+
 - D50 updates both local USB clients to 0.16.0-usb.3/16003. Preserve replacement installation and signing compatibility, keep APKs/private device details excluded from source and retain loopback/USB dependence.
 
 

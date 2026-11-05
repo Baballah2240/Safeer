@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-11-05 - Booking sidebar and settings
+
+D51: The owner requests removing Booking's native title/Home/Refresh/Print toolbar and moving public header navigation into a professional sidebar with Settings. Keep Driver's native controls. Replace Booking/public marketplace navigation with a compact menu trigger and accessible modal side drawer containing trip search, My booking, staff access and appearance/language settings. Preserve live search/holds, entered values on drawer open/close, bilingual/RTL, focus return/Escape, both themes and security boundaries. Native flavor-specific toolbar removal retains system insets, loading/error recovery, same-origin restrictions and data. Build/lint/save local USB patch .4/16004, install preserving app data and inspect phone screens. Test real drawer/settings and affected public/booking/header workflows on disposable data, document/archive source and keep APKs/private data out of Git. No remote hosting or portfolio publication.
+
 ## 2026-11-05 - Install latest USB mobile update
 
 D50: The owner requests downloading updates into the mobile apps. Build/lint/save both local Android variants as 0.16.0-usb.3/16003, retaining debug-signing compatibility and the shared live web source. Restore the existing loopback USB tunnel, install with replacement preserving app data, verify installed versions and actual app screens on the authorized connected phone. No uninstall, account reset, database seeding, Wi-Fi exposure or hosting. Keep APKs/checksums/manifests/signing material out of Git, update continuation/mobile documentation and archive scoped source plus sanitized receipts. Commit locally under the private portfolio publishing restriction. Phone/server/USB remain required; native installation does not create remote hosting.

@@ -1,5 +1,8 @@
 # Section archives and source checkpoints
 
+Latest Booking follow-up: [D51 sidebar and Settings](BOOKING_SIDEBAR_2026-11-05.md), source checkpoint archives/Safeer-0.16.0-Booking-Sidebar-2026-11-05.zip. APKs and private runtime remain separate ignored artifacts.
+
+
 Latest mobile follow-up: [D50 Android update](ANDROID_UPDATE_2026-11-05.md), checkpoint archives/Safeer-0.16.0-Android-USB3-2026-11-05.zip. APKs and private runtime are separate ignored artifacts.
 
 

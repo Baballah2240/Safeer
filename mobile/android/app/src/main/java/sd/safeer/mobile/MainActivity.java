@@ -69,23 +69,26 @@ public final class MainActivity extends Activity {
             } else v.setPadding(insets.getSystemWindowInsetLeft(),insets.getSystemWindowInsetTop(),insets.getSystemWindowInsetRight(),insets.getSystemWindowInsetBottom());
             return insets;
         });
-        LinearLayout bar = new LinearLayout(this);
-        bar.setGravity(android.view.Gravity.CENTER_VERTICAL);
-        TextView title = new TextView(this);
-        title.setText(getString(R.string.app_name));
-        title.setTextColor(Color.WHITE);
-        title.setTextSize(17);
-        title.setPadding(dp(16),0,0,0);
-        bar.addView(title,new LinearLayout.LayoutParams(0,dp(48),1));
-        button(bar,R.drawable.ic_home,text("Home","الرئيسية"),this::home);
-        button(bar,R.drawable.ic_refresh,text("Refresh","تحديث"),() -> web.reload());
-        button(bar,R.drawable.ic_print,text("Print / save PDF","طباعة / حفظ PDF"),() -> {
-            if (!failed && allowed(Uri.parse(web.getUrl() == null ? "" : web.getUrl()))) {
-                PrintManager manager = (PrintManager)getSystemService(PRINT_SERVICE);
-                manager.print(getString(R.string.app_name),web.createPrintDocumentAdapter("Safeer"),null);
-            }
-        });
-        root.addView(bar);
+        // Booking uses the shared web sidebar; Driver retains its native tools.
+        if (!"booking".equals(BuildConfig.FLAVOR)) {
+            LinearLayout bar = new LinearLayout(this);
+            bar.setGravity(android.view.Gravity.CENTER_VERTICAL);
+            TextView title = new TextView(this);
+            title.setText(getString(R.string.app_name));
+            title.setTextColor(Color.WHITE);
+            title.setTextSize(17);
+            title.setPadding(dp(16),0,0,0);
+            bar.addView(title,new LinearLayout.LayoutParams(0,dp(48),1));
+            button(bar,R.drawable.ic_home,text("Home","الرئيسية"),this::home);
+            button(bar,R.drawable.ic_refresh,text("Refresh","تحديث"),() -> web.reload());
+            button(bar,R.drawable.ic_print,text("Print / save PDF","طباعة / حفظ PDF"),() -> {
+                if (!failed && allowed(Uri.parse(web.getUrl() == null ? "" : web.getUrl()))) {
+                    PrintManager manager = (PrintManager)getSystemService(PRINT_SERVICE);
+                    manager.print(getString(R.string.app_name),web.createPrintDocumentAdapter("Safeer"),null);
+                }
+            });
+            root.addView(bar);
+        }
         progress = new ProgressBar(this,null,android.R.attr.progressBarStyleHorizontal);
         progress.setMax(100);
         root.addView(progress,new LinearLayout.LayoutParams(-1,dp(3)));
@@ -149,6 +152,16 @@ public final class MainActivity extends Activity {
     }
 
     @Override public void onBackPressed() {
+        if ("booking".equals(BuildConfig.FLAVOR) && allowed(Uri.parse(web.getUrl() == null ? "" : web.getUrl()))) {
+            // Close the same-origin web drawer before navigating away. No Java
+            // interface or credentials are exposed to JavaScript.
+            web.evaluateJavascript("(()=>{const d=document.getElementById('market-menu');if(d&&d.open){d.close();return true;}return false;})()", result -> {
+                if (!isFinishing() && !isDestroyed() && !"true".equals(result)) navigateBack();
+            });
+        } else navigateBack();
+    }
+
+    private void navigateBack() {
         if (web.canGoBack()) web.goBack(); else super.onBackPressed();
     }
 

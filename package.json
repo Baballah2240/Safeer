@@ -56,7 +56,8 @@
     "mobile:usb": "node mobile/usb.mjs",
     "mobile:install": "node mobile/install.mjs",
     "test:headers:browser": "node tests/headers.browser.mjs",
-    "test:sidebar:browser": "node tests/sidebar.browser.mjs"
+    "test:sidebar:browser": "node tests/sidebar.browser.mjs",
+    "test:booking-menu:browser": "node tests/booking-menu.browser.mjs"
   },
   "license": "UNLICENSED",
   "dependencies": {

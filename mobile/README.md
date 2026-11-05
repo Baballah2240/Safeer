@@ -7,7 +7,7 @@ Two independent installed apps reuse the real responsive web application in src/
 | Safeer Driver | sd.safeer.driver | /driver |
 | Safeer Booking | sd.safeer.booking | /marketplace |
 
-Version: 0.16.0-usb.3 (16003), debug-signed local test channel, Android 8/API 26 or later. Tested on the connected LGN-NX1 Android 16/API 36 phone. No Flutter client, camera scan, offline queue, online payment, remote server or store release is included. All booking, payment, session, company and assigned-driver rules remain enforced by the existing backend. The phone has separate app cookies/storage; it does not automatically inherit a computer sign-in.
+Version: 0.16.0-usb.4 (16004), debug-signed local test channel, Android 8/API 26 or later. Tested on the connected LGN-NX1 Android 16/API 36 phone. No Flutter client, camera scan, offline queue, online payment, remote server or store release is included. All booking, payment, session, company and assigned-driver rules remain enforced by the existing backend. The phone has separate app cookies/storage; it does not automatically inherit a computer sign-in.
 
 The current owner-selected palette is black and brown, with cream/brown light mode. The native shell and icon match the shared bento/glass web UI.
 
@@ -19,7 +19,7 @@ The current owner-selected palette is black and brown, with cream/brown light mo
 4. Open Safeer Booking to find trips/reserve seats or retrieve a reservation. The company must be approved/listed and have a future published assigned trip before it appears. An empty marketplace is expected until the manager completes this configuration.
 5. Open Safeer Driver and sign in with a manager-created account linked to an active company driver record, granted driver access and assigned to a trip. No shared/default driver password is supplied or created by installation. Current assignment/membership controls still apply.
 
-Home returns to the app's own workspace; Refresh reloads it. The print icon opens Android print/save-PDF for the current page. Native print handoff exists; physical printer acceptance remains untested. Back navigates within the app. The interface retains Arabic/English and light/dark controls. If disconnected, restore the server/cable/tunnel and press Retry. Closing or uninstalling an app does not delete server records, but uninstalling Booking removes its locally saved opaque booking keys; reference/mobile recovery remains available.
+Booking has no native title/Home/Refresh/Print toolbar; use its menu for trip search, My booking, staff access and Settings (appearance/language). Driver keeps Home, Refresh and Android print/save-PDF controls. Driver native print handoff exists; physical printer acceptance remains untested. Back navigates within the app. The interface retains Arabic/English and light/dark controls. If disconnected, restore the server/cable/tunnel and press Retry. Closing or uninstalling an app does not delete server records, but uninstalling Booking removes its locally saved opaque booking keys; reference/mobile recovery remains available.
 
 The computer, Safeer process and USB tunnel must stay connected for live operations. Installing an APK does not make Safeer available over mobile data or another network. Hosting/HTTPS and a remote-client security design need separate implementation.
 

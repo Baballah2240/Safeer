@@ -1,5 +1,8 @@
 # Safeer / Sudan Transport
 
+Booking now uses an accessible sidebar with Settings, without the native title/Home/Refresh/Print toolbar. Local USB version 0.16.0-usb.4/16004. See [D51 handover](docs/archive/BOOKING_SIDEBAR_2026-11-05.md).
+
+
 Latest local USB client update: 0.16.0-usb.3/16003, with current shared glass/header/notice design. See [D50 handover](docs/archive/ANDROID_UPDATE_2026-11-05.md).
 
 

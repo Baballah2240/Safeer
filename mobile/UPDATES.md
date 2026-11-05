@@ -1,5 +1,10 @@
 # Safeer mobile status
 
+## 0.16.0-usb.4 - 2026-11-05, D51
+
+Booking removes the native title and Home/Refresh/Print row. Public Booking pages use a compact menu and accessible sidebar containing navigation and language/appearance Settings. Driver retains its native tools. Preserve all origin/permission, system-inset, error-recovery and data rules. Build/lint/save and replace both local packages without clearing data. See [D51 handover](../docs/archive/BOOKING_SIDEBAR_2026-11-05.md).
+
+
 ## 0.16.0-usb.3 - 2026-11-05, D50
 
 Owner-requested update of both Safeer Driver and Booking. Increment the local native version to 16003 and retain all security/navigation behavior, signing compatibility and data-preserving installation. Shared src/ supplies the latest glass, floating headers and marketplace notice. Build/lint, save APK/checksum manifests and verify the connected phone; binaries remain ignored. See [D50 evidence](../docs/archive/ANDROID_UPDATE_2026-11-05.md).
