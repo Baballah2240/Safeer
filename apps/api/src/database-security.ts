@@ -3,11 +3,14 @@ import type {Pool} from 'pg';
 
 type Policy={tables:Record<string,{rls:boolean;privileges:string[]}>;functions:string[]};
 const policy=JSON.parse(readFileSync(new URL('../../config/database-security.json',import.meta.url),'utf8')) as Policy;
-const privileges=['SELECT','INSERT','UPDATE','DELETE','TRUNCATE','REFERENCES','TRIGGER','MAINTAIN'];
+const basePrivileges=['SELECT','INSERT','UPDATE','DELETE','TRUNCATE','REFERENCES','TRIGGER'];
 
 /** Fail closed on missing/drifted security objects. This is configuration verification,
  * not an attempt to repair a database or trust its current grants as the policy. */
 export async function verifyDatabaseSecurity(pool:Pool){
+ // MAINTAIN exists only from PostgreSQL 17; hosted PostgreSQL 16 rejects the name.
+ const {rows:[server]}=await pool.query("SELECT current_setting('server_version_num')::int AS v");
+ const privileges=server.v>=170000?[...basePrivileges,'MAINTAIN']:basePrivileges;
  const {rows:tables}=await pool.query(`SELECT c.relname AS name,c.relrowsecurity AS rls,
   ARRAY(SELECT p FROM unnest($1::text[]) p WHERE has_table_privilege(current_user,c.oid,p)) AS privileges,
   ARRAY(SELECT p FROM unnest(ARRAY['SELECT','INSERT','UPDATE','REFERENCES']) p WHERE has_any_column_privilege(current_user,c.oid,p)) AS columns
