@@ -1,5 +1,10 @@
 # Safeer mobile status
 
+## 0.16.0-usb.3 - 2026-11-05, D50
+
+Owner-requested update of both Safeer Driver and Booking. Increment the local native version to 16003 and retain all security/navigation behavior, signing compatibility and data-preserving installation. Shared src/ supplies the latest glass, floating headers and marketplace notice. Build/lint, save APK/checksum manifests and verify the connected phone; binaries remain ignored. See [D50 evidence](../docs/archive/ANDROID_UPDATE_2026-11-05.md).
+
+
 D49 shared web refresh: 12px desktop/10px mobile sticky header gap reveals the curve; glass has softer tint and broad reflections. Scroll clearance accounts for the gap. Existing USB apps load shared web assets on Refresh; no APK build/install or physical phone capture is claimed. See [handover](../docs/archive/FLOATING_HEADER_2026-11-05.md).
 
 

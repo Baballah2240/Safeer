@@ -1,5 +1,8 @@
 # Safeer
 
+- D50 updates both local USB clients to 0.16.0-usb.3/16003. Preserve replacement installation and signing compatibility, keep APKs/private device details excluded from source and retain loopback/USB dependence.
+
+
 - D49 supersedes D43 top:0: preserve a 12px desktop/10px mobile floating header gap, include it in focus scroll clearance, and keep the above-sidebar toggle clear of actions. Existing header/sidebar regressions cover this layout.
 
 

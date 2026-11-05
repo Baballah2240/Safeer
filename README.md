@@ -1,5 +1,8 @@
 # Safeer / Sudan Transport
 
+Latest local USB client update: 0.16.0-usb.3/16003, with current shared glass/header/notice design. See [D50 handover](docs/archive/ANDROID_UPDATE_2026-11-05.md).
+
+
 Headers now float 12px below the top (10px on phones), with softer translucent glass and visible rounded edges. See [D49 handover](docs/archive/FLOATING_HEADER_2026-11-05.md).
 
 

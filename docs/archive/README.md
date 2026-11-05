@@ -1,5 +1,8 @@
 # Section archives and source checkpoints
 
+Latest mobile follow-up: [D50 Android update](ANDROID_UPDATE_2026-11-05.md), checkpoint archives/Safeer-0.16.0-Android-USB3-2026-11-05.zip. APKs and private runtime are separate ignored artifacts.
+
+
 Latest header follow-up: [D49 floating header](FLOATING_HEADER_2026-11-05.md), checkpoint archives/Safeer-0.16.0-Floating-Header-2026-11-05.zip.
 
 

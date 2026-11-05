@@ -7,7 +7,7 @@ Two independent installed apps reuse the real responsive web application in src/
 | Safeer Driver | sd.safeer.driver | /driver |
 | Safeer Booking | sd.safeer.booking | /marketplace |
 
-Version: 0.16.0-usb.2 (16002), debug-signed local test channel, Android 8/API 26 or later. Tested on the connected LGN-NX1 Android 16/API 36 phone. No Flutter client, camera scan, offline queue, online payment, remote server or store release is included. All booking, payment, session, company and assigned-driver rules remain enforced by the existing backend. The phone has separate app cookies/storage; it does not automatically inherit a computer sign-in.
+Version: 0.16.0-usb.3 (16003), debug-signed local test channel, Android 8/API 26 or later. Tested on the connected LGN-NX1 Android 16/API 36 phone. No Flutter client, camera scan, offline queue, online payment, remote server or store release is included. All booking, payment, session, company and assigned-driver rules remain enforced by the existing backend. The phone has separate app cookies/storage; it does not automatically inherit a computer sign-in.
 
 The current owner-selected palette is black and brown, with cream/brown light mode. The native shell and icon match the shared bento/glass web UI.
 
@@ -16,7 +16,7 @@ The current owner-selected palette is black and brown, with cream/brown light mo
 1. Keep Safeer running on this Windows computer at http://127.0.0.1:4320 (npm.cmd run local if not already running).
 2. Connect the Android phone by USB, enable USB debugging and accept the computer authorization prompt.
 3. From projects/Safeer run npm.cmd run mobile:usb after reconnecting/restarting the phone. This forwards the phone's port 4320 to the same loopback service on the computer. No firewall opening or Wi-Fi server is required.
-4. Open Safeer Booking to find trips/reserve seats or retrieve a reservation. The company must be approved/listed and have a future published assigned trip before it appears. The existing local database has zero companies; an empty real marketplace is expected until the manager configures them.
+4. Open Safeer Booking to find trips/reserve seats or retrieve a reservation. The company must be approved/listed and have a future published assigned trip before it appears. An empty marketplace is expected until the manager completes this configuration.
 5. Open Safeer Driver and sign in with a manager-created account linked to an active company driver record, granted driver access and assigned to a trip. No shared/default driver password is supplied or created by installation. Current assignment/membership controls still apply.
 
 Home returns to the app's own workspace; Refresh reloads it. The print icon opens Android print/save-PDF for the current page. Native print handoff exists; physical printer acceptance remains untested. Back navigates within the app. The interface retains Arabic/English and light/dark controls. If disconnected, restore the server/cable/tunnel and press Retry. Closing or uninstalling an app does not delete server records, but uninstalling Booking removes its locally saved opaque booking keys; reference/mobile recovery remains available.
