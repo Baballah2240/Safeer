@@ -49,7 +49,9 @@ try{
   const admin=new pg.Client({connectionString:ownerBase+'/postgres',connectionTimeoutMillis:5000});await admin.connect();
   try{
     if(!(await admin.query("SELECT 1 FROM pg_database WHERE datname='safeer'")).rowCount)await admin.query('CREATE DATABASE safeer');
-    if(!(await admin.query("SELECT 1 FROM pg_roles WHERE rolname='safeer_app'")).rowCount)await admin.query(`CREATE ROLE safeer_app LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS PASSWORD '${settings.appPassword}'`);
+    // Keep the runtime password aligned with private settings (tests or recovery may have changed it).
+    if((await admin.query("SELECT 1 FROM pg_roles WHERE rolname='safeer_app'")).rowCount)await admin.query(`ALTER ROLE safeer_app WITH LOGIN PASSWORD '${settings.appPassword}'`);
+    else await admin.query(`CREATE ROLE safeer_app LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS PASSWORD '${settings.appPassword}'`);
   }finally{await admin.end();}
   const migration=new pg.Client({connectionString:ownerBase+'/safeer'});await migration.connect();
   try{await runMigrations(migration,await readMigrations());await grantIdentityRuntime(migration,'safeer_app');}finally{await migration.end();}
