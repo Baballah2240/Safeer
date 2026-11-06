@@ -17,3 +17,19 @@
 - Back up the database from the Render dashboard. Starter plans keep limited point-in-time recovery, so check yours.
 - Migrations only move forward. Never edit an applied migration.
 - Pushing to GitHub triggers a Render deploy only when auto-deploy is on. Check the deploy status in Render.
+
+# Hosting on a Namecheap VPS (Ubuntu 24.04)
+
+`deploy/setup-ubuntu.sh` installs Node 24, PostgreSQL 16, Nginx and a Let's Encrypt certificate, and runs Safeer under systemd as the unprivileged `safeer` user.
+
+1. Buy a Namecheap VPS with **Ubuntu 24.04**. Note its IP address and root password.
+2. In Namecheap **Domain List > mohbaba.online > Advanced DNS**, add an `A Record`: Host `safeer`, Value = the VPS IP. Remove any `CNAME` for `safeer`.
+3. Sign in: `ssh root@<VPS IP>`, then run:
+
+       git clone https://github.com/Baballah2240/Safeer.git /opt/safeer
+       OWNER_EMAIL=you@example.com bash /opt/safeer/deploy/setup-ubuntu.sh
+
+4. Read the temporary owner password: `journalctl -u safeer | grep "Temporary password"`. Sign in at `/staff` and change it.
+5. To update later, run the same command again. Logs: `journalctl -u safeer -f`.
+
+Secrets live in `/etc/safeer.env` (root only). Back up the database with `sudo -u postgres pg_dump safeer > safeer.sql`. A private repository needs a GitHub deploy key or token for the clone.
