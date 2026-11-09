@@ -25,6 +25,7 @@ export const publicAssets = {
   '/src/fleet.js': ['src/fleet.js', 'text/javascript'],
   '/src/companies.js': ['src/companies.js', 'text/javascript'],
   '/src/theme.js': ['src/theme.js', 'text/javascript'],
+  '/src/app-release.js': ['src/app-release.js', 'text/javascript'],
   '/src/theme.css': ['src/theme.css', 'text/css'],
   '/src/brand.svg': ['src/brand.svg', 'image/svg+xml'],
   '/driver': ['driver.html', 'text/html'],

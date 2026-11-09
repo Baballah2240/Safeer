@@ -23,6 +23,35 @@ try{await identityFixture(async f=>{
    await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width<700});
    await send('Page.navigate',{url:web.origin+path+'?lang='+language});await until(`Boolean(document.querySelector('${ready}'))`);
    if(await evaluate('document.documentElement.dataset.theme')!==theme)await evaluate('document.querySelector("[data-theme-toggle]").click()');
+   if(width<=760){
+    // D58 phone panel: closed by default, slides in from the side, modal while open.
+    const finish=()=>evaluate('document.getAnimations().forEach(a=>a.finish())');
+    const panel=`(()=>{const b=document.querySelector('[data-sidebar-toggle]'),s=document.getElementById(b.getAttribute('aria-controls')),r=s.getBoundingClientRect();return {expanded:b.getAttribute('aria-expanded'),visible:getComputedStyle(s).visibility==='visible',inside:r.left>=-1&&r.right<=innerWidth+1&&r.width<innerWidth,focusIn:s.contains(document.activeElement),inert:document.querySelector('${content}').closest('.staff-content,.workspace-area,main,.shell>*:not(.sidebar-column)')?.inert===true||document.querySelector('${content}').inert===true};})()`;
+    await settle();await finish();
+    let state=await evaluate(panel);
+    assert.equal(state.expanded,'false',name+' phone menu closed by default');assert.equal(state.visible,false,name+' phone panel hidden');
+    assert.ok(await evaluate(`(()=>{const b=document.querySelector('[data-sidebar-toggle]'),r=b.getBoundingClientRect();return r.top>=0&&r.width>=44&&document.elementFromPoint(r.left+r.width/2,r.top+r.height/2)?.closest('[data-sidebar-toggle]')===b;})()`),name+' phone toggle visible');
+    await evaluate(`window.__field=document.querySelector('${field}');window.__value=__field.value;window.__expected=__field.tagName==='SELECT'?__value:'unchanged';__field.value=__expected;document.querySelector('[data-sidebar-toggle]').focus()`);
+    await key('Enter','Enter',13);await settle();await finish();
+    state=await evaluate(panel);
+    assert.equal(state.expanded,'true',name+' phone opens');assert.ok(state.visible&&state.inside,name+' phone panel beside page');
+    assert.ok(state.focusIn,name+' phone focus moves into panel');assert.ok(state.inert,name+' phone page behind is inert');
+    assert.equal(await evaluate('document.documentElement.dataset.sidebarOpen'),'true',name);
+    await key('Escape','Escape',27);await settle();await finish();
+    state=await evaluate(panel);
+    assert.ok(state.expanded==='false'&&!state.visible&&!state.inert,name+' Escape closes');
+    assert.ok(await evaluate('document.activeElement.matches("[data-sidebar-toggle]")'),name+' focus returns to toggle');
+    await evaluate('document.querySelector("[data-sidebar-toggle]").click()');await settle();await finish();
+    await evaluate('document.querySelector(".sidebar-column").dispatchEvent(new MouseEvent("click",{bubbles:true}))');await settle();await finish();
+    assert.equal((await evaluate(panel)).expanded,'false',name+' backdrop closes');
+    assert.ok(await evaluate(`document.querySelector('${field}')===window.__field&&__field.value===window.__expected`),name+' phone preserves form');
+    await evaluate('window.__field.value=window.__value');
+    await evaluate(`document.querySelector('${languageButton}').click()`);await settle();
+    assert.equal(await evaluate('document.querySelector("[data-sidebar-toggle]").getAttribute("aria-label")'),language==='en'?'فتح القائمة':'Open menu',name+' phone translated label');
+    assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth+2'),name+' phone overflow');
+    if(width===390&&theme==='dark'&&language==='en')writeFileSync(join(shots,path==='/staff'?'staff-phone.png':'preview-phone.png'),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
+    assert.deepEqual(await evaluate('__errors'),[],name);layouts++;continue;
+   }
    if(await evaluate('document.documentElement.dataset.sidebarHidden')==='true')await evaluate('document.querySelector("[data-sidebar-toggle]").click()');
    await settle();
    assert.ok(await evaluate(`(()=>{const b=document.querySelector('[data-sidebar-toggle]'),s=document.getElementById(b.getAttribute('aria-controls'));return b.getBoundingClientRect().bottom<=s.getBoundingClientRect().top+1&&!b.closest('header');})()`),name+' toggle above sidebar');
@@ -52,6 +81,9 @@ try{await identityFixture(async f=>{
   }
  }
  // A storage change in another tab must move focus out of the hidden sidebar.
+ await send('Emulation.setDeviceMetricsOverride',{width:1366,height:768,deviceScaleFactor:1,mobile:false});await settle();
+ if(await evaluate('document.documentElement.dataset.sidebarHidden')==='true')await evaluate('document.querySelector("[data-sidebar-toggle]").click()');
+ await evaluate('document.getAnimations().forEach(a=>a.finish())');await settle();
  await evaluate(`document.querySelector('.sidebar button').focus();dispatchEvent(new StorageEvent('storage',{key:'safeer.sidebar.hidden',newValue:'1'}))`);
  assert.ok(await evaluate('document.activeElement.matches("[data-sidebar-toggle]")'));
  await send('Emulation.setEmulatedMedia',{media:'print'});

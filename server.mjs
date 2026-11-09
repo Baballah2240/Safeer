@@ -2,6 +2,7 @@ import {createServer,request as upstreamRequest} from 'node:http';
 import {readFile} from 'node:fs/promises';
 import {readFileSync} from 'node:fs';
 import {resolve} from 'node:path';
+import {createHash} from 'node:crypto';
 import {pathToFileURL} from 'node:url';
 import {publicAssets} from './config/assets.mjs';
 
@@ -69,6 +70,15 @@ export async function startServer({port = 4320, built = false, identityApiUrl, p
       }
       const [file, type] = publicAssets[asset];
       const content = await readFile(new URL((built ? 'dist/' : '') + file, import.meta.url));
+      // D53: scripts/styles/images may be kept by phones but must be revalidated on
+      // every visit; an unchanged file costs a 304 instead of a full download.
+      // Pages stay no-store so a signed-out view is never replayed.
+      if (type !== 'text/html') {
+        const tag = '"' + createHash('sha256').update(content).digest('base64url').slice(0, 27) + '"';
+        response.setHeader('Cache-Control', 'no-cache');
+        response.setHeader('ETag', tag);
+        if (String(request.headers['if-none-match'] || '').split(',').map(x => x.trim()).includes(tag)) { response.writeHead(304); response.end(); return; }
+      }
       response.writeHead(200, {'Content-Type': type + (type === 'image/svg+xml' ? '' : '; charset=utf-8')});
       response.end(request.method === 'HEAD' ? undefined : content);
     } catch {

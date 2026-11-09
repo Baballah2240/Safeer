@@ -28,7 +28,7 @@ try{await identityFixture(async f=>{
   for(let n=0;n<3;n++){await key('Tab','Tab',9);assert.ok(await evaluate('document.querySelector("#market-menu").contains(document.activeElement)'),label+' keyboard containment');}
   await click('#market-settings summary');
   if(await evaluate('document.documentElement.dataset.theme')!==theme)await click('[data-theme-toggle]');
-  assert.ok(await evaluate('(()=>{const d=document.querySelector("#market-menu"),r=d.getBoundingClientRect();return r.left>=-1&&r.right<=innerWidth+1&&d.scrollWidth<=d.clientWidth+1&&r.height<=innerHeight+1;})()'),label+' drawer fits');
+  await evaluate('document.getAnimations().forEach(a=>a.finish())');assert.ok(await evaluate('(()=>{const d=document.querySelector("#market-menu"),r=d.getBoundingClientRect();return r.left>=-1&&r.right<=innerWidth+1&&d.scrollWidth<=d.clientWidth+1&&r.height<=innerHeight+1;})()'),label+' drawer fits');
   if(width===390||width===1366)writeFileSync(join(shots,`${path.slice(1)}-${theme}-${lang}-${width}.png`),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
   await key('Escape','Escape',27);await until('!document.querySelector("#market-menu").open');
   await until('document.activeElement.id==="market-menu-toggle"');

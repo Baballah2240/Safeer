@@ -41,14 +41,14 @@ try{
   await send('Page.navigate',{url:web.origin+'/'+page});
   const form='#'+page+'-login';
   await until(`Boolean(window.__releaseSession)&&Boolean(document.querySelector('${form}'))`);
-  assert.equal(await evaluate(`document.querySelector('${form} button').disabled`),true,'startup must block premature login');
+  assert.equal(await evaluate(`document.querySelector('${form} button:not([type=button])').disabled`),true,'startup must block premature login');
   await fill(form+' [name=login]','fictional@safeer.local');
   await fill(form+' [name=password]','Startup fictional password');
   await evaluate(`document.querySelector('${form}').requestSubmit()`);
   assert.equal(await evaluate('window.__loginCalls'),0);
 
   await evaluate('window.__releaseSession()');
-  await until(`!document.querySelector('${form} button').disabled`);
+  await until(`!document.querySelector('${form} button:not([type=button])').disabled`);
   await fill(form+' [name=login]','fictional@safeer.local');
   await fill(form+' [name=password]','Fictional password for browser test');
   await evaluate(`document.querySelector('${page==='staff'?'#staff-language':'[data-lang]'}').click()`);
@@ -58,18 +58,18 @@ try{
   await evaluate(`document.querySelector('${form}').requestSubmit()`);
   await until('window.__loginCalls===1');
   await evaluate(`document.querySelector('${page==='staff'?'#staff-language':'[data-lang]'}').click()`);
-  assert.equal(await evaluate(`document.querySelector('${form} button').disabled`),true,'rerender must preserve submission lock');
+  assert.equal(await evaluate(`document.querySelector('${form} button:not([type=button])').disabled`),true,'rerender must preserve submission lock');
   await evaluate(`document.querySelector('${form}').requestSubmit()`);
   assert.equal(await evaluate('window.__loginCalls'),1,'one login request at a time');
   await evaluate('window.__releaseLogin()');
-  await until(`!document.querySelector('${form} button').disabled`);
+  await until(`!document.querySelector('${form} button:not([type=button])').disabled`);
   assert.equal(await evaluate(`document.querySelector('${form} [name=login]').value`),'fictional@safeer.local');
   assert.equal(await evaluate(`document.querySelector('${form} [name=password]').value`),'');
   assert.ok(await evaluate(`document.querySelector('[role=alert]')?.textContent.trim()`));
   await fill(form+' [name=password]','Another fictional password');
   await evaluate(`window.__mode='offline';document.querySelector('${form}').requestSubmit()`);
   await until('window.__loginCalls===2');await evaluate('window.__releaseLogin()');
-  await until(`!document.querySelector('${form} button').disabled`);
+  await until(`!document.querySelector('${form} button:not([type=button])').disabled`);
   assert.equal(await evaluate(`document.querySelector('${form} [name=login]').value`),'fictional@safeer.local');
   assert.equal(await evaluate(`document.querySelector('${form} [name=password]').value`),'');
   await fill(form+' [name=password]','Successful fictional password');

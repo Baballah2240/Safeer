@@ -13,8 +13,8 @@ android {
     defaultConfig {
         minSdk 26
         targetSdk 35
-        versionCode 16006
-        versionName '0.16.0'
+        versionCode 16200
+        versionName '0.16.2'
     }
     buildFeatures { buildConfig true }
     signingConfigs {
@@ -48,7 +48,7 @@ android {
     }
     buildTypes {
         debug {
-            versionNameSuffix '-usb.6'
+            versionNameSuffix '-usb'
             // USB test channel: the computer's loopback service through adb reverse.
             buildConfigField 'String', 'ORIGIN', '"http://127.0.0.1:4320"'
         }

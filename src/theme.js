@@ -1,3 +1,4 @@
+import {appRelease} from './app-release.js';
 const storageKey='safeer.theme';
 const valid=value=>value==='light'||value==='dark';
 let theme='dark';
@@ -32,21 +33,43 @@ apply();
 const sidebarKey='safeer.sidebar.hidden';
 let sidebarHidden=false;
 try{sidebarHidden=localStorage.getItem(sidebarKey)==='1';}catch{/* Layout remains usable without storage. */}
-const sidebarLabel=language=>language==='ar'
-  ?(sidebarHidden?'إظهار القائمة الجانبية':'إخفاء القائمة الجانبية')
-  :(sidebarHidden?'Show sidebar':'Hide sidebar');
-export const sidebarButton=(language,id)=>`<button type="button" class="secondary sidebar-toggle" data-sidebar-toggle aria-controls="${id}" aria-expanded="${!sidebarHidden}" aria-label="${sidebarLabel(language)}" title="${sidebarLabel(language)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M6 9h12M6 15h12"/></svg><span>${sidebarLabel(language)}</span></button>`;
+// D58: on phones the workspace menu is an off-canvas panel that is closed by
+// default and slides in from the side; desktop keeps the saved show/hide column.
+const phoneQuery=matchMedia('(max-width:760px)');
+let sidebarOpen=false;
+const sidebarShown=()=>phoneQuery.matches?sidebarOpen:!sidebarHidden;
+const sidebarLabel=language=>{
+  const shown=sidebarShown();
+  if(phoneQuery.matches)return language==='ar'?(shown?'إغلاق القائمة':'فتح القائمة'):(shown?'Close menu':'Open menu');
+  return language==='ar'?(shown?'إخفاء القائمة الجانبية':'إظهار القائمة الجانبية'):(shown?'Hide sidebar':'Show sidebar');
+};
+export const sidebarButton=(language,id)=>`<button type="button" class="secondary sidebar-toggle" data-sidebar-toggle aria-controls="${id}" aria-expanded="${sidebarShown()}" aria-label="${sidebarLabel(language)}" title="${sidebarLabel(language)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path class="toggle-open" d="M6 9h12M6 15h12"/><path class="toggle-close" d="m7 7 10 10M17 7 7 17"/></svg><span>${sidebarLabel(language)}</span></button>`;
 function applySidebar(){
+  const open=phoneQuery.matches&&sidebarOpen;
   document.documentElement.dataset.sidebarHidden=String(sidebarHidden);
+  document.documentElement.dataset.sidebarOpen=String(open);
   document.querySelectorAll('[data-sidebar-toggle]').forEach(button=>{
     // A cross-tab change must not leave focus in navigation that becomes hidden.
     const sidebar=document.getElementById(button.getAttribute('aria-controls'));
-    if(sidebarHidden&&sidebar?.contains(document.activeElement))button.focus();
+    const column=sidebar?.closest('.sidebar-column');
+    // The open phone panel is modal: the page behind it is inert.
+    if(column)[...column.parentElement.children].forEach(node=>{if(node!==column)node.inert=open;});
+    if(!sidebarShown()&&sidebar?.contains(document.activeElement))button.focus();
     const text=sidebarLabel(document.documentElement.lang);
-    button.setAttribute('aria-expanded',String(!sidebarHidden));
+    button.setAttribute('aria-expanded',String(sidebarShown()));
     button.setAttribute('aria-label',text);button.title=text;
     button.querySelector('span').textContent=text;
   });
+}
+function setPhoneMenu(open,{focus=true}={}){
+  if(sidebarOpen===open)return;
+  // Slide only for a deliberate open/close; resizing or re-rendering snaps.
+  const root=document.documentElement;root.dataset.sidebarMotion='true';clearTimeout(setPhoneMenu.timer);setPhoneMenu.timer=setTimeout(()=>{delete root.dataset.sidebarMotion;},340);
+  sidebarOpen=open;applySidebar();
+  const button=document.querySelector('[data-sidebar-toggle]'),sidebar=button&&document.getElementById(button.getAttribute('aria-controls'));
+  // Start at the current page so the panel opens where the person already is.
+  if(open&&focus)(sidebar?.querySelector('[aria-current=page],.nav-item.active')||sidebar?.querySelector('nav :is(a[href],button:not([disabled]))')||sidebar?.querySelector('a[href],button:not([disabled])'))?.focus({preventScroll:true});
+  else if(!open&&focus&&button&&(document.activeElement===document.body||sidebar?.contains(document.activeElement)))button.focus({preventScroll:true});
 }
 // Slide the sidebar out/in and glide the content into place (FLIP). Reduced motion snaps.
 let sidebarMoving=false;
@@ -54,6 +77,7 @@ const sidebarEase='cubic-bezier(.22,1,.36,1)';
 async function toggleSidebar(button){
   const sidebar=document.getElementById(button.getAttribute('aria-controls'));
   const shell=sidebar?.closest('.staff-shell,.shell');
+  if(phoneQuery.matches){setPhoneMenu(!sidebarOpen);return;}
   const still=matchMedia('(prefers-reduced-motion: reduce)').matches||!sidebar?.animate;
   const save=()=>{try{localStorage.setItem(sidebarKey,sidebarHidden?'1':'0');}catch{/* Preserve in-memory preference. */}};
   if(still||!shell){sidebarHidden=!sidebarHidden;save();applySidebar();return;}
@@ -75,9 +99,28 @@ async function toggleSidebar(button){
 }
 document.addEventListener('click',event=>{
   const button=event.target.closest?.('[data-sidebar-toggle]');
-  if(!button||sidebarMoving)return;
-  void toggleSidebar(button);
+  if(button){if(!sidebarMoving)void toggleSidebar(button);return;}
+  if(!phoneQuery.matches||!sidebarOpen)return;
+  // Tapping the dimmed backdrop or choosing a destination closes the panel.
+  const target=event.target;
+  if(target.classList?.contains('sidebar-column')||target.closest?.(':is(.staff-sidebar,.sidebar) :is(a[href],button)'))setPhoneMenu(false,{focus:!target.closest?.('a[href]')});
 });
+document.addEventListener('keydown',event=>{
+  if(event.key==='Escape'&&phoneQuery.matches&&sidebarOpen){event.preventDefault();setPhoneMenu(false);}
+});
+phoneQuery.addEventListener?.('change',()=>{sidebarOpen=false;applySidebar();});
+// Password fields can be revealed; the value never leaves the input.
+document.addEventListener('click',event=>{
+  const reveal=event.target.closest?.('[data-reveal]');
+  const field=reveal?.parentElement?.querySelector('input');
+  if(!field)return;
+  const show=field.type==='password',ar=document.documentElement.lang==='ar';
+  field.type=show?'text':'password';
+  reveal.setAttribute('aria-pressed',String(show));
+  reveal.setAttribute('aria-label',show?(ar?'إخفاء كلمة المرور':'Hide password'):(ar?'إظهار كلمة المرور':'Show password'));
+});
+const eye='M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6';
+export const passwordField=(language,label)=>`<label>${label}<span class="auth-input-wrap"><input name="password" type="password" required autocomplete="current-password" maxlength="128"><button type="button" class="auth-reveal" data-reveal aria-pressed="false" aria-label="${language==='ar'?'إظهار كلمة المرور':'Show password'}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${eye}"/></svg></button></span></label>`;
 addEventListener('storage',event=>{
   if(event.key!==sidebarKey&&event.key!==null)return;
   sidebarHidden=event.newValue==='1';applySidebar();
@@ -152,3 +195,27 @@ export const legalLinks=language=>{
   const ar=language==='ar',q='?lang='+(ar?'ar':'en');
   return `<p class="legal-links"><a href="/privacy${q}">${ar?'سياسة الخصوصية':'Privacy policy'}</a><span aria-hidden="true"> · </span><a href="/account-deletion${q}">${ar?'حذف الحساب والبيانات':'Delete account and data'}</a></p>`;
 };
+
+// D60: download and update notices for the Android apps. The installed app adds
+// "SafeerApp/<versionCode> (<flavor>)" to its user agent; files live on GitHub releases.
+const installed=/SafeerApp\/(\d+) \((driver|booking)\)/.exec(navigator.userAgent);
+const androidBrowser=!installed&&/Android/i.test(navigator.userAgent);
+const downloadIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>';
+const appWords=(language,flavor)=>language==='ar'
+  ?{name:flavor==='driver'?'تطبيق سفير للسائق':'تطبيق سفير للحجز',update:'يتوفر تحديث جديد',updateLink:'تنزيل التحديث',get:'احصل على التطبيق',getLink:'تنزيل',download:'تنزيل تطبيق أندرويد',version:'الإصدار'}
+  :{name:flavor==='driver'?'Safeer Driver app':'Safeer Booking app',update:'A new version is available',updateLink:'Download update',get:'Get the app',getLink:'Download',download:'Download Android app',version:'Version'};
+const releaseFor=flavor=>appRelease?.apps?.[flavor];
+export const appOutdated=()=>Boolean(installed&&appRelease&&Number(installed[1])<appRelease.versionCode);
+export const appVersionLabel=()=>appRelease?'v'+appRelease.versionName:'';
+export function appBanner(language,flavor){
+  const file=releaseFor(flavor),w=appWords(language,flavor);
+  if(!file)return '';
+  const kind=appOutdated()?'update':androidBrowser?'get':'';
+  if(!kind)return '';
+  return `<aside class="app-banner app-banner-${kind}" aria-label="${w.name}">${downloadIcon}<span><strong>${kind==='update'?w.update:w.get}</strong><small>${w.name} · ${w.version} <bdi>${appRelease.versionName}</bdi></small></span><a class="app-banner-link" href="${file.url}" rel="noopener">${kind==='update'?w.updateLink:w.getLink}</a></aside>`;
+}
+export function appDrawerLink(language,flavor){
+  const file=releaseFor(flavor),w=appWords(language,flavor);
+  if(!file||(installed&&!appOutdated()))return '';
+  return `<a class="drawer-download" href="${file.url}" rel="noopener">${downloadIcon}<span>${appOutdated()?w.updateLink:w.download}<small>${w.version} <bdi>${appRelease.versionName}</bdi></small></span></a>`;
+}

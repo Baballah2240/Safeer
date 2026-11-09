@@ -4,7 +4,7 @@
   --ink:#251c16;--muted:#716052;--accent:#754a31;--warning:#926414;--warning-fill:#e9bd62;--border:#d8c8b9;--paper:#fffaf5;--page:#f1e9e0;
   --surface:#fffaf5ed;--surface-soft:#fffbf5b8;--glass-control:#fffaf54d;--glass-highlight:#ffffffa6;--glass-edge:#ffffffa6;--glass-shadow:#3923151c;--accent-wash:#8b5d3b12;
   --page-art:radial-gradient(ellipse at 88% 8%,#b98c5e70,transparent 48%),radial-gradient(ellipse at 12% 56%,#ad8a6652,transparent 46%),radial-gradient(ellipse at 68% 92%,#fffdf8b3,transparent 50%);
-  --header-gap:12px;--header-glass:#fffaf540;--header-reflection:#ffffff8c;--header-edge:#ffffffbf;
+  --header-gap:calc(12px + var(--safe-top,0px));--header-glass:#fffaf540;--header-reflection:#ffffff8c;--header-edge:#ffffffbf;
   --glass-tile:#fffaf58c;--glass-sheen:#ffffff45;--glass-rim:#ffffffb3;
   --sidebar-glass:#251a12d9;--sidebar-sheen:#fff4e82e;
   /* Compatibility aliases keep page components on the same material system. */

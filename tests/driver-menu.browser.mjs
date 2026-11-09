@@ -27,7 +27,7 @@ try{await identityFixture(async f=>{
    await click('#driver-menu-toggle');assert.ok(await evaluate('document.querySelector("#driver-menu").contains(document.activeElement)'),label+' focus');
    await evaluate(`document.querySelector('${field}').focus()`);assert.ok(await evaluate(`!document.activeElement.matches('${field}')`),label+' inert background');
    await click('#driver-settings summary');if(await evaluate('document.documentElement.dataset.theme')!==theme)await click('[data-theme-toggle]');
-   assert.ok(await evaluate('(()=>{const d=document.querySelector("#driver-menu"),r=d.getBoundingClientRect();return r.left>=-1&&r.right<=innerWidth+1&&d.scrollWidth<=d.clientWidth+1&&r.height<=innerHeight+1;})()'),label+' drawer fits');
+   await evaluate('document.getAnimations().forEach(a=>a.finish())');assert.ok(await evaluate('(()=>{const d=document.querySelector("#driver-menu"),r=d.getBoundingClientRect();return r.left>=-1&&r.right<=innerWidth+1&&d.scrollWidth<=d.clientWidth+1&&r.height<=innerHeight+1;})()'),label+' drawer fits');
    assert.equal(await evaluate('Boolean(document.querySelector("#driver-menu [data-refresh]"))'),signedIn,label+' refresh access');
    if(width===390||width===1366)writeFileSync(join(shots,`${signedIn}-${theme}-${lang}-${width}.png`),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
    await send('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});await send('Input.dispatchKeyEvent',{type:'keyUp',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});

@@ -127,6 +127,33 @@
   html body .market-preferences>div{display:grid;gap:8px;font-size:.8rem;color:var(--muted)}
   html body .market-preferences button{width:100%;white-space:normal}
   html body .market-drawer-foot{margin:32px 8px 0;padding-top:20px;border-top:1px solid var(--border);font-size:.8rem;color:var(--muted);line-height:1.7}
+  /* D53 professional drawer: identity header, labelled sections, pinned footer. */
+  html body dialog.market-drawer[open]{display:flex;flex-direction:column;padding:20px 16px calc(16px + env(safe-area-inset-bottom))}
+  html body .market-drawer-head{margin:0 4px 20px;padding-bottom:18px;border-bottom:1px solid var(--border)}
+  html body .drawer-brand{display:flex;align-items:center;gap:12px;min-width:0}
+  html body .drawer-brand img{width:40px;height:40px;border-radius:12px;flex-shrink:0}
+  html body .drawer-brand>span{display:grid;gap:2px;min-width:0}
+  html body .drawer-brand strong{font-size:1rem;line-height:1.2;overflow-wrap:anywhere}
+  html body .drawer-brand small{font-size:.75rem;font-weight:500;color:var(--muted)}
+  html body .market-drawer .app-drawer-close{width:40px;height:40px;min-height:40px;border-radius:12px;background:transparent;border:1px solid var(--border);box-shadow:none}
+  html body .market-drawer .app-drawer-close:hover{background:var(--accent-wash)}
+  html body .drawer-user{display:flex;align-items:center;gap:12px;margin:0 4px 18px;padding:12px;border:1px solid var(--border);border-radius:16px;background:var(--accent-wash)}
+  html body .drawer-avatar{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;flex-shrink:0;background:var(--accent);color:var(--paper);font-weight:700}
+  html body .drawer-user>span:last-child{display:grid;gap:2px;min-width:0}
+  html body .drawer-user strong{font-size:.9rem;overflow-wrap:anywhere}
+  html body .drawer-user small{font-size:.75rem;color:var(--muted)}
+  html body .drawer-section-label{margin:0 14px 8px;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  html[lang=ar] body .drawer-section-label{letter-spacing:0}
+  html body .market-drawer-nav{gap:4px}
+  html body .market-drawer-nav a[aria-current=page]{position:relative;background:var(--accent-wash);border-color:transparent;color:var(--ink)}
+  html body .market-drawer-nav a[aria-current=page]::before{content:'';position:absolute;inset-block:12px;inset-inline-start:0;width:3px;border-radius:3px;background:var(--accent)}
+  html body .drawer-bottom{margin-top:auto;padding-top:16px}
+  html body .drawer-bottom .app-settings{margin-top:0}
+  html body .drawer-bottom .market-drawer-foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 12px;margin:12px 6px 0;padding-top:14px}
+  html body .drawer-version{font-variant-numeric:tabular-nums;opacity:.75}
+  @media (prefers-reduced-motion:no-preference){html body dialog.market-drawer[open]{animation:drawer-in 220ms cubic-bezier(.2,.8,.2,1)}html[dir=rtl] body dialog.market-drawer[open]{animation-name:drawer-in-rtl}}
+  @keyframes drawer-in{from{transform:translateX(-100%)}to{transform:none}}
+  @keyframes drawer-in-rtl{from{transform:translateX(100%)}to{transform:none}}
   html body .platform-notice-message{overflow-wrap:anywhere;white-space:pre-wrap}
   html body .market-service-notice{background:linear-gradient(120deg,var(--glass-sheen),transparent 55%),var(--glass-tile);border-color:var(--glass-rim);box-shadow:0 8px 24px var(--glass-shadow),inset 0 1px 0 var(--glass-highlight);backdrop-filter:blur(20px) saturate(125%);-webkit-backdrop-filter:blur(20px) saturate(125%)}
   html body .market-band{margin:20px clamp(12px,3vw,32px) 0;border-radius:28px;background:radial-gradient(ellipse at 90% 0%,#94674445,transparent 65%),var(--material-navy);border:1px solid #bc91643d;box-shadow:0 12px 36px var(--glass-shadow);padding-block:32px}
@@ -261,7 +288,7 @@
 .theme-toggle{white-space:nowrap}
 @media screen{
   html body :is(.staff-topbar,.driver-header,.market-bar,.topbar){margin-block-start:var(--header-gap)}
-  @media(max-width:760px){:root{--header-gap:10px}html body :is(.driver-header,.market-bar,.topbar){border-radius:24px}}
+  @media(max-width:760px){:root{--header-gap:calc(10px + var(--safe-top,0px))}html body :is(.driver-header,.market-bar,.topbar){border-radius:24px}}
   html body :is(.staff-shell,.shell){overflow-x:clip}
   html body .sidebar-column{position:sticky;top:0;align-self:flex-start;display:flex;flex-direction:column;height:100dvh;min-width:0}
   html body .sidebar-toolbar{display:flex;align-items:center;justify-content:center;flex:0 0 68px}
@@ -308,3 +335,80 @@
   html body .legal-body{line-height:1.75}
   html body .legal-body h2{margin:26px 0 8px;font-size:17px}
 }
+
+@media screen{
+  /* D58: the Android app draws under the camera cutout and passes its height as --safe-top. */
+  html body dialog.market-drawer[open]{padding-top:calc(20px + var(--safe-top,0px))}
+  html body .sidebar-toggle .toggle-close{display:none}
+
+  /* Professional sign-in card shared by Staff and Driver. */
+  html body .staff-panel.auth-card{width:100%;max-width:440px;margin:clamp(16px,5vh,56px) auto;padding:clamp(24px,6vw,36px);display:block;text-align:start}
+  html body .auth-brand{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+  html body .auth-brand img{width:48px;height:48px;border-radius:14px;flex-shrink:0}
+  html body .auth-brand>span{display:grid;gap:2px;min-width:0}
+  html body .auth-brand strong{font-size:1rem;line-height:1.2}
+  html body .auth-brand small{font-size:.78rem;color:var(--muted)}
+  html body .auth-card h1{margin:0 0 6px;font-size:clamp(1.45rem,5.5vw,1.85rem);line-height:1.2}
+  html body .auth-card .auth-lead{margin:0 0 24px;color:var(--muted);font-size:.95rem;line-height:1.6}
+  html body .auth-form{display:grid;gap:18px;margin:0}
+  html body .auth-form label{display:grid;gap:8px;font-weight:600;font-size:.9rem;margin:0}
+  html body .auth-form input{width:100%;min-height:52px;padding:0 14px;font-size:16px;border-radius:14px;box-sizing:border-box}
+  html body .auth-input-wrap{position:relative;display:block}
+  html body .auth-input-wrap input{padding-inline-end:56px}
+  html body .auth-card .auth-reveal,html body .auth-card .auth-reveal:hover:not(:disabled){position:absolute;inset-block:4px;inset-inline-end:4px;display:grid;place-items:center;width:46px;min-width:46px;height:auto;min-height:0;padding:0;border:0;border-radius:10px;background:transparent;box-shadow:none;color:var(--muted)}
+  html body .auth-card .auth-reveal[aria-pressed=true]{color:var(--accent)}
+  html body .auth-reveal svg{width:20px;height:20px}
+  html body .auth-card .auth-submit{width:100%;min-height:54px;margin-top:6px;font-size:1rem;border-radius:16px}
+  html body .auth-note{display:flex;align-items:center;gap:10px;margin:22px 0 0;padding-top:18px;border-top:1px solid var(--border);color:var(--muted);font-size:.82rem;line-height:1.5}
+  html body .auth-note svg{width:18px;height:18px;flex-shrink:0;color:var(--accent)}
+  html body .auth-card .legal-links{margin-top:14px}
+}
+@media screen and (max-width:760px){
+  /* Phone workspace menu: closed by default, slides in from the side on demand. */
+  html body :is(.staff-shell,.shell)>.sidebar-column,
+  html[data-sidebar-hidden=true] body :is(.staff-shell,.shell)>.sidebar-column{position:fixed;inset-block-start:0;inset-inline-start:0;width:auto;height:auto;padding:0;z-index:70;display:block;background:none}
+  html body .sidebar-column .sidebar-toolbar{position:fixed;inset-block-start:calc(var(--header-gap) + 14px);inset-inline-start:24px;z-index:73;display:block;flex:none;height:auto}
+  html body .sidebar-column :is(.staff-sidebar,.sidebar),
+  html[data-sidebar-hidden=true] body .sidebar-column :is(.staff-sidebar,.sidebar){display:flex;flex-direction:column;position:fixed;inset-block:0;inset-inline-start:0;inset-inline-end:auto;width:min(320px,86vw);height:100dvh;max-height:none;margin:0;padding:calc(var(--safe-top,0px) + 84px) 16px calc(20px + env(safe-area-inset-bottom));gap:14px;border-radius:0 24px 24px 0;overflow-y:auto;overscroll-behavior:contain;z-index:72;transform:translateX(-104%);visibility:hidden;transition:none}
+  html[data-sidebar-motion=true] body .sidebar-column :is(.staff-sidebar,.sidebar){transition:transform 280ms cubic-bezier(.22,1,.36,1),visibility 0s linear 280ms}
+  html[dir=rtl] body .sidebar-column :is(.staff-sidebar,.sidebar){transform:translateX(104%);border-radius:24px 0 0 24px}
+  html[data-sidebar-open=true] body .sidebar-column :is(.staff-sidebar,.sidebar){transform:none;visibility:visible}
+  html[data-sidebar-motion=true][data-sidebar-open=true] body .sidebar-column :is(.staff-sidebar,.sidebar){transition:transform 280ms cubic-bezier(.22,1,.36,1),visibility 0s}
+  html[data-sidebar-open=true] body .sidebar-column::before{content:'';position:fixed;inset:0;z-index:71;background:#0a0705a6;animation:menu-dim 200ms ease}
+  html[data-sidebar-open=true] body{overflow:hidden}
+  html[data-sidebar-open=true] body .sidebar-toggle .toggle-open{display:none}
+  html[data-sidebar-open=true] body .sidebar-toggle .toggle-close{display:inline}
+  html body .staff-sidebar .staff-nav,html body .sidebar nav{display:grid;grid-template-columns:1fr;gap:4px}
+  html body .staff-sidebar .staff-nav button{justify-content:flex-start;min-height:48px;padding:12px 14px;font-size:14px;gap:12px}
+  html body .staff-sidebar :is(.staff-sidebar-label,.staff-sidebar-foot){display:block}
+  html body .staff-sidebar .staff-preview{display:flex;align-items:center;gap:12px;min-height:48px;font-size:13px}
+  html body .staff-sidebar .staff-preview>span{display:grid;gap:2px}
+  html body .staff-sidebar .staff-preview small{display:block;margin:0;padding:0}
+  html body .sidebar-column .staff-brand{margin-bottom:4px}
+  /* Header: room for the menu button; title first, actions on their own row. */
+  html body :is(.staff-topbar,.topbar),html[data-sidebar-hidden=true] body :is(.staff-topbar,.topbar){flex-wrap:wrap;align-items:center;gap:12px;min-height:72px;padding:14px 16px;padding-inline-start:80px}
+  html body .staff-topbar-title{flex:1 1 100%;min-height:44px;display:flex;flex-direction:column;justify-content:center}
+  html body .staff-top-actions{flex:1 1 100%;display:flex;flex-wrap:wrap;gap:8px;margin-inline-start:-64px}
+  html body .staff-top-actions>button{flex:1 1 auto;min-height:44px;padding:8px 12px}
+}
+@media screen and (max-width:760px) and (prefers-reduced-motion:reduce){
+  html body .sidebar-column :is(.staff-sidebar,.sidebar){transition:none!important}
+  html[data-sidebar-open=true] body .sidebar-column::before{animation:none}
+}
+@keyframes menu-dim{from{opacity:0}to{opacity:1}}
+
+@media screen{
+  /* D60: app download/update notices. */
+  html body .app-banner{display:flex;align-items:center;gap:12px;margin:12px 16px 0;padding:12px 14px;border:1px solid var(--border);border-radius:18px;background:linear-gradient(135deg,var(--accent-wash),transparent 70%),var(--paper);color:var(--ink)}
+  html body .app-banner-update{border-color:var(--accent)}
+  html body .app-banner>svg{width:22px;height:22px;flex-shrink:0;color:var(--accent)}
+  html body .app-banner>span{display:grid;gap:2px;flex:1;min-width:0}
+  html body .app-banner strong{font-size:.9rem}
+  html body .app-banner small{font-size:.75rem;color:var(--muted);overflow-wrap:anywhere}
+  html body .app-banner-link{flex-shrink:0;display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border-radius:14px;background:var(--material-enamel,var(--accent));color:#fff;font-weight:700;font-size:.85rem;text-decoration:none}
+  html body .market-drawer-nav a.drawer-download{margin-top:8px;border-color:var(--border);background:var(--accent-wash)}
+  html body .drawer-download>span{display:grid;gap:2px}
+  html body .drawer-download small{font-size:.72rem;font-weight:500;color:var(--muted)}
+  @media(min-width:761px){html body .app-banner{max-width:1240px;margin-inline:auto}}
+}
+@media print{.app-banner,.drawer-download{display:none!important}}

@@ -55,3 +55,25 @@ test('prototype serves only explicit public assets, locally, without a write API
     assert.equal((await fetch(app.origin)).status,200,'Malformed request must not stop the server');
   } finally { await app.close(); }
 });
+
+test('static assets revalidate with ETags while pages stay no-store (D57)', async () => {
+  const app = await startServer({port: 0});
+  try {
+    const first = await fetch(app.origin + '/src/theme.css');
+    const tag = first.headers.get('etag');
+    assert.equal(first.status, 200);
+    assert.equal(first.headers.get('cache-control'), 'no-cache');
+    assert.match(tag, /^"[A-Za-z0-9_-]{27}"$/);
+    await first.arrayBuffer();
+    const again = await fetch(app.origin + '/src/theme.css', {headers: {'If-None-Match': tag}});
+    assert.equal(again.status, 304);
+    assert.equal((await again.arrayBuffer()).byteLength, 0);
+    const changed = await fetch(app.origin + '/src/theme.css', {headers: {'If-None-Match': '"stale"'}});
+    assert.equal(changed.status, 200);
+    await changed.arrayBuffer();
+    const page = await fetch(app.origin + '/marketplace');
+    assert.equal(page.headers.get('cache-control'), 'no-store');
+    assert.equal(page.headers.get('etag'), null);
+    await page.arrayBuffer();
+  } finally { await app.close(); }
+});

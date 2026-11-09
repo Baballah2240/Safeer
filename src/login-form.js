@@ -9,7 +9,8 @@ export function loginFormState() {
     form.elements.namedItem('login').value=draft.login;
     form.elements.namedItem('password').value=draft.password;
     form.setAttribute('aria-busy',String(pending));
-    form.querySelector('button').disabled=pending;
+    // The submit button, not the show-password control, is locked while pending.
+    form.querySelector('button:not([type=button])').disabled=pending;
   };
   return {
     capture,restore,

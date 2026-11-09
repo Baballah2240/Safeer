@@ -1,5 +1,17 @@
 # Changelog
 
+## Online app download - D60, 2026-11-09
+
+Website Download/Get-the-app/Update notices driven by generated src/app-release.js; the app identifies its version in the user agent and opens only Safeer GitHub release links externally.
+
+## Full-screen apps, phone menu and sign-in - D58, 2026-11-09
+
+Android draws into the display cutout and shares --safe-top with the page. Phone Staff/preview navigation becomes an off-canvas modal panel with backdrop, Escape/Back closing and focus return; desktop behaviour is unchanged. Sign-in pages share a professional card with a show-password control. Sidebar browser checks now cover phone open/close, inert background, focus, translation and form preservation.
+
+## Website-connected apps and drawer - D57, 2026-11-09
+
+Android Driver and Booking default to the signed website channel (0.16.1/16100) with automatic reconnect, same-page retry, state restore and ETag asset revalidation. The phone drawers gain an identity header, labelled menu, signed-in driver card, current-page indicator, pinned Settings/footer with version, and a slide-in that respects reduced motion. Menu browser tests finish that animation before measuring; a server test covers 304 revalidation and no-store pages.
+
 ## Audit remediation - D56, 2026-11-09
 
 The audit source fixes preserve newest-search ordering and unfinished search fields, restore the above-sidebar toggle with immediate keyboard state and clipped animation overflow, publish the owner-approved support contact, and permit a bounded 64 KiB payload only for creating public group bookings (other endpoints remain 8 KiB). The Android error screen distinguishes hosted HTTPS from USB; local patch .6/16006 is built/linted/saved. Hosted owner recovery now supports a non-superuser migration owner with explicit confirmation, duplicate-email rollback, session revocation and audit. Complete browser release gating and PostgreSQL 16 CI are added. No schema, financial policy, role grants or real account credentials are changed. See [D56 handover](archive/AUDIT_REMEDIATION_2026-11-09.md) for measured results and outstanding deployment/device verification.

@@ -1,5 +1,11 @@
 # Safeer
 
+- D60: after every website app build run npm.cmd run mobile:save, commit the regenerated src/app-release.js, and attach both APKs to the GitHub release tag v<versionName>. Never commit APKs or the upload key. The repository is intended to be public: keep secrets and real personal data out of tracked files.
+
+- D57: installed apps connect to https://safeer.mohbaba.online; USB is only for installation. npm.cmd run mobile:build/mobile:save build the signed website channel; mobile:build:usb/mobile:save:usb keep the debug development channel. Never commit the upload key. Shipments are agreed (fixed price, receiver phone+name, anyone sends) but must not start until the owner says so (D59).
+- D58: phone workspace sidebar is an off-canvas panel (closed by default, modal, side slide-in); the app passes the cutout height as --safe-top. Keep the show-password button type=button so the sign-in lock still targets submit. Run tests/sidebar.browser.mjs for menu changes.
+
+
 - D52 supersedes Driver toolbar retention: both clients now use shared sidebar/Settings and immersive fullscreen with normal swipe-reveal/exit, safe cutout/IME insets and drawer-first Back. Version .5/16005. Keep assigned-driver authority and operational actions intact; run Driver/Booking drawer, boarding and header checks.
 
 
