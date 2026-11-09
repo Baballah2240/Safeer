@@ -1,5 +1,7 @@
 # Safeer
 
+- Mobile app handover for Codex: read docs/archive/MOBILE_HANDOVER_2026-11-09.md first. Work from the Safeer repository clone, never the Stocrant copy.
+
 - D60: after every website app build run npm.cmd run mobile:save, commit the regenerated src/app-release.js, and attach both APKs to the GitHub release tag v<versionName>. Never commit APKs or the upload key. The repository is intended to be public: keep secrets and real personal data out of tracked files.
 
 - D57: installed apps connect to https://safeer.mohbaba.online; USB is only for installation. npm.cmd run mobile:build/mobile:save build the signed website channel; mobile:build:usb/mobile:save:usb keep the debug development channel. Never commit the upload key. Shipments are agreed (fixed price, receiver phone+name, anyone sends) but must not start until the owner says so (D59).
