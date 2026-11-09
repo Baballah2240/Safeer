@@ -17,15 +17,23 @@ try{await identityFixture(async f=>{
  let layouts=0;
  for(const signedIn of [false,true]){
   await send('Network.clearBrowserCookies');if(signedIn){const value=s.driver.c.cookie,i=value.indexOf('=');await send('Network.setCookie',{name:value.slice(0,i),value:value.slice(i+1),url:web.origin,httpOnly:true,sameSite:'Strict'});}
-  for(const lang of ['en','ar'])for(const theme of ['dark','light'])for(const [width,height] of [[1920,1080],[1366,768],[390,844],[320,740]]){
+  for(const lang of ['en','ar'])for(const theme of ['dark','light'])for(const [width,height] of [[1920,1080],[1366,768],[390,844],[320,740],[568,320]]){
    const label=`${signedIn}/${lang}/${theme}/${width}`;
    await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width<700});
    await send('Page.navigate',{url:web.origin+'/driver?lang='+lang});await until(`Boolean(document.querySelector('${signedIn?'[data-trip]':'#driver-login'}'))`);
+   // Menu preservation is checked after startup settles; login.browser covers drafts during startup.
+   if(!signedIn)await until('document.querySelector("#driver-login")?.getAttribute("aria-busy")==="false"');
    if(signedIn){await click('[data-trip]');await until('Boolean(document.querySelector("#driver-incident"))');}
    const field=signedIn?'#driver-incident textarea':'#driver-login [name=login]',value=signedIn?'Fictional unsaved incident':'fictional@example.test';
    await evaluate(`window.__field=document.querySelector('${field}');__field.value='${value}';__field.dispatchEvent(new Event('input',{bubbles:true}));`);
    await click('#driver-menu-toggle');assert.ok(await evaluate('document.querySelector("#driver-menu").contains(document.activeElement)'),label+' focus');
    await evaluate(`document.querySelector('${field}').focus()`);assert.ok(await evaluate(`!document.activeElement.matches('${field}')`),label+' inert background');
+   assert.equal(await evaluate('document.querySelector("#driver-menu").dataset.appFlavor'),'driver',label+' separate app identity');
+   assert.ok(await evaluate('document.documentElement.classList.contains("app-drawer-open")'),label+' background scroll locked');
+   assert.ok(await evaluate('document.querySelector("#driver-menu-close").getBoundingClientRect().width>=44'),label+' close touch target');
+   assert.equal(await evaluate('document.querySelectorAll("#driver-menu .drawer-nav-copy").length'),3,label+' navigation descriptions');
+   await evaluate('document.getAnimations().forEach(a=>a.finish())');
+   if(width===390&&lang==='en')writeFileSync(join(shots,'modern-'+theme+'-'+signedIn+'.png'),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
    await click('#driver-settings summary');if(await evaluate('document.documentElement.dataset.theme')!==theme)await click('[data-theme-toggle]');
    await evaluate('document.getAnimations().forEach(a=>a.finish())');assert.ok(await evaluate('(()=>{const d=document.querySelector("#driver-menu"),r=d.getBoundingClientRect();return r.left>=-1&&r.right<=innerWidth+1&&d.scrollWidth<=d.clientWidth+1&&r.height<=innerHeight+1;})()'),label+' drawer fits');
    assert.equal(await evaluate('Boolean(document.querySelector("#driver-menu [data-refresh]"))'),signedIn,label+' refresh access');

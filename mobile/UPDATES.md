@@ -197,3 +197,11 @@ Staff luggage pages now clear stale actions during searches, support explicit re
 ## 2026-11-09 - D62 verified mobile handover
 
 Rebuilt both 0.16.2 website apps with the existing upload certificate; release build/lint/signatures and shared mobile workflows passed. Regenerated src/app-release.js for the saved APK hashes. Added Android-browser/old/current/newer app download-notice checks. See docs/archive/MOBILE_CONTINUATION_2026-11-09.md. No signing identity/version change or phone uninstall. Public downloads await owner publication of the private draft and repository visibility choice.
+
+## 2026-11-09 - 0.16.3 / 16300 (D63)
+
+- Driver: own app identity, trip/boarding descriptions and separated Refresh/Sign out actions.
+- Booking: own app identity, trip search/reservation descriptions and employee access guidance.
+- Both: modern menu cards, clear selected destination, 44px controls, compact settings, privacy/support access, reliable scroll/focus and translated-header clearance.
+- Same package IDs, HTTPS service and signing certificate. New app-release metadata points each app to its matching 0.16.3 APK; older 0.16.2 clients show the update notice after loading the updated website.
+- Source/browser/build/lint/signature checks passed; public hosting/download verification is separate from a Git push. No phone uninstall or automatic APK installation.

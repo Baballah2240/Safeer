@@ -15,7 +15,7 @@ try{await identityFixture(async f=>{
  const click=s=>evaluate(`document.querySelector(${JSON.stringify(s)}).click()`);
  const key=async(key,code,n)=>{await send('Input.dispatchKeyEvent',{type:'keyDown',key,code,windowsVirtualKeyCode:n});await send('Input.dispatchKeyEvent',{type:'keyUp',key,code,windowsVirtualKeyCode:n});};
  let layouts=0;
- for(const path of ['/marketplace','/booking'])for(const lang of ['en','ar'])for(const theme of ['dark','light'])for(const [width,height] of [[1920,1080],[1366,768],[390,844],[320,740]]){
+ for(const path of ['/marketplace','/booking'])for(const lang of ['en','ar'])for(const theme of ['dark','light'])for(const [width,height] of [[1920,1080],[1366,768],[390,844],[320,740],[568,320]]){
   const label=`${path}/${lang}/${theme}/${width}`;
   await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width<700});
   await send('Page.navigate',{url:web.origin+path+'?lang='+lang});await until(`Boolean(document.querySelector('${path==='/booking'?'#market-lookup':'#market-search'}'))`);
@@ -26,7 +26,13 @@ try{await identityFixture(async f=>{
   assert.ok(await evaluate('document.querySelector("#market-menu").contains(document.activeElement)'),label+' initial focus');
   await evaluate(`document.querySelector('${field}').focus()`);assert.ok(await evaluate(`!document.activeElement.matches('${field}')`),label+' inert background');
   for(let n=0;n<3;n++){await key('Tab','Tab',9);assert.ok(await evaluate('document.querySelector("#market-menu").contains(document.activeElement)'),label+' keyboard containment');}
-  await click('#market-settings summary');
+  assert.equal(await evaluate('document.querySelector("#market-menu").dataset.appFlavor'),'booking',label+' separate app identity');
+   assert.ok(await evaluate('document.documentElement.classList.contains("app-drawer-open")'),label+' background scroll locked');
+   assert.ok(await evaluate('document.querySelector("#market-menu-close").getBoundingClientRect().width>=44'),label+' close touch target');
+   assert.equal(await evaluate('document.querySelectorAll("#market-menu .drawer-nav-copy").length'),3,label+' navigation descriptions');
+   await evaluate('document.getAnimations().forEach(a=>a.finish())');
+   if(width===390&&lang==='en')writeFileSync(join(shots,'modern-'+theme+'.png'),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
+   await click('#market-settings summary');
   if(await evaluate('document.documentElement.dataset.theme')!==theme)await click('[data-theme-toggle]');
   await evaluate('document.getAnimations().forEach(a=>a.finish())');assert.ok(await evaluate('(()=>{const d=document.querySelector("#market-menu"),r=d.getBoundingClientRect();return r.left>=-1&&r.right<=innerWidth+1&&d.scrollWidth<=d.clientWidth+1&&r.height<=innerHeight+1;})()'),label+' drawer fits');
   if(width===390||width===1366)writeFileSync(join(shots,`${path.slice(1)}-${theme}-${lang}-${width}.png`),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));

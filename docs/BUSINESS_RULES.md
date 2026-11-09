@@ -230,3 +230,7 @@ A traveler can say what luggage they have when booking. It is only their word. S
 ## 2026-11-09 - D61 luggage operations follow-up
 
 The owner selected improvement of the existing Section 11 workflow. Core registration, paid-ticket checks, one-time QR tags/replacement, custody transitions, exceptions and verified collection are implemented, not future prototype work. This follow-up adds fresh-search loading safety, explicit refresh, guidance at the 50-row display bound and a permanent-loss warning for missing-bag resolution. Existing permissions, privacy, refund rules and database schema are unchanged. See [the operational plan](workflows/LUGGAGE_IMPROVEMENT_2026-11-09.md) for responsibilities, acceptance gates and deferred work.
+
+## 2026-11-09 - Mobile menus and update (D63)
+
+D63 keeps paid-ticket/boarding/booking authority and offline station payment rules unchanged. An available update links Driver to the Driver APK and Booking to the Booking APK; installation remains the phone owner's action. See [the release handover](archive/MOBILE_MENUS_0.16.3_2026-11-09.md).

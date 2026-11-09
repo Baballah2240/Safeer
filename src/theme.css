@@ -412,3 +412,45 @@
   @media(min-width:761px){html body .app-banner{max-width:1240px;margin-inline:auto}}
 }
 @media print{.app-banner,.drawer-download{display:none!important}}
+/* D63: separate app identity, clearer navigation and touch-friendly phone menus. */
+@media screen {
+  html.app-drawer-open{overflow:hidden}
+  html body dialog.market-drawer{width:min(370px,calc(100vw - 20px));border:1px solid var(--border);background:var(--paper);scroll-padding-block:20px}
+  html body dialog.market-drawer[open]{padding:20px 18px calc(20px + env(safe-area-inset-bottom));padding-top:calc(20px + var(--safe-top,0px));gap:0}
+  html body .market-drawer-head{margin:0 2px 18px;padding-bottom:18px;flex-shrink:0;align-items:center}
+  html body .drawer-brand{gap:12px}
+  html body .market-drawer .drawer-brand img{width:46px;height:46px;padding:8px;border:1px solid var(--border);background:var(--accent-wash);border-radius:15px;box-sizing:border-box}
+  html body .drawer-brand strong{font-size:1.05rem;font-weight:750;line-height:1.35}
+  html body .drawer-brand small{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase}
+  html body .market-drawer .app-drawer-close{width:44px;height:44px;min-width:44px;min-height:44px;border-radius:50%}
+  html body .drawer-intro{margin:0 2px 22px;padding:18px;border:1px solid var(--border);border-radius:20px;background:linear-gradient(140deg,var(--accent-wash),transparent),var(--glass-tile)}
+  html body .drawer-intro h2{font-size:1.17rem;line-height:1.35;margin:0 0 8px;letter-spacing:-.02em}
+  html body .drawer-intro p{font-size:.8rem;line-height:1.65;color:var(--muted);margin:0}
+  html body .drawer-user{margin:0 2px 14px;background:var(--paper)}
+  html body .drawer-section-label{margin:0 12px 8px;font-size:.68rem;letter-spacing:.1em}
+  html body .market-drawer-nav{gap:6px}
+  html body .market-drawer-nav a{min-height:72px;padding:12px 10px;gap:12px;border-radius:18px;position:relative;flex-shrink:0}
+  html body .market-drawer-nav a>svg{width:21px;height:21px;padding:10px;box-sizing:content-box;border-radius:13px;background:var(--accent-wash);flex-shrink:0}
+  html body .market-drawer-nav a[aria-current=page]{border:1px solid var(--border);background:var(--accent-wash)}
+  html body .market-drawer-nav a[aria-current=page]>svg{background:var(--accent);color:var(--paper)}
+  html body .market-drawer-nav a[aria-current=page]::before{display:none}
+  html body .market-drawer-nav a::after{content:'\203a';font-size:24px;line-height:1;color:var(--muted);margin-inline-start:auto;flex-shrink:0}
+  html[dir=rtl] body .market-drawer-nav a::after{transform:rotate(180deg)}
+  html body .drawer-nav-copy{display:grid;gap:4px;min-width:0}
+  html body .drawer-nav-copy strong{font-size:.88rem;font-weight:650;line-height:1.4}
+  html body .drawer-nav-copy small{font-size:.72rem;line-height:1.5;font-weight:400;color:var(--muted);overflow-wrap:anywhere}
+  html body .drawer-account-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 2px 0;padding-top:14px;border-top:1px solid var(--border)}
+  html body .drawer-account-actions button.drawer-nav-action{min-height:48px;justify-content:center;gap:8px;padding:10px 6px;border:1px solid var(--border);border-radius:14px;font-size:.8rem;white-space:normal}
+  html body .drawer-account-actions [data-logout]{color:var(--muted)}
+  html body .drawer-bottom{padding-top:22px}
+  html body .drawer-bottom .app-settings{border:1px solid var(--border);border-radius:18px;background:var(--accent-wash);overflow:clip}
+  html body .drawer-bottom .app-settings summary{min-height:54px;border-radius:18px;font-size:.85rem}
+  html body .drawer-bottom .market-preferences{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;padding:4px 14px 14px}
+  html body .drawer-bottom .market-preferences>div{min-width:0;gap:6px;font-size:.72rem}
+  html body .drawer-bottom .market-preferences button{min-height:46px;font-size:.76rem;padding:8px;border-radius:12px}
+  html body .drawer-help{display:flex;align-items:center;justify-content:center;min-height:44px;margin-top:8px;font-size:.76rem;color:var(--muted);text-underline-offset:4px}
+  html body .drawer-bottom .market-drawer-foot{font-size:.7rem;line-height:1.6;margin:4px 4px 0;padding-top:12px}
+  html body .drawer-version{display:inline-flex;align-items:center;padding:3px 9px;border:1px solid var(--border);border-radius:99px;font-size:.68rem;opacity:1;white-space:nowrap}
+  html body .market-drawer :is(a,button,summary):focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  @media(max-height:600px){html body .drawer-intro{padding:12px;margin-bottom:12px}html body .market-drawer-nav a{min-height:60px}html body .drawer-bottom{padding-top:12px}}
+}

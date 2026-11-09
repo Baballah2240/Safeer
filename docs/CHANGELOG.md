@@ -239,3 +239,7 @@ The owner selected improvement of the existing Section 11 workflow. Core registr
 ## 2026-11-09 - Mobile continuation (D62)
 
 Claude's 0.16.2 internet-connected apps have been rebuilt, signed and verified in the standalone Safeer repository. Shared mobile menus, headers, login, luggage and release-notice checks passed. Generated download metadata matches saved APKs. See [the continuation handover](archive/MOBILE_CONTINUATION_2026-11-09.md). Release preparation remains private; public repository/release and phone installation require separate action.
+
+## 2026-11-09 - Mobile menus and update (D63)
+
+D63: modern distinct app menus, navigation descriptions, clearer active states, separated Driver account actions, two-column settings, support link, 44px controls and locked background scrolling. Fixed translated-header measurement timing. Signed 0.16.3 update metadata and public release publication are owner-approved. See [the release handover](archive/MOBILE_MENUS_0.16.3_2026-11-09.md).

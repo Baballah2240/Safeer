@@ -131,9 +131,9 @@ applySidebar();
 export const drawerIcon=path=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${path}"/></svg>`;
 export function bindSideDrawer(root,id,triggerId,closeId){
   const menu=root.querySelector('#'+id),toggle=root.querySelector('#'+triggerId);
-  toggle.onclick=()=>{menu.showModal();toggle.setAttribute('aria-expanded','true');};
+  toggle.onclick=()=>{if(!menu.open)menu.showModal();document.documentElement.classList.add('app-drawer-open');toggle.setAttribute('aria-expanded','true');};
   root.querySelector('#'+closeId).onclick=()=>menu.close();
-  menu.addEventListener('close',()=>{toggle.setAttribute('aria-expanded','false');toggle.focus({preventScroll:true});});
+  menu.addEventListener('close',()=>{if(!document.querySelector('dialog[data-app-drawer][open]'))document.documentElement.classList.remove('app-drawer-open');toggle.setAttribute('aria-expanded','false');if(toggle.isConnected)toggle.focus({preventScroll:true});});
   menu.addEventListener('click',event=>{if(event.target!==menu)return;const r=menu.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)menu.close();});
   menu.querySelectorAll('a[href^="#"]').forEach(link=>link.addEventListener('click',()=>menu.close()));
 }
@@ -142,15 +142,17 @@ export function bindSideDrawer(root,id,triggerId,closeId){
 // focus and scrollIntoView clear the actual wrapped height at every viewport.
 if(typeof ResizeObserver==='function'){
   let header;
-  const sizes=new ResizeObserver(entries=>{
-    const height=Math.ceil(entries[0].target.getBoundingClientRect().height);
+  const measureHeader=()=>{
+    if(!header?.isConnected)return;
+    const height=Math.ceil(header.getBoundingClientRect().height);
     document.documentElement.style.setProperty('--sticky-header-height',height+'px');
-  });
+  };
+  const sizes=new ResizeObserver(entries=>{if(entries.some(entry=>entry.target===header))measureHeader();});
   const followHeader=()=>{
     const current=document.querySelector('.staff-topbar,.driver-header,.market-bar,.topbar');
     if(current===header)return;
     sizes.disconnect();header=current;
-    if(header)sizes.observe(header);
+    if(header){sizes.observe(header);measureHeader();}
   };
   const renders=new MutationObserver(followHeader);
   renders.observe(document.body,{childList:true,subtree:true});

@@ -232,3 +232,7 @@ The Luggage section calls a LuggageController backed by fixed database functions
 ## 2026-11-09 - D61 luggage operations follow-up
 
 The owner selected improvement of the existing Section 11 workflow. Core registration, paid-ticket checks, one-time QR tags/replacement, custody transitions, exceptions and verified collection are implemented, not future prototype work. This follow-up adds fresh-search loading safety, explicit refresh, guidance at the 50-row display bound and a permanent-loss warning for missing-bag resolution. Existing permissions, privacy, refund rules and database schema are unchanged. See [the operational plan](workflows/LUGGAGE_IMPROVEMENT_2026-11-09.md) for responsibilities, acceptance gates and deferred work.
+
+## 2026-11-09 - Mobile menus and update (D63)
+
+D63 changes shared menu presentation and modal scroll/focus handling, immediately measures replacement headers and ignores stale ResizeObserver entries. Native flavors remain sd.safeer.driver (/driver) and sd.safeer.booking (/marketplace), now 0.16.3/16300 with the same upload certificate. See [the release handover](archive/MOBILE_MENUS_0.16.3_2026-11-09.md).

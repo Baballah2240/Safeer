@@ -1,5 +1,10 @@
 # Decisions
 
+## 2026-11-09 - Separate modern app menus and public update
+
+D63: The owner requests modern, reliable and professional menus for the separate Driver and Booking apps, source push, and a new mobile version/update notice. The owner explicitly approves making Baballah2240/Safeer public and publishing both APKs so downloads work without GitHub sign-in. Retain distinct packages/start routes, company/assigned-driver permissions, booking/payment policies, existing signing certificate, Arabic/English, themes, focus/draft preservation and safe-area handling. Refine navigation hierarchy and touch targets, isolate account actions, preserve accessible modal behavior and publish signed 0.16.3/16300 with exact artifact metadata. Verify source, native signatures/lint, browser layouts and real public downloads/live notices separately. Do not include unrelated shipment work or uninstall phones.
+
+
 ## 2026-11-09 - Resume the mobile handover
 
 D62: The owner asks Codex to continue Claude's Safeer mobile handover and confirms Safeer is the intended app. Continue from the independent C:/Users/Lenovo/source/Safeer repository, preserving D57-D60 and signed 0.16.2 app identity. Rebuild/lint and save the website APKs with the existing private upload key, verify signatures, shared mobile workflows and download/update behavior, and prepare the missing v0.16.2 release as a private draft. APKs and signing material stay out of source control. Making the private repository public and publishing the release remain a separate owner step under D60; no phone uninstall, signing-key rotation or unrequested shipment implementation.
