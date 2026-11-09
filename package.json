@@ -44,6 +44,7 @@
     "test:boarding:browser": "node tests/boarding.browser.mjs",
     "test:luggage": "node --test tests/luggage.integration.mjs",
     "test:luggage:browser": "node tests/luggage.browser.mjs",
+    "test:shipments": "node --test tests/shipments.integration.mjs",
     "test:platform": "node --test tests/platform.integration.mjs",
     "test:platform:browser": "node tests/platform.browser.mjs",
     "test:finance": "node --test tests/finance.integration.mjs",
@@ -66,7 +67,8 @@
     "test:marketplace:regressions": "node tests/marketplace-regressions.browser.mjs",
     "mobile:build:hosted": "node mobile/build.mjs",
     "mobile:build:usb": "node mobile/build.mjs --usb",
-    "mobile:save:usb": "node mobile/save.mjs --usb"
+    "mobile:save:usb": "node mobile/save.mjs --usb",
+    "test:shipments:browser": "node tests/shipments.browser.mjs"
   },
   "license": "UNLICENSED",
   "dependencies": {

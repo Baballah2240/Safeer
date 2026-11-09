@@ -1,5 +1,9 @@
 # Changelog
 
+## Shipments - D59, 2026-11-09
+
+Shipments (D59, migration 0016): parcels sent without a traveler. Companies set one fixed price per item type (envelope, small parcel, large parcel, other); the sender pays at drop-off into the operator's open cash session and gets a receipt with a random public tracking code (SH-XXXXXXXX). Staff tag the parcel (QR shown once), load it on a published trip, mark it in transit after departure and arrived, and hand it over only when the receiver's phone number and name match. Problems block moves and hand-over until resolved; a missing parcel settled or closed becomes Lost. Before loading it can be returned to the sender without an in-app refund. Adds the staff Shipments section, the public /track page, a Track a shipment item in the Booking menu, the driver's shipment list, privacy policy wording, tests/shipments.integration.mjs (7) and tests/shipments.browser.mjs.
+
 ## Online app download - D60, 2026-11-09
 
 Website Download/Get-the-app/Update notices driven by generated src/app-release.js; the app identifies its version in the user agent and opens only Safeer GitHub release links externally.

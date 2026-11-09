@@ -1,5 +1,9 @@
 # Business rules
 
+## Shipments - D59, 2026-11-09
+
+Shipments (D59, migration 0016): parcels sent without a traveler. Companies set one fixed price per item type (envelope, small parcel, large parcel, other); the sender pays at drop-off into the operator's open cash session and gets a receipt with a random public tracking code (SH-XXXXXXXX). Staff tag the parcel (QR shown once), load it on a published trip, mark it in transit after departure and arrived, and hand it over only when the receiver's phone number and name match. Problems block moves and hand-over until resolved; a missing parcel settled or closed becomes Lost. Before loading it can be returned to the sender without an in-app refund. See docs/workflows/SHIPMENTS.md.
+
 ## Audit remediation - D56, 2026-11-09
 
 The audit source fixes preserve newest-search ordering and unfinished search fields, restore the above-sidebar toggle with immediate keyboard state and clipped animation overflow, publish the owner-approved support contact, and permit a bounded 64 KiB payload only for creating public group bookings (other endpoints remain 8 KiB). The Android error screen distinguishes hosted HTTPS from USB; local patch .6/16006 is built/linted/saved. Hosted owner recovery now supports a non-superuser migration owner with explicit confirmation, duplicate-email rollback, session revocation and audit. Complete browser release gating and PostgreSQL 16 CI are added. No schema, financial policy, role grants or real account credentials are changed. See [D56 handover](archive/AUDIT_REMEDIATION_2026-11-09.md) for measured results and outstanding deployment/device verification.

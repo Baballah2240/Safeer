@@ -16,7 +16,13 @@ test('Section 14 upgrades thirteen migrations without changing identities, compa
  await client.query("INSERT INTO safeer.companies(id,slug,name_en,name_ar,status) VALUES($1,'platform-upgrade','Fictional Existing','Fictional Existing','archived')",[randomUUID()]);
  const tables=(await client.query("SELECT tablename FROM pg_tables WHERE schemaname='safeer' ORDER BY tablename")).rows.map(x=>x.tablename);
  const snapshot=async()=>{const result={};for(const t of tables)result[t]=(await client.query(`SELECT to_jsonb(x) AS row FROM safeer.${t} x ORDER BY to_jsonb(x)::text`)).rows;return result;};
- const before=await snapshot();await runMigrations(client,migrations);assert.deepEqual(await snapshot(),before);
+ const before=await snapshot();await runMigrations(client,migrations);
+ // D59 adds only shipment permissions to the template roles (and bumps those roles' versions).
+ const shipment=x=>String(x.row.code??x.row.permission_code??'').startsWith('company.shipments.');
+ const after=await snapshot();after.permissions=after.permissions.filter(x=>!shipment(x));after.role_permissions=after.role_permissions.filter(x=>!shipment(x));
+ const unversioned=rows=>rows.map(x=>({...x.row,version:undefined})).sort((p,q)=>p.id<q.id?-1:1);
+ assert.deepEqual(unversioned(after.roles),unversioned(before.roles));after.roles=before.roles;
+ assert.deepEqual(after,before);
  assert.equal((await client.query('SELECT count(*)::integer n FROM safeer.notification_events')).rows[0].n,0,'No historical alerts are backfilled.');
  assert.equal((await client.query('SELECT notice_enabled FROM safeer.platform_settings')).rows[0].notice_enabled,false);
 }));
@@ -98,7 +104,7 @@ test('Section 04 preserves existing company resources and tenant role copies whi
  assert.deepEqual((await client.query('SELECT row_to_json(s) AS row FROM safeer.stations s WHERE id=$1',[sid])).rows[0].row,{...before,city_id:null});
  assert.deepEqual((await client.query('SELECT row_to_json(s) AS row FROM safeer.company_users s WHERE id=$1',[member])).rows[0].row,membership);
  assert.equal((await client.query('SELECT count(*)::int AS n FROM safeer.company_role_permissions WHERE role_id=$1',[role])).rows[0].n,9);
- assert.equal((await client.query("SELECT count(*)::int AS n FROM safeer.role_permissions p JOIN safeer.roles r ON r.id=p.role_id WHERE r.code='company_administrator'")).rows[0].n,27);
+ assert.equal((await client.query("SELECT count(*)::int AS n FROM safeer.role_permissions p JOIN safeer.roles r ON r.id=p.role_id WHERE r.code='company_administrator'")).rows[0].n,30);
  assert.equal((await client.query('SELECT count(*)::int AS n FROM safeer.cities')).rows[0].n,0);
 }));
 
@@ -148,7 +154,7 @@ test('foundation schemas and migration ledger grant no public access', async () 
   const result = await client.query("SELECT count(*)::int AS count FROM pg_namespace n CROSS JOIN LATERAL aclexplode(n.nspacl) acl WHERE n.nspname IN ('safeer', 'safeer_meta') AND acl.grantee = 0");
   assert.equal(result.rows[0].count, 0);
   const tables = await client.query("SELECT tablename FROM pg_tables WHERE schemaname = 'safeer'");
-  assert.deepEqual(tables.rows.map(r=>r.tablename).sort(), ['users','sessions','roles','permissions','role_permissions','platform_user_roles','identity_audit','auth_throttles','companies','company_settings','branches','stations','company_roles','company_role_permissions','company_users','company_user_roles','support_access_grants','support_access_grant_permissions','company_audit','cities','routes','route_stops','seat_layouts','seat_layout_revisions','seat_layout_seats','buses','drivers','trips','trip_stops','trip_assignments','company_public_profiles','bookings','seat_allocations','booking_events','booking_contacts','booking_passengers','company_payment_settings','station_counters','cash_sessions','document_sequences','payments','receipts','tickets','refunds','document_prints','luggage_records','luggage_tags','luggage_events','luggage_exceptions','ticket_credentials','boarding_records','journey_events','journey_incidents','platform_settings','notification_events','notification_reads'].sort());
+  assert.deepEqual(tables.rows.map(r=>r.tablename).sort(), ['users','sessions','roles','permissions','role_permissions','platform_user_roles','identity_audit','auth_throttles','companies','company_settings','branches','stations','company_roles','company_role_permissions','company_users','company_user_roles','support_access_grants','support_access_grant_permissions','company_audit','cities','routes','route_stops','seat_layouts','seat_layout_revisions','seat_layout_seats','buses','drivers','trips','trip_stops','trip_assignments','company_public_profiles','bookings','seat_allocations','booking_events','booking_contacts','booking_passengers','company_payment_settings','station_counters','cash_sessions','document_sequences','payments','receipts','tickets','refunds','document_prints','luggage_records','luggage_tags','luggage_events','luggage_exceptions','ticket_credentials','boarding_records','journey_events','journey_incidents','platform_settings','notification_events','notification_reads','shipment_prices','shipments','shipment_items','shipment_tags','shipment_events','shipment_exceptions','shipment_payments'].sort());
 }));
 
 test('migration CLI reports pending/applied status without echoing credentials', async () => fixture(async (client, url) => {

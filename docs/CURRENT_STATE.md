@@ -1,5 +1,9 @@
 # Current state - read this first
 
+## Shipments - D59, 2026-11-09
+
+Shipments (D59, migration 0016): parcels sent without a traveler. Companies set one fixed price per item type (envelope, small parcel, large parcel, other); the sender pays at drop-off into the operator's open cash session and gets a receipt with a random public tracking code (SH-XXXXXXXX). Staff tag the parcel (QR shown once), load it on a published trip, mark it in transit after departure and arrived, and hand it over only when the receiver's phone number and name match. Problems block moves and hand-over until resolved; a missing parcel settled or closed becomes Lost. Before loading it can be returned to the sender without an in-app refund. Verified locally on PostgreSQL 16 with fictional data: shipment integration (7/7) and browser walkthrough, database, security, luggage, finance, boarding and platform suites. Not yet deployed until pushed. Existing companies must add the shipment permissions to their roles and set a price list before use.
+
 ## Audit remediation - D56, 2026-11-09
 
 Verification complete: 17 unit/server checks, 129 integration tests on PostgreSQL 16.15, and all 20 browser scripts pass across the main run and corrected-predicate continuation. Debug and hosted Android builds/lint pass; APKs are saved. Local service is updated. GitHub/Render authentication and a physical USB phone are the remaining external requirements.

@@ -1,5 +1,5 @@
 {
-  "description": "Expected local schema security for Sections 01-15. Add reviewed objects explicitly with their owning migration; do not generate this from a live database.",
+  "description": "Expected local schema security for Sections 01-15 and D59 shipments. Add reviewed objects explicitly with their owning migration; do not generate this from a live database.",
   "tables": {
     "auth_throttles": {
       "rls": false,
@@ -276,6 +276,34 @@
         "UPDATE"
       ]
     },
+    "shipment_events": {
+      "rls": true,
+      "privileges": []
+    },
+    "shipment_exceptions": {
+      "rls": true,
+      "privileges": []
+    },
+    "shipment_items": {
+      "rls": true,
+      "privileges": []
+    },
+    "shipment_payments": {
+      "rls": true,
+      "privileges": []
+    },
+    "shipment_prices": {
+      "rls": true,
+      "privileges": []
+    },
+    "shipment_tags": {
+      "rls": true,
+      "privileges": []
+    },
+    "shipments": {
+      "rls": true,
+      "privileges": []
+    },
     "station_counters": {
       "rls": true,
       "privileges": []
@@ -404,6 +432,17 @@
     "safeer.company_can(uuid,text,uuid,uuid)",
     "safeer.company_has(uuid,text)",
     "safeer.member_visible(uuid,uuid,boolean)",
-    "safeer.assignment_allowed(uuid,uuid,uuid,uuid)"
+    "safeer.assignment_allowed(uuid,uuid,uuid,uuid)",
+    "safeer.shipment_options(uuid)",
+    "safeer.shipment_price_save(uuid,uuid,text,integer,boolean,integer)",
+    "safeer.shipment_create(uuid,uuid,uuid,uuid,text,text,text,text,jsonb,text,text,boolean,text,text,text)",
+    "safeer.shipment_find(uuid,text,text,uuid)",
+    "safeer.shipment_tag(uuid,uuid,uuid,text,text,integer)",
+    "safeer.shipment_move(uuid,uuid,uuid,text,text,integer)",
+    "safeer.shipment_deliver(uuid,uuid,uuid,text,text,integer)",
+    "safeer.shipment_return(uuid,uuid,uuid,text,integer)",
+    "safeer.shipment_report(uuid,uuid,uuid,text,text)",
+    "safeer.shipment_resolve(uuid,uuid,uuid,uuid,text,text)",
+    "safeer.public_shipment(text)"
   ]
 }

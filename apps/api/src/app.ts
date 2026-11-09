@@ -14,6 +14,7 @@ import {PublicService} from './public.service.js';
 import {ReservationService} from './reservation.service.js';
 import {TicketingService} from './ticketing.service.js';
 import {LuggageService} from './luggage.service.js';
+import {ShipmentService} from './shipment.service.js';
 import {BoardingService} from './boarding.service.js';
 import {FinanceService} from './finance.service.js';
 import {PlatformService} from './platform.service.js';
@@ -38,7 +39,7 @@ class Errors implements ExceptionFilter {
     const type=(error as {type?:string})?.type;
     if(type==='entity.parse.failed'||type==='entity.too.large'){res.status(type==='entity.too.large'?413:400).json({error:{code:'INVALID_REQUEST',message:'Send valid JSON within the limit for this endpoint.'}});return;}
     if(code==='23505'){const constraint=(error as {constraint?:string}).constraint||'';const loginConflict=constraint==='users_normalized_login_key';res.status(409).json({error:{code:loginConflict?'DUPLICATE_LOGIN':'DUPLICATE_RECORD',message:loginConflict?'That login is already in use.':'This code, slug or membership is already in use.'}});return;}
-    if(code==='P0001'&&['INVALID_REPORT','EXPORT_LIMIT','TICKET_INVALID','BOARDING_CLOSED','JOURNEY_STATE','LAST_COMPANY_ADMIN','COMPANY_LIMIT','CATALOG_LIMIT','RESOURCE_IN_USE','STATION_CITY_IN_USE','INVALID_ROUTE_STOPS','INACTIVE_ROUTE_RESOURCE','LAYOUT_IN_USE','INACTIVE_LAYOUT','INVALID_SEAT_LAYOUT','IMMUTABLE_REVISION','TRIP_NOT_DRAFT','TRIP_FINISHED','LUGGAGE_HELD','LUGGAGE_STATE','LUGGAGE_NOT_DEPARTED','LUGGAGE_EXCEPTION_OPEN','TICKET_REQUIRED','TAG_UNKNOWN','TAG_REPLACED','TAG_REASON_REQUIRED','REASON_REQUIRED','COLLECTION_NOT_VERIFIED','TRIP_NOT_READY','INVALID_TRIP_STOPS','ASSIGNMENT_CONFLICT','INACTIVE_ASSIGNMENT','TRIP_RESOURCE_IN_USE','TRIP_NOT_BOOKABLE','INVALID_SEATS','SEATS_UNAVAILABLE','SEATS_HELD','IDEMPOTENCY_CONFLICT','HOLD_CLOSED','INVALID_PASSENGERS','STALE_VERSION','NO_OPEN_SESSION','SESSION_OPEN','SESSION_CLOSED','COUNTER_INACTIVE','COUNTER_BUSY','NOTE_REQUIRED','ALREADY_PAID','HOLD_ENDED','LATE_REASON_REQUIRED','METHOD_DISABLED','CURRENCY_MISMATCH','ALREADY_REFUNDED','NOT_PAID','REFUND_CLOSED','REFERENCE_REQUIRED'].includes((error as Error).message)){res.status(409).json({error:{code:(error as Error).message,message:'The change conflicts with a protected resource, route rule or local capacity.'}});return;}
+    if(code==='P0001'&&['INVALID_REPORT','CONTENTS_NOT_DECLARED','INVALID_DESTINATION','INVALID_ITEMS','PRICE_MISSING','SHIPMENT_STATE','SHIPMENT_NOT_DEPARTED','SHIPMENT_EXCEPTION_OPEN','SHIPMENT_EXCEPTION_CLOSED','RECEIVER_NOT_VERIFIED','TAG_REQUIRED','EXPORT_LIMIT','TICKET_INVALID','BOARDING_CLOSED','JOURNEY_STATE','LAST_COMPANY_ADMIN','COMPANY_LIMIT','CATALOG_LIMIT','RESOURCE_IN_USE','STATION_CITY_IN_USE','INVALID_ROUTE_STOPS','INACTIVE_ROUTE_RESOURCE','LAYOUT_IN_USE','INACTIVE_LAYOUT','INVALID_SEAT_LAYOUT','IMMUTABLE_REVISION','TRIP_NOT_DRAFT','TRIP_FINISHED','LUGGAGE_HELD','LUGGAGE_STATE','LUGGAGE_NOT_DEPARTED','LUGGAGE_EXCEPTION_OPEN','TICKET_REQUIRED','TAG_UNKNOWN','TAG_REPLACED','TAG_REASON_REQUIRED','REASON_REQUIRED','COLLECTION_NOT_VERIFIED','TRIP_NOT_READY','INVALID_TRIP_STOPS','ASSIGNMENT_CONFLICT','INACTIVE_ASSIGNMENT','TRIP_RESOURCE_IN_USE','TRIP_NOT_BOOKABLE','INVALID_SEATS','SEATS_UNAVAILABLE','SEATS_HELD','IDEMPOTENCY_CONFLICT','HOLD_CLOSED','INVALID_PASSENGERS','STALE_VERSION','NO_OPEN_SESSION','SESSION_OPEN','SESSION_CLOSED','COUNTER_INACTIVE','COUNTER_BUSY','NOTE_REQUIRED','ALREADY_PAID','HOLD_ENDED','LATE_REASON_REQUIRED','METHOD_DISABLED','CURRENCY_MISMATCH','ALREADY_REFUNDED','NOT_PAID','REFUND_CLOSED','REFERENCE_REQUIRED'].includes((error as Error).message)){res.status(409).json({error:{code:(error as Error).message,message:'The change conflicts with a protected resource, route rule or local capacity.'}});return;}
     if(code==='23P01'){res.status(409).json({error:{code:'SEATS_UNAVAILABLE',message:'Those seats have just been taken.'}});return;}
     if(['55P03','57014'].includes(code||'')){res.setHeader('Retry-After','5');res.status(503).json({error:{code:'BUSY',message:'Please try again in a moment.'}});return;}
     if(['23503','23514','42501'].includes(code||'')){res.status(code==='42501'?403:400).json({error:{code:code==='42501'?'FORBIDDEN':'INVALID_RESOURCE_SCOPE',message:'The resource does not belong to an allowed company or scope.'}});return;}
@@ -141,6 +142,26 @@ class ReservationController {
  @Get('holds/:reference') booking(@Req() req:Request,@Param('reference') reference:string){return this.reservations.booking(reference,req.headers['x-booking-key']).then(reply);}
  @Post('holds/:reference/release') release(@Req() req:Request,@Param('reference') reference:string,@Body() data:unknown){return this.reservations.release(reference,data,req.socket.remoteAddress||'local').then(reply);}
 }
+@Controller('api/v1/companies/:id/shipments')
+class ShipmentController {
+ constructor(private readonly shipments:ShipmentService){}
+ @Get() find(@Req() req:Request,@Param('id') id:string,@Query('q') q:unknown,@Query('trip') trip:unknown){return this.shipments.find(token(req),id,q,trip).then(reply);}
+ @Get('options') options(@Req() req:Request,@Param('id') id:string){return this.shipments.options(token(req),id).then(reply);}
+ @Post() create(@Req() req:Request,@Param('id') id:string,@Body() data:unknown){return this.shipments.create(token(req),id,data).then(reply);}
+ @Post('prices') price(@Req() req:Request,@Param('id') id:string,@Body() data:unknown){return this.shipments.savePrice(token(req),id,data).then(reply);}
+ @Post('scan') scan(@Req() req:Request,@Param('id') id:string,@Body() data:unknown){return this.shipments.scan(token(req),id,data).then(reply);}
+ @Post(':sid/tag') tag(@Req() req:Request,@Param('id') id:string,@Param('sid') sid:string,@Body() data:unknown){return this.shipments.tag(token(req),id,sid,data).then(reply);}
+ @Post(':sid/move') move(@Req() req:Request,@Param('id') id:string,@Param('sid') sid:string,@Body() data:unknown){return this.shipments.move(token(req),id,sid,data).then(reply);}
+ @Post(':sid/deliver') deliver(@Req() req:Request,@Param('id') id:string,@Param('sid') sid:string,@Body() data:unknown){return this.shipments.deliver(token(req),id,sid,data).then(reply);}
+ @Post(':sid/return') giveBack(@Req() req:Request,@Param('id') id:string,@Param('sid') sid:string,@Body() data:unknown){return this.shipments.returnToSender(token(req),id,sid,data).then(reply);}
+ @Post(':sid/exceptions') report(@Req() req:Request,@Param('id') id:string,@Param('sid') sid:string,@Body() data:unknown){return this.shipments.report(token(req),id,sid,data).then(reply);}
+ @Post(':sid/exceptions/:eid/resolve') resolve(@Req() req:Request,@Param('id') id:string,@Param('sid') sid:string,@Param('eid') eid:string,@Body() data:unknown){return this.shipments.resolve(token(req),id,sid,eid,data).then(reply);}
+}
+@Controller('api/v1/public')
+class ShipmentTrackingController {
+ constructor(private readonly shipments:ShipmentService){}
+ @Get('shipments/:code') track(@Req() req:Request,@Param('code') code:string){return this.shipments.track(code,client(req)).then(reply);}
+}
 @Controller('api/v1/companies/:id/luggage')
 class LuggageController {
  constructor(private readonly luggage:LuggageService){}
@@ -215,7 +236,7 @@ class PlatformController {
  @Get('notifications') notifications(@Req() req:Request,@Query('before') before:string|undefined){return this.platform.notifications(token(req),before).then(reply);}
  @Post('notifications/:event/read') read(@Req() req:Request,@Param('event') id:string,@Body() data:unknown){return this.platform.read(token(req),id,data).then(reply);}
 }
-@Module({controllers:[PlatformController,FinanceController,IdentityController,CompanyController,LuggageController,TicketingController,BookingController,RouteController,FleetController,TripSeatController,TripController,ReservationController,PublicController,PublicProfileController,BoardingController],providers:[Database,IdentityService,CompanyService,RouteService,FleetService,TripService,PublicService,ReservationService,TicketingService,LuggageService,BoardingService,FinanceService,PlatformService]})
+@Module({controllers:[PlatformController,FinanceController,IdentityController,CompanyController,LuggageController,ShipmentController,ShipmentTrackingController,TicketingController,BookingController,RouteController,FleetController,TripSeatController,TripController,ReservationController,PublicController,PublicProfileController,BoardingController],providers:[Database,ShipmentService,IdentityService,CompanyService,RouteService,FleetService,TripService,PublicService,ReservationService,TicketingService,LuggageService,BoardingService,FinanceService,PlatformService]})
 export class IdentityModule {}
 
 export async function createIdentityApi({port=4321,webOrigin='http://127.0.0.1:4320'}:{port?:number;webOrigin?:string}={}){

@@ -29,7 +29,7 @@ try{await identityFixture(async f=>{
   assert.equal(await evaluate('document.querySelector("#market-menu").dataset.appFlavor'),'booking',label+' separate app identity');
    assert.ok(await evaluate('document.documentElement.classList.contains("app-drawer-open")'),label+' background scroll locked');
    assert.ok(await evaluate('document.querySelector("#market-menu-close").getBoundingClientRect().width>=44'),label+' close touch target');
-   assert.equal(await evaluate('document.querySelectorAll("#market-menu .drawer-nav-copy").length'),3,label+' navigation descriptions');
+   assert.equal(await evaluate('document.querySelectorAll("#market-menu .drawer-nav-copy").length'),4,label+' navigation descriptions');
    await evaluate('document.getAnimations().forEach(a=>a.finish())');
    if(width===390&&lang==='en')writeFileSync(join(shots,'modern-'+theme+'.png'),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
    await click('#market-settings summary');

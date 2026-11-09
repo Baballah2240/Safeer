@@ -10,14 +10,14 @@ const e=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':
 const contact=SUPPORT_CONTACT?`<a href="mailto:${e(SUPPORT_CONTACT)}">${e(SUPPORT_CONTACT)}</a>`:(ar?'(يُضاف عنوان التواصل قبل النشر)':'(contact address is added before publishing)');
 const T={
  en:{
-  privacy:'Privacy policy',deletion:'Delete your account and data',updated:'Last updated 5 November 2026',
+  privacy:'Privacy policy',deletion:'Delete your account and data',updated:'Last updated 9 November 2026',
   back:'Back',other:'العربية',
   privacyBody:[
    ['Who we are','Safeer is a bus booking and station management service used by approved Sudanese bus companies. The Safeer Booking and Safeer Driver apps show the same Safeer service.'],
-   ['What we collect',`<ul><li><b>Passengers:</b> each traveler's full name, one mobile number per booking, an optional luggage description, chosen seats, booking reference, tickets, payments recorded at the station and bag tags.</li><li><b>Staff and drivers:</b> name, work email, password (stored only as a one-way hash), role, company, sign-in sessions with device type, and an audit history of actions.</li><li><b>Technical:</b> a session cookie needed to stay signed in and your theme, language and sidebar choices stored on your device.</li></ul>We do not collect location, contacts, photos, camera or microphone data, and we show no advertising.`],
+   ['What we collect',`<ul><li><b>Passengers:</b> each traveler's full name, one mobile number per booking, an optional luggage description, chosen seats, booking reference, tickets, payments recorded at the station and bag tags.</li><li><b>Shipments:</b> the sender's and receiver's names and mobile numbers, the destination office, item types, weights and optional descriptions, the fee paid and the tracking code. Public tracking shows only the status and offices, never names or numbers.</li><li><b>Staff and drivers:</b> name, work email, password (stored only as a one-way hash), role, company, sign-in sessions with device type, and an audit history of actions.</li><li><b>Technical:</b> a session cookie needed to stay signed in and your theme, language and sidebar choices stored on your device.</li></ul>We do not collect location, contacts, photos, camera or microphone data, and we show no advertising.`],
    ['How we use it','To hold seats, issue tickets and receipts, track luggage, let drivers check tickets and board passengers, keep financial records and protect accounts from misuse.'],
    ['Who receives it','Your booking details go only to the bus company operating your trip. Safeer does not sell personal data or share it with advertisers. Payments are recorded by the company at its station; Safeer does not process cards or wallets.'],
-   ['How long we keep it','Passenger names, mobile numbers and luggage notes are erased automatically 90 days after the trip ends. Financial records (amounts, receipt and ticket numbers) are kept as required for accounting. Staff accounts stay until the company or the platform administrator removes them.'],
+   ['How long we keep it','Passenger names, mobile numbers and luggage notes, and shipment sender and receiver details and item descriptions, are erased automatically 90 days after the trip ends. Financial records (amounts, receipt and ticket numbers) are kept as required for accounting. Staff accounts stay until the company or the platform administrator removes them.'],
    ['Security','Data travels over encrypted connections. Passwords are hashed, access follows each person\'s company and role, and sensitive actions require the current password.'],
    ['Your choices',`You can ask to see, correct or delete your data. See <a href="/account-deletion?lang=en">Delete your account and data</a>. Contact: ${contact}.`],
   ],
@@ -27,14 +27,14 @@ const T={
    ['What is kept','Financial records that the law or accounting requires (amounts, ticket and receipt numbers) are kept without your name and mobile number. Audit entries keep the action but not your personal details after deletion.'],
   ]},
  ar:{
-  privacy:'سياسة الخصوصية',deletion:'حذف حسابك وبياناتك',updated:'آخر تحديث ٥ نوفمبر ٢٠٢٦',
+  privacy:'سياسة الخصوصية',deletion:'حذف حسابك وبياناتك',updated:'آخر تحديث ٩ نوفمبر ٢٠٢٦',
   back:'رجوع',other:'English',
   privacyBody:[
    ['من نحن','سفير خدمة لحجز الحافلات وإدارة المحطات تستخدمها شركات حافلات سودانية معتمدة. تطبيقا «حجز سفير» و«سائق سفير» يعرضان خدمة سفير نفسها.'],
-   ['ما نجمعه',`<ul><li><b>الركاب:</b> الاسم الكامل لكل مسافر، ورقم جوال واحد لكل حجز، ووصف اختياري للأمتعة، والمقاعد المختارة، ورقم الحجز، والتذاكر، والمدفوعات المسجلة في المحطة، وبطاقات الأمتعة.</li><li><b>الموظفون والسائقون:</b> الاسم، والبريد الإلكتروني للعمل، وكلمة المرور (تُحفظ مشفرة باتجاه واحد فقط)، والدور، والشركة، وجلسات الدخول مع نوع الجهاز، وسجل تدقيق للإجراءات.</li><li><b>تقنياً:</b> ملف جلسة لازم لبقائك مسجلاً، واختيارات المظهر واللغة والقائمة الجانبية المحفوظة على جهازك.</li></ul>لا نجمع الموقع أو جهات الاتصال أو الصور أو بيانات الكاميرا أو الميكروفون، ولا نعرض إعلانات.`],
+   ['ما نجمعه',`<ul><li><b>الركاب:</b> الاسم الكامل لكل مسافر، ورقم جوال واحد لكل حجز، ووصف اختياري للأمتعة، والمقاعد المختارة، ورقم الحجز، والتذاكر، والمدفوعات المسجلة في المحطة، وبطاقات الأمتعة.</li><li><b>الشحنات:</b> اسما المرسل والمستلم ورقما جواليهما، ومكتب الوجهة، وأنواع القطع وأوزانها ووصف اختياري لها، والرسوم المدفوعة، ورمز التتبع. يعرض التتبع العام الحالة والمكاتب فقط، دون أسماء أو أرقام.</li><li><b>الموظفون والسائقون:</b> الاسم، والبريد الإلكتروني للعمل، وكلمة المرور (تُحفظ مشفرة باتجاه واحد فقط)، والدور، والشركة، وجلسات الدخول مع نوع الجهاز، وسجل تدقيق للإجراءات.</li><li><b>تقنياً:</b> ملف جلسة لازم لبقائك مسجلاً، واختيارات المظهر واللغة والقائمة الجانبية المحفوظة على جهازك.</li></ul>لا نجمع الموقع أو جهات الاتصال أو الصور أو بيانات الكاميرا أو الميكروفون، ولا نعرض إعلانات.`],
    ['كيف نستخدمها','لحجز المقاعد وإصدار التذاكر والإيصالات وتتبع الأمتعة وتمكين السائقين من فحص التذاكر وصعود الركاب وحفظ السجلات المالية وحماية الحسابات من إساءة الاستخدام.'],
    ['من يتلقاها','تصل بيانات حجزك فقط إلى شركة الحافلات المشغلة لرحلتك. لا يبيع سفير البيانات الشخصية ولا يشاركها مع المعلنين. تسجل الشركة المدفوعات في محطتها؛ ولا يعالج سفير البطاقات أو المحافظ.'],
-   ['مدة الاحتفاظ','تُحذف أسماء الركاب وأرقام الجوال وملاحظات الأمتعة تلقائياً بعد ٩٠ يوماً من انتهاء الرحلة. تُحفظ السجلات المالية (المبالغ وأرقام الإيصالات والتذاكر) كما تتطلب المحاسبة. تبقى حسابات الموظفين حتى تحذفها الشركة أو مسؤول المنصة.'],
+   ['مدة الاحتفاظ','تُحذف أسماء الركاب وأرقام الجوال وملاحظات الأمتعة، وبيانات مرسلي الشحنات ومستلميها ووصف القطع، تلقائياً بعد ٩٠ يوماً من انتهاء الرحلة. تُحفظ السجلات المالية (المبالغ وأرقام الإيصالات والتذاكر) كما تتطلب المحاسبة. تبقى حسابات الموظفين حتى تحذفها الشركة أو مسؤول المنصة.'],
    ['الأمان','تنتقل البيانات عبر اتصالات مشفرة. كلمات المرور مشفرة، والوصول حسب شركة كل شخص ودوره، والإجراءات الحساسة تتطلب كلمة المرور الحالية.'],
    ['خياراتك',`يمكنك طلب الاطلاع على بياناتك أو تصحيحها أو حذفها. راجع <a href="/account-deletion?lang=ar">حذف حسابك وبياناتك</a>. للتواصل: ${contact}.`],
   ],

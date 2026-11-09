@@ -1,5 +1,9 @@
 # Database schema and migration status
 
+## Shipments - D59, migration 0016, 2026-11-09
+
+Tables (RLS, no direct runtime privileges): shipment_prices, shipments, shipment_items, shipment_tags (QR hash only), shipment_events, shipment_exceptions, shipment_payments. Functions: shipment_options, shipment_price_save, shipment_create, shipment_find, shipment_tag, shipment_move, shipment_deliver, shipment_return, shipment_report, shipment_resolve, public_shipment. session_totals, finance_movements, finance_report and platform_dashboard include shipment_payments. erase_due_passenger_data and driver_manifest wrap their previous versions (renamed *_before_shipments and revoked from the runtime role). document_sequences adds shipment and shipment_tag; receipts share the receipt sequence. A guard trigger keeps history append-only and erased details erased.
+
 ## Audit remediation - D56, 2026-11-09
 
 The audit source fixes preserve newest-search ordering and unfinished search fields, restore the above-sidebar toggle with immediate keyboard state and clipped animation overflow, publish the owner-approved support contact, and permit a bounded 64 KiB payload only for creating public group bookings (other endpoints remain 8 KiB). The Android error screen distinguishes hosted HTTPS from USB; local patch .6/16006 is built/linted/saved. Hosted owner recovery now supports a non-superuser migration owner with explicit confirmation, duplicate-email rollback, session revocation and audit. Complete browser release gating and PostgreSQL 16 CI are added. No schema, financial policy, role grants or real account credentials are changed. See [D56 handover](archive/AUDIT_REMEDIATION_2026-11-09.md) for measured results and outstanding deployment/device verification.

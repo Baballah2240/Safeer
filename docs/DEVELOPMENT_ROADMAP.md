@@ -1,5 +1,9 @@
 # Development roadmap
 
+## Shipments - D59, 2026-11-09
+
+Delivered: price list, paid drop-off with receipt and tracking code, tags, journey steps, verified hand-over, returns, problems, public tracking, driver list, finance integration and 90-day erasure. Possible follow-ups needing owner decisions: refunds for returned shipments, receiver-pays-on-collection, price per route, SMS notifications.
+
 ## Audit remediation - D56, 2026-11-09
 
 The audit source fixes preserve newest-search ordering and unfinished search fields, restore the above-sidebar toggle with immediate keyboard state and clipped animation overflow, publish the owner-approved support contact, and permit a bounded 64 KiB payload only for creating public group bookings (other endpoints remain 8 KiB). The Android error screen distinguishes hosted HTTPS from USB; local patch .6/16006 is built/linted/saved. Hosted owner recovery now supports a non-superuser migration owner with explicit confirmation, duplicate-email rollback, session revocation and audit. Complete browser release gating and PostgreSQL 16 CI are added. No schema, financial policy, role grants or real account credentials are changed. See [D56 handover](archive/AUDIT_REMEDIATION_2026-11-09.md) for measured results and outstanding deployment/device verification.
