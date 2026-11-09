@@ -1,6 +1,8 @@
+import {loginFormState} from './login-form.js';
 import {themeButton,drawerIcon as menuIcon,bindSideDrawer,legalLinks} from './theme.js';
 
 const root=document.querySelector('#driver-app');
+const signIn=loginFormState();
 const ar={
  'Driver workspace':'مساحة السائق','Company workspace':'مساحة الشركة','Sign in':'تسجيل الدخول','Sign out':'تسجيل الخروج','Email':'البريد الإلكتروني','Password':'كلمة المرور','Refresh':'تحديث','Assigned trips':'الرحلات المعينة','No assigned trips. Ask your manager to link your driver record and grant driver access.':'لا توجد رحلات معينة. اطلب من المدير ربط سجل السائق بحسابك ومنح صلاحية السائق.',
  'Choose a trip to see its manifest.':'اختر رحلة لعرض كشف الركاب.','Local only · Online verification required':'محلي فقط · يلزم الاتصال للتحقق','Loading…':'جار التحميل…','Passenger manifest':'كشف الركاب','Seat':'المقعد','Passenger':'الراكب','Ticket':'التذكرة','Boarding':'الصعود','Boarded':'تم الصعود','Not boarded':'لم يصعد','Invalid ticket':'تذكرة غير صالحة','No passengers yet.':'لا يوجد ركاب بعد.',
@@ -30,7 +32,7 @@ function checkTicket(input){
 async function api(path,method='GET',data){
  let response,result;
  try{response=await fetch('/api/v1/'+path,{method,credentials:'same-origin',cache:'no-store',headers:{...(data?{'Content-Type':'application/json'}:{}),...(method!=='GET'?{'X-CSRF-Token':csrf}:{})},...(data?{body:JSON.stringify(data)}:{})});result=await response.json();}catch{throw Error('REQUEST_FAILED');}
- if(!response.ok){if(response.status===401){reset();render();}throw Error(result.error?.code||'REQUEST_FAILED');}
+ if(!response.ok){if(response.status===401&&path!=='auth/login'){reset();render();}throw Error(result.error?.code||'REQUEST_FAILED');}
  if(result.data.csrfToken)csrf=result.data.csrfToken;return result.data;
 }
 const path=()=>`driver/companies/${selected.companyId}/trips/${selected.id}`;
@@ -60,10 +62,12 @@ function driverNavigation(settingsOpen){
  return `<header class="driver-header driver-compact-header"><button type="button" id="driver-menu-toggle" class="secondary sidebar-toggle" aria-label="${t('Menu')}" aria-haspopup="dialog" aria-controls="driver-menu" aria-expanded="false">${menuIcon('M6 9h12M6 15h12')}</button><strong>${t('Driver workspace')}</strong></header><dialog id="driver-menu" class="market-drawer" data-app-drawer aria-labelledby="driver-menu-title"><div class="market-drawer-head"><div class="driver-brand" id="driver-menu-title"><img src="/src/brand.svg" alt=""><span>Safeer / سفير</span></div><button type="button" class="secondary app-drawer-close" id="driver-menu-close" aria-label="${t('Close menu')}">${menuIcon('m6 6 12 12M18 6 6 18')}</button></div><nav class="market-drawer-nav" aria-label="${t('Driver navigation')}"><a href="${me&&!me.mustChangePassword?'#driver-trips':'#driver-login'}" aria-current="page">${menuIcon('M4 5h16v12H4zM7 21v-4M17 21v-4M4 11h16')}<span>${t(me&&!me.mustChangePassword?'Assigned trips':'Sign in')}</span></a><a href="/staff?tab=notifications&lang=${language}">${menuIcon('M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M9 21h6')}<span>${t('Notifications')}</span></a><a href="/staff?lang=${language}">${menuIcon('M3 21V7l9-4 9 4v14M7 21v-6h10v6')}<span>${t('Company workspace')}</span></a>${me?`<button type="button" class="drawer-nav-action" data-refresh ${busy?'disabled':''}>${menuIcon('M20 7V3l-4 4M20 7a8 8 0 1 0 0 10')}<span>${t('Refresh')}</span></button><button type="button" class="drawer-nav-action" data-logout ${busy?'disabled':''}>${menuIcon('M9 21H3V3h6M9 12h12M17 8l4 4-4 4')}<span>${t('Sign out')}</span></button>`:''}</nav><details id="driver-settings" class="app-settings" ${settingsOpen?'open':''}><summary>${menuIcon('M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8M9 3h6l1 3 3 1 2 5-2 5-3 1-1 3H9l-1-3-3-1-2-5 2-5 3-1z')}<span>${t('Settings')}</span>${menuIcon('m9 6 6 6-6 6')}</summary><div class="market-preferences"><div><span>${t('Appearance')}</span>${themeButton(language)}</div><div><span>${t('Language')}</span><button type="button" data-lang id="driver-language" lang="${language==='en'?'ar':'en'}" ${busy?'disabled':''}>${language==='ar'?'English':'العربية'}</button></div></div></details><p class="market-drawer-foot">${t('Local only · Online verification required')}</p></dialog>`;
 }
 function render(){
+ if(me)signIn.clear();else signIn.capture(root.querySelector('#driver-login'));
  const manualEntry=root.querySelector('#driver-manual-entry');if(manualEntry)manualEntryOpen=manualEntry.open;
  document.documentElement.lang=language;document.documentElement.dir=language==='ar'?'rtl':'ltr';
  const menuWasOpen=root.querySelector('#driver-menu')?.open,settingsOpen=root.querySelector('#driver-settings')?.open,focused=document.activeElement?.id;
  root.innerHTML=`<div class="driver-shell">${driverNavigation(settingsOpen)}<main><p class="driver-local">${t('Local only · Online verification required')}</p><div class="driver-message" role="${bad?'alert':'status'}">${message?`<p class="staff-alert ${bad?'bad':''}">${e(t(message))}</p>`:''}${busy?`<p>${t('Loading…')}</p>`:''}</div>${!me?`<section class="staff-panel staff-login"><h1>${t('Driver workspace')}</h1><form id="driver-login"><label>${t('Email')}<input name="login" type="email" autocomplete="username" required maxlength="254"></label><label>${t('Password')}<input name="password" type="password" autocomplete="current-password" required maxlength="128"></label><button class="staff-primary" ${busy?'disabled':''}>${t('Sign in')}</button></form>${legalLinks(language)}</section>`:me.mustChangePassword?`<section class="staff-panel"><p>${t('Change your temporary password in the company workspace first.')}</p></section>`:`<div class="driver-layout"><aside class="staff-panel driver-trips" id="driver-trips"><h2>${t('Assigned trips')}</h2>${trips.map(x=>`<button class="driver-trip" data-trip="${e(x.id)}" ${selected?.id===x.id?'aria-current="true"':''} ${busy?'disabled':''}><strong>${e(language==='ar'?x.routeAr:x.routeEn)}</strong><span>${e(language==='ar'?x.companyAr:x.companyEn)}</span><small><bdi>${e(when(x.departureAt))}</bdi></small><span>${t(x.status==='canceled'?'canceled':x.journey)} · <bdi>${e(x.bus)}</bdi></span></button>`).join('')||`<p>${t('No assigned trips. Ask your manager to link your driver record and grant driver access.')}</p>`}</aside>${detail()}</div>`}</main></div>`;
+ signIn.restore(root.querySelector('#driver-login'));
  bind();
  if(menuWasOpen){root.querySelector('#driver-menu').showModal();root.querySelector('#driver-menu-toggle').setAttribute('aria-expanded','true');}
  if(focused)root.querySelector('#'+CSS.escape(focused))?.focus({preventScroll:true});
@@ -71,7 +75,7 @@ function render(){
 function bind(){
  bindSideDrawer(root,'driver-menu','driver-menu-toggle','driver-menu-close');
  root.querySelector('[data-lang]').onclick=()=>{language=language==='en'?'ar':'en';const url=new URL(location.href);url.searchParams.set('lang',language);history.replaceState(null,'',url);render();};
- root.querySelector('#driver-login')?.addEventListener('submit',event=>{event.preventDefault();const values=Object.fromEntries(new FormData(event.currentTarget));void action(async()=>{await api('auth/login','POST',values);me=await api('auth/me');if(!me.mustChangePassword)await reload();});});
+ root.querySelector('#driver-login')?.addEventListener('submit',event=>{event.preventDefault();const values=signIn.begin(event.currentTarget);if(!values)return;void action(async()=>{try{await api('auth/login','POST',values);me=await api('auth/me');if(!me.mustChangePassword)await reload();}finally{signIn.finish(root.querySelector('#driver-login'),!me);}});});
  root.querySelector('[data-logout]')?.addEventListener('click',()=>{root.querySelector('#driver-menu').close();void action(async()=>{await api('auth/logout','POST',{});reset();});});
  root.querySelector('[data-refresh]')?.addEventListener('click',()=>{root.querySelector('#driver-menu').close();void action(reload);});
  root.querySelectorAll('[data-trip]').forEach(button=>button.onclick=()=>{if(incident.note&&!confirm(t('Discard the unsaved incident?')))return;void action(async()=>{selected=trips.find(x=>x.id===button.dataset.trip);manifest=null;checked=null;scan='';incident={kind:'delay',note:'',key:crypto.randomUUID()};await reload();});});
@@ -97,4 +101,4 @@ function bind(){
  });});
 }
 render();
-await action(async()=>{try{me=await api('auth/me');if(!me.mustChangePassword)await reload();}catch(error){if(error.message!=='UNAUTHENTICATED')throw error;}});
+await action(async()=>{try{me=await api('auth/me');if(!me.mustChangePassword)await reload();}catch(error){if(error.message!=='UNAUTHENTICATED')throw error;}finally{signIn.finish(root.querySelector('#driver-login'));}});

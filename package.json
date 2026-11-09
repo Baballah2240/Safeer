@@ -60,7 +60,11 @@
     "test:headers:browser": "node tests/headers.browser.mjs",
     "test:sidebar:browser": "node tests/sidebar.browser.mjs",
     "test:booking-menu:browser": "node tests/booking-menu.browser.mjs",
-    "test:driver-menu:browser": "node tests/driver-menu.browser.mjs"
+    "test:driver-menu:browser": "node tests/driver-menu.browser.mjs",
+    "test:login:browser": "node tests/login.browser.mjs",
+    "identity:recover:hosted": "node database/hosted-owner-recovery.mjs",
+    "test:marketplace:regressions": "node tests/marketplace-regressions.browser.mjs",
+    "mobile:build:hosted": "node mobile/build.mjs --hosted-check"
   },
   "license": "UNLICENSED",
   "dependencies": {

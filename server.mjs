@@ -5,6 +5,7 @@ import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {publicAssets} from './config/assets.mjs';
 
+const bodyLimits = JSON.parse(readFileSync(new URL('./config/http-limits.json', import.meta.url), 'utf8'));
 const {version} = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
 // Connection options apply only to one hop. Each HTTP server owns its socket
 // lifetime/framing; forwarding these fields can contradict its own close limit.
@@ -13,7 +14,7 @@ const forwardedHeaders=headers=>{
   return Object.fromEntries(Object.entries(headers).filter(([name])=>!excluded.has(name.toLowerCase())));
 };
 
-export async function startServer({port = 4320, built = false, identityApiUrl, publicOrigin} = {}) {
+export async function startServer({port = 4320, built = false, identityApiUrl, publicOrigin, loopbackOnly = false} = {}) {
   const hosted = publicOrigin ? new URL(publicOrigin) : null;
   if (hosted && (hosted.protocol !== 'https:' || hosted.pathname !== '/' || hosted.search || hosted.username)) throw Error('The public origin must be https:// with no path.');
   if (!Number.isInteger(port) || port < 0 || port > 65535) throw Error('Choose a valid local port.');
@@ -39,13 +40,14 @@ export async function startServer({port = 4320, built = false, identityApiUrl, p
       let target;
       try{target=new URL(apiUrl);if(target.protocol!=='http:'||target.hostname!=='127.0.0.1'||target.username||target.password||target.pathname!=='/'||target.search||target.hash)throw Error();}
       catch{response.writeHead(503,{'Content-Type':'application/json'});response.end(JSON.stringify({error:{code:'IDENTITY_UNAVAILABLE',message:'Review the local identity API configuration.'}}));return;}
-      if(Number(request.headers['content-length']||0)>8192){response.writeHead(413);response.end('Request too large');return;}
+      const bodyLimit=request.method==='POST'&&path==='/api/v1/public/holds'?bodyLimits.bookingBodyBytes:bodyLimits.defaultBodyBytes;
+      if(Number(request.headers['content-length']||0)>bodyLimit){response.writeHead(413);response.end('Request too large');return;}
       const upstream=upstreamRequest({hostname:target.hostname,port:target.port,method:request.method,path:request.url,headers:{...forwardedHeaders(request.headers),host:target.host,'x-safeer-client':hosted?String(request.headers['x-forwarded-for']||'').split(',').pop().trim():request.socket.remoteAddress}},incoming=>{
         response.writeHead(incoming.statusCode,forwardedHeaders(incoming.headers));incoming.pipe(response);
       });
       upstream.setTimeout(10000,()=>upstream.destroy());
       upstream.on('error',()=>{if(!response.headersSent){response.writeHead(503,{'Content-Type':'application/json'});response.end(JSON.stringify({error:{code:'IDENTITY_UNAVAILABLE',message:'Start the local identity service.'}}));}else response.destroy();});
-      let size=0;request.on('data',chunk=>{size+=chunk.length;if(size>8192){upstream.destroy();request.unpipe(upstream);if(!response.headersSent){response.writeHead(413);response.end('Request too large');}}});
+      let size=0;request.on('data',chunk=>{size+=chunk.length;if(size>bodyLimit){upstream.destroy();request.unpipe(upstream);if(!response.headersSent){response.writeHead(413);response.end('Request too large');}}});
       request.on('aborted',()=>upstream.destroy());request.pipe(upstream);return;
     }
     if(path.startsWith('/api/v1/auth')||path.startsWith('/api/v1/identity')){
@@ -74,7 +76,7 @@ export async function startServer({port = 4320, built = false, identityApiUrl, p
     }
   });
   server.keepAliveTimeout=5000;server.maxHeadersCount=40;server.maxRequestsPerSocket=100;server.setTimeout(15000,socket=>socket.destroy());
-  await new Promise((accept, reject) => { server.once('error', reject); server.listen(port, hosted ? '0.0.0.0' : '127.0.0.1', accept); });
+  await new Promise((accept, reject) => { server.once('error', reject); server.listen(port, hosted && !loopbackOnly ? '0.0.0.0' : '127.0.0.1', accept); });
   return {server, origin: `http://127.0.0.1:${server.address().port}`, close: () => new Promise(accept => server.close(accept))};
 }
 

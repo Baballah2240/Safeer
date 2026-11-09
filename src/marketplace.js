@@ -16,6 +16,9 @@ const count=(n,key)=>{const forms=phrases[key][language];return (forms[new Intl.
 const money=row=>{const digits=row.fareMinor%100?2:0;return new Intl.NumberFormat(locale(),{style:'currency',currency:row.currency,minimumFractionDigits:digits,maximumFractionDigits:digits}).format(row.fareMinor/100);};
 const day=value=>new Intl.DateTimeFormat(locale(),{weekday:'short',day:'numeric',month:'short',timeZone:'UTC'}).format(new Date(value+'T12:00:00Z'));
 const length=minutes=>{const h=Math.floor(minutes/60),m=minutes%60;return [h?`${h} ${t('h')}`:'',m?`${m} ${t('min')}`:''].filter(Boolean).join(' ');};
+let searchVersion=0,searchDraft={...query};
+const bookingTooLarge='This booking is too large. Shorten the descriptions and try again.';
+arabic[bookingTooLarge]='بيانات الحجز كبيرة جداً. اختصر الأوصاف وحاول مجدداً.';
 const link=path=>`${path}${language==='ar'?'?lang=ar':''}`;
 async function get(path,headers={}){const response=await fetch('/api/v1/public/'+path,{credentials:'omit',cache:'no-store',headers});if(response.status===400||response.status===404)throw Object.assign(Error(),{status:response.status});if(!response.ok)throw Error();return (await response.json()).data;}
 async function post(path,data){const response=await fetch('/api/v1/public/'+path,{method:'POST',credentials:'omit',cache:'no-store',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});const reply=await response.json().catch(()=>({}));if(!response.ok)throw Object.assign(Error(),{status:response.status,code:reply.error?.code});return reply.data;}
@@ -29,7 +32,7 @@ function tripCard(row,showCompany=true){
 const sorted=()=>[...trips].sort(sort==='price'?(a,b)=>a.fareMinor-b.fareMinor:sort==='length'?(a,b)=>a.durationMinutes-b.durationMinutes:()=>0);
 function home(){
  const options=(value)=>`<option value="">${t('Any city')}</option>${cities.map(c=>`<option value="${e(c.code)}" ${c.code===value?'selected':''}>${e(pick(c,'name'))}</option>`).join('')}`;
- return `<section class="market-band market-band-search"><div class="market-wrap"><h1>${t('Find a bus trip')}</h1><p>${t('Compare published trips from approved bus companies across Sudan.')}</p><form id="market-search" class="market-card"><label>${t('From')}<select id="market-from" name="from">${options(query.from)}</select></label><label>${t('To')}<select id="market-to" name="to">${options(query.to)}</select></label><label>${t('Travel date')}<input id="market-date" type="date" name="date" value="${e(query.date)}"></label><div class="market-buttons"><button id="market-submit" class="primary">${t('Search trips')}</button>${searched?`<button type="button" class="secondary" data-clear>${t('Clear')}</button>`:''}</div></form></div></section><div class="market-wrap market-body"><section class="market-results"><header class="market-head"><h2>${count(trips.length,'trips')}</h2><label class="market-sort">${t('Sort by')}<select id="market-sort">${[['time','Earliest departure'],['price','Lowest price'],['length','Shortest journey']].map(([id,label])=>`<option value="${id}" ${id===sort?'selected':''}>${t(label)}</option>`).join('')}</select></label></header><p class="market-note">${t('Choose your seats to hold them for a limited time, then pay the company at its station before the hold ends.')}</p>${searchFailure?`<p class="market-empty" role="alert">${t(searchFailure)}</p>`:sorted().map(row=>tripCard(row)).join('')||`<p class="market-empty">${t(searched?'No trips match your search. Try another date or city.':'No trips are published yet.')}</p>`}</section><section class="market-results"><header class="market-head"><h2>${t('Bus companies')}</h2></header>${companies.length?`<div class="market-companies">${companies.map(c=>`<article class="market-card">${mark(pick(c,'name'))}<h3>${e(pick(c,'name'))}</h3><p>${count(c.tripCount,'upcoming')}</p><a href="${e(link('/company/'+c.slug))}">${t('View company')}</a></article>`).join('')}</div>`:`<p class="market-empty">${t('No companies are listed yet.')}</p>`}</section></div>`;
+ return `<section class="market-band market-band-search"><div class="market-wrap"><h1>${t('Find a bus trip')}</h1><p>${t('Compare published trips from approved bus companies across Sudan.')}</p><form id="market-search" class="market-card"><label>${t('From')}<select id="market-from" name="from">${options(searchDraft.from)}</select></label><label>${t('To')}<select id="market-to" name="to">${options(searchDraft.to)}</select></label><label>${t('Travel date')}<input id="market-date" type="date" name="date" value="${e(searchDraft.date)}"></label><div class="market-buttons"><button id="market-submit" class="primary">${t('Search trips')}</button>${searched?`<button type="button" class="secondary" data-clear>${t('Clear')}</button>`:''}</div></form></div></section><div class="market-wrap market-body"><section class="market-results"><header class="market-head"><h2>${count(trips.length,'trips')}</h2><label class="market-sort">${t('Sort by')}<select id="market-sort">${[['time','Earliest departure'],['price','Lowest price'],['length','Shortest journey']].map(([id,label])=>`<option value="${id}" ${id===sort?'selected':''}>${t(label)}</option>`).join('')}</select></label></header><p class="market-note">${t('Choose your seats to hold them for a limited time, then pay the company at its station before the hold ends.')}</p>${searchFailure?`<p class="market-empty" role="alert">${t(searchFailure)}</p>`:sorted().map(row=>tripCard(row)).join('')||`<p class="market-empty">${t(searched?'No trips match your search. Try another date or city.':'No trips are published yet.')}</p>`}</section><section class="market-results"><header class="market-head"><h2>${t('Bus companies')}</h2></header>${companies.length?`<div class="market-companies">${companies.map(c=>`<article class="market-card">${mark(pick(c,'name'))}<h3>${e(pick(c,'name'))}</h3><p>${count(c.tripCount,'upcoming')}</p><a href="${e(link('/company/'+c.slug))}">${t('View company')}</a></article>`).join('')}</div>`:`<p class="market-empty">${t('No companies are listed yet.')}</p>`}</section></div>`;
 }
 function companyPage(){
  const unique=key=>[...new Map(trips.map(row=>[key(row),row])).values()],about=pick(company,'about'),routeKey=row=>row.routeNameEn+'|'+row.routeNameAr,lowest=route=>Math.min(...trips.filter(row=>routeKey(row)===routeKey(route)).map(row=>row.fareMinor));
@@ -84,7 +87,7 @@ async function placeHold(){
   const data=await post('holds',{tripId,seats:selected,key:holdKey,mobile:contactMobile,travelers:selected.map(seat=>({seat,name:names[seat]||'',luggage:bags[seat]||null}))});
   openBooking(data,holdKey);
  }catch(error){
-  holdError=error.code==='SEATS_UNAVAILABLE'?'Some of your seats were just taken. Please choose again.':error.code==='RATE_LIMITED'?'Too many attempts. Please wait a few minutes and try again.':error.code==='TRIP_NOT_BOOKABLE'?'This trip can no longer be held.':error.code==='INVALID_MOBILE'||error.code==='INVALID_PASSENGERS'?'Check the names and mobile number.':'We could not reach the service. Try again.';
+  holdError=error.status===413?bookingTooLarge:error.code==='SEATS_UNAVAILABLE'?'Some of your seats were just taken. Please choose again.':error.code==='RATE_LIMITED'?'Too many attempts. Please wait a few minutes and try again.':error.code==='TRIP_NOT_BOOKABLE'?'This trip can no longer be held.':error.code==='INVALID_MOBILE'||error.code==='INVALID_PASSENGERS'?'Check the names and mobile number.':'We could not reach the service. Try again.';
   // Only a clear refusal from the service means nothing was held. Anything else may have succeeded, so the same key and seats are retried.
   // A limit reached while retrying says nothing about the first attempt, so the key is kept.
   const refused=error.status>=400&&error.status<500&&!(error.status===429&&unresolved);
@@ -148,7 +151,7 @@ function bind(){
  bindSideDrawer(root,'market-menu','market-menu-toggle','market-menu-close');
  root.querySelector('#market-language').onclick=()=>{language=language==='en'?'ar':'en';const url=new URL(location.href);url.searchParams.set('lang',language);history.replaceState(null,'',url);render();};
  root.querySelector('#market-sort')?.addEventListener('change',event=>{sort=event.target.value;render();});
- root.querySelector('[data-clear]')?.addEventListener('click',()=>{query={from:'',to:'',date:''};void search();});
+ root.querySelector('[data-clear]')?.addEventListener('click',()=>{query={from:'',to:'',date:''};searchDraft={...query};void search();});
  root.querySelector('#market-seats')?.addEventListener('click',event=>{
   const button=event.target.closest('[data-seat]');if(!button||button.disabled||holding||unresolved)return;
   const label=button.dataset.seat;holdError='';
@@ -170,12 +173,20 @@ function bind(){
   catch{releaseError='We could not release these seats. They are still held. Try again.';}
   releasing=false;render();if(booking.status==='released')announce('These seats were released');
  });
- const form=root.querySelector('#market-search');if(form)form.onsubmit=event=>{event.preventDefault();const v=Object.fromEntries(new FormData(form));query={from:v.from,to:v.to,date:v.date};void search();};
+ const form=root.querySelector('#market-search');if(form){
+  const capture=()=>{const v=Object.fromEntries(new FormData(form));searchDraft={from:v.from,to:v.to,date:v.date};};
+  form.addEventListener('input',capture);form.addEventListener('change',capture);
+  form.onsubmit=event=>{event.preventDefault();capture();query={...searchDraft};void search();};
+ }
 }
 async function search(){
- const values=Object.entries(query).filter(([,value])=>value),qs=new URLSearchParams(values).toString();searched=values.length>0;
- try{trips=(await get('trips'+(qs?'?'+qs:''))).items;searchFailure='';}catch(error){trips=[];searchFailure=error.status===400?'Check your search and try again.':'The trip service is not available right now. Please try again later.';}
- const url=new URL(location.href);for(const key of ['from','to','date'])query[key]?url.searchParams.set(key,query[key]):url.searchParams.delete(key);history.replaceState(null,'',url);render();
+ const sequence=++searchVersion,filters={...query};
+ const values=Object.entries(filters).filter(([,value])=>value),qs=new URLSearchParams(values).toString();
+ let rows,errorMessage='';
+ try{rows=(await get('trips'+(qs?'?'+qs:''))).items;}catch(error){rows=[];errorMessage=error.status===400?'Check your search and try again.':'The trip service is not available right now. Please try again later.';}
+ if(sequence!==searchVersion)return;
+ trips=rows;searchFailure=errorMessage;searched=values.length>0;
+ const url=new URL(location.href);for(const key of ['from','to','date'])filters[key]?url.searchParams.set(key,filters[key]):url.searchParams.delete(key);history.replaceState(null,'',url);render();
  document.querySelector('#market-status').textContent=searchFailure?t(searchFailure):count(trips.length,'trips');
 }
 render();

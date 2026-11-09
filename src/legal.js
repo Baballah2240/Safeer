@@ -2,7 +2,7 @@ import {themeButton} from './theme.js';
 
 // Fill before store submission: a monitored email or web form for privacy and deletion requests.
 // mobile/release.mjs refuses to build store bundles while this is empty.
-export const SUPPORT_CONTACT='';
+export const SUPPORT_CONTACT='mohammedbaballah142@gmail.com';
 
 const params=new URLSearchParams(location.search),language=params.get('lang')==='ar'?'ar':'en',ar=language==='ar';
 const page=location.pathname==='/account-deletion'?'deletion':'privacy';

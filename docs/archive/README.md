@@ -1,5 +1,7 @@
 # Section archives and source checkpoints
 
+Latest login follow-up: [D54 login reliability](LOGIN_RELIABILITY_2026-11-08.md). Source-only checkpoint: archives/Safeer-0.16.0-Login-2026-11-08.zip.
+
 Latest mobile follow-up: [D52 Driver sidebar/fullscreen](MOBILE_FULLSCREEN_2026-11-05.md), source checkpoint archives/Safeer-0.16.0-Mobile-Fullscreen-2026-11-05.zip.
 
 

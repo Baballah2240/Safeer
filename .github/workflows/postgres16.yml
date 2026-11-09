@@ -1,0 +1,33 @@
+name: Safeer PostgreSQL 16 verification
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: safeer_ci
+          POSTGRES_PASSWORD: fictional-ci-only-password
+          POSTGRES_DB: postgres
+        ports: [5432:5432]
+        options: >-
+          --health-cmd "pg_isready -U safeer_ci"
+          --health-interval 5s --health-timeout 5s --health-retries 12
+    env:
+      SAFEER_TEST_DATABASE_URL: postgresql://safeer_ci:fictional-ci-only-password@127.0.0.1:5432/postgres
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --omit=optional
+      - run: npm run verify:release

@@ -10,7 +10,7 @@ const root=fileURLToPath(new URL('../',import.meta.url)),qa=join(root,'.qa'),sta
 const version=JSON.parse(readFileSync(join(root,'package.json'),'utf8')).version;
 const args=process.argv.slice(2);if(args.length)throw Error('Use npm run verify:release without arguments; all release checks are required.');
 mkdirSync(qa,{recursive:true});if(lstatSync(qa).isSymbolicLink())throw Error('Verification directory must not be a link.');
-const workspace=join(qa,'release-'+randomUUID()),bin=join(root,'node_modules/@embedded-postgres/windows-x64/native/bin');
+const workspace=join(qa,'release-'+randomUUID()),bin=process.env.SAFEER_VERIFY_PG_BIN?resolve(process.env.SAFEER_VERIFY_PG_BIN):join(root,'node_modules/@embedded-postgres/windows-x64/native/bin');
 let owned=false,dbStarted=false,complete=false,databaseUrl=process.env.SAFEER_TEST_DATABASE_URL;
 // Invalidate any older successful receipt before work starts.
 writeFileSync(join(qa,'release-verification.json'),JSON.stringify({version,startedAt,passed:false,steps:[]},null,2)+'\n');
@@ -39,7 +39,8 @@ try{
  const env={SAFEER_TEST_DATABASE_URL:databaseUrl};
  const native=readdirSync(join(root,'tests')).filter(p=>p.endsWith('.integration.mjs')).sort().map(p=>'tests/'+p);
  await run('all native PostgreSQL integration, security, concurrency and recovery checks',process.execPath,['--test',...native],env);
- for(const [name,built] of [['platform',false],['identity',true],['reservations',true],['ticketing',true],['boarding',true],['platform',true]])await run(`${built?'built':'source'} ${name} browser workflow`,process.execPath,['tests/'+name+'.browser.mjs'],{...env,SAFEER_BROWSER_BUILT:built?'1':'0'},180000);
+ const browsers=['browser.mjs',...readdirSync(join(root,'tests')).filter(p=>p.endsWith('.browser.mjs')).sort()];
+ for(const file of browsers)await run('built browser workflow: '+file,process.execPath,['tests/'+file],{...env,SAFEER_BROWSER_BUILT:'1'},180000);
  complete=true;
 }catch(error){console.error(error.message);process.exitCode=1;}
 finally{

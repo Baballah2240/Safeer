@@ -63,7 +63,7 @@ async function toggleSidebar(button){
   const before=content.map(node=>node.getBoundingClientRect());
   const out=[{opacity:1,transform:'none',filter:'blur(0)'},{opacity:0,transform:`translateX(${away}) scale(.96)`,filter:'blur(6px)'}];
   try{
-    if(!sidebarHidden)await sidebar.animate(out,{duration:240,easing:'cubic-bezier(.4,0,1,1)'}).finished;
+    // Apply visibility and accessibility immediately; animation must not delay keyboard state.
     sidebarHidden=!sidebarHidden;save();applySidebar();
     content.forEach((node,i)=>{
       const after=node.getBoundingClientRect(),dx=before[i].left-after.left;

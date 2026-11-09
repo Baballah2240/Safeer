@@ -19,6 +19,7 @@ import {FinanceService} from './finance.service.js';
 import {PlatformService} from './platform.service.js';
 import {IdentityError,sessionToken,validCsrf,fail} from './security.js';
 
+const bodyLimits=JSON.parse(readFileSync(new URL('../../config/http-limits.json',import.meta.url),'utf8')) as {defaultBodyBytes:number;bookingBodyBytes:number};
 const version=JSON.parse(readFileSync(new URL('../../package.json',import.meta.url),'utf8')).version;
 // Hosted HTTPS deployments add Secure; loopback development cannot use it over http.
 let secure='';
@@ -35,7 +36,7 @@ class Errors implements ExceptionFilter {
     if(error instanceof IdentityError){if(error.getStatus()===429)res.setHeader('Retry-After','60');res.status(error.getStatus()).json(error.getResponse());return;}
     const code=(error as {code?:string})?.code;
     const type=(error as {type?:string})?.type;
-    if(type==='entity.parse.failed'||type==='entity.too.large'){res.status(type==='entity.too.large'?413:400).json({error:{code:'INVALID_REQUEST',message:'Send a valid JSON request within 8 KiB.'}});return;}
+    if(type==='entity.parse.failed'||type==='entity.too.large'){res.status(type==='entity.too.large'?413:400).json({error:{code:'INVALID_REQUEST',message:'Send valid JSON within the limit for this endpoint.'}});return;}
     if(code==='23505'){const constraint=(error as {constraint?:string}).constraint||'';const loginConflict=constraint==='users_normalized_login_key';res.status(409).json({error:{code:loginConflict?'DUPLICATE_LOGIN':'DUPLICATE_RECORD',message:loginConflict?'That login is already in use.':'This code, slug or membership is already in use.'}});return;}
     if(code==='P0001'&&['INVALID_REPORT','EXPORT_LIMIT','TICKET_INVALID','BOARDING_CLOSED','JOURNEY_STATE','LAST_COMPANY_ADMIN','COMPANY_LIMIT','CATALOG_LIMIT','RESOURCE_IN_USE','STATION_CITY_IN_USE','INVALID_ROUTE_STOPS','INACTIVE_ROUTE_RESOURCE','LAYOUT_IN_USE','INACTIVE_LAYOUT','INVALID_SEAT_LAYOUT','IMMUTABLE_REVISION','TRIP_NOT_DRAFT','TRIP_FINISHED','LUGGAGE_HELD','LUGGAGE_STATE','LUGGAGE_NOT_DEPARTED','LUGGAGE_EXCEPTION_OPEN','TICKET_REQUIRED','TAG_UNKNOWN','TAG_REPLACED','TAG_REASON_REQUIRED','REASON_REQUIRED','COLLECTION_NOT_VERIFIED','TRIP_NOT_READY','INVALID_TRIP_STOPS','ASSIGNMENT_CONFLICT','INACTIVE_ASSIGNMENT','TRIP_RESOURCE_IN_USE','TRIP_NOT_BOOKABLE','INVALID_SEATS','SEATS_UNAVAILABLE','SEATS_HELD','IDEMPOTENCY_CONFLICT','HOLD_CLOSED','INVALID_PASSENGERS','STALE_VERSION','NO_OPEN_SESSION','SESSION_OPEN','SESSION_CLOSED','COUNTER_INACTIVE','COUNTER_BUSY','NOTE_REQUIRED','ALREADY_PAID','HOLD_ENDED','LATE_REASON_REQUIRED','METHOD_DISABLED','CURRENCY_MISMATCH','ALREADY_REFUNDED','NOT_PAID','REFUND_CLOSED','REFERENCE_REQUIRED'].includes((error as Error).message)){res.status(409).json({error:{code:(error as Error).message,message:'The change conflicts with a protected resource, route rule or local capacity.'}});return;}
     if(code==='23P01'){res.status(409).json({error:{code:'SEATS_UNAVAILABLE',message:'Those seats have just been taken.'}});return;}
@@ -243,7 +244,8 @@ export async function createIdentityApi({port=4321,webOrigin='http://127.0.0.1:4
     }
     next();
   });
-  app.use(json({limit:'8kb',strict:true}));
+  const standardJson=json({limit:bodyLimits.defaultBodyBytes,strict:true}),bookingJson=json({limit:bodyLimits.bookingBodyBytes,strict:true});
+  app.use((req:Request,res:Response,next:()=>void)=>(req.method==='POST'&&req.path==='/api/v1/public/holds'?bookingJson:standardJson)(req,res,next));
   try{await app.listen(port,'127.0.0.1');}catch(error){await app.close();throw error;}
   const address=app.getHttpServer().address();
   return {app,origin:`http://127.0.0.1:${address.port}`,identity:app.get(IdentityService),db:app.get(Database),close:()=>app.close()};

@@ -1,5 +1,9 @@
 # Safeer Android USB test apps
 
+## Audit fixes - 0.16.0-usb.6 / 16006, 2026-11-09
+
+Hosted errors now explain internet recovery; USB debug retains cable/tunnel recovery. Shared web fixes cover search ordering/drafts, large Arabic group bookings, support contact and sidebar placement. Debug build/lint and mobile:save passed; installation awaits an authorized USB phone. mobile:build:hosted compiles/lints the HTTPS release variants without publishing. See [D56 evidence](../docs/archive/AUDIT_REMEDIATION_2026-11-09.md).
+
 Two independent installed apps reuse the real responsive web application in src/:
 
 | App | Android package | Home |
@@ -7,7 +11,7 @@ Two independent installed apps reuse the real responsive web application in src/
 | Safeer Driver | sd.safeer.driver | /driver |
 | Safeer Booking | sd.safeer.booking | /marketplace |
 
-Version: 0.16.0-usb.5 (16005), debug-signed local test channel, Android 8/API 26 or later. Tested on the connected LGN-NX1 Android 16/API 36 phone. No Flutter client, camera scan, offline queue, online payment, remote server or store release is included. All booking, payment, session, company and assigned-driver rules remain enforced by the existing backend. The phone has separate app cookies/storage; it does not automatically inherit a computer sign-in.
+Version: 0.16.0-usb.6 (16006), debug-signed local test channel, Android 8/API 26 or later. Debug and hosted build/lint passed. Replacement installation of this patch awaits an authorized USB phone; the prior .5 patch was tested on the existing phone. The phone keeps separate app cookies/storage and does not inherit a computer sign-in.
 
 The current owner-selected palette is black and brown, with cream/brown light mode. The native shell and icon match the shared bento/glass web UI.
 
@@ -21,7 +25,7 @@ The current owner-selected palette is black and brown, with cream/brown light mo
 
 Both apps use immersive fullscreen without native title/Home/Refresh/Print toolbars. Swipe from an edge to reveal Android system controls; the camera cutout and visible keyboard remain protected. Booking menu contains trip search, My booking, staff access and Settings. Driver menu contains assigned trips/sign-in, notifications, company access, Refresh/Sign out when signed in, and Settings. Both offer appearance/language preferences. Android Back closes an open drawer before following history or exiting. Native print controls have been removed; physical printer support is not verified. Back navigates within the app. The interface retains Arabic/English and light/dark controls. If disconnected, restore the server/cable/tunnel and press Retry. Closing or uninstalling an app does not delete server records, but uninstalling Booking removes its locally saved opaque booking keys; reference/mobile recovery remains available.
 
-The computer, Safeer process and USB tunnel must stay connected for live operations. Installing an APK does not make Safeer available over mobile data or another network. Hosting/HTTPS and a remote-client security design need separate implementation.
+Debug builds require the running computer/server and USB tunnel. Hosted release builds use the configured fixed HTTPS origin and an internet connection. Building an APK does not publish or install it, and neither channel includes offline synchronization.
 
 ## Build, save and install
 
@@ -35,4 +39,4 @@ Build runs both debug variants and Android lint. Save writes both APKs, individu
 
 Keep the debug signing key in the private Android user directory to preserve update compatibility. It is never source-controlled. Production signing, current store target/API requirements, Play distribution and secure remote delivery are separate work. Android lint has zero errors; known warnings are the pinned target 35 and the API 33 back-navigation attribute ignored on older devices. Gradle/API deprecation notices remain with the pinned toolchain.
 
-WebView allows only http://127.0.0.1:4320 navigation/resources; other cleartext hosts, file/content access, mixed content, third-party cookies and native JS bridges are disabled. Cloud/device transfer excludes app data on Android 12+, with backup disabled on earlier versions too. JavaScript/DOM storage are required by the shared app, and existing server CSP/CSRF/Host controls remain intact. No credentials are embedded. See the official [Android WebView guide](https://developer.android.com/develop/ui/views/layout/webapps/webview) and [ADB guide](https://developer.android.com/tools/adb).
+WebView allows only its fixed build origin: USB loopback for debug, configured HTTPS for hosted release. Other hosts, file/content access, mixed content, third-party cookies and native JS bridges are disabled. Cloud/device transfer excludes app data on Android 12+, with backup disabled on earlier versions too. JavaScript/DOM storage are required by the shared app, and existing server CSP/CSRF/Host controls remain intact. No credentials are embedded. See the official [Android WebView guide](https://developer.android.com/develop/ui/views/layout/webapps/webview) and [ADB guide](https://developer.android.com/tools/adb).

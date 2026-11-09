@@ -1,5 +1,13 @@
 # Safeer mobile status
 
+## Audit fixes - 0.16.0-usb.6 / 16006, 2026-11-09
+
+Hosted errors now explain internet recovery; USB debug retains cable/tunnel recovery. Shared web fixes cover search ordering/drafts, large Arabic group bookings, support contact and sidebar placement. Debug build/lint and mobile:save passed; installation awaits an authorized USB phone. mobile:build:hosted compiles/lints the HTTPS release variants without publishing. See [D56 evidence](../docs/archive/AUDIT_REMEDIATION_2026-11-09.md).
+
+## Shared login reliability - 2026-11-08, D54
+
+Staff/Driver sign-in preserves fields across language changes, retains the email after failed attempts, clears rejected passwords and prevents premature/duplicate submission. The shared web update is available on refresh; no native package change or APK installation. Existing permissions, data and local USB dependence are preserved. See [D54 handover](../docs/archive/LOGIN_RELIABILITY_2026-11-08.md).
+
 ## Render hosting - 2026-11-05
 
 The web app can now run hosted at https://safeer.mohbaba.online from `render.yaml` and `scripts/production.mjs`: one fixed HTTPS origin, Secure cookies, HSTS, hosted PostgreSQL with a limited runtime role, and migrations on start. Store builds use `--origin https://safeer.mohbaba.online` once the site is live. See [hosting](../docs/HOSTING.md).

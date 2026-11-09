@@ -1,5 +1,21 @@
 # Current state - read this first
 
+## Audit remediation - D56, 2026-11-09
+
+Verification complete: 17 unit/server checks, 129 integration tests on PostgreSQL 16.15, and all 20 browser scripts pass across the main run and corrected-predicate continuation. Debug and hosted Android builds/lint pass; APKs are saved. Local service is updated. GitHub/Render authentication and a physical USB phone are the remaining external requirements.
+
+The audit source fixes preserve newest-search ordering and unfinished search fields, restore the above-sidebar toggle with immediate keyboard state and clipped animation overflow, publish the owner-approved support contact, and permit a bounded 64 KiB payload only for creating public group bookings (other endpoints remain 8 KiB). The Android error screen distinguishes hosted HTTPS from USB; local patch .6/16006 is built/linted/saved. Hosted owner recovery now supports a non-superuser migration owner with explicit confirmation, duplicate-email rollback, session revocation and audit. Complete browser release gating and PostgreSQL 16 CI are added. No schema, financial policy, role grants or real account credentials are changed. See [D56 handover](archive/AUDIT_REMEDIATION_2026-11-09.md) for measured results and outstanding deployment/device verification.
+
+
+## Quality audit - D55, 2026-11-09
+
+The broad audit found seven confirmed issues. All 17 unit/server and 126 database tests pass; 18 of 19 distinct browser scripts pass, with the sidebar placement regression reproduced twice. Targeted probes also reproduce stale marketplace searches, lost search drafts and an allowed Arabic group-booking payload rejected by the 8 KB limit. Read-only online checks confirm that the reviewed login helper is absent from the deployment and the support contact remains empty. See [the complete quality report](testing/QUALITY_AUDIT_2026-11-09.md) for severity, evidence and coverage gaps. No product fixes or production data changes were made.
+
+## Login reliability - D54, 2026-11-08
+
+Staff and Driver preserve entered sign-in fields during language/render changes, keep the email after rejection, clear rejected passwords, and serialize login submissions while startup/session checks or login requests are pending. Credentials stay in ephemeral form state, never browser storage, markup or source. Existing accounts/data, server authorization, password rules and loopback-only access are preserved. The owner separately approved private local owner-password recovery; no credentials are included here. See [D54 handover](archive/LOGIN_RELIABILITY_2026-11-08.md).
+
+
 ## Driver sidebar and mobile fullscreen - D52
 
 Driver now matches Booking with sidebar navigation and appearance/language Settings; operational refresh/logout and assigned-trip rules remain. Both local Android clients remove native toolbars and use immersive fullscreen with swipe-reveal system controls and safe cutout/keyboard insets. USB patch .5/16005 preserves app data. No schema/API, authority, money or hosting change. See [D52 handover](archive/MOBILE_FULLSCREEN_2026-11-05.md); prior evidence is historical.

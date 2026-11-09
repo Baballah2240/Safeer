@@ -33,3 +33,15 @@
 5. To update later, run the same command again. Logs: `journalctl -u safeer -f`.
 
 Secrets live in `/etc/safeer.env` (root only). Back up the database with `sudo -u postgres pg_dump safeer > safeer.sql`. A private repository needs a GitHub deploy key or token for the clone.
+
+## Explicit hosted owner recovery
+
+After verifying a private database backup, open the existing Render service Shell and run the reviewed command from the deployed source:
+
+    npm run identity:recover:hosted -- --email existing@example.com --new-email new@example.com --confirm-reset
+
+DATABASE_URL must be the existing private migration-owner connection, never safeer_app. Omit --new-email to keep the login unchanged. The command prints a generated temporary password once, revokes prior owner sessions, requires password change and audits the action; conflicting emails roll back. Update SAFEER_OWNER_LOGIN separately after a deliberate email change. Do not paste credentials into Git or public logs. Recovery is an operator command, not a forgot-password HTTP bypass.
+
+## Verification before deployment
+
+Run npm run verify:release; it includes every browser workflow. The dedicated repository workflow .github/workflows/postgres16.yml uses an isolated PostgreSQL 16 service. Windows can select a separately provisioned test binary with SAFEER_VERIFY_PG_BIN; persistent runtime/ is never selected automatically. Test summaries do not prove that Render deployed the same commit: compare the deployed login module and build hashes after a successful deployment.

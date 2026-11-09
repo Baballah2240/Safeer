@@ -115,7 +115,9 @@ public final class MainActivity extends Activity {
         error.setPadding(dp(28),dp(28),dp(28),dp(28));
         error.setBackgroundColor(Color.rgb(241,233,224));
         TextView message = new TextView(this);
-        message.setText(text("Connect to Safeer\n\nKeep this computer's Safeer app running and connect this phone by USB. Ask the operator to restore the USB connection, then retry.","الاتصال بسفير\n\nشغّل سفير على الكمبيوتر ووصل الهاتف بكابل USB. اطلب من المسؤول إعادة اتصال USB ثم أعد المحاولة."));
+        message.setText(ORIGIN_URI.getScheme().equals("https")
+            ? text("Cannot connect to Safeer\n\nCheck your internet connection and retry. Your account and bookings stay on the server.","تعذر الاتصال بسفير\n\nتحقق من اتصال الإنترنت ثم أعد المحاولة. يبقى حسابك وحجوزاتك على الخادم.")
+            : text("Connect to Safeer\n\nKeep this computer's Safeer app running and connect this phone by USB. Ask the operator to restore the USB connection, then retry.","الاتصال بسفير\n\nشغّل سفير على الكمبيوتر ووصل الهاتف بكابل USB. اطلب من المسؤول إعادة اتصال USB ثم أعد المحاولة."));
         message.setTextColor(Color.rgb(22,17,14));
         message.setTextSize(18);
         error.addView(message);
