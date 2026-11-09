@@ -139,3 +139,7 @@ Local preparation is complete; production readiness is not claimed. Before remot
 ## 2026-11-09 - D61 luggage operations follow-up
 
 The owner selected improvement of the existing Section 11 workflow. Core registration, paid-ticket checks, one-time QR tags/replacement, custody transitions, exceptions and verified collection are implemented, not future prototype work. This follow-up adds fresh-search loading safety, explicit refresh, guidance at the 50-row display bound and a permanent-loss warning for missing-bag resolution. Existing permissions, privacy, refund rules and database schema are unchanged. See [the operational plan](workflows/LUGGAGE_IMPROVEMENT_2026-11-09.md) for responsibilities, acceptance gates and deferred work.
+
+## 2026-11-09 - Mobile continuation (D62)
+
+Claude's 0.16.2 internet-connected apps have been rebuilt, signed and verified in the standalone Safeer repository. Shared mobile menus, headers, login, luggage and release-notice checks passed. Generated download metadata matches saved APKs. See [the continuation handover](archive/MOBILE_CONTINUATION_2026-11-09.md). Release preparation remains private; public repository/release and phone installation require separate action.

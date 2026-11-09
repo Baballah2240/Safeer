@@ -47,3 +47,7 @@ Covers D57, D58 and D60. The source is on `main` of `Baballah2240/Safeer` (commi
 ## Tests to run after mobile or shared UI changes
 
 `npm.cmd test`, `npm.cmd run check`, and with `SAFEER_TEST_DATABASE_URL` set to a disposable PostgreSQL: `test:sidebar:browser`, `test:booking-menu:browser`, `test:driver-menu:browser`, `test:headers:browser`, `test:login:browser`. An embedded PostgreSQL 16 is available in the local `.qa/pg16` folder, which is not tracked.
+
+## Codex continuation
+
+See [the verified continuation](MOBILE_CONTINUATION_2026-11-09.md) for updated APK hashes, mobile regression evidence and private draft-release preparation. The open-item list above records the original handover state.

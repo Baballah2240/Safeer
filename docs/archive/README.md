@@ -70,3 +70,5 @@ To continue, extract into a new folder, read docs/CURRENT_STATE.md first, run np
 [Black and brown palette](BLACK_BROWN_2026-11-04.md) records D42 and the matching USB Android patch.
 
 [Sticky liquid-glass headers](STICKY_HEADERS_2026-11-04.md) records D43.
+
+- [Mobile continuation and release verification, 2026-11-09](MOBILE_CONTINUATION_2026-11-09.md).

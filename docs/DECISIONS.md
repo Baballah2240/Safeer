@@ -1,5 +1,10 @@
 # Decisions
 
+## 2026-11-09 - Resume the mobile handover
+
+D62: The owner asks Codex to continue Claude's Safeer mobile handover and confirms Safeer is the intended app. Continue from the independent C:/Users/Lenovo/source/Safeer repository, preserving D57-D60 and signed 0.16.2 app identity. Rebuild/lint and save the website APKs with the existing private upload key, verify signatures, shared mobile workflows and download/update behavior, and prepare the missing v0.16.2 release as a private draft. APKs and signing material stay out of source control. Making the private repository public and publishing the release remain a separate owner step under D60; no phone uninstall, signing-key rotation or unrequested shipment implementation.
+
+
 ## 2026-11-09 - Luggage operational improvement
 
 D61: The owner explicitly selects improvement of the existing passenger luggage registration, tagging, tracking and collection workflow. Section 11 core operations already exist under D33; obsolete prototype planning statements do not mean they are unimplemented. Improve fresh-search safety, operator refresh, visibility of the bounded list and the warning for irreversible missing-bag resolution. Preserve company permissions, paid-ticket registration, optimistic versions, collection proof, exception blocks, privacy erasure and refund guards. No allowances/fees, freight, camera scanning, driver tag authority or account/data changes. Verify on disposable fixtures, update the section plan/mobile notes and publish only to Baballah2240/Safeer. Hosting and physical installation require separate verification.

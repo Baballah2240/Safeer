@@ -193,3 +193,7 @@ Add the responsive bilingual Luggage section, printable QR tags, a luggage field
 ## 2026-11-09 - D61 shared luggage workflow
 
 Staff luggage pages now clear stale actions during searches, support explicit refresh, explain the 50-bag display bound and warn about permanent missing-bag closure in Arabic/English. Existing Android web clients consume the shared source. No camera permission, package/version change or driver luggage grant. Phone/printer/scanner acceptance is separate from source checks.
+
+## 2026-11-09 - D62 verified mobile handover
+
+Rebuilt both 0.16.2 website apps with the existing upload certificate; release build/lint/signatures and shared mobile workflows passed. Regenerated src/app-release.js for the saved APK hashes. Added Android-browser/old/current/newer app download-notice checks. See docs/archive/MOBILE_CONTINUATION_2026-11-09.md. No signing identity/version change or phone uninstall. Public downloads await owner publication of the private draft and repository visibility choice.
