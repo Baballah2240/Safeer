@@ -58,3 +58,11 @@ Source checkpoint: archives/Safeer-0.12.0-Section-11-2026-11-02.zip, generated f
 ## Limits and next section
 
 Local only. There is no allowance or fee, no camera scanning and no driver use of tags yet. Stop before Section 12 (driver client, QR verification, boarding) until the owner approves it. Continue from [CURRENT_STATE](../CURRENT_STATE.md).
+
+## D61 follow-up - 2026-11-09
+
+The owner selected improvement of the existing core operations. The historical prototype/deferred notes do not override D33 delivery. Search safety, explicit refresh, bounded-list guidance and permanent-loss resolution warnings are now implemented in shared source. See [the operational plan](../workflows/LUGGAGE_IMPROVEMENT_2026-11-09.md) and current workflow. Validation results are recorded at the completed D61 handover; no new schema, fee, driver permission or live-data migration is introduced. Source is maintained in Baballah2240/Safeer, independently of Stocrant.
+
+## D61 verification result
+
+Passed on 2026-11-09: 17 unit/server checks; API/public build (37 assets); document links; 15 luggage/ticketing integration tests on disposable PostgreSQL 16; the built luggage browser flow including search ordering/loading, failed-refresh recovery, 50-row guidance, missing-bag warning, QR/replacement, collection and 32 bilingual/theme/layout combinations. Both Android debug flavors built and linted successfully. Existing native deprecation/compatibility warnings remain. No real account, booking, payment or runtime migration was changed. Physical phone/printer/scanner and online deployment are not claimed.

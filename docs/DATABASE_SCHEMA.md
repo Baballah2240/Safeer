@@ -319,3 +319,7 @@ Migration 0012 adds ticket_credentials (same-company ticket FK, stable opaque QR
 ## Section 13 financial projections
 
 Migration 0013_finance.sql adds company.finance.read, finance_movements/report/options/audit functions and posting/opening-time indexes on existing financial tables. It adds no tables: the current schema remains 53 application tables/45 RLS tables. Runtime gets only the report/options/audit entry points; no financial table grants or raw movement helper grant. Amounts are integer minor-unit strings in API results. Projections scope by each cash session station, preserve company-local posting dates, separate currencies, snapshot pagination and full-lifetime cash-session calculations.
+
+## 2026-11-09 - D61 luggage operations follow-up
+
+The owner selected improvement of the existing Section 11 workflow. Core registration, paid-ticket checks, one-time QR tags/replacement, custody transitions, exceptions and verified collection are implemented, not future prototype work. This follow-up adds fresh-search loading safety, explicit refresh, guidance at the 50-row display bound and a permanent-loss warning for missing-bag resolution. Existing permissions, privacy, refund rules and database schema are unchanged. See [the operational plan](workflows/LUGGAGE_IMPROVEMENT_2026-11-09.md) for responsibilities, acceptance gates and deferred work.

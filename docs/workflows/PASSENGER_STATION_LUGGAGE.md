@@ -1,6 +1,6 @@
 # Passenger, station and luggage workflows
 
-Target workflows below are approved design. Only the old single-seat unpaid demo is currently executable.
+Current core booking, station, luggage and boarding operations are implemented. The paragraphs below retain the original design context; D33 and the Section 11 handover govern luggage operations. See [the current luggage workflow](LUGGAGE.md).
 
 ## Booking states
 
@@ -25,7 +25,7 @@ The local passenger form now collects a yes/no declaration before reservation. Y
 
 Register against a booking passenger/trip -> create unique tag/opaque QR -> verify tagging -> load -> in transit -> unload -> verify collection. Record each transition with actor/station/time. Exceptions and their resolution form separate events so the lifecycle history is preserved. Tag replacements reference the original; they do not create a second unlinked luggage record.
 
-Paid tickets authorize travel according to policy; luggage registration/loading/collection does not change ticket payment state. Excess-luggage fees, allowance, collection verification, missed bags and incident handling require operational approval before Section 11 implementation.
+Paid tickets authorize travel according to policy; luggage registration/loading/collection does not change ticket payment state. D33 implements collection verification by ticket or booking mobile number, missing/damaged-bag exceptions and separate authorized resolution. Excess-luggage fees and allowances remain deferred.
 
 ## Boarding
 

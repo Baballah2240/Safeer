@@ -139,3 +139,5 @@ Object.assign(ar,{
 Object.assign(labels,{'company.finance.read':'Read scoped financial reports'});
 Object.assign(ar,{'Counter':'صندوق المحطة'});
 Object.assign(errors,{INVALID_REPORT:'Choose valid filters and a date range of up to 31 days.',EXPORT_LIMIT:'More than 10,000 transactions match. Narrow the dates or filters before exporting.'});
+
+Object.assign(ar,{"Refresh luggage":"تحديث الأمتعة","Showing the latest 50 matching bags. Search by bag or tag number to find an older bag.":"تظهر أحدث 50 حقيبة مطابقة. ابحث برقم الحقيبة أو البطاقة للعثور على حقيبة أقدم.","For a missing bag, Settled or Closed permanently marks it Lost and ends company custody. Choose Found only when it has been found.":"للحقيبة المفقودة، تؤدي التسوية أو الإغلاق إلى تسجيلها مفقودة نهائياً وإنهاء عهدة الشركة. اختر وُجدت فقط إذا عُثر عليها."});

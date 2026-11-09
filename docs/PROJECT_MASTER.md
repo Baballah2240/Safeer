@@ -197,3 +197,7 @@ Completed and verified in source: counter sessions, payments, walk-in sales, tic
 ## Section 11 implementation
 
 Completed and verified in source: traveler luggage declarations, bag registration, QR tags, tracking, problems and collection. There is no allowance or fee, and no camera scanning. The real local database has not been upgraded yet; see the owner step in [Section 11](archive/SECTION_11_LUGGAGE.md).
+
+## 2026-11-09 - D61 luggage operations follow-up
+
+The owner selected improvement of the existing Section 11 workflow. Core registration, paid-ticket checks, one-time QR tags/replacement, custody transitions, exceptions and verified collection are implemented, not future prototype work. This follow-up adds fresh-search loading safety, explicit refresh, guidance at the 50-row display bound and a permanent-loss warning for missing-bag resolution. Existing permissions, privacy, refund rules and database schema are unchanged. See [the operational plan](workflows/LUGGAGE_IMPROVEMENT_2026-11-09.md) for responsibilities, acceptance gates and deferred work.

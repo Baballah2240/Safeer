@@ -228,3 +228,7 @@ The Station section and booking sheets call a TicketingController backed by fixe
 ## Section 11 luggage
 
 The Luggage section calls a LuggageController backed by fixed database functions; the runtime role has no table access. The QR is built in the API from a random value, returned once as a vector path, and only its hash is stored. A hardware scanner types into the search box, and the scan goes in a request body so it stays out of logs. Registering takes the same trip lock as refunds, so a bag cannot slip in during a refund. qrcode-generator is a new runtime dependency; jsqr is used only by tests.
+
+## 2026-11-09 - D61 luggage operations follow-up
+
+The owner selected improvement of the existing Section 11 workflow. Core registration, paid-ticket checks, one-time QR tags/replacement, custody transitions, exceptions and verified collection are implemented, not future prototype work. This follow-up adds fresh-search loading safety, explicit refresh, guidance at the 50-row display bound and a permanent-loss warning for missing-bag resolution. Existing permissions, privacy, refund rules and database schema are unchanged. See [the operational plan](workflows/LUGGAGE_IMPROVEMENT_2026-11-09.md) for responsibilities, acceptance gates and deferred work.

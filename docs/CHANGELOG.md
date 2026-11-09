@@ -231,3 +231,7 @@ Applied restrained skeuomorphism using shared CSS materials, tactile enamel butt
 ## 0.3.4 - Dark mode (2026-10-31)
 
 Added shared default dark theme, bilingual light/dark controls, validated persistent preferences, cross-window synchronization and storage-blocked fallback. Toggling preserves form drafts/focus. Styled seats, statuses, tables and dialogs; retained clean white-paper printing. No dependencies or database changes.
+
+## 2026-11-09 - D61 luggage operations follow-up
+
+The owner selected improvement of the existing Section 11 workflow. Core registration, paid-ticket checks, one-time QR tags/replacement, custody transitions, exceptions and verified collection are implemented, not future prototype work. This follow-up adds fresh-search loading safety, explicit refresh, guidance at the 50-row display bound and a permanent-loss warning for missing-bag resolution. Existing permissions, privacy, refund rules and database schema are unchanged. See [the operational plan](workflows/LUGGAGE_IMPROVEMENT_2026-11-09.md) for responsibilities, acceptance gates and deferred work.

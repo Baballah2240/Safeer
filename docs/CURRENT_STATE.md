@@ -135,3 +135,7 @@ Git changes are committed locally. Pushing the shared branch would also publish 
 ## Remaining release prerequisites
 
 Local preparation is complete; production readiness is not claimed. Before remote customer access: owner-approved HTTPS/host/session/database infrastructure, secrets and off-site backup/rollback drill, monitoring/job supervision/rate and connection limits, representative load objectives, independent security review, physical device/printer/scanner acceptance and legal/financial/retention decisions. Existing open financial questions remain in [Section 10](archive/SECTION_10_TICKETING.md). Flutter, remote notifications, offline/camera scanning, freight and emergency assignment correction remain future scope. Stop at this checkpoint until the owner selects the next phase.
+
+## 2026-11-09 - D61 luggage operations follow-up
+
+The owner selected improvement of the existing Section 11 workflow. Core registration, paid-ticket checks, one-time QR tags/replacement, custody transitions, exceptions and verified collection are implemented, not future prototype work. This follow-up adds fresh-search loading safety, explicit refresh, guidance at the 50-row display bound and a permanent-loss warning for missing-bag resolution. Existing permissions, privacy, refund rules and database schema are unchanged. See [the operational plan](workflows/LUGGAGE_IMPROVEMENT_2026-11-09.md) for responsibilities, acceptance gates and deferred work.

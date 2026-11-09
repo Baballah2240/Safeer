@@ -189,3 +189,7 @@ Add the responsive bilingual Station section, payment, refund and print sheets a
 ## 2026-11-02 - Section 11 luggage
 
 Add the responsive bilingual Luggage section, printable QR tags, a luggage field on passenger and walk-in forms and bag status on the passenger booking page to shared src/. No native app build or deployment requested. Verification: 102 automated checks and 32 luggage layouts per source/built mode.
+
+## 2026-11-09 - D61 shared luggage workflow
+
+Staff luggage pages now clear stale actions during searches, support explicit refresh, explain the 50-bag display bound and warn about permanent missing-bag closure in Arabic/English. Existing Android web clients consume the shared source. No camera permission, package/version change or driver luggage grant. Phone/printer/scanner acceptance is separate from source checks.

@@ -109,7 +109,7 @@ Updated 2026-11-03. Sections 01-12 and the verified local upgrades (D34, D36) ar
 | 08 | Seat inventory, atomic multi-seat holds, expiry, idempotency, segment-ready allocation | 06-07 | Source complete and verified; private local database upgrade is an open owner step |
 | 09 | Guest passenger details, multi-passenger booking, secure retrieval and booking history | 08 | Source complete and verified; private local database upgrade is an open owner step |
 | 10 | Station ticketing, payment confirmation, official tickets, receipts, cancellations/refund operations | 02-03, 08-09 | Complete in source; local upgrade open; owner will revisit the money flow |
-| 11 | Passenger luggage registration, tagging/QR, tracking, exceptions and collection | 09-10 | Complete in source; local upgrade open |
+| 11 | Passenger luggage registration, tagging/QR, tracking, exceptions and collection | 09-10 | Complete and locally upgraded under D34; D61 operational improvement |
 | 12 | Local driver client, assigned-trip manifest, QR verification, boarding/departure/arrival | 05-06, 10-11 | Complete and verified locally under D36; Flutter deferred |
 | 13 | Company financial reports and read-only cash reconciliation | 10 | Complete and verified locally under D37 |
 | 14 | Platform administration, company approval UI, notifications, global analytics | Existing module APIs through 13 | Complete and verified locally under D38; see CURRENT_STATE |
@@ -155,3 +155,7 @@ Completed D22 tactile styling for the existing local interface. This visual upda
 ## 0.3.4 - Dark mode (2026-10-31)
 
 Completed the owner-requested D23 dark-mode follow-up. Both themes retain Section 02 staff workflows and the fictional passenger preview; Section 03 remains deferred.
+
+## 2026-11-09 - D61 luggage operations follow-up
+
+The owner selected improvement of the existing Section 11 workflow. Core registration, paid-ticket checks, one-time QR tags/replacement, custody transitions, exceptions and verified collection are implemented, not future prototype work. This follow-up adds fresh-search loading safety, explicit refresh, guidance at the 50-row display bound and a permanent-loss warning for missing-bag resolution. Existing permissions, privacy, refund rules and database schema are unchanged. See [the operational plan](workflows/LUGGAGE_IMPROVEMENT_2026-11-09.md) for responsibilities, acceptance gates and deferred work.

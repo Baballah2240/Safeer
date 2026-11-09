@@ -1,5 +1,10 @@
 # Decisions
 
+## 2026-11-09 - Luggage operational improvement
+
+D61: The owner explicitly selects improvement of the existing passenger luggage registration, tagging, tracking and collection workflow. Section 11 core operations already exist under D33; obsolete prototype planning statements do not mean they are unimplemented. Improve fresh-search safety, operator refresh, visibility of the bounded list and the warning for irreversible missing-bag resolution. Preserve company permissions, paid-ticket registration, optimistic versions, collection proof, exception blocks, privacy erasure and refund guards. No allowances/fees, freight, camera scanning, driver tag authority or account/data changes. Verify on disposable fixtures, update the section plan/mobile notes and publish only to Baballah2240/Safeer. Hosting and physical installation require separate verification.
+
+
 ## 2026-11-09 - Online app download and update notice
 
 D60: The owner chooses to make the Baballah2240/Safeer repository public so signed APKs can be attached to public GitHub releases (tag v<versionName>), and asks for a website Download button plus an in-app update notice. npm run mobile:save writes src/app-release.js (version, URLs, SHA-256, size) from the signed website build; APKs stay out of Git. The installed app appends SafeerApp/<versionCode> (<flavor>) to its user agent; the shared page shows an Update notice when that code is older, a Get-the-app notice in Android browsers, and a Download item in the Booking/Driver drawers outside the up-to-date app. The app opens only https://github.com/Baballah2240/Safeer/releases/ links, in the phone browser, so Android installs the update over the same signing key. A pre-publication scan found no keys, tokens or real personal data in tracked Safeer files; the owner-approved support email is already public. Making the repository public and creating the release are owner actions on GitHub.
