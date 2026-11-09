@@ -29,3 +29,7 @@ Both release APKs built and passed signature verification with the existing cert
 | Safeer-Booking-0.16.3.apk | 16728 | e660b16a63f5cc580579b0a222635e231f00846262ca857cd696ecb802669e51 |
 
 APKs/checksum manifests remain ignored. Publish these exact APKs and sidecars under the public GitHub release [v0.16.3](https://github.com/Baballah2240/Safeer/releases/tag/v0.16.3). Before publication, scan available tracked history for known private-key/provider-token patterns and check artifact digests. Independently verify unauthenticated APK downloads and live old-version notices after release; a Git push alone proves neither. No real account, booking, payment or runtime database is changed.
+
+## Publication verified - 2026-11-09
+
+Source commit 7b282c5 was pushed to Safeer main. The owner-approved visibility change is complete: Baballah2240/Safeer is public, and release v0.16.3 is published with both APKs and their checksum sidecars. Independent unauthenticated downloads returned HTTP 200 and matched the exact sizes/SHA-256 values above. Live app-release.js, theme.js/theme.css, driver.js and marketplace.js match the reviewed source. Live browser checks using the installed 0.16.2 Driver and Booking user agents passed in Arabic and English: both advertise 0.16.3 and link to their own APK. A private v0.16.2 draft remains historical and is superseded by the published v0.16.3. No phone installation is claimed.
