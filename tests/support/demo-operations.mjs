@@ -5,6 +5,14 @@ import {randomUUID} from 'node:crypto';
 
 const need=r=>{assert.ok(r.status<300,r.raw);return r.data;};
 const today=(tz='Africa/Khartoum')=>new Intl.DateTimeFormat('en-CA',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+// Departures must stay on today's Khartoum date: fit the three trips between "more than an hour away"
+// (so the first is still scheduled, not boarding) and midnight, keeping their order and gaps.
+const minutesLeftToday=()=>{const [h,m]=new Intl.DateTimeFormat('en-GB',{timeZone:'Africa/Khartoum',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date()).split(':').map(Number);return 24*60-(h*60+m)-1;};
+export function departureOffsets(left=minutesLeftToday()){
+ const first=65,gap=Math.min(105,Math.floor((left-first)/2));
+ if(gap<2)throw Error('Operations fixtures need about 75 minutes left in the Khartoum day; rerun after midnight Africa/Khartoum.');
+ return [first,first+gap,first+2*gap];
+}
 const laterToday=minutes=>{const d=new Date(Date.now()+minutes*60000);return new Intl.DateTimeFormat('en-GB',{timeZone:'Africa/Khartoum',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(d);};
 
 export async function seedOperations(f,slug='fictional-nile-ops'){
@@ -25,7 +33,7 @@ export async function seedOperations(f,slug='fictional-nile-ops'){
  const station=need(await f.admin.request(base+'/stations','POST',{nameEn:'Khartoum Station',nameAr:'محطة الخرطوم',code:'ST1',branchId:branch,active:true,...pw})).id;
  const counter=need(await f.admin.request(base+'/counters','POST',{stationId:station,code:'c1',name:'Counter 1',...pw})).id;need(await f.admin.request(base+'/counter/sessions','POST',{counterId:counter,openingMinor:0}));
  need(await f.admin.request(base+'/public-profile','PUT',{listed:true,aboutEn:'',aboutAr:'',version:0,...pw}));
- const soon=await trip(r1,laterToday(90),[b1,d1]),later=await trip(r2,laterToday(180),[b2,d2]),unassigned=await trip(r1,laterToday(300),null);
+ const [o1,o2,o3]=departureOffsets(),soon=await trip(r1,laterToday(o1),[b1,d1]),later=await trip(r2,laterToday(o2),[b2,d2]),unassigned=await trip(r1,laterToday(o3),null);
  const pay=async(tripId,labels)=>{const key=randomUUID(),hold=need(await f.client().request('public/holds','POST',{tripId,seats:labels,key,mobile:'0912345678',travelers:labels.map(seat=>({seat,name:'Fictional Traveler '+seat}))}));
   const bid=(await f.migration.query('SELECT id FROM safeer.bookings WHERE reference=$1',[hold.reference])).rows[0].id;need(await f.admin.request(`${base}/bookings/${bid}/pay`,'POST',{method:'cash',key:randomUUID()}));
   const printed=need(await f.admin.request(`${base}/bookings/${bid}/print`,'POST',{document:'tickets'}));return {bid,reference:hold.reference,key,codes:printed.codes};};
