@@ -43,3 +43,9 @@ Android release build and lint pass with 0 errors and the same 2 existing warnin
 - Eight built browser scripts pass on the integrated source: Driver dashboard camera/video, operations dashboard, manual ticket fallback (16 layouts), legacy boarding (16 layouts), Driver menu (40 layouts), Booking menu (40 layouts), sticky headers (64 combinations) and independent release notices. Shipment browser verification also passed before upstream integration; the integrated shipment backend suite passes.
 - Saved final Driver APK verifies with Android v2 signing, version 18000/0.18.0 and the existing certificate above. Optional CAMERA is declared; neither microphone nor audio permission is present. Booking release metadata/hash is unchanged.
 - Temporary test databases are separate loopback clusters and were stopped. No production boarding or booking transaction was used for verification.
+
+## Published and verified online
+
+Source commit c5b73fb is pushed to Safeer main, preserving upstream c730c07. Public release v0.18.0 contains exactly Safeer-Driver-0.18.0.apk and its SHA-256 file. Both files download without GitHub authentication; the APK hash and byte count match the signed local artifact. The existing Booking 0.17.0 APK also downloads publicly with its original hash/size unchanged.
+
+Independent HTTPS verification confirms /driver and six Driver/shared assets match the verified source, /api/v1/health returns 200 with the database connected, camera policy is self-only on /driver and denied on /marketplace, and the live browser shows Download update for Driver 17000 pointing to the 0.18.0 APK. Booking 17000 shows no update notice. No live passenger account or production booking/boarding write was used. This verifies hosting and public downloads separately from Git push; phone installation and physical camera testing were not performed.

@@ -2,7 +2,7 @@
 
 ## Driver Trip Dashboard - D66, 2026-11-10
 
-D66 Driver 0.18.0/18000 implements the requested Trip Dashboard, QR camera and searchable passenger list. Booking remains 0.17.0/17000. Read the release handover for test evidence, download checks and physical-device limits; a push alone does not prove deployment or phone installation. See [D66 handover](archive/DRIVER_TRIP_DASHBOARD_0.18.0_2026-11-10.md).
+Public Driver release v0.18.0 and the live update notice are verified, including public APK checksum and HTTP 200/database health. Booking remains current at 17000; no phone install was performed. D66 Driver 0.18.0/18000 implements the requested Trip Dashboard, QR camera and searchable passenger list. Booking remains 0.17.0/17000. Read the release handover for test evidence, download checks and physical-device limits; a push alone does not prove deployment or phone installation. See [D66 handover](archive/DRIVER_TRIP_DASHBOARD_0.18.0_2026-11-10.md).
 
 ## Operations dashboard and booking homepage - D65, 2026-11-10
 

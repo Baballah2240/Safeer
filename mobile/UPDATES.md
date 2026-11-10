@@ -2,6 +2,8 @@
 
 ## Driver only - 0.18.0 / 18000, 2026-11-10, D66
 
+Published to public release v0.18.0 (Driver APK and checksum only). Live source/health and Driver-17000 update notice are independently verified; Booking-17000 shows no update. Both public APK downloads match their recorded checksums. No physical phone was installed or tested.
+
 Final verification preserves upstream D65 operations counts, translates Wrong trip in manual checks and clears passenger search/filter state when changing trip/account or losing access. Driver-only notices and both menus pass; Booking remains 17000.
 
 Trip Dashboard shows the real assigned route, departure/status and valid boarding totals. Scan ticket opens the QR camera, offers optional flashlight and printed-code fallback, shows accepted/already scanned/wrong trip/invalid/retry results, and refreshes passengers without duplicate boarding. Search/filter passengers with a shortcut to scanning. Violet/blue frosted cards, phone passenger cards, Arabic/English and reduced motion are preserved. Camera frames stay on the device; no audio permission.
