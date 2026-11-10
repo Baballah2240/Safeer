@@ -1,5 +1,9 @@
 # Safeer mobile status
 
+## Route stations and staff details - website, 2026-11-11
+
+Staff screens: each route stop now lists only stations in its city and explains when there are none; saving a mismatched station shows a clear message. Adding or editing staff accepts an optional job title and work phone. Custom company roles always let the person open their company workspace. Phones receive these changes from the website; no new APK.
+
 ## Theme leftovers and clearer errors - website, 2026-11-10
 
 The Safeer logo, the home workspace sidebar and the staff sign-in sidebar now use the violet palette instead of brown/beige. Staff and Driver sign-in show a readable message when sign-in is unavailable instead of IDENTITY_UNAVAILABLE or a developer command, and the booking search reports an unavailable trip service instead of a missing company page. Phones receive these changes from the website; no new APK.

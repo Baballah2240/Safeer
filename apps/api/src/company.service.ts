@@ -4,6 +4,7 @@ import type {PoolClient} from 'pg';
 import {Database} from './database.js';
 import {IdentityService,type Principal} from './identity.service.js';
 import {body,text,login,uuid,version,list,secret,hashPassword,fail} from './security.js';
+import {mobileNumber} from './reservation.service.js';
 
 const permissionCodes=['company.profile.read','company.profile.manage','company.resources.read','company.resources.manage','company.members.read','company.members.manage','company.roles.read','company.roles.manage','company.audit.read','company.routes.read','company.routes.manage','company.fleet.read','company.fleet.manage','company.drivers.read','company.drivers.manage','company.trips.read','company.trips.manage','company.bookings.read','company.bookings.manage','company.luggage.operate','company.luggage.resolve','company.shipments.operate','company.shipments.resolve','company.shipments.prices','company.ticketing.operate','company.payments.late','company.sessions.manage','company.driver.operate','company.journeys.manage','company.finance.read'];
 const supportCodes=['company.profile.read','company.resources.read','company.audit.read','company.routes.read'];
@@ -36,7 +37,7 @@ export class CompanyService {
   const branches=(await c.query(`SELECT id,code,name_en AS "nameEn",name_ar AS "nameAr",active,version,safeer.company_can(company_id,'company.resources.manage',id) AS "canEdit" FROM safeer.branches WHERE company_id=$1 ORDER BY code`,[cid])).rows;
   const stations=(await c.query(`SELECT id,branch_id AS "branchId",code,name_en AS "nameEn",name_ar AS "nameAr",address,city_id AS "cityId",active,version,safeer.company_can(company_id,'company.resources.manage',branch_id,id) AS "canEdit" FROM safeer.stations WHERE company_id=$1 ORDER BY code`,[cid])).rows;
   const roles=await this.has(c,cid,'company.roles.read')?(await c.query(`SELECT r.id,r.code,r.display_name AS "displayName",r.scope,r.active,r.version,COALESCE(array_agg(p.permission_code ORDER BY p.permission_code) FILTER(WHERE p.permission_code IS NOT NULL),'{}') AS permissions FROM safeer.company_roles r LEFT JOIN safeer.company_role_permissions p ON (p.company_id,p.role_id)=(r.company_id,r.id) WHERE r.company_id=$1 GROUP BY r.id ORDER BY r.code`,[cid])).rows:[];
-  const members=await this.has(c,cid,'company.members.read')?(await c.query(`SELECT m.id,m.user_id AS "userId",m.display_name AS "displayName",u.normalized_login AS login,m.active,u.active AS "accountActive",m.version,safeer.member_visible(m.company_id,m.id,true) AS "canEdit",COALESCE((SELECT json_agg(json_build_object('roleId',a.role_id,'scope',a.scope,'branchId',a.branch_id,'stationId',a.station_id) ORDER BY a.id) FROM safeer.company_user_roles a WHERE (a.company_id,a.member_id)=(m.company_id,m.id)),'[]') AS assignments FROM safeer.company_users m JOIN safeer.users u ON u.id=m.user_id WHERE m.company_id=$1 ORDER BY m.display_name,m.id`,[cid])).rows:[];
+  const members=await this.has(c,cid,'company.members.read')?(await c.query(`SELECT m.id,m.user_id AS "userId",m.display_name AS "displayName",m.job_title AS "jobTitle",m.phone,u.normalized_login AS login,m.active,u.active AS "accountActive",m.version,safeer.member_visible(m.company_id,m.id,true) AS "canEdit",COALESCE((SELECT json_agg(json_build_object('roleId',a.role_id,'scope',a.scope,'branchId',a.branch_id,'stationId',a.station_id) ORDER BY a.id) FROM safeer.company_user_roles a WHERE (a.company_id,a.member_id)=(m.company_id,m.id)),'[]') AS assignments FROM safeer.company_users m JOIN safeer.users u ON u.id=m.user_id WHERE m.company_id=$1 ORDER BY m.display_name,m.id`,[cid])).rows:[];
   const audit=await this.has(c,cid,'company.audit.read')?(await c.query(`SELECT id,actor_id AS "actorId",action,target_id AS "targetId",occurred_at AS "occurredAt" FROM safeer.company_audit WHERE company_id=$1 ORDER BY occurred_at DESC,id LIMIT 100`,[cid])).rows:[];
   const grants=await this.can(c,cid,'company.members.manage')?(await c.query(`SELECT g.id,u.normalized_login AS login,g.reason,g.expires_at AS "expiresAt",g.revoked_at AS "revokedAt",g.expires_at>clock_timestamp() AND g.revoked_at IS NULL AS active,COALESCE((SELECT array_agg(permission_code ORDER BY permission_code) FROM safeer.support_access_grant_permissions p WHERE (p.company_id,p.grant_id)=(g.company_id,g.id)),'{}') AS permissions FROM safeer.support_access_grants g JOIN safeer.users u ON u.id=g.support_user_id WHERE g.company_id=$1 ORDER BY g.created_at DESC,g.id`,[cid])).rows:[];
   const managedBranches=[],memberBranches=[],memberStations=[];for(const b of branches){if(await this.can(c,cid,'company.resources.manage',b.id))managedBranches.push(b.id);if(await this.can(c,cid,'company.members.manage',b.id))memberBranches.push(b.id);}for(const st of stations)if(await this.can(c,cid,'company.members.manage',st.branchId,st.id))memberStations.push(st.id);
@@ -106,7 +107,8 @@ export class CompanyService {
   }return assignments;
  }
  async member(token:string,cid:string,id:string|undefined,input:unknown){
-  uuid(cid);if(id)uuid(id);const data=body(input,id?['displayName','active','assignments','version','currentPassword']:['displayName','login','existing','assignments','currentPassword']);
+  uuid(cid);if(id)uuid(id);const data=body(input,id?['displayName','jobTitle','phone','active','assignments','version','currentPassword']:['displayName','jobTitle','phone','login','existing','assignments','currentPassword']);
+  const jobTitle=data.jobTitle===undefined||data.jobTitle===null||String(data.jobTitle).trim()===''?null:text(data.jobTitle,1,80),phone=data.phone===undefined||data.phone===null||String(data.phone).trim()===''?null:mobileNumber(data.phone,'INVALID_PHONE');
   const displayName=text(data.displayName),enabled=id?active(data.active):true,v=id?version(data.version):1,email=id?'':login(data.login);
   if(!id&&typeof data.existing!=='boolean')fail('INVALID_INPUT');await this.identity.reauthenticate(token,data.currentPassword);
   await this.run(token,async(c)=>{await this.company(c,cid);if(!await this.has(c,cid,'company.members.manage'))fail('FORBIDDEN',403);});
@@ -117,12 +119,12 @@ export class CompanyService {
    const mid=id||randomUUID();let uid='';
    if(id){const old=(await c.query('SELECT * FROM safeer.company_users WHERE company_id=$1 AND id=$2',[cid,id])).rows[0];if(!old)fail('NOT_FOUND',404);
     if(!(await c.query('SELECT safeer.member_visible($1,$2,true) AS ok',[cid,id])).rows[0].ok)fail('FORBIDDEN',403);
-    uid=old.user_id;const result=await c.query('UPDATE safeer.company_users SET display_name=$1,active=$2,version=version+1 WHERE company_id=$3 AND id=$4 AND version=$5 RETURNING id',[displayName,enabled,cid,id,v]);if(!result.rowCount)fail('STALE_VERSION',409);
+    uid=old.user_id;const result=await c.query('UPDATE safeer.company_users SET display_name=$1,active=$2,job_title=$6,phone=$7,version=version+1 WHERE company_id=$3 AND id=$4 AND version=$5 RETURNING id',[displayName,enabled,cid,id,v,jobTitle,phone]);if(!result.rowCount)fail('STALE_VERSION',409);
     await c.query('DELETE FROM safeer.company_user_roles WHERE company_id=$1 AND member_id=$2',[cid,id]);
    }else{
     if(data.existing){if(!p.superAdministrator)fail('FORBIDDEN',403);const u=(await c.query('SELECT id FROM safeer.users WHERE normalized_login=$1 AND active',[email])).rows[0];if(!u)fail('NOT_FOUND',404);uid=u.id;}
     else{uid=randomUUID();await c.query('INSERT INTO safeer.users(id,normalized_login,display_name,password_hash) VALUES($1,$2,$3,$4)',[uid,email,displayName,encoded]);}
-    await c.query('INSERT INTO safeer.company_users(id,company_id,user_id,display_name) VALUES($1,$2,$3,$4)',[mid,cid,uid,displayName]);
+    await c.query('INSERT INTO safeer.company_users(id,company_id,user_id,display_name,job_title,phone) VALUES($1,$2,$3,$4,$5,$6)',[mid,cid,uid,displayName,jobTitle,phone]);
    }
    for(const a of assignments)await c.query('INSERT INTO safeer.company_user_roles(id,company_id,member_id,role_id,scope,branch_id,station_id) VALUES($1,$2,$3,$4,$5,$6,$7)',[randomUUID(),cid,mid,a.roleId,a.scope,a.branchId,a.stationId]);
    const single=assignments.length===1?assignments[0]:null;await this.audit(c,p,cid,'member.saved',mid,single?.branchId||null,single?.stationId||null);
@@ -131,7 +133,7 @@ export class CompanyService {
  }
  async role(token:string,cid:string,id:string|undefined,input:unknown){
   uuid(cid);if(id)uuid(id);const data=body(input,id?['displayName','active','permissions','version','currentPassword']:['displayName','scope','permissions','currentPassword']);
-  const name=text(data.displayName),perms=permissions(data.permissions),enabled=id?active(data.active):true,v=id?version(data.version):1;
+  const name=text(data.displayName),requested=permissions(data.permissions),perms=requested.some(x=>x!=='company.driver.operate')&&!requested.includes('company.profile.read')?[...requested,'company.profile.read']:requested,enabled=id?active(data.active):true,v=id?version(data.version):1;
   const scope=id?'':text(data.scope,1,20);if(!id&&!['company','branch','station'].includes(scope))fail('INVALID_ROLE_SCOPE');await this.identity.reauthenticate(token,data.currentPassword);
   return this.run(token,async(c,p)=>{
    await this.company(c,cid);await this.need(c,cid,'company.roles.manage');for(const perm of perms)await this.need(c,cid,perm);

@@ -54,7 +54,10 @@ export class RouteService {
   if(stops[0].cityId===stops.at(-1)!.cityId||new Set(stops.map(s=>s.cityId+':'+s.stationId)).size!==stops.length)fail('INVALID_ROUTE_STOPS');
   await this.identity.reauthenticate(token,data.currentPassword);
   return this.run(token,async(c,p)=>{
-   await this.access(c,cid,true);const target=id||randomUUID(),values=[routeCode,nameEn,nameAr,stops[0].cityId,stops.at(-1)!.cityId,active,cid,target];
+   await this.access(c,cid,true);
+   // A stop's station must be in that stop's city; report it clearly instead of failing on the foreign key.
+   for(const stop of stops)if(stop.stationId&&!(await c.query('SELECT 1 FROM safeer.stations WHERE company_id=$1 AND id=$2 AND city_id=$3',[cid,stop.stationId,stop.cityId])).rowCount)fail('ROUTE_STATION_CITY');
+   const target=id||randomUUID(),values=[routeCode,nameEn,nameAr,stops[0].cityId,stops.at(-1)!.cityId,active,cid,target];
    if(id){const result=await c.query('UPDATE safeer.routes SET code=$1,name_en=$2,name_ar=$3,origin_city_id=$4,destination_city_id=$5,active=$6,version=version+1 WHERE company_id=$7 AND id=$8 AND version=$9 RETURNING id',[...values,v]);if(!result.rowCount)fail('STALE_VERSION',409);await c.query('DELETE FROM safeer.route_stops WHERE company_id=$1 AND route_id=$2',[cid,id]);}
    else await c.query('INSERT INTO safeer.routes(code,name_en,name_ar,origin_city_id,destination_city_id,active,company_id,id) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',values);
    for(const [index,stop] of stops.entries())await c.query('INSERT INTO safeer.route_stops(company_id,route_id,stop_index,city_id,station_id) VALUES($1,$2,$3,$4,$5)',[cid,target,index,stop.cityId,stop.stationId]);

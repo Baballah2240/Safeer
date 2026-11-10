@@ -1,5 +1,10 @@
 # Changelog
 
+## Route stations and staff details - D69, 2026-11-11
+
+Migration 0021_member_contact.sql adds optional company_users.phone and job_title. Route stop station choices follow the chosen city with a clear ROUTE_STATION_CITY error; working company roles always include company.profile.read. The routes browser test selector is updated for the D65 company sidebar. Verified by tests/staff-details.integration.mjs, routes/companies browser workflows and database integration.
+
+
 ## Driver light/dark correction - 2026-11-10
 
 The Driver dashboard used fixed light colors despite the selected theme. Driver-specific surfaces now follow light/dark tokens with contrast/persistence tests. Driver release 0.18.1/18001 keeps Booking at 0.17.0/17000. See [theme correction handover](archive/DRIVER_THEME_FIX_2026-11-10.md).

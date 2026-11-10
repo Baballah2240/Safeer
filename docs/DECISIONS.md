@@ -1,5 +1,10 @@
 # Decisions
 
+## 2026-11-11 - Route stations and staff details
+
+D69: The owner reports a route-saving error and gaps when creating users. A route stop may use only a station in that stop's city; the form now lists only those stations (rebuilt, not hidden, because hidden options still appear in some mobile pickers), explains when a city has none, and the API reports ROUTE_STATION_CITY instead of a generic scope error. Staff members gain optional job title and work phone (international form, same rules as passenger mobiles). Any company role with a company permission other than company.driver.operate automatically includes company.profile.read, because without it the member cannot open the company workspace at all; driver-only roles are unchanged. The member station picker is rebuilt per branch for the same mobile reason.
+
+
 ## 2026-11-10 - Driver appearance correction (D66 follow-up)
 
 The owner reports a broken light/dark switch in Driver. The theme attribute and persisted setting change, but the dashboard CSS hard-codes light surfaces and dark ink over the shared theme. Replace those overrides with Driver-scoped light/dark tokens for page, cards, menu, inputs, passenger rows and readable semantic/result states. Keep exact action/selection/progress colors, camera sharpness, sticky header, reduced motion, forms and streams. Publish Driver 0.18.1/18001 with the same signing certificate so installing the update loads the corrected web styling. Keep Booking 0.17.0/17000 unchanged. Verify actual surface brightness/contrast and persistence, not only the theme attribute. Work in isolation from the uncommitted passenger-account work.

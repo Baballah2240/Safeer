@@ -102,7 +102,7 @@ test('Section 04 preserves existing company resources and tenant role copies whi
  const membership=(await client.query('SELECT row_to_json(s) AS row FROM safeer.company_users s WHERE id=$1',[member])).rows[0].row;
  await runMigrations(client,migrations);
  assert.deepEqual((await client.query('SELECT row_to_json(s) AS row FROM safeer.stations s WHERE id=$1',[sid])).rows[0].row,{...before,city_id:null});
- assert.deepEqual((await client.query('SELECT row_to_json(s) AS row FROM safeer.company_users s WHERE id=$1',[member])).rows[0].row,membership);
+ assert.deepEqual((await client.query('SELECT row_to_json(s) AS row FROM safeer.company_users s WHERE id=$1',[member])).rows[0].row,{...membership,phone:null,job_title:null},'D69 only adds empty optional contact columns.');
  assert.equal((await client.query('SELECT count(*)::int AS n FROM safeer.company_role_permissions WHERE role_id=$1',[role])).rows[0].n,9);
  assert.equal((await client.query("SELECT count(*)::int AS n FROM safeer.role_permissions p JOIN safeer.roles r ON r.id=p.role_id WHERE r.code='company_administrator'")).rows[0].n,30);
  assert.equal((await client.query('SELECT count(*)::int AS n FROM safeer.cities')).rows[0].n,0);
