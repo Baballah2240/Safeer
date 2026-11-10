@@ -18,7 +18,8 @@ try {
   await send('Emulation.setDeviceMetricsOverride', {width: 1366, height: 900, deviceScaleFactor: 1, mobile: false});
   await send('Page.navigate', {url: app.origin});
   await until('Boolean(document.querySelector(".metrics"))');
-  assert.equal(await evaluate('document.documentElement.dataset.theme'),'dark');
+  // D65: staff and preview open in the light glass theme.
+  assert.equal(await evaluate('document.documentElement.dataset.theme'),'light');
   await send('Runtime.evaluate',{expression:`(()=>{const other=window.open('about:blank','safeer-theme-check');if(!other)throw Error('Theme check window did not open');other.localStorage.setItem('safeer.theme','light');other.close();})()`,userGesture:true});
   await until('document.documentElement.dataset.theme==="light"');
   await send('Page.reload');await until('Boolean(document.querySelector(".metrics"))');
@@ -116,8 +117,8 @@ try {
   await click('[data-nav=overview]'); await shot('overview-mobile-ar');
   const blocked=await send('Page.addScriptToEvaluateOnNewDocument',{source:`for(const name of ['getItem','setItem']){const original=Storage.prototype[name];Storage.prototype[name]=function(key,...args){if(key==='safeer.theme')throw new DOMException('Blocked','SecurityError');return original.call(this,key,...args);};}`});
   await send('Page.reload');await until('Boolean(document.querySelector(".metrics"))');
-  assert.equal(await evaluate('document.documentElement.dataset.theme'),'dark');
-  await click('[data-theme-toggle]');assert.equal(await evaluate('document.documentElement.dataset.theme'),'light');
+  assert.equal(await evaluate('document.documentElement.dataset.theme'),'light');
+  await click('[data-theme-toggle]');assert.equal(await evaluate('document.documentElement.dataset.theme'),'dark');
   await send('Page.removeScriptToEvaluateOnNewDocument',{identifier:blocked.identifier});
   assert.deepEqual(await evaluate('window.__errors'), []);
   console.log('Passenger browser checks passed: luggage choice/required description, draft retention/reset, text escaping/print, no-luggage booking, company demo scoping, expiry, Arabic reference and desktop/mobile layouts.');

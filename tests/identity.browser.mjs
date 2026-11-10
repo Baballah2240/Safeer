@@ -25,11 +25,11 @@ try{
     await send('Emulation.setDeviceMetricsOverride',{width:1366,height:900,deviceScaleFactor:1,mobile:false});
     await send('Page.navigate',{url:web.origin+'/staff'});
     await signIn('owner@safeer.local',f.password);
-    assert.equal(await evaluate('document.documentElement.dataset.theme'),'dark');
-    await click('[data-theme-toggle]');assert.equal(await evaluate('document.documentElement.dataset.theme'),'light');
-    await send('Page.reload');await until('Boolean(document.querySelector("#change-password"))');
     assert.equal(await evaluate('document.documentElement.dataset.theme'),'light');
     await click('[data-theme-toggle]');assert.equal(await evaluate('document.documentElement.dataset.theme'),'dark');
+    await send('Page.reload');await until('Boolean(document.querySelector("#change-password"))');
+    assert.equal(await evaluate('document.documentElement.dataset.theme'),'dark');
+    await click('[data-theme-toggle]');assert.equal(await evaluate('document.documentElement.dataset.theme'),'light');
     assert.equal(await evaluate('document.querySelectorAll(".staff-summary article").length'),3);
     assert.deepEqual(await evaluate('[...document.querySelectorAll(".staff-shortcuts button")].map(b=>b.dataset.tab).sort()'),['audit','cities','companies','notifications','platform','roles','sessions','users']);
     await click('.staff-shortcuts [data-tab=users]');await until('Boolean(document.querySelector("[data-create-user]"))');

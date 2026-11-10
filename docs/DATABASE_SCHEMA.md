@@ -1,5 +1,9 @@
 # Database schema and migration status
 
+## Operations projections - D65, migration 0018, 2026-11-10
+
+Read-only functions operations_trip_status(trips), operations_today(uuid,date) and operations_trip(uuid,uuid) with fixed search_path and no PUBLIC execution; the last two are granted to the runtime role. Index trips_company_departure. No tables or existing data change.
+
 ## Shipments - D59, migration 0016, 2026-11-09
 
 Tables (RLS, no direct runtime privileges): shipment_prices, shipments, shipment_items, shipment_tags (QR hash only), shipment_events, shipment_exceptions, shipment_payments. Functions: shipment_options, shipment_price_save, shipment_create, shipment_find, shipment_tag, shipment_move, shipment_deliver, shipment_return, shipment_report, shipment_resolve, public_shipment. session_totals, finance_movements, finance_report and platform_dashboard include shipment_payments. erase_due_passenger_data and driver_manifest wrap their previous versions (renamed *_before_shipments and revoked from the runtime role). document_sequences adds shipment and shipment_tag; receipts share the receipt sequence. A guard trigger keeps history append-only and erased details erased.

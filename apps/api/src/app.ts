@@ -15,6 +15,7 @@ import {ReservationService} from './reservation.service.js';
 import {TicketingService} from './ticketing.service.js';
 import {LuggageService} from './luggage.service.js';
 import {ShipmentService} from './shipment.service.js';
+import {OperationsService} from './operations.service.js';
 import {BoardingService} from './boarding.service.js';
 import {FinanceService} from './finance.service.js';
 import {PlatformService} from './platform.service.js';
@@ -142,6 +143,12 @@ class ReservationController {
  @Get('holds/:reference') booking(@Req() req:Request,@Param('reference') reference:string){return this.reservations.booking(reference,req.headers['x-booking-key']).then(reply);}
  @Post('holds/:reference/release') release(@Req() req:Request,@Param('reference') reference:string,@Body() data:unknown){return this.reservations.release(reference,data,req.socket.remoteAddress||'local').then(reply);}
 }
+@Controller('api/v1/companies/:id/operations')
+class OperationsController {
+ constructor(private readonly operations:OperationsService){}
+ @Get() today(@Req() req:Request,@Param('id') id:string,@Query('day') day:unknown){return this.operations.today(token(req),id,day).then(reply);}
+ @Get('trips/:tid') trip(@Req() req:Request,@Param('id') id:string,@Param('tid') tid:string){return this.operations.trip(token(req),id,tid).then(reply);}
+}
 @Controller('api/v1/companies/:id/shipments')
 class ShipmentController {
  constructor(private readonly shipments:ShipmentService){}
@@ -236,7 +243,7 @@ class PlatformController {
  @Get('notifications') notifications(@Req() req:Request,@Query('before') before:string|undefined){return this.platform.notifications(token(req),before).then(reply);}
  @Post('notifications/:event/read') read(@Req() req:Request,@Param('event') id:string,@Body() data:unknown){return this.platform.read(token(req),id,data).then(reply);}
 }
-@Module({controllers:[PlatformController,FinanceController,IdentityController,CompanyController,LuggageController,ShipmentController,ShipmentTrackingController,TicketingController,BookingController,RouteController,FleetController,TripSeatController,TripController,ReservationController,PublicController,PublicProfileController,BoardingController],providers:[Database,ShipmentService,IdentityService,CompanyService,RouteService,FleetService,TripService,PublicService,ReservationService,TicketingService,LuggageService,BoardingService,FinanceService,PlatformService]})
+@Module({controllers:[PlatformController,FinanceController,IdentityController,CompanyController,LuggageController,ShipmentController,ShipmentTrackingController,OperationsController,TicketingController,BookingController,RouteController,FleetController,TripSeatController,TripController,ReservationController,PublicController,PublicProfileController,BoardingController],providers:[Database,ShipmentService,OperationsService,IdentityService,CompanyService,RouteService,FleetService,TripService,PublicService,ReservationService,TicketingService,LuggageService,BoardingService,FinanceService,PlatformService]})
 export class IdentityModule {}
 
 export async function createIdentityApi({port=4321,webOrigin='http://127.0.0.1:4320'}:{port?:number;webOrigin?:string}={}){

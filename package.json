@@ -68,7 +68,9 @@
     "mobile:build:hosted": "node mobile/build.mjs",
     "mobile:build:usb": "node mobile/build.mjs --usb",
     "mobile:save:usb": "node mobile/save.mjs --usb",
-    "test:shipments:browser": "node tests/shipments.browser.mjs"
+    "test:shipments:browser": "node tests/shipments.browser.mjs",
+    "test:operations": "node --test tests/operations.integration.mjs",
+    "test:operations:browser": "node tests/operations.browser.mjs"
   },
   "license": "UNLICENSED",
   "dependencies": {

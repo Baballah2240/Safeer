@@ -444,6 +444,8 @@
     "safeer.shipment_report(uuid,uuid,uuid,text,text)",
     "safeer.shipment_resolve(uuid,uuid,uuid,uuid,text,text)",
     "safeer.public_shipment(text)",
-    "safeer.passenger_booking(text,text,text)"
+    "safeer.passenger_booking(text,text,text)",
+    "safeer.operations_today(uuid,date)",
+    "safeer.operations_trip(uuid,uuid)"
   ]
 }

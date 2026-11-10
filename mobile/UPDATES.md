@@ -1,5 +1,9 @@
 # Safeer mobile status
 
+## Booking homepage - 2026-11-10, D65
+
+No new app version. The Booking app shows the new booking-first homepage once the website is updated. The Driver app is unchanged by this work.
+
 ## Shipments on the website - 2026-11-09, D59
 
 No new app version. The Booking app's menu gains Track a shipment (served by the website), and the Driver app's trip page lists shipments on the trip. Both appear once the website is updated.
