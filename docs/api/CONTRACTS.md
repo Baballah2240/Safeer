@@ -108,3 +108,7 @@ Existing hold-create, device-key booking/current and reference/mobile lookup rou
 ## D66 Driver dashboard / Driver 0.18.0
 
 No new HTTP route. Assigned trip replies add timezone. The manifest adds serverNow, boardingOpen, timezone, scheduled stops (nameEn/nameAr/scheduledAt), nullable estimatedArrivalAt and passengers[].bookingReference. No phone, payment proof or QR credential is returned in the manifest. /verify and /board add alreadyBoarded (true only if the boarding existed before this transaction). Existing locking and uniqueness make concurrent/retried board requests idempotent. A valid same-company opaque QR for a different trip returns HTTP 409 TICKET_WRONG_TRIP without passenger/booking details; printed numbers remain selected-trip scoped and return generic TICKET_INVALID for other trips. Existing CSRF/authentication/window/refund/cancellation rules remain. Camera failures and uncertain network results do not authorize boarding locally.
+
+## D67 mobile release discovery
+
+Public read-only GET/HEAD /mobile/releases returns the existing per-app release metadata with Cache-Control: no-store and no credentials. Other methods are rejected. The Driver client validates versions, hash/size and exact canonical Safeer GitHub release URLs before replacing its last known metadata; stale/downgraded/invalid responses are rejected. This endpoint has no account, trip or booking data and performs no installation.

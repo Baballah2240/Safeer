@@ -5,6 +5,7 @@ import {resolve} from 'node:path';
 import {createHash} from 'node:crypto';
 import {pathToFileURL} from 'node:url';
 import {publicAssets} from './config/assets.mjs';
+import {appRelease} from './src/app-release.js';
 
 const bodyLimits = JSON.parse(readFileSync(new URL('./config/http-limits.json', import.meta.url), 'utf8'));
 const {version} = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
@@ -60,6 +61,7 @@ export async function startServer({port = 4320, built = false, identityApiUrl, p
       response.writeHead(405, {Allow: 'GET, HEAD'}); response.end('This prototype has no write API.'); return;
     }
     try {
+      if(path==='/mobile/releases'){response.writeHead(200,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});response.end(request.method==='HEAD'?undefined:JSON.stringify(appRelease));return;}
       if (path === '/api/v1/health') {
         response.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
         response.end(request.method === 'HEAD' ? undefined : JSON.stringify({data: {service: 'safeer', version, mode: 'local-prototype', database: 'not-connected', maintenance:{holds:{state:'disabled',lastSuccessAt:null},retention:{state:'disabled',lastSuccessAt:null}}}}));

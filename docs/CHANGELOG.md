@@ -1,5 +1,9 @@
 # Changelog
 
+## Driver update discovery - D67, 2026-11-10
+
+Driver update metadata is refreshed without a page/form/camera rerender, and its menu always exposes a download link plus Check for updates. Existing APK versions remain unchanged. See [D67 handover](archive/DRIVER_UPDATE_DISCOVERY_2026-11-10.md) for root cause, one-time old-client recovery and verification.
+
 ## Driver Trip Dashboard - D66, 2026-11-10
 
 Driver 0.18.0: frosted route dashboard, authoritative boarding progress, one-tap QR camera, optional torch, printed-code fallback, clear scan results and safe retries. Passenger search by name/seat/booking reference, All/Waiting/Boarded filters and small-phone cards. Independent Driver-only signed update; Booking APK unchanged. See [D66 handover](archive/DRIVER_TRIP_DASHBOARD_0.18.0_2026-11-10.md).

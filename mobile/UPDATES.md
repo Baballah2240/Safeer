@@ -1,5 +1,11 @@
 # Safeer mobile status
 
+## Driver update discovery fix - 2026-11-10, D67
+
+Web-only correction; keep the published Driver 0.18.0/18000 and Booking 0.17.0/17000 APKs/checksums unchanged. Driver now checks uncached public release metadata when its page starts, returns to the foreground, reconnects, opens its menu or uses Check for updates. Its menu always offers Download Driver app, even for a current or unidentified client. Only update controls change in place; login/incident drafts and active camera streams remain intact. Offline/invalid/downgraded metadata retains the last known valid Safeer release.
+
+An already-loaded old document cannot execute new code until a fresh page load. If the old layout persists, open the published Driver APK link in the phone browser and install it once. This also gets an old USB-channel wrapper onto the current HTTPS channel if necessary; no automatic install or physical-phone verification is claimed.
+
 ## Driver only - 0.18.0 / 18000, 2026-11-10, D66
 
 Published to public release v0.18.0 (Driver APK and checksum only). Live source/health and Driver-17000 update notice are independently verified; Booking-17000 shows no update. Both public APK downloads match their recorded checksums. No physical phone was installed or tested.

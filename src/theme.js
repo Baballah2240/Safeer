@@ -1,3 +1,4 @@
+import {validateAppRelease} from './app-update-data.js';
 import {appRelease} from './app-release.js';
 const storageKey='safeer.theme';
 const valid=value=>value==='light'||value==='dark';
@@ -200,15 +201,16 @@ export const legalLinks=language=>{
 
 // D60: download and update notices for the Android apps. The installed app adds
 // "SafeerApp/<versionCode> (<flavor>)" to its user agent; files live on GitHub releases.
+let releases=validateAppRelease(appRelease);
 const installed=/SafeerApp\/(\d+) \((driver|booking)\)/.exec(navigator.userAgent);
 const androidBrowser=!installed&&/Android/i.test(navigator.userAgent);
 const downloadIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>';
 const appWords=(language,flavor)=>language==='ar'
   ?{name:flavor==='driver'?'تطبيق سفير للسائق':'تطبيق سفير للحجز',update:'يتوفر تحديث جديد',updateLink:'تنزيل التحديث',get:'احصل على التطبيق',getLink:'تنزيل',download:'تنزيل تطبيق أندرويد',version:'الإصدار'}
   :{name:flavor==='driver'?'Safeer Driver app':'Safeer Booking app',update:'A new version is available',updateLink:'Download update',get:'Get the app',getLink:'Download',download:'Download Android app',version:'Version'};
-export const releaseFor=flavor=>{const file=appRelease?.apps?.[flavor];return file?{versionName:appRelease.versionName,versionCode:appRelease.versionCode,tag:appRelease.tag,releasePage:appRelease.releasePage,...file}:null;};
+export const releaseFor=flavor=>releases.apps[flavor]||null;
 export const appOutdated=(flavor=installed?.[2])=>{const file=releaseFor(flavor);return Boolean(installed&&installed[2]===flavor&&file&&Number(installed[1])<file.versionCode);};
-export const appVersionLabel=(flavor=installed?.[2])=>{const file=releaseFor(flavor)||appRelease;return file?'v'+file.versionName:'';};
+export const appVersionLabel=(flavor=installed?.[2])=>{const file=releaseFor(flavor)||releases;return file?'v'+file.versionName:'';};
 export function appBanner(language,flavor){
   const file=releaseFor(flavor),w=appWords(language,flavor);
   if(!file)return '';
@@ -218,6 +220,45 @@ export function appBanner(language,flavor){
 }
 export function appDrawerLink(language,flavor){
   const file=releaseFor(flavor),w=appWords(language,flavor);
-  if(!file||(installed&&installed[2]===flavor&&!appOutdated(flavor)))return '';
-  return `<a class="drawer-download" href="${file.url}" rel="noopener">${downloadIcon}<span>${appOutdated(flavor)?w.updateLink:w.download}<small>${w.version} <bdi>${file.versionName}</bdi></small></span></a>`;
+  if(!file||(flavor!=='driver'&&installed&&installed[2]===flavor&&!appOutdated(flavor)))return '';
+  return `<a class="drawer-download" ${flavor==='driver'?'data-driver-download':''} href="${file.url}" rel="noopener">${downloadIcon}<span>${appOutdated(flavor)?w.updateLink:flavor==='driver'?(language==='ar'?'\u062a\u0646\u0632\u064a\u0644 \u062a\u0637\u0628\u064a\u0642 \u0627\u0644\u0633\u0627\u0626\u0642':'Download Driver app'):w.download}<small>${w.version} <bdi>${file.versionName}</bdi></small></span></a>`;
 }
+
+const updateWords={"en":{"check":"Check for updates","checking":"Checking for updates…","latest":"Latest Driver version","failed":"Could not check for updates. Try again or use Download Driver app."},"ar":{"check":"التحقق من التحديثات","checking":"جارٍ التحقق من التحديثات…","latest":"أحدث إصدار للسائق","failed":"تعذر التحقق من التحديثات. أعد المحاولة أو استخدم تنزيل تطبيق السائق."}};
+let updateRequest=null,updateState='',lastUpdateAttempt=0;
+const driverPage=()=>document.documentElement.dataset.appSurface==='driver';
+const updateStatus=language=>{const w=updateWords[language==='ar'?'ar':'en'];return updateState==='checking'?w.checking:updateState==='failed'?w.failed:updateState==='ok'?w.latest+' · '+releaseFor('driver').versionName:'';};
+export function driverUpdateControls(language){
+ const w=updateWords[language==='ar'?'ar':'en'];
+ return '<button type="button" class="drawer-nav-action" data-check-app-update '+(updateRequest?'disabled':'')+'>'+downloadIcon+'<span>'+w.check+'</span></button><p class="driver-update-status" data-app-update-status role="status" aria-live="polite">'+updateStatus(language)+'</p>';
+}
+function refreshDriverUpdateUi(){
+ if(!driverPage())return;const language=document.documentElement.lang==='ar'?'ar':'en';
+ const banner=document.querySelector('[data-driver-update-banner]'),markup=appBanner(language,'driver');if(banner&&banner.innerHTML!==markup)banner.innerHTML=markup;
+ document.querySelectorAll('[data-driver-download]').forEach(link=>{const holder=document.createElement('template');holder.innerHTML=appDrawerLink(language,'driver');const next=holder.content.firstElementChild;if(next){link.href=next.href;if(link.innerHTML!==next.innerHTML)link.innerHTML=next.innerHTML;}});
+ document.querySelectorAll('[data-app-update-status]').forEach(n=>n.textContent=updateStatus(language));
+ document.querySelectorAll('[data-check-app-update]').forEach(n=>n.disabled=Boolean(updateRequest));
+ document.querySelectorAll('#driver-menu .drawer-version').forEach(n=>n.textContent=appVersionLabel('driver'));
+}
+export function refreshAppRelease({force=false}={}){
+ if(!driverPage())return Promise.resolve(false);
+ if(updateRequest)return updateRequest;
+ if(!force&&(document.hidden||Date.now()-lastUpdateAttempt<15000))return Promise.resolve(false);
+ lastUpdateAttempt=Date.now();updateState='checking';
+ const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),8000);
+ const task=(async()=>{
+  try{const response=await fetch('/mobile/releases',{cache:'no-store',credentials:'omit',signal:controller.signal,headers:{Accept:'application/json'}});if(!response.ok)throw Error('Release unavailable');
+   releases=validateAppRelease(await response.json(),releases);updateState='ok';return true;
+  }catch{updateState='failed';return false;}
+  finally{clearTimeout(timeout);}
+ })();
+ updateRequest=task;refreshDriverUpdateUi();
+ void task.finally(()=>{if(updateRequest===task)updateRequest=null;refreshDriverUpdateUi();});
+ return task;
+}
+document.addEventListener('click',event=>{if(event.target.closest?.('[data-check-app-update],#driver-menu-toggle'))void refreshAppRelease({force:true});});
+addEventListener('pageshow',()=>void refreshAppRelease());
+addEventListener('focus',()=>void refreshAppRelease());
+addEventListener('online',()=>void refreshAppRelease({force:true}));
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)void refreshAppRelease();});
+if(driverPage()){queueMicrotask(()=>void refreshAppRelease());setInterval(()=>{if(!document.hidden)void refreshAppRelease();},60000);}

@@ -112,3 +112,6 @@ body:has(#driver-app){background:radial-gradient(ellipse at 95% 0,rgba(88,109,24
  #driver-app .driver-passenger-panel .staff-table-wrap{overflow:visible}
 }
 #driver-app .driver-header{position:sticky;top:var(--header-gap);z-index:40;background:rgba(245,244,255,.82);border:1px solid rgba(255,255,255,.95);border-radius:22px;padding:10px 12px;margin-inline:0;margin-bottom:18px;backdrop-filter:blur(28px) saturate(175%);-webkit-backdrop-filter:blur(28px) saturate(175%);box-shadow:0 8px 24px rgba(56,49,116,.07)}
+#driver-app .driver-update-status{font-size:.76rem;line-height:1.5;color:#53566d;padding:0 14px;margin:0 0 10px;overflow-wrap:anywhere}
+#driver-app [data-check-app-update]{display:flex;gap:12px;align-items:center;width:100%;padding:12px 14px;text-align:start;font-size:.86rem}
+#driver-app [data-driver-update-banner]:empty{display:none}

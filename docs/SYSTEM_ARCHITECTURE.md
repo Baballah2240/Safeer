@@ -1,5 +1,9 @@
 # System architecture
 
+## Driver update discovery - D67, 2026-11-10
+
+Driver update metadata is refreshed without a page/form/camera rerender, and its menu always exposes a download link plus Check for updates. Existing APK versions remain unchanged. See [D67 handover](archive/DRIVER_UPDATE_DISCOVERY_2026-11-10.md) for root cause, one-time old-client recovery and verification.
+
 ## Driver Trip Dashboard - D66, 2026-11-10
 
 DriverCamera uses getUserMedia(video only), local BarcodeDetector or pinned jsQR 1.4.0 fallback, no frame upload/storage, serial decoding and lifecycle cleanup. Android camera permission is restricted to the Driver flavor, fixed HTTPS origin and /driver; Booking remains camera-denied. /driver alone receives camera=(self). Per-app release metadata keeps Driver 18000 independent of Booking 17000. See [D66 handover](archive/DRIVER_TRIP_DASHBOARD_0.18.0_2026-11-10.md).
