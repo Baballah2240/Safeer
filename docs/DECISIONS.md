@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-11-10 - Driver appearance correction (D66 follow-up)
+
+The owner reports a broken light/dark switch in Driver. The theme attribute and persisted setting change, but the dashboard CSS hard-codes light surfaces and dark ink over the shared theme. Replace those overrides with Driver-scoped light/dark tokens for page, cards, menu, inputs, passenger rows and readable semantic/result states. Keep exact action/selection/progress colors, camera sharpness, sticky header, reduced motion, forms and streams. Publish Driver 0.18.1/18001 with the same signing certificate so installing the update loads the corrected web styling. Keep Booking 0.17.0/17000 unchanged. Verify actual surface brightness/contrast and persistence, not only the theme attribute. Work in isolation from the uncommitted passenger-account work.
+
 ## 2026-11-10 - Optional passenger accounts (step 1: database)
 
 D68: The owner approves optional passenger accounts so travellers can save booking details, choosing email sign-in through Google. Guest booking stays mandatory (D03) and unchanged. Accounts are separate from staff identities: provider subject, email, chosen name, optional picture and mobile, at most ten saved co-travellers, hashed passenger sessions, and one owner per linked booking. Linking requires the existing device key, so an account never gains a booking it could not already open. Saved profile data is kept until the passenger changes it or deletes the account; booking passenger data keeps the D31 erasure policy. Deleting an account removes the profile, sessions, travellers and links while bookings remain guest bookings. The API must verify the Google ID token (signature, audience, issuer, expiry, verified email) before calling passenger_sign_in. Delivery is staged: 1 database, 2 website Google sign-in and checkout, 3 My Trips across devices, 4 Android browser/deep-link sign-in, 5 privacy page and account deletion UI.

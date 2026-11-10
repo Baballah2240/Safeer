@@ -1,9 +1,12 @@
 # Changelog
 
+## Driver light/dark correction - 2026-11-10
+
+The Driver dashboard used fixed light colors despite the selected theme. Driver-specific surfaces now follow light/dark tokens with contrast/persistence tests. Driver release 0.18.1/18001 keeps Booking at 0.17.0/17000. See [theme correction handover](archive/DRIVER_THEME_FIX_2026-11-10.md).
+
 ## Passenger accounts database - D68 step 1, 2026-11-10
 
 Migration 0020_passenger_accounts.sql adds optional passenger accounts behind reviewed functions only. No website, API or app behaviour changes yet; guest booking is unchanged. Verified by tests/passenger-accounts.integration.mjs and the database/security integration suites.
-
 
 ## Driver update discovery - D67, 2026-11-10
 

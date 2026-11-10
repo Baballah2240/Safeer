@@ -1,9 +1,12 @@
 # Current state - read this first
 
+## Driver light/dark correction - 2026-11-10
+
+The Driver dashboard used fixed light colors despite the selected theme. Driver-specific surfaces now follow light/dark tokens with contrast/persistence tests. Driver release 0.18.1/18001 keeps Booking at 0.17.0/17000. See [theme correction handover](archive/DRIVER_THEME_FIX_2026-11-10.md).
+
 ## Passenger accounts database - D68 step 1, 2026-11-10
 
 Migration 0020 is in place for optional Google-based passenger accounts: four RLS tables with no direct runtime privileges (passenger_accounts, passenger_sessions, passenger_travelers, passenger_booking_links) and eight runtime functions for sign-in, session, sign-out, profile/travellers, link/unlink, account trips and account deletion. Not yet exposed through the API or UI; Google OAuth client configuration is still required from the owner.
-
 
 ## Driver update discovery - D67, 2026-11-10
 

@@ -6,13 +6,13 @@ export const appRelease={
  "releasePage": "https://github.com/Baballah2240/Safeer/releases/tag/v0.17.0",
  "apps": {
   "driver": {
-   "versionName": "0.18.0",
-   "versionCode": 18000,
-   "tag": "v0.18.0",
-   "releasePage": "https://github.com/Baballah2240/Safeer/releases/tag/v0.18.0",
-   "url": "https://github.com/Baballah2240/Safeer/releases/download/v0.18.0/Safeer-Driver-0.18.0.apk",
-   "sha256": "7ecafb83cb831dc14f3f541976e47a63976f9ff8bfb7fe8b689ec09a2620a02f",
-   "bytes": 17896
+   "versionName": "0.18.1",
+   "versionCode": 18001,
+   "tag": "v0.18.1",
+   "releasePage": "https://github.com/Baballah2240/Safeer/releases/tag/v0.18.1",
+   "url": "https://github.com/Baballah2240/Safeer/releases/download/v0.18.1/Safeer-Driver-0.18.1.apk",
+   "sha256": "b5cc5d85b2e608b9a099e47aad88720fd19838af13c715b904f71baa3e855cec",
+   "bytes": 17892
   },
   "booking": {
    "url": "https://github.com/Baballah2240/Safeer/releases/download/v0.17.0/Safeer-Booking-0.17.0.apk",

@@ -30,8 +30,8 @@ android {
     flavorDimensions += 'workspace'
     productFlavors {
         driver {
-            versionCode 18000
-            versionName '0.18.0'
+            versionCode 18001
+            versionName '0.18.1'
             dimension 'workspace'
             applicationId 'sd.safeer.driver'
             resValue 'string', 'app_name', 'Safeer Driver'

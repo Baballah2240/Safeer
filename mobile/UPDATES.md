@@ -1,5 +1,9 @@
 # Safeer mobile status
 
+## Driver light/dark correction - 0.18.1 / 18001, 2026-11-10
+
+The Driver appearance setting previously changed while dashboard, menu and field colors stayed fixed in light mode. Driver surfaces now follow saved light/dark tokens, including passenger rows, links, focus outlines and solid readable scanner results. Exact blue/purple action and progress colors, sharp camera, reduced motion, forms and sign-in state are preserved. Driver-only 0.18.1 uses the existing signature; Booking stays at 0.17.0/17000. Installing the update gives the already-open client a fresh document with the corrected styles.
+
 ## Driver update discovery fix - 2026-11-10, D67
 
 Web-only correction; keep the published Driver 0.18.0/18000 and Booking 0.17.0/17000 APKs/checksums unchanged. Driver now checks uncached public release metadata when its page starts, returns to the foreground, reconnects, opens its menu or uses Check for updates. Its menu always offers Download Driver app, even for a current or unidentified client. Only update controls change in place; login/incident drafts and active camera streams remain intact. Offline/invalid/downgraded metadata retains the last known valid Safeer release.

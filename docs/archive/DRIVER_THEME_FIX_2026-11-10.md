@@ -1,0 +1,13 @@
+﻿# Driver light/dark correction - 2026-11-10
+
+The owner's reported appearance bug was reproduced: the theme attribute changed to dark, but computed page brightness remained 0.873 and route-card brightness 0.958 (light surfaces). Driver dashboard CSS added for D66 had fixed light backgrounds and dark ink with stronger specificity than the shared dark theme. The existing theme switch and saved preference were functioning.
+
+The correction replaces these fixed surfaces with Driver-scoped light/dark tokens for page, cards, drawer/header, buttons/inputs, passenger rows, semantic labels and solid scanner results. Dark links/focus indicators use readable violet ink; selected/progress purple and primary blue remain the exact approved colors. Native form color scheme follows the selected light mode. Opaque accessibility/unsupported-blur fallbacks follow the theme. Camera preview remains unfiltered.
+
+Tests assert actual surface brightness and at least 4.5:1 text contrast in both modes, including drawer, fields, passenger panel and accepted/warning/error/working scanner states. The dedicated regression covers 36 light-dark-light combinations across English/Arabic, signed-in/out and 320/430/1366px layouts, checks draft node identity and persists dark mode after reload. Screenshots in ignored .qa/driver-theme were visually reviewed. Existing Driver scanner/video and 40-menu-layout checks protect operational behavior.
+
+Publish Driver-only 0.18.1/18001 with the same certificate; Booking remains 0.17.0/17000 and its artifact is not rebuilt. The small native version bump lets phones receive an update notice and obtain a fresh web document; it does not claim that a Git push replaces an already-open page. Physical phone testing remains unperformed by the owner's earlier choice.
+
+The work was isolated in .qa/driver-theme-fix to preserve the uncommitted passenger-account migration/security work in the canonical checkout. No authentication, database, booking, payment or passenger-account implementation is changed by this fix. Release hashes and publication evidence are recorded after build/publish verification.
+
+Verified local gate: 26 unit/server checks, API/static build and docs; the new 36-layout theme regression; real QR camera/boarding regression; 40 Driver menu layouts; update-discovery and per-app release-notice browsers. Android Driver-only build/lint passes (0 errors, 2 existing warnings), package sd.safeer.driver 18001 / 0.18.1 and v2 signature certificate SHA-256 a19fb6c1832196283aa3cf342ac4c2aa78b56d736702f8bccca1d8fcf8df7205. Saved APK: 17,892 bytes, SHA-256 b5cc5d85b2e608b9a099e47aad88720fd19838af13c715b904f71baa3e855cec. Booking URL/hash stay unchanged at 0.17.0.
