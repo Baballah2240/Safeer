@@ -1,5 +1,10 @@
 # Current state - read this first
 
+## Passenger accounts database - D68 step 1, 2026-11-10
+
+Migration 0020 is in place for optional Google-based passenger accounts: four RLS tables with no direct runtime privileges (passenger_accounts, passenger_sessions, passenger_travelers, passenger_booking_links) and eight runtime functions for sign-in, session, sign-out, profile/travellers, link/unlink, account trips and account deletion. Not yet exposed through the API or UI; Google OAuth client configuration is still required from the owner.
+
+
 ## Driver update discovery - D67, 2026-11-10
 
 Driver update metadata is refreshed without a page/form/camera rerender, and its menu always exposes a download link plus Check for updates. Existing APK versions remain unchanged. See [D67 handover](archive/DRIVER_UPDATE_DISCOVERY_2026-11-10.md) for root cause, one-time old-client recovery and verification.

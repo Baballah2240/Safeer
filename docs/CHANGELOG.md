@@ -1,5 +1,10 @@
 # Changelog
 
+## Passenger accounts database - D68 step 1, 2026-11-10
+
+Migration 0020_passenger_accounts.sql adds optional passenger accounts behind reviewed functions only. No website, API or app behaviour changes yet; guest booking is unchanged. Verified by tests/passenger-accounts.integration.mjs and the database/security integration suites.
+
+
 ## Driver update discovery - D67, 2026-11-10
 
 Driver update metadata is refreshed without a page/form/camera rerender, and its menu always exposes a download link plus Check for updates. Existing APK versions remain unchanged. See [D67 handover](archive/DRIVER_UPDATE_DISCOVERY_2026-11-10.md) for root cause, one-time old-client recovery and verification.

@@ -1,5 +1,5 @@
 {
-  "description": "Reviewed schema security for Sections 01-15, D59 shipments and D64 protected passenger presentation. New objects must be explicitly reviewed with their owning migration.",
+  "description": "Reviewed schema security for Sections 01-15, D59 shipments and D64 protected passenger presentation and D68 optional passenger accounts. New objects must be explicitly reviewed with their owning migration.",
   "tables": {
     "auth_throttles": {
       "rls": false,
@@ -177,6 +177,22 @@
       "privileges": []
     },
     "notification_reads": {
+      "rls": true,
+      "privileges": []
+    },
+    "passenger_accounts": {
+      "rls": true,
+      "privileges": []
+    },
+    "passenger_booking_links": {
+      "rls": true,
+      "privileges": []
+    },
+    "passenger_sessions": {
+      "rls": true,
+      "privileges": []
+    },
+    "passenger_travelers": {
       "rls": true,
       "privileges": []
     },
@@ -446,6 +462,14 @@
     "safeer.public_shipment(text)",
     "safeer.passenger_booking(text,text,text)",
     "safeer.operations_today(uuid,date)",
-    "safeer.operations_trip(uuid,uuid)"
+    "safeer.operations_trip(uuid,uuid)",
+    "safeer.passenger_sign_in(text,text,text,text,uuid,text,integer)",
+    "safeer.passenger_me(text)",
+    "safeer.passenger_sign_out(text,boolean)",
+    "safeer.passenger_save_profile(text,integer,text,text,jsonb)",
+    "safeer.passenger_link_booking(text,text,text)",
+    "safeer.passenger_unlink_booking(text,text)",
+    "safeer.passenger_trips(text)",
+    "safeer.passenger_delete_account(text)"
   ]
 }

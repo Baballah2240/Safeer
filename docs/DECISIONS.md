@@ -1,5 +1,10 @@
 # Decisions
 
+## 2026-11-10 - Optional passenger accounts (step 1: database)
+
+D68: The owner approves optional passenger accounts so travellers can save booking details, choosing email sign-in through Google. Guest booking stays mandatory (D03) and unchanged. Accounts are separate from staff identities: provider subject, email, chosen name, optional picture and mobile, at most ten saved co-travellers, hashed passenger sessions, and one owner per linked booking. Linking requires the existing device key, so an account never gains a booking it could not already open. Saved profile data is kept until the passenger changes it or deletes the account; booking passenger data keeps the D31 erasure policy. Deleting an account removes the profile, sessions, travellers and links while bookings remain guest bookings. The API must verify the Google ID token (signature, audience, issuer, expiry, verified email) before calling passenger_sign_in. Delivery is staged: 1 database, 2 website Google sign-in and checkout, 3 My Trips across devices, 4 Android browser/deep-link sign-in, 5 privacy page and account deletion UI.
+
+
 ## 2026-11-10 - Driver update discovery
 
 D67: The owner reports the old Driver layout and no update button. The live Driver 0.18.0 release and notice were verified, but the current web client only reads its imported release metadata once, and Android resume does not reload the document. Fix future discovery with an uncached public release endpoint, fresh Driver checks on load/resume/online/menu/manual request, and a persistent Driver download link, including for unknown/current app versions. Update only notice controls in place so camera, login and incident drafts survive. Validate release metadata and restrict downloads to the exact Safeer GitHub artifacts; retain the last known release on network/invalid-data failures. Keep Driver APK 0.18.0 and Booking APK 0.17.0 unchanged. Existing already-loaded old code cannot receive this fix until a fresh page load or installation; provide the published Driver APK as the one-time recovery path. No automatic install, forced reload, credential changes or production data edits.

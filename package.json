@@ -72,7 +72,8 @@
     "test:operations": "node --test tests/operations.integration.mjs",
     "test:operations:browser": "node tests/operations.browser.mjs",
     "mobile:build:driver": "node mobile/build.mjs --driver-only",
-    "mobile:save:driver": "node mobile/save.mjs --driver-only"
+    "mobile:save:driver": "node mobile/save.mjs --driver-only",
+    "test:passenger-accounts": "node --test tests/passenger-accounts.integration.mjs"
   },
   "license": "UNLICENSED",
   "dependencies": {
