@@ -157,3 +157,5 @@ D63 publication verified: repository public; [0.16.3 release](https://github.com
 ## 2026-11-10 - My Trips glass redesign (D64)
 
 D64 implements the reference-driven glass redesign for Booking and matching Driver app surfaces. Passenger My Trips uses existing guest bookings, exact schedule snapshots, Upcoming/Past, real paid-ticket QR geometry, journey details and Book/Trips/Profile navigation. Android 0.17.0/17000 keeps the existing package IDs/signing key. See [the design/release handover](archive/MY_TRIPS_GLASS_0.17.0_2026-11-10.md).
+
+D64 public delivery is verified: [0.17.0 release](https://github.com/Baballah2240/Safeer/releases/tag/v0.17.0), correct public APK hashes, live redesigned assets, connected API and separate old-app update links in Arabic/English. The paid-ticket QR and cancellation/security matrix passed on isolated fictional data; no real production booking/account was changed for tests. Reopening installed apps online loads the new shared UI; APK installation is a separate user action.
