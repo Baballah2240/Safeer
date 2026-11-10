@@ -2,6 +2,8 @@
 
 ## Driver only - 0.18.0 / 18000, 2026-11-10, D66
 
+Final verification preserves upstream D65 operations counts, translates Wrong trip in manual checks and clears passenger search/filter state when changing trip/account or losing access. Driver-only notices and both menus pass; Booking remains 17000.
+
 Trip Dashboard shows the real assigned route, departure/status and valid boarding totals. Scan ticket opens the QR camera, offers optional flashlight and printed-code fallback, shows accepted/already scanned/wrong trip/invalid/retry results, and refreshes passengers without duplicate boarding. Search/filter passengers with a shortcut to scanning. Violet/blue frosted cards, phone passenger cards, Arabic/English and reduced motion are preserved. Camera frames stay on the device; no audio permission.
 
 Build with `npm.cmd run mobile:build:driver`, then `npm.cmd run mobile:save:driver`. The signed APK, checksum and `latest-driver.json` are ignored artifacts. Publish only Safeer-Driver-0.18.0.apk and its checksum in release v0.18.0. Driver update notices use version 18000; Booking metadata, URL and APK hash stay at 17000. Android installs the APK after the owner downloads/approves it; pushing source does not install it. The owner declined a connected phone, so this release has automated camera/video verification but no physical-phone result.

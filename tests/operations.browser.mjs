@@ -43,7 +43,7 @@ try{await identityFixture(async f=>{
  assert.equal(await kpi('Boarded'),'1','The dashboard updates from the confirmed record.');
  assert.equal(await evaluate('document.querySelectorAll(".ops-mini tbody tr").length'),1,'One recent scan.');
  const again=await scan(token);assert.equal(again.data.boardedAt,first.data.boardedAt,'A duplicate scan returns the original boarding.');
- assert.equal((await scan(s.bookings[2].codes[0].token)).error.code,'TICKET_INVALID','A wrong-trip ticket is refused.');
+ assert.equal((await scan(s.bookings[2].codes[0].token)).error.code,'TICKET_WRONG_TRIP','A wrong-trip ticket is refused.');
  await click('#ops-refresh');await until('Boolean(document.querySelector(".ops-panel .ops-bar"))');await new Promise(r=>setTimeout(r,400));
  assert.equal(await kpi('Boarded'),'1','A duplicate or wrong-trip scan leaves the count unchanged.');
  assert.match(await evaluate('document.querySelector(".ops-progress-label").textContent'),/1\s*of\s*4/);

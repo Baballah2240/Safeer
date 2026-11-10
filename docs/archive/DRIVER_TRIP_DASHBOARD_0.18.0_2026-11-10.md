@@ -35,3 +35,11 @@ Android release build and lint pass with 0 errors and the same 2 existing warnin
 - [Android PermissionRequest](https://developer.android.com/reference/android/webkit/PermissionRequest): grant only RESOURCE_VIDEO_CAPTURE for the approved page/resource.
 - [MDN getUserMedia](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia): secure context and explicit camera permission.
 - [MDN Barcode Detection API](https://developer.mozilla.org/en-US/docs/Web/API/Barcode_Detection_API): feature detection and decoder fallback.
+
+## Completed local release gate
+
+- npm run check: 25 unit/server tests, API/static build (52 assets) and 78 documentation files pass.
+- PostgreSQL 16: 22 distinct boarding, Driver dashboard, operations, security and shipment integration tests pass across the combined run and corrected operations-contract rerun. The operations assertions now expect the intentional TICKET_WRONG_TRIP response; counts remain unchanged for wrong/duplicate tickets.
+- Eight built browser scripts pass on the integrated source: Driver dashboard camera/video, operations dashboard, manual ticket fallback (16 layouts), legacy boarding (16 layouts), Driver menu (40 layouts), Booking menu (40 layouts), sticky headers (64 combinations) and independent release notices. Shipment browser verification also passed before upstream integration; the integrated shipment backend suite passes.
+- Saved final Driver APK verifies with Android v2 signing, version 18000/0.18.0 and the existing certificate above. Optional CAMERA is declared; neither microphone nor audio permission is present. Booking release metadata/hash is unchanged.
+- Temporary test databases are separate loopback clusters and were stopped. No production boarding or booking transaction was used for verification.

@@ -40,7 +40,7 @@ test('a validated driver scan counts once; repeated scans and retries never rais
  assert.equal(after.passengers.filter(p=>p.boardedAt).length,1);
  assert.equal(ok(await f.admin.request(s.base+'/operations')).summary.boarded,1);
  const wrong=await driver.c.request(`driver/companies/${s.cid}/trips/${s.trips.soon}/board`,'POST',{token:s.bookings[2].codes[0].token});
- assert.equal(wrong.error.code,'TICKET_INVALID','A ticket for another trip is refused.');
+ assert.equal(wrong.error.code,'TICKET_WRONG_TRIP','A ticket for another trip is refused.');
  assert.equal((await trip()).boarded,1);
 }));
 
