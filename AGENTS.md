@@ -1,5 +1,7 @@
 # Safeer
 
+- D66 supersedes D60 coupled app releases for this update: Driver 0.18.0/18000, Booking stays 0.17.0/17000. Use mobile:build:driver then mobile:save:driver; publish only the Driver APK/checksum. Keep per-app version metadata, optional video-only camera restricted to Driver /driver, server-authorized/idempotent boarding, manual confirmation fallback, D59 shipments and no fabricated ETA. The owner declines physical-phone testing. See docs/archive/DRIVER_TRIP_DASHBOARD_0.18.0_2026-11-10.md.
+
 - D64 supersedes the black/brown palette for Booking and Driver app surfaces: use the exact owner-provided violet/blue/pink/yellow glass colors. Passenger /booking is My Trips; Book/Trips/Profile keep existing routes and guest access. Migration 0017 adds proof-checked schedule/paid-ticket presentation: never expose QR to reference/mobile lookup or unpaid/refunded/cancelled bookings, and never fabricate a QR. Keep Driver distinct and preserve D59 shipments. See docs/archive/MY_TRIPS_GLASS_0.17.0_2026-11-10.md.
 
 

@@ -22,13 +22,15 @@ if(!existsSync(join(sdk,'platforms/android-35/android.jar')))fail('Install Andro
 const r=spawnSync(process.env.ComSpec||'cmd.exe',['/d','/c','gradlew.bat','--offline','--no-daemon','-PsafeerOrigin='+origin_,'-PsafeerUploadProperties='+properties,'bundleDriverRelease','bundleBookingRelease','lintDriverRelease','lintBookingRelease'],{cwd:android,windowsHide:true,stdio:'inherit',env:{...process.env,JAVA_HOME:javaHome,ANDROID_HOME:sdk}});
 if(r.status!==0)process.exit(r.status??1);
 const out=join(here,'releases/play');mkdirSync(out,{recursive:true});
-const version=(readFileSync(join(android,'app/build.gradle'),'utf8').match(/versionCode (\d+)/)||[])[1];
+const gradle=readFileSync(join(android,'app/build.gradle'),'utf8'),defaults=/defaultConfig\s*\{([\s\S]*?)\}/.exec(gradle)?.[1]||'';
+const versionFor=flavor=>Number(/versionCode (\d+)/.exec(new RegExp('\\b'+flavor+'\\s*\\{([\\s\\S]*?)\\}').exec(gradle)?.[1]||'')?.[1]||/versionCode (\d+)/.exec(defaults)?.[1]);
 const files=[];
 for(const flavor of ['driver','booking']){
+ const version=versionFor(flavor);if(!Number.isSafeInteger(version))fail('Invalid version: '+flavor);
  const source=join(android,`app/build/outputs/bundle/${flavor}Release/app-${flavor}-release.aab`);
  if(!existsSync(source))fail('Missing bundle: '+source);
  const target=join(out,`safeer-${flavor}-${version}.aab`);copyFileSync(source,target);
- const sha256=createHash('sha256').update(readFileSync(target)).digest('hex');writeFileSync(target+'.sha256',sha256+'\n');files.push({flavor,file:target,sha256});
+ const sha256=createHash('sha256').update(readFileSync(target)).digest('hex');writeFileSync(target+'.sha256',sha256+'\n');files.push({flavor,versionCode:version,file:target,sha256});
 }
-writeFileSync(join(out,'latest.json'),JSON.stringify({origin:origin_,versionCode:Number(version),builtAt:new Date().toISOString(),files},null,2)+'\n');
+writeFileSync(join(out,'latest.json'),JSON.stringify({origin:origin_,builtAt:new Date().toISOString(),files},null,2)+'\n');
 console.log('Signed Play bundles in mobile/releases/play/. Upload them in Play Console; this script uploads nothing.');

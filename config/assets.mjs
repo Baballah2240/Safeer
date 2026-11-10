@@ -1,5 +1,10 @@
 // One explicit public-asset list for the local server and static build.
 export const publicAssets = {
+  '/src/driver-dashboard.js': ['src/driver-dashboard.js', 'text/javascript'],
+  '/src/driver-dashboard.css': ['src/driver-dashboard.css', 'text/css'],
+  '/src/driver-camera.js': ['src/driver-camera.js', 'text/javascript'],
+  '/src/vendor/jsQR.js': ['src/vendor/jsQR.js', 'text/javascript'],
+  '/src/vendor/jsQR-LICENSE.txt': ['src/vendor/jsQR-LICENSE.txt', 'text/plain'],
   '/src/passenger-ui.js': ['src/passenger-ui.js', 'text/javascript'],
   '/src/passenger-glass.css': ['src/passenger-glass.css', 'text/css'],
   '/src/coach-journey.jpg': ['src/coach-journey.jpg', 'image/jpeg'],

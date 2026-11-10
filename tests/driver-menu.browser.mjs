@@ -23,7 +23,7 @@ try{await identityFixture(async f=>{
    await send('Page.navigate',{url:web.origin+'/driver?lang='+lang});await until(`Boolean(document.querySelector('${signedIn?'[data-trip]':'#driver-login'}'))`);
    // Menu preservation is checked after startup settles; login.browser covers drafts during startup.
    if(!signedIn)await until('document.querySelector("#driver-login")?.getAttribute("aria-busy")==="false"');
-   if(signedIn){await click('[data-trip]');await until('Boolean(document.querySelector("#driver-incident"))');}
+   if(signedIn){await click('[data-trip]');await until('Boolean(document.querySelector("#driver-incident button:not(:disabled)"))');}
    const field=signedIn?'#driver-incident textarea':'#driver-login [name=login]',value=signedIn?'Fictional unsaved incident':'fictional@example.test';
    await evaluate(`window.__field=document.querySelector('${field}');__field.value='${value}';__field.dispatchEvent(new Event('input',{bubbles:true}));`);
    await click('#driver-menu-toggle');assert.ok(await evaluate('document.querySelector("#driver-menu").contains(document.activeElement)'),label+' focus');

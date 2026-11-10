@@ -1,5 +1,9 @@
 # System architecture
 
+## Driver Trip Dashboard - D66, 2026-11-10
+
+DriverCamera uses getUserMedia(video only), local BarcodeDetector or pinned jsQR 1.4.0 fallback, no frame upload/storage, serial decoding and lifecycle cleanup. Android camera permission is restricted to the Driver flavor, fixed HTTPS origin and /driver; Booking remains camera-denied. /driver alone receives camera=(self). Per-app release metadata keeps Driver 18000 independent of Booking 17000. See [D66 handover](archive/DRIVER_TRIP_DASHBOARD_0.18.0_2026-11-10.md).
+
 ## Audit remediation - D56, 2026-11-09
 
 The audit source fixes preserve newest-search ordering and unfinished search fields, restore the above-sidebar toggle with immediate keyboard state and clipped animation overflow, publish the owner-approved support contact, and permit a bounded 64 KiB payload only for creating public group bookings (other endpoints remain 8 KiB). The Android error screen distinguishes hosted HTTPS from USB; local patch .6/16006 is built/linted/saved. Hosted owner recovery now supports a non-superuser migration owner with explicit confirmation, duplicate-email rollback, session revocation and audit. Complete browser release gating and PostgreSQL 16 CI are added. No schema, financial policy, role grants or real account credentials are changed. See [D56 handover](archive/AUDIT_REMEDIATION_2026-11-09.md) for measured results and outstanding deployment/device verification.

@@ -20,12 +20,12 @@ try{await identityFixture(async f=>{
  const submit=selector=>evaluate(`document.querySelector(${JSON.stringify(selector)}).requestSubmit()`);
  await send('Page.navigate',{url:web.origin+'/driver'});await until('Boolean(document.querySelector("#driver-login"))');
  await fill('[name=login]',login);await fill('[name=password]',s.driver.pass);await submit('#driver-login');
- await until('Boolean(document.querySelector("[data-trip]"))');await click('[data-trip]');await until('Boolean(document.querySelector("#driver-scan"))');
- await fill('#driver-scan input',s.code.token);await submit('#driver-scan');await until('Boolean(document.querySelector("[data-board]"))');
+ await until('Boolean(document.querySelector("[data-trip]"))');await click('[data-trip]');await until('Boolean(document.querySelector("#driver-scan button:not(:disabled)"))');
+ await click('[data-open-scan]');await fill('#driver-scan input',s.code.token);await submit('#driver-scan');await until('Boolean(document.querySelector("[data-board]"))');
  assert.equal((await f.migration.query('SELECT count(*)::int n FROM safeer.boarding_records')).rows[0].n,0);
  await click('[data-board]');await until('Boolean(document.querySelector(".driver-message").textContent.includes("Boarding saved"))');
  assert.equal((await f.migration.query('SELECT count(*)::int n FROM safeer.boarding_records')).rows[0].n,1);
- await fill('#driver-incident textarea','Fictional <img src=x onerror=alert(1)> road delay');await submit('#driver-incident');await until('document.querySelectorAll(".driver-incident").length===1');
+ await click('[data-home]');await fill('#driver-incident textarea','Fictional <img src=x onerror=alert(1)> road delay');await submit('#driver-incident');await until('document.querySelectorAll(".driver-incident").length===1');
  assert.equal(await evaluate('Boolean(document.querySelector(".driver-incident img"))'),false);
  for(const theme of ['dark','light'])for(const lang of ['en','ar'])for(const [width,height] of [[1920,1080],[1366,768],[390,844],[320,740]]){
   await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width<700});

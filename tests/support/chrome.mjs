@@ -2,10 +2,10 @@ import {spawn} from 'node:child_process';
 import {existsSync} from 'node:fs';
 import {join} from 'node:path';
 
-export async function chrome(directory) {
+export async function chrome(directory,extraArgs=[]) {
   const executable = process.env.CHROME_EXE || (process.platform === 'win32' ? 'C:/Program Files/Google/Chrome/Application/chrome.exe' : '/usr/bin/google-chrome');
   if (!existsSync(executable)) throw Error('Set CHROME_EXE to a local Chrome/Chromium binary.');
-  const processHandle = spawn(executable, ['--headless=new', '--disable-gpu', '--no-first-run', '--no-default-browser-check', '--remote-debugging-pipe', '--user-data-dir=' + join(directory, 'profile'), 'about:blank'], {windowsHide: true, stdio: ['ignore', 'ignore', 'pipe', 'pipe', 'pipe']});
+  const processHandle = spawn(executable, ['--headless=new', ...extraArgs, '--disable-gpu', '--no-first-run', '--no-default-browser-check', '--remote-debugging-pipe', '--user-data-dir=' + join(directory, 'profile'), 'about:blank'], {windowsHide: true, stdio: ['ignore', 'ignore', 'pipe', 'pipe', 'pipe']});
   let sequence = 0, buffer = '', sessionId;
   const pending = new Map();
   const fail = error => { for (const task of pending.values()) task.reject(error); pending.clear(); };

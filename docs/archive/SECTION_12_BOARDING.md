@@ -1,5 +1,7 @@
 # Section 12 — local driver workspace and boarding
 
+D66 continuation: [Driver Trip Dashboard and camera release](DRIVER_TRIP_DASHBOARD_0.18.0_2026-11-10.md) supersedes the historical keyboard-only/local-client limits. Assigned-trip authority, explicit manual check/confirm and idempotent boarding remain.
+
 Authorized by D35-D36. Local responsive client now; Flutter deferred by the owner. Assigned drivers may verify tickets, board passengers, record departure/arrival and report incidents only for currently assigned trips. Company-wide journey supervisors and Super Administrator use explicit authority.
 
 Source version: 0.13.0. Append-only migration: `0012_boarding.sql`. Four new private tables: ticket_credentials, boarding_records, journey_events, journey_incidents. Restricted runtime uses fixed SQL functions and has no direct table access. Stable opaque per-ticket QR codes are added to station ticket prints, including existing tickets through migration backfill. The manifest omits phone numbers, payment references and collection proof.

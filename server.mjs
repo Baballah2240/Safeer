@@ -36,6 +36,8 @@ export async function startServer({port = 4320, built = false, identityApiUrl, p
       if(!request.url?.startsWith('/')||request.url.startsWith('//')||request.url.includes('\\'))throw Error('Invalid request target');
       path=new URL(request.url,'http://127.0.0.1').pathname;
     }catch{response.writeHead(400);response.end('Invalid request target');return;}
+    // D66: only the Driver document may ask for local camera capture; audio remains disabled.
+    if(path==='/driver')response.setHeader('Permissions-Policy','camera=(self), microphone=(), geolocation=(), payment=(), usb=()');
     const apiUrl=(typeof identityApiUrl==='function'?identityApiUrl():identityApiUrl)||process.env.SAFEER_AUTH_API_URL;
     if(path.startsWith('/api/v1/')&&apiUrl){
       let target;

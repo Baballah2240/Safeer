@@ -1,5 +1,9 @@
 # Development roadmap
 
+## Driver Trip Dashboard - D66, 2026-11-10
+
+D66 implements the Driver dashboard, one-tap camera boarding, passenger search/filters and independent Driver release. Physical-phone verification was declined by the owner; automated browser camera/video and isolated database verification cover this release. See [D66 handover](archive/DRIVER_TRIP_DASHBOARD_0.18.0_2026-11-10.md).
+
 ## Operations dashboard and booking homepage - D65, 2026-11-10
 
 The staff workspace adopts the D64 violet-blue glass palette (data-app-surface=staff, operations.css). Inside a company the sidebar lists Overview, Trips, Routes, Bookings, Drivers, Vehicles, Reports, then Operations (Station, Luggage, Shipments) and Settings, each shown only with its permission. Overview (migration 0018, read-only) shows Departures today, Passengers booked, Boarded and Needs attention, the Today's departures table (time, route, vehicle, driver, booked/capacity, boarded/booked, labelled status), a side panel with trip details, boarding progress, passengers and recent scans, and delayed or driver-unassigned trips. Figures come only from valid tickets on confirmed bookings and boarding_records; the dashboard refreshes every 20 seconds while visible. The passenger homepage gets a booking-first hero with the illustrative coach image, a frosted From/To/Travel date/Passengers panel with a blue Find trips button, popular routes from real published city pairs, pickup/drop-off points in results, a Help section, and Book a trip / My tickets / Help / language links on desktop. Tests: tests/operations.integration.mjs (3) and tests/operations.browser.mjs.

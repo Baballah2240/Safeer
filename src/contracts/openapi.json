@@ -11403,7 +11403,8 @@
                               "arrivalAt",
                               "status",
                               "bus",
-                              "journey"
+                              "journey",
+                              "timezone"
                             ],
                             "properties": {
                               "id": {
@@ -11449,6 +11450,9 @@
                                   "departed",
                                   "arrived"
                                 ]
+                              },
+                              "timezone": {
+                                "type": "string"
                               }
                             }
                           }
@@ -11523,7 +11527,12 @@
                         "arrivalAt",
                         "events",
                         "incidents",
-                        "passengers"
+                        "passengers",
+                        "timezone",
+                        "serverNow",
+                        "boardingOpen",
+                        "estimatedArrivalAt",
+                        "stops"
                       ],
                       "properties": {
                         "tripId": {
@@ -11618,7 +11627,8 @@
                               "seat",
                               "name",
                               "valid",
-                              "boardedAt"
+                              "boardedAt",
+                              "bookingReference"
                             ],
                             "properties": {
                               "ticket": {
@@ -11650,6 +11660,54 @@
                                     "type": "null"
                                   }
                                 ]
+                              },
+                              "bookingReference": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "timezone": {
+                          "type": "string"
+                        },
+                        "serverNow": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "boardingOpen": {
+                          "type": "boolean"
+                        },
+                        "estimatedArrivalAt": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "stops": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "nameEn",
+                              "nameAr",
+                              "scheduledAt"
+                            ],
+                            "properties": {
+                              "nameEn": {
+                                "type": "string"
+                              },
+                              "nameAr": {
+                                "type": "string"
+                              },
+                              "scheduledAt": {
+                                "type": "string",
+                                "format": "date-time"
                               }
                             }
                           }
@@ -11760,7 +11818,8 @@
                         "ticket",
                         "seat",
                         "name",
-                        "boardedAt"
+                        "boardedAt",
+                        "alreadyBoarded"
                       ],
                       "properties": {
                         "ticket": {
@@ -11789,6 +11848,10 @@
                               "type": "null"
                             }
                           ]
+                        },
+                        "alreadyBoarded": {
+                          "type": "boolean",
+                          "description": "True if boarding existed before this request; concurrent retries create only one boarding record."
                         }
                       }
                     }
@@ -11804,7 +11867,7 @@
             "description": "No current authorized assignment or company journey permission."
           },
           "409": {
-            "description": "Ticket invalid, boarding closed, journey order or idempotency conflict."
+            "description": "Ticket invalid, boarding closed, journey order or idempotency conflict. TICKET_WRONG_TRIP for a valid opaque same-company QR belonging to a different trip; no passenger details. Printed ticket numbers stay scoped to the selected trip."
           }
         }
       }
@@ -11896,7 +11959,8 @@
                         "ticket",
                         "seat",
                         "name",
-                        "boardedAt"
+                        "boardedAt",
+                        "alreadyBoarded"
                       ],
                       "properties": {
                         "ticket": {
@@ -11925,6 +11989,10 @@
                               "type": "null"
                             }
                           ]
+                        },
+                        "alreadyBoarded": {
+                          "type": "boolean",
+                          "description": "True if boarding existed before this request; concurrent retries create only one boarding record."
                         }
                       }
                     }
@@ -11940,7 +12008,7 @@
             "description": "No current authorized assignment or company journey permission."
           },
           "409": {
-            "description": "Ticket invalid, boarding closed, journey order or idempotency conflict."
+            "description": "Ticket invalid, boarding closed, journey order or idempotency conflict. TICKET_WRONG_TRIP for a valid opaque same-company QR belonging to a different trip; no passenger details. Printed ticket numbers stay scoped to the selected trip."
           }
         }
       }

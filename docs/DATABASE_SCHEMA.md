@@ -1,5 +1,9 @@
 # Database schema and migration status
 
+## Driver Trip Dashboard - D66, 2026-11-10
+
+Append-only migration 0019_driver_dashboard.sql extends the private manifest core with authorized booking references, timezone, boarding availability and scheduled stops. The existing shipments wrapper is retained. driver_verify adds alreadyBoarded under the existing lock/unique record; same-company opaque QR can return TICKET_WRONG_TRIP without passenger details. No tables or financial rules change. See [D66 handover](archive/DRIVER_TRIP_DASHBOARD_0.18.0_2026-11-10.md).
+
 ## Operations projections - D65, migration 0018, 2026-11-10
 
 Read-only functions operations_trip_status(trips), operations_today(uuid,date) and operations_trip(uuid,uuid) with fixed search_path and no PUBLIC execution; the last two are granted to the runtime role. Index trips_company_departure. No tables or existing data change.

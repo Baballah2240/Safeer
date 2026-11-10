@@ -70,7 +70,9 @@
     "mobile:save:usb": "node mobile/save.mjs --usb",
     "test:shipments:browser": "node tests/shipments.browser.mjs",
     "test:operations": "node --test tests/operations.integration.mjs",
-    "test:operations:browser": "node tests/operations.browser.mjs"
+    "test:operations:browser": "node tests/operations.browser.mjs",
+    "mobile:build:driver": "node mobile/build.mjs --driver-only",
+    "mobile:save:driver": "node mobile/save.mjs --driver-only"
   },
   "license": "UNLICENSED",
   "dependencies": {

@@ -1,5 +1,11 @@
 # Local driver workspace
 
+## D66 current phone workflow - 2026-11-10
+
+Use Safeer Driver 0.18.0 connected to https://safeer.mohbaba.online/driver. The active assigned trip opens on the dashboard. Scan ticket starts the QR camera in one tap; an accepted QR boards immediately, refreshes the count/list and keeps the camera ready. Remove the ticket before scanning another one. Already scanned never adds a second boarding. Wrong trip/invalid/boarding closed do not board. Validation unavailable pauses automatic scanning; Retry validation resends the same ticket safely, including when a previous server reply was lost.
+
+Passenger list searches names, seats and booking codes and filters All/Waiting/Boarded. Back or leaving scanning stops the camera. Backgrounding the app stops it; use Start camera on return. Flashlight is optional and enabled only when supported. For permission denial or unsupported camera, choose Manual code entry; Check ticket then Confirm boarding remains the explicit printed-number/hardware flow. No offline boarding. Camera frames remain on the device and no audio is requested. Next stop uses known schedule/phase only; no live ETA is fabricated. Booking is a separate unchanged 0.17.0 APK. The historical local-only limitations below are superseded by D57/D66.
+
 Open http://127.0.0.1:4320/driver, or use **Driver workspace** in the staff sidebar. It shares the existing account, session and password with `/staff`. Change a temporary password in the company workspace before operating trips. Language and theme controls are available on both pages. This is a responsive local web client; no Flutter app or remote phone connection exists yet.
 
 ## Manager setup

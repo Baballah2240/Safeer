@@ -206,18 +206,18 @@ const downloadIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" s
 const appWords=(language,flavor)=>language==='ar'
   ?{name:flavor==='driver'?'تطبيق سفير للسائق':'تطبيق سفير للحجز',update:'يتوفر تحديث جديد',updateLink:'تنزيل التحديث',get:'احصل على التطبيق',getLink:'تنزيل',download:'تنزيل تطبيق أندرويد',version:'الإصدار'}
   :{name:flavor==='driver'?'Safeer Driver app':'Safeer Booking app',update:'A new version is available',updateLink:'Download update',get:'Get the app',getLink:'Download',download:'Download Android app',version:'Version'};
-const releaseFor=flavor=>appRelease?.apps?.[flavor];
-export const appOutdated=()=>Boolean(installed&&appRelease&&Number(installed[1])<appRelease.versionCode);
-export const appVersionLabel=()=>appRelease?'v'+appRelease.versionName:'';
+export const releaseFor=flavor=>{const file=appRelease?.apps?.[flavor];return file?{versionName:appRelease.versionName,versionCode:appRelease.versionCode,tag:appRelease.tag,releasePage:appRelease.releasePage,...file}:null;};
+export const appOutdated=(flavor=installed?.[2])=>{const file=releaseFor(flavor);return Boolean(installed&&installed[2]===flavor&&file&&Number(installed[1])<file.versionCode);};
+export const appVersionLabel=(flavor=installed?.[2])=>{const file=releaseFor(flavor)||appRelease;return file?'v'+file.versionName:'';};
 export function appBanner(language,flavor){
   const file=releaseFor(flavor),w=appWords(language,flavor);
   if(!file)return '';
-  const kind=appOutdated()?'update':androidBrowser?'get':'';
+  const kind=appOutdated(flavor)?'update':androidBrowser||(installed&&installed[2]!==flavor)?'get':'';
   if(!kind)return '';
-  return `<aside class="app-banner app-banner-${kind}" aria-label="${w.name}">${downloadIcon}<span><strong>${kind==='update'?w.update:w.get}</strong><small>${w.name} · ${w.version} <bdi>${appRelease.versionName}</bdi></small></span><a class="app-banner-link" href="${file.url}" rel="noopener">${kind==='update'?w.updateLink:w.getLink}</a></aside>`;
+  return `<aside class="app-banner app-banner-${kind}" aria-label="${w.name}">${downloadIcon}<span><strong>${kind==='update'?w.update:w.get}</strong><small>${w.name} · ${w.version} <bdi>${file.versionName}</bdi></small></span><a class="app-banner-link" href="${file.url}" rel="noopener">${kind==='update'?w.updateLink:w.getLink}</a></aside>`;
 }
 export function appDrawerLink(language,flavor){
   const file=releaseFor(flavor),w=appWords(language,flavor);
-  if(!file||(installed&&!appOutdated()))return '';
-  return `<a class="drawer-download" href="${file.url}" rel="noopener">${downloadIcon}<span>${appOutdated()?w.updateLink:w.download}<small>${w.version} <bdi>${appRelease.versionName}</bdi></small></span></a>`;
+  if(!file||(installed&&installed[2]===flavor&&!appOutdated(flavor)))return '';
+  return `<a class="drawer-download" href="${file.url}" rel="noopener">${downloadIcon}<span>${appOutdated(flavor)?w.updateLink:w.download}<small>${w.version} <bdi>${file.versionName}</bdi></small></span></a>`;
 }

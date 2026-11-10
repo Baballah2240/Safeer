@@ -9,6 +9,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.WindowInsets;
 import android.webkit.CookieManager;
+import android.webkit.PermissionRequest;
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
@@ -36,6 +39,8 @@ public final class MainActivity extends Activity {
     private ConnectivityManager connectivity;
     private ConnectivityManager.NetworkCallback networkCallback;
     private int safeTop;
+    private PermissionRequest pendingCamera;
+    private static final int CAMERA_REQUEST = 6141;
 
     static boolean allowed(Uri uri) {
         return ORIGIN_URI.getScheme() != null && ORIGIN_URI.getScheme().equals(uri.getScheme())
@@ -52,6 +57,36 @@ public final class MainActivity extends Activity {
         String path = uri.getPath();
         return "https".equals(uri.getScheme()) && "github.com".equals(uri.getHost())
             && path != null && path.startsWith("/Baballah2240/Safeer/releases/");
+    }
+
+    private boolean driverCameraPage() {
+        String current = web == null ? null : web.getUrl();
+        if (!"driver".equals(BuildConfig.FLAVOR) || current == null || isFinishing() || isDestroyed()) return false;
+        Uri page = Uri.parse(current);
+        return allowed(page) && "/driver".equals(page.getPath());
+    }
+
+    private void cameraPermission(PermissionRequest request) {
+        String[] resources = request.getResources();
+        if (!driverCameraPage() || request.getOrigin() == null || !allowed(request.getOrigin())
+            || resources.length != 1 || !PermissionRequest.RESOURCE_VIDEO_CAPTURE.equals(resources[0])) { request.deny(); return; }
+        if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            request.grant(new String[]{PermissionRequest.RESOURCE_VIDEO_CAPTURE}); return;
+        }
+        if (pendingCamera != null) pendingCamera.deny();
+        pendingCamera = request;
+        requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_REQUEST);
+    }
+
+    @Override public void onRequestPermissionsResult(int code, String[] permissions, int[] results) {
+        super.onRequestPermissionsResult(code, permissions, results);
+        if (code != CAMERA_REQUEST) return;
+        PermissionRequest request = pendingCamera; pendingCamera = null;
+        if (request == null) return;
+        if (driverCameraPage() && request.getOrigin() != null && allowed(request.getOrigin())
+            && results.length == 1 && results[0] == PackageManager.PERMISSION_GRANTED) {
+            request.grant(new String[]{PermissionRequest.RESOURCE_VIDEO_CAPTURE});
+        } else request.deny();
     }
 
     private int dp(int value) { return Math.round(value * getResources().getDisplayMetrics().density); }
@@ -166,6 +201,8 @@ public final class MainActivity extends Activity {
         content.addView(error,new FrameLayout.LayoutParams(-1,-1));
         error.setVisibility(View.GONE);
         web.setWebChromeClient(new WebChromeClient(){
+            @Override public void onPermissionRequest(PermissionRequest request) { runOnUiThread(() -> cameraPermission(request)); }
+            @Override public void onPermissionRequestCanceled(PermissionRequest request) { if (pendingCamera == request) pendingCamera = null; }
             @Override public void onProgressChanged(WebView view,int value) {
                 progress.setProgress(value);
                 progress.setVisibility(value==100 ? View.GONE : View.VISIBLE);
@@ -187,6 +224,7 @@ public final class MainActivity extends Activity {
             }
             @Override public void onPageStarted(WebView view,String url,android.graphics.Bitmap icon) {
                 failed=false;error.setVisibility(View.GONE);
+                if (pendingCamera != null && (!allowed(Uri.parse(url)) || !"/driver".equals(Uri.parse(url).getPath()))) { pendingCamera.deny(); pendingCamera = null; }
             }
             @Override public void onReceivedError(WebView view,WebResourceRequest request,WebResourceError failure) {
                 if(request.isForMainFrame()){failed=true;error.setVisibility(View.VISIBLE);}
@@ -223,6 +261,7 @@ public final class MainActivity extends Activity {
     }
 
     @Override protected void onPause() {
+        if (pendingCamera == null && "driver".equals(BuildConfig.FLAVOR)) web.evaluateJavascript("window.dispatchEvent(new Event('safeer:native-pause'))", null);
         web.onPause();
         CookieManager.getInstance().flush();
         super.onPause();
@@ -243,6 +282,7 @@ public final class MainActivity extends Activity {
     }
 
     @Override protected void onDestroy() {
+        if (pendingCamera != null) { pendingCamera.deny(); pendingCamera = null; }
         if (connectivity != null && networkCallback != null) { try { connectivity.unregisterNetworkCallback(networkCallback); } catch (RuntimeException ignored) {} }
         web.stopLoading();web.setWebChromeClient(null);web.setWebViewClient(null);
         ((android.view.ViewGroup)web.getParent()).removeView(web);web.destroy();

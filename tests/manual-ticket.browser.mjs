@@ -20,9 +20,9 @@ try{await identityFixture(async f=>{
  for(const lang of ['en','ar'])for(const theme of ['dark','light'])for(const [width,height] of [[1920,1080],[1366,768],[390,844],[320,740]]){
   const label=`${lang}/${theme}/${width}`;
   await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width<700});await send('Page.navigate',{url:web.origin+'/driver?lang='+lang});await until('Boolean(document.querySelector("[data-trip]"))');
-  await click('[data-trip]');await until('Boolean(document.querySelector("#driver-manual-entry"))');
-  if(await evaluate('document.documentElement.dataset.theme')!==theme)await click('[data-theme-toggle]');
-  await click('#driver-manual-entry summary');await check(s.p.ticket.toLowerCase());await until('Boolean(document.querySelector("[data-board]:not(:disabled)"))');
+  await click('[data-trip]');await until('Boolean(document.querySelector("#driver-manual-ticket button:not(:disabled)"))');
+  await click('[data-open-scan]');await click('[data-manual]');if(await evaluate('document.documentElement.dataset.theme')!==theme)await click('[data-theme-toggle]');
+  await check(s.p.ticket.toLowerCase());await until('Boolean(document.querySelector("[data-board]:not(:disabled)"))');
   assert.equal(await evaluate('document.querySelector(".driver-check strong").textContent'),'Fictional Traveler 1',label);
   assert.ok(await evaluate('document.querySelector("#driver-manual-entry").open'),label+' stays expanded');
   assert.equal((await f.migration.query('SELECT count(*)::int n FROM safeer.boarding_records')).rows[0].n,0,label+' checking does not board');

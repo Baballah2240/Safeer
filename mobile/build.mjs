@@ -5,11 +5,13 @@ import {fileURLToPath} from 'node:url';
 const args=process.argv.slice(2);
 // Default: website apps signed with the private upload key, connected to the live HTTPS site.
 // --usb: debug apps for development that reach this computer through adb reverse.
-if(args.some(a=>!['--hosted-check','--usb'].includes(a)))throw Error('Use mobile:build (website) or mobile:build:usb.');
+if(args.some(a=>!['--hosted-check','--usb','--driver-only'].includes(a)))throw Error('Use mobile:build (website) or mobile:build:usb.');
 const hosted=!args.includes('--usb');
 const uploadProperties=process.env.SAFEER_UPLOAD_PROPERTIES||join(process.env.USERPROFILE||'','.android/safeer-upload.properties');
 if(hosted&&!existsSync(uploadProperties))throw Error('No upload key found. Run npm.cmd run mobile:upload-key once and back it up privately.');
+const driverOnly=args.includes('--driver-only');
 const tasks=hosted?['-PsafeerOrigin=https://safeer.mohbaba.online','-PsafeerUploadProperties='+uploadProperties,'assembleDriverRelease','assembleBookingRelease','lintDriverRelease','lintBookingRelease']:['assembleDriverDebug','assembleBookingDebug','lintDriverDebug','lintBookingDebug'];
+if(driverOnly)for(let i=tasks.length-1;i>=0;i--)if(/Booking/.test(tasks[i]))tasks.splice(i,1);
 const android=fileURLToPath(new URL('./android/',import.meta.url));
 const jdks=join(process.env.USERPROFILE||'','.gradle/jdks');
 const candidates=[process.env.JAVA_HOME,...(existsSync(jdks)?readdirSync(jdks).map(n=>join(jdks,n)):[]),'C:/Program Files/Android/Android Studio/jbr'].filter(Boolean);

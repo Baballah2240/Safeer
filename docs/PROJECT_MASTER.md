@@ -1,5 +1,9 @@
 # Safeer / Sudan Transport - project master
 
+## Driver Trip Dashboard - D66, 2026-11-10
+
+D66 adds the Driver Option B Trip Dashboard and signed Driver 0.18.0/18000 download. Booking stays on 0.17.0/17000. Assigned-trip operations, money policy and D59 shipments are preserved. See [D66 handover](archive/DRIVER_TRIP_DASHBOARD_0.18.0_2026-11-10.md).
+
 ## Audit remediation - D56, 2026-11-09
 
 The audit source fixes preserve newest-search ordering and unfinished search fields, restore the above-sidebar toggle with immediate keyboard state and clipped animation overflow, publish the owner-approved support contact, and permit a bounded 64 KiB payload only for creating public group bookings (other endpoints remain 8 KiB). The Android error screen distinguishes hosted HTTPS from USB; local patch .6/16006 is built/linted/saved. Hosted owner recovery now supports a non-superuser migration owner with explicit confirmation, duplicate-email rollback, session revocation and audit. Complete browser release gating and PostgreSQL 16 CI are added. No schema, financial policy, role grants or real account credentials are changed. See [D56 handover](archive/AUDIT_REMEDIATION_2026-11-09.md) for measured results and outstanding deployment/device verification.
