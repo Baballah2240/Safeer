@@ -104,6 +104,16 @@
  @media(max-width:520px){.ops-kpi{min-height:76px;padding:12px}.ops-kpi-icon{width:38px;height:38px}html body .ops-table{font-size:.85rem}html body .ops-table :is(th,td){padding:10px 8px}.ops-create span{display:none}html body .ops-create{width:48px;padding:0;justify-content:center}}
  @media(prefers-reduced-motion:reduce){.ops-bar span{transition:none}}
  @media(prefers-reduced-motion:no-preference){.ops-panel{animation:ops-panel-in 220ms ease}}
+ /* Home workspace sidebar and sign-in sidebar hints follow the same violet palette (no brown leftovers). */
+ html[data-app-surface=staff] body .sidebar :is(.brand,.brand small){color:var(--ink);text-shadow:none}
+ html[data-app-surface=staff] body .sidebar :is(.brand small,.sidebar-label,.sidebar-footer,.sidebar-footer small){color:var(--muted)}
+ html[data-app-surface=staff] body .sidebar nav{border-color:var(--border)}
+ html[data-app-surface=staff] body .sidebar .nav-item{color:var(--ink);background:transparent;border-color:transparent;box-shadow:none;text-shadow:none}
+ html[data-app-surface=staff] body .sidebar .nav-item svg{color:var(--muted)}
+ html[data-app-surface=staff] body .sidebar .nav-item:not(.active):hover{background:#6234d912;color:var(--ink);border-color:transparent}
+ html[data-app-surface=staff] body .sidebar .nav-item.active{background:var(--ops-selected);color:#fff;border-color:transparent;box-shadow:0 8px 22px #6234d940}
+ html[data-app-surface=staff] body .sidebar .nav-item.active svg{color:#fff}
+ html[data-app-surface=staff] body .staff-sidebar :is(.staff-preview small,.staff-sidebar-foot){color:var(--muted)}
 }
 @keyframes ops-panel-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @media print{.ops-head-actions,.ops-row-open{box-shadow:none}.ops-panel{position:static}}

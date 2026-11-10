@@ -1,5 +1,9 @@
 # Safeer mobile status
 
+## Theme leftovers and clearer errors - website, 2026-11-10
+
+The Safeer logo, the home workspace sidebar and the staff sign-in sidebar now use the violet palette instead of brown/beige. Staff and Driver sign-in show a readable message when sign-in is unavailable instead of IDENTITY_UNAVAILABLE or a developer command, and the booking search reports an unavailable trip service instead of a missing company page. Phones receive these changes from the website; no new APK.
+
 ## Driver light/dark correction - 0.18.1 / 18001, 2026-11-10
 
 The Driver appearance setting previously changed while dashboard, menu and field colors stayed fixed in light mode. Driver surfaces now follow saved light/dark tokens, including passenger rows, links, focus outlines and solid readable scanner results. Exact blue/purple action and progress colors, sharp camera, reduced motion, forms and sign-in state are preserved. Driver-only 0.18.1 uses the existing signature; Booking stays at 0.17.0/17000. Installing the update gives the already-open client a fresh document with the corrected styles.

@@ -257,7 +257,7 @@ try{
  }
  else if(slug){const data=await get('companies/'+slug);company=data.company;trips=data.trips;}
  else{[{items:cities},{items:companies}]=await Promise.all([get('cities'),get('companies')]);loading=false;await search();}
-}catch(error){if(holdRef&&error.status===404){lookupMode=true;lookupReference=holdRef;}else failure=tripId&&error.status===404?'This trip is no longer available.':error.status===404?'This company page is not available.':'The trip service is not available right now. Please try again later.';}
+}catch(error){if(holdRef&&error.status===404){lookupMode=true;lookupReference=holdRef;}else failure=tripId&&error.status===404?'This trip is no longer available.':error.status===404&&slug?'This company page is not available.':'The trip service is not available right now. Please try again later.';}
 loading=false;if(!holdRef||lookupMode||!document.querySelector('#market-hold-title'))render();if(lookupMode)void loadSavedBookings();
 // Availability is rechecked while a seat page is open. The countdown is display only; the server decides when a hold ends.
 setInterval(()=>{if(tripId&&seatTrip&&!holding)void (unresolved?placeHold():refreshSeats());},15000);
