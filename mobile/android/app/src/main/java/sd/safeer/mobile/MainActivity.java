@@ -105,7 +105,7 @@ public final class MainActivity extends Activity {
         super.onCreate(state);
         LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
-        root.setBackgroundColor(Color.rgb(22,17,14));
+        root.setBackgroundColor(Color.rgb(14,20,39));
         // Hide bars, but keep controls away from cutouts and the visible keyboard.
         root.setOnApplyWindowInsetsListener((v, insets) -> {
             if (android.os.Build.VERSION.SDK_INT >= 30) {
@@ -151,7 +151,7 @@ public final class MainActivity extends Activity {
         error.setOrientation(LinearLayout.VERTICAL);
         error.setGravity(android.view.Gravity.CENTER);
         error.setPadding(dp(28),dp(28),dp(28),dp(28));
-        error.setBackgroundColor(Color.rgb(241,233,224));
+        error.setBackgroundColor(Color.rgb(233,236,255));
         TextView message = new TextView(this);
         message.setText(ORIGIN_URI.getScheme().equals("https")
             ? text("Cannot connect to Safeer\n\nCheck your internet connection and retry. Your account and bookings stay on the server.","تعذر الاتصال بسفير\n\nتحقق من اتصال الإنترنت ثم أعد المحاولة. يبقى حسابك وحجوزاتك على الخادم.")

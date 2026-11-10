@@ -236,3 +236,7 @@ The owner selected improvement of the existing Section 11 workflow. Core registr
 ## 2026-11-09 - Mobile menus and update (D63)
 
 D63 changes shared menu presentation and modal scroll/focus handling, immediately measures replacement headers and ignores stale ResizeObserver entries. Native flavors remain sd.safeer.driver (/driver) and sd.safeer.booking (/marketplace), now 0.16.3/16300 with the same upload certificate. See [the release handover](archive/MOBILE_MENUS_0.16.3_2026-11-09.md).
+
+## 2026-11-10 - My Trips glass redesign (D64)
+
+src/passenger-ui.js holds route/timeline/ticket templates; src/passenger-glass.css scopes the exact palette to Booking/Driver. Existing /marketplace and /booking routes plus view=profile support bottom navigation. The read-only passenger projection supplies authoritative timestamps and schedule snapshots. QR geometry uses the existing ticketQr helper; raw QR token fields are removed from public API JSON. Route-only device cache excludes names, phones and QR credentials. See [the design/release handover](archive/MY_TRIPS_GLASS_0.17.0_2026-11-10.md).

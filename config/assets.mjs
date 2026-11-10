@@ -1,5 +1,8 @@
 // One explicit public-asset list for the local server and static build.
 export const publicAssets = {
+  '/src/passenger-ui.js': ['src/passenger-ui.js', 'text/javascript'],
+  '/src/passenger-glass.css': ['src/passenger-glass.css', 'text/css'],
+  '/src/coach-journey.jpg': ['src/coach-journey.jpg', 'image/jpeg'],
   '/src/login-form.js': ['src/login-form.js', 'text/javascript'],
   '/': ['index.html', 'text/html'],
   '/src/app.js': ['src/app.js', 'text/javascript'],

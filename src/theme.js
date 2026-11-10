@@ -1,7 +1,7 @@
 import {appRelease} from './app-release.js';
 const storageKey='safeer.theme';
 const valid=value=>value==='light'||value==='dark';
-let theme='dark';
+let theme=document.documentElement.dataset.appSurface?'light':'dark';
 try{const saved=localStorage.getItem(storageKey);if(valid(saved))theme=saved;}catch{/* Storage restrictions must not prevent access. */}
 
 const label=language=>language==='ar'

@@ -1,8 +1,14 @@
 # Decisions
 
+## 2026-11-09 - Passenger My Trips glass redesign
+
+D64: The owner supplies a My Trips reference and exact colors and requests a working redesign on existing Safeer routes, stack and booking data. Supersede the earlier black/brown palette for Booking and Driver app surfaces with selected #6234D9, primary #295BE0, glow #586DF4, pickup #FF4961, drop-off #FB3D75 and labeled status #F8C152. Build passenger Upcoming/Past device-booking views, prominent route/ticket cards, real schedule timelines where public route details exist, boarding/seat information and QR only when supplied by an authorized ticket response. Keep existing guest key and reference/mobile access, payments, cancellations, driver permissions and no fake accounts/QRs/schedules. Add Book/Trips/Profile bottom navigation on passenger pages and passenger-count intent to the existing seat-selection flow. Profile honestly exposes guest/device settings. Match Driver visual tokens without merging its workflow into Booking. Use a neutral generated coach illustration, labeled as illustrative; never claim assigned vehicle photography. Preserve the separately committed D59 shipments. Migration 0017 adds a read-only, proof-checked passenger projection for exact schedule snapshots and existing paid-ticket QR credentials; device-key access receives valid paid-ticket QR geometry, while reference/mobile access stays masked without QR. Do not alter existing migration checksums or booking/payment state. Preserve reduced motion, accessibility, RTL/LTR, theme and browser/native compatibility. Test source/built route, booking, ticket, empty/canceled, multi-seat, phone and tablet/large-phone flows; document and publish the verified update to Safeer.
+
+
 ## 2026-11-09 - Shipments
 
 D59: The owner approves adding parcel shipments to Release 1, superseding the passenger-and-luggage-only scope for this one module. Rules agreed: anyone may send; fixed price per item type set by each company; the sender pays at drop-off at the origin office into the operator's open cash session (cash, or bank/wallet with a reference when enabled) and receives a receipt; the receiver collects at the destination office with phone number and name, which must match; banned contents (cash, weapons, hazardous goods, live animals, perishable food) are confirmed by staff. Public tracking uses a random code and shows status and offices only. Shipment money is included in cash session totals, finance movements/session cash and platform totals. Personal details are erased 90 days after the trip arrives. Returns before loading do not refund in Safeer; a refund flow would need a separate financial decision. New permissions company.shipments.operate/resolve/prices are added to the template roles only; existing company roles must be granted them.
+
 
 ## 2026-11-09 - Separate modern app menus and public update
 

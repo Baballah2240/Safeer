@@ -238,3 +238,7 @@ The owner selected improvement of the existing Section 11 workflow. Core registr
 ## 2026-11-09 - Mobile menus and update (D63)
 
 D63 keeps paid-ticket/boarding/booking authority and offline station payment rules unchanged. An available update links Driver to the Driver APK and Booking to the Booking APK; installation remains the phone owner's action. See [the release handover](archive/MOBILE_MENUS_0.16.3_2026-11-09.md).
+
+## 2026-11-10 - My Trips glass redesign (D64)
+
+My Trips is a view of existing bookings, not a new passenger account or payment channel. Booking keys remain on the device; other-device lookup stays masked and QR-free. Unpaid reservations have no ticket QR; refunds/cancellation remove QR presentation. Driver boarding remains an authenticated server check. Generated coach artwork is illustrative, never an assigned-vehicle claim. See [the design/release handover](archive/MY_TRIPS_GLASS_0.17.0_2026-11-10.md).

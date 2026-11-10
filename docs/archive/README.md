@@ -74,3 +74,5 @@ To continue, extract into a new folder, read docs/CURRENT_STATE.md first, run np
 - [Mobile continuation and release verification, 2026-11-09](MOBILE_CONTINUATION_2026-11-09.md).
 
 - [Separate Driver/Booking menus and 0.16.3 update](MOBILE_MENUS_0.16.3_2026-11-09.md).
+
+- [My Trips glass redesign, protected ticket presentation and 0.17.0 release](MY_TRIPS_GLASS_0.17.0_2026-11-10.md).

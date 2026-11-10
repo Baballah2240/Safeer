@@ -3,7 +3,7 @@
   "info": {
     "title": "Safeer local passenger transport API",
     "version": "0.16.0",
-    "description": "Local-only passenger transport API through Section 15 (security and recovery verification): Super Administrator dashboard, service notice and scoped in-app notifications alongside finance, identity, company isolation, ticketing, luggage and driver boarding. No external hosting, online gateway or native app."
+    "description": "Same-origin Safeer API for passenger bookings, authenticated company operations, driver boarding and shipments. Guest routes require the existing device booking key or masked reference/mobile proof. No online payment gateway."
   },
   "servers": [
     {
@@ -8695,7 +8695,7 @@
     "/api/v1/public/holds": {
       "post": {
         "summary": "Hold 1-10 seats with their travelers, all or none",
-        "description": "Anonymous. No session is used; writes require the page origin and JSON. Limited to 120 seats per client address per 15 minutes. Repeating a key with the same seats returns the original hold.",
+        "description": "Anonymous. No session is used; writes require the page origin and JSON. Limited to 120 seats per client address per 15 minutes. Repeating a key with the same seats returns the original hold. D64: returns exact booked schedule snapshots; valid paid device-key tickets include existing QR credential geometry.",
         "security": [],
         "requestBody": {
           "required": true,
@@ -8778,8 +8778,7 @@
                   ],
                   "properties": {
                     "data": {
-                      "type": "object",
-                      "additionalProperties": true
+                      "$ref": "#/components/schemas/PassengerBookingPresentation"
                     }
                   }
                 }
@@ -8810,7 +8809,7 @@
     "/api/v1/public/holds/{reference}": {
       "get": {
         "summary": "Open a hold",
-        "description": "Anonymous. No session is used; writes require the page origin and JSON. The reference alone opens nothing.",
+        "description": "Anonymous. No session is used; writes require the page origin and JSON. The reference alone opens nothing. D64: returns exact booked schedule snapshots; valid paid device-key tickets include existing QR credential geometry.",
         "security": [],
         "parameters": [
           {
@@ -8844,8 +8843,7 @@
                   ],
                   "properties": {
                     "data": {
-                      "type": "object",
-                      "additionalProperties": true
+                      "$ref": "#/components/schemas/PassengerBookingPresentation"
                     }
                   }
                 }
@@ -9103,7 +9101,7 @@
     "/api/v1/public/holds/current": {
       "get": {
         "summary": "Find the hold made with a key",
-        "description": "Anonymous. Recovers an attempt whose reply was lost.",
+        "description": "Anonymous. Recovers an attempt whose reply was lost. D64: returns exact booked schedule snapshots; valid paid device-key tickets include existing QR credential geometry.",
         "security": [],
         "parameters": [
           {
@@ -9128,8 +9126,7 @@
                   ],
                   "properties": {
                     "data": {
-                      "type": "object",
-                      "additionalProperties": true
+                      "$ref": "#/components/schemas/PassengerBookingPresentation"
                     }
                   }
                 }
@@ -9148,7 +9145,7 @@
     "/api/v1/public/holds/lookup": {
       "post": {
         "summary": "Reopen a booking with its reference and mobile number",
-        "description": "Anonymous, requiring the page origin and JSON. Returns a masked number and shortened names. Limited to 5 failures per reference and 30 attempts per client address per 15 minutes.",
+        "description": "Anonymous, requiring the page origin and JSON. Returns a masked number and shortened names. Limited to 5 failures per reference and 30 attempts per client address per 15 minutes. D64: reference/mobile access is still masked and never returns QR geometry.",
         "security": [],
         "requestBody": {
           "required": true,
@@ -9185,8 +9182,7 @@
                   ],
                   "properties": {
                     "data": {
-                      "type": "object",
-                      "additionalProperties": true
+                      "$ref": "#/components/schemas/PassengerBookingPresentation"
                     }
                   }
                 }
@@ -15410,6 +15406,117 @@
                   "type": "boolean"
                 }
               }
+            }
+          }
+        }
+      },
+      "PassengerTicket": {
+        "type": "object",
+        "required": [
+          "number",
+          "seat",
+          "status"
+        ],
+        "properties": {
+          "number": {
+            "type": "string"
+          },
+          "seat": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "qr": {
+            "type": "object",
+            "required": [
+              "size",
+              "path"
+            ],
+            "properties": {
+              "size": {
+                "type": "integer",
+                "minimum": 21,
+                "maximum": 177
+              },
+              "path": {
+                "type": "string"
+              }
+            },
+            "description": "Existing opaque ticket credential rendered as sharp vector geometry. Only valid paid, noncancelled tickets opened with the device booking key receive this field."
+          }
+        }
+      },
+      "PassengerBookingPresentation": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "reference": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "departureAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "arrivalAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "timezone": {
+            "type": "string"
+          },
+          "fromNameEn": {
+            "type": "string"
+          },
+          "fromNameAr": {
+            "type": "string"
+          },
+          "toNameEn": {
+            "type": "string"
+          },
+          "toNameAr": {
+            "type": "string"
+          },
+          "arrivalDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "arrivalTime": {
+            "type": "string"
+          },
+          "stops": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "cityNameEn": {
+                  "type": "string"
+                },
+                "cityNameAr": {
+                  "type": "string"
+                },
+                "stationNameEn": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "stationNameAr": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            }
+          },
+          "tickets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PassengerTicket"
             }
           }
         }

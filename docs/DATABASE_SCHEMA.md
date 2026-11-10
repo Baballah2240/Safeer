@@ -331,3 +331,7 @@ The owner selected improvement of the existing Section 11 workflow. Core registr
 ## 2026-11-09 - Mobile menus and update (D63)
 
 D63 changes no table, migration, runtime grant or financial rule. The isolated release excludes unrelated shipment work. Driver and Booking remain distinct Android packages with shared authenticated server boundaries. See [the release handover](archive/MOBILE_MENUS_0.16.3_2026-11-09.md).
+
+## 2026-11-10 - My Trips glass redesign (D64)
+
+Migration 0017_passenger_presentation.sql adds one fixed, read-only SECURITY DEFINER function with search_path=pg_catalog and revoked PUBLIC execute. Exactly one existing proof is required. It returns booked stop/timezone/timestamp snapshots; only strong device-key reads of valid paid, noncancelled tickets receive existing QR credentials for server-side vector encoding. It changes no table or business record; reviewed runtime grants/security catalog are extended. See [the design/release handover](archive/MY_TRIPS_GLASS_0.17.0_2026-11-10.md).

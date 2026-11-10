@@ -1,5 +1,5 @@
 {
-  "description": "Expected local schema security for Sections 01-15 and D59 shipments. Add reviewed objects explicitly with their owning migration; do not generate this from a live database.",
+  "description": "Reviewed schema security for Sections 01-15, D59 shipments and D64 protected passenger presentation. New objects must be explicitly reviewed with their owning migration.",
   "tables": {
     "auth_throttles": {
       "rls": false,
@@ -443,6 +443,7 @@
     "safeer.shipment_return(uuid,uuid,uuid,text,integer)",
     "safeer.shipment_report(uuid,uuid,uuid,text,text)",
     "safeer.shipment_resolve(uuid,uuid,uuid,uuid,text,text)",
-    "safeer.public_shipment(text)"
+    "safeer.public_shipment(text)",
+    "safeer.passenger_booking(text,text,text)"
   ]
 }

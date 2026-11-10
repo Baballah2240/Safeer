@@ -153,3 +153,7 @@ Claude's 0.16.2 internet-connected apps have been rebuilt, signed and verified i
 D63 delivers separate modern Driver/Booking menus and signed Android 0.16.3/16300. The owner explicitly approves public repository visibility and release publication so older 0.16.2 apps can download their own update. See [the release handover](archive/MOBILE_MENUS_0.16.3_2026-11-09.md).
 
 D63 publication verified: repository public; [0.16.3 release](https://github.com/Baballah2240/Safeer/releases/tag/v0.16.3) published. Both public APK downloads match recorded hashes. Live old-version Driver/Booking update banners and correct download links passed in Arabic/English; the redesigned live source matches the release. Phone installation remains the owner's action.
+
+## 2026-11-10 - My Trips glass redesign (D64)
+
+D64 implements the reference-driven glass redesign for Booking and matching Driver app surfaces. Passenger My Trips uses existing guest bookings, exact schedule snapshots, Upcoming/Past, real paid-ticket QR geometry, journey details and Book/Trips/Profile navigation. Android 0.17.0/17000 keeps the existing package IDs/signing key. See [the design/release handover](archive/MY_TRIPS_GLASS_0.17.0_2026-11-10.md).

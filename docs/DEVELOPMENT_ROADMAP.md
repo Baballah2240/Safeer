@@ -167,3 +167,7 @@ The owner selected improvement of the existing Section 11 workflow. Core registr
 ## 2026-11-09 - Mobile menus and update (D63)
 
 D63 mobile-menu follow-up: separate app identity, descriptive navigation, grouped account actions, compact settings, 44px targets, responsive landscape coverage and new signed update artifacts are implemented and verified. See [the release handover](archive/MOBILE_MENUS_0.16.3_2026-11-09.md).
+
+## 2026-11-10 - My Trips glass redesign (D64)
+
+D64 adds My Trips, guest Profile/settings, passenger-count search intent, itinerary/ticket presentation and exact app colors. It builds on the separately committed D59 shipments without rewriting that migration or its workflows. Deployment and download evidence are tracked separately from source checks. See [the design/release handover](archive/MY_TRIPS_GLASS_0.17.0_2026-11-10.md).

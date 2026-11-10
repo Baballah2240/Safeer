@@ -209,3 +209,7 @@ Rebuilt both 0.16.2 website apps with the existing upload certificate; release b
 - Both: modern menu cards, clear selected destination, 44px controls, compact settings, privacy/support access, reliable scroll/focus and translated-header clearance.
 - Same package IDs, HTTPS service and signing certificate. New app-release metadata points each app to its matching 0.16.3 APK; older 0.16.2 clients show the update notice after loading the updated website.
 - Source/browser/build/lint/signature checks passed; public hosting/download verification is separate from a Git push. No phone uninstall or automatic APK installation.
+
+## 2026-11-10 - 0.17.0 / 17000 (D64)
+
+Booking: reference-driven glass My Trips, Upcoming/Past, real route/photo/status cards, timeline, seat/boarding and valid device-owned paid-ticket QR, frosted Book/Trips/Profile and passenger-count search intent. Driver: matching exact blue/violet palette and native loading/recovery colors; its separate assignment/boarding workflow is unchanged. Both retain package IDs, signing key and HTTPS website. Migration 0017 is a read-only, proof-checked passenger projection; weaker reference/mobile lookup stays masked/QR-free. Preserve D59 shipments. See docs/archive/MY_TRIPS_GLASS_0.17.0_2026-11-10.md.

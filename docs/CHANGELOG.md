@@ -247,3 +247,7 @@ Claude's 0.16.2 internet-connected apps have been rebuilt, signed and verified i
 ## 2026-11-09 - Mobile menus and update (D63)
 
 D63: modern distinct app menus, navigation descriptions, clearer active states, separated Driver account actions, two-column settings, support link, 44px controls and locked background scrolling. Fixed translated-header measurement timing. Signed 0.16.3 update metadata and public release publication are owner-approved. See [the release handover](archive/MOBILE_MENUS_0.16.3_2026-11-09.md).
+
+## 2026-11-10 - My Trips glass redesign (D64)
+
+D64: glass My Trips with Upcoming/Past, next reservation/photo card, journey timeline, paid-ticket/seat/QR view, Book/Trips/Profile navigation, guest preferences, passenger-count selection and matching Driver palette. Fixed ticket anchors causing unnecessary reloads and passenger-count links briefly retaining old intent. Added exact schedule and protected QR projection; signed Android 0.17.0/17000. See [the design/release handover](archive/MY_TRIPS_GLASS_0.17.0_2026-11-10.md).

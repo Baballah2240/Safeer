@@ -1,5 +1,8 @@
 # Safeer
 
+- D64 supersedes the black/brown palette for Booking and Driver app surfaces: use the exact owner-provided violet/blue/pink/yellow glass colors. Passenger /booking is My Trips; Book/Trips/Profile keep existing routes and guest access. Migration 0017 adds proof-checked schedule/paid-ticket presentation: never expose QR to reference/mobile lookup or unpaid/refunded/cancelled bookings, and never fabricate a QR. Keep Driver distinct and preserve D59 shipments. See docs/archive/MY_TRIPS_GLASS_0.17.0_2026-11-10.md.
+
+
 - Mobile app handover for Codex: read docs/archive/MOBILE_HANDOVER_2026-11-09.md first. Work from the Safeer repository clone, never the Stocrant copy.
 
 - D60: after every website app build run npm.cmd run mobile:save, commit the regenerated src/app-release.js, and attach both APKs to the GitHub release tag v<versionName>. Never commit APKs or the upload key. The repository is intended to be public: keep secrets and real personal data out of tracked files.

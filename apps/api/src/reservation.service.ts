@@ -1,3 +1,4 @@
+import {ticketQr} from './ticket-qr.js';
 import {Injectable,OnModuleDestroy,OnModuleInit} from '@nestjs/common';
 import {randomBytes,randomUUID} from 'node:crypto';
 import type {PoolClient} from 'pg';
@@ -68,6 +69,11 @@ export class ReservationService implements OnModuleInit,OnModuleDestroy {
   });}
  sweep(){return this.job('holds',async()=>{await this.db.pool.query('SELECT safeer.expire_due_holds()');});}
  private one(sql:string,values:unknown[]){return this.db.pool.query(sql,values).then(result=>result.rows[0]?.row??null);}
+ private async presentation(code:string,access:string|null,mobile:string|null){
+  const row=await this.one('SELECT safeer.passenger_booking($1,$2,$3) AS row',[code,access,mobile]);
+  if(!row)fail('NOT_FOUND',404);
+  return {...row,tickets:(row.tickets as Array<Record<string,unknown>>).map(({qrToken,...ticket})=>({...ticket,...(typeof qrToken==='string'?{qr:ticketQr(qrToken)}:{})}))};
+ }
  async trip(id:string){uuid(id);const row=await this.one('SELECT safeer.public_trip($1) AS row',[id]);if(!row)fail('NOT_FOUND',404);return row;}
  // Counts seats, not requests, so one client cannot hold whole buses a few requests at a time.
  private async throttle(client:string,seats:number){if(await this.spend('hold:'+client,seats)>120)fail('RATE_LIMITED',429,'Please wait and try again.');}
@@ -92,16 +98,17 @@ export class ReservationService implements OnModuleInit,OnModuleDestroy {
   const request=digest('safeer-request-v1:'+data.key+JSON.stringify([tripId,[...labels].sort(),mobile,people]));
   // A retry of a hold that already exists costs nothing, so a lost reply can always be recovered.
   if(!await this.one('SELECT safeer.public_booking_by_key($1) AS row',[access]))await this.throttle(client,labels.length);
-  return this.db.transaction(async c=>(await c.query('SELECT safeer.public_book($1,$2,$3,$4,$5,$6,$7,$8) AS row',[tripId,labels,randomUUID(),reference(),access,request,mobile,JSON.stringify(people)])).rows[0].row,false);
+  const row=await this.db.transaction(async c=>(await c.query('SELECT safeer.public_book($1,$2,$3,$4,$5,$6,$7,$8) AS row',[tripId,labels,randomUUID(),reference(),access,request,mobile,JSON.stringify(people)])).rows[0].row,false);
+  return this.presentation(row.reference,access,null);
  }
  async booking(code:string,key:unknown){
   if(!referencePattern.test(code))fail('NOT_FOUND',404);
-  const row=await this.one('SELECT safeer.public_booking($1,$2) AS row',[code,accessHash(key)]);if(!row)fail('NOT_FOUND',404);return row;
+  return this.presentation(code,accessHash(key),null);
  }
- async current(key:unknown){const row=await this.one('SELECT safeer.public_booking_by_key($1) AS row',[accessHash(key)]);if(!row)fail('NOT_FOUND',404);return row;}
+ async current(key:unknown){const row=await this.one('SELECT safeer.public_booking_by_key($1) AS row',[accessHash(key)]);if(!row)fail('NOT_FOUND',404);return this.presentation(row.reference,accessHash(key),null);}
  async lookup(input:unknown,client:string){
   const data=body(input,['reference','mobile']),code=ReservationService.reference(data.reference),mobile=mobileNumber(data.mobile,'INVALID_INPUT');
-  return this.guarded(code,client,()=>this.one('SELECT safeer.public_lookup($1,$2) AS row',[code,mobile]));
+  return this.guarded(code,client,()=>this.presentation(code,null,mobile));
  }
  async release(code:string,input:unknown,client:string){
   if(!referencePattern.test(code))fail('NOT_FOUND',404);

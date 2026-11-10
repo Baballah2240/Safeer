@@ -14,7 +14,7 @@ try{
  await send('Page.addScriptToEvaluateOnNewDocument',{source:'window.__errors=[];addEventListener("error",e=>__errors.push(e.message));addEventListener("unhandledrejection",e=>__errors.push(String(e.reason)));document.addEventListener("securitypolicyviolation",e=>__errors.push("CSP "+e.violatedDirective));'});
  const android='Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 Chrome/130.0.0.0 Mobile Safari/537.36';
  const cases=[['browser',android,false,true],['desktop','Mozilla/5.0 (Windows NT 10.0; Win64; x64)',false,false]];
- for(const flavor of ['driver','booking'])for(const [label,code,outdated]of [['installed-0.16.2',16200,true],['old',appRelease.versionCode-1,true],['current',appRelease.versionCode,false],['newer',appRelease.versionCode+1,false]])cases.push([label+'-'+flavor,android+' SafeerApp/'+code+' ('+flavor+')',outdated,outdated]);
+ for(const flavor of ['driver','booking'])for(const [label,code,outdated]of [['installed-0.16.3',16300,true],['installed-0.16.2',16200,true],['old',appRelease.versionCode-1,true],['current',appRelease.versionCode,false],['newer',appRelease.versionCode+1,false]])cases.push([label+'-'+flavor,android+' SafeerApp/'+code+' ('+flavor+')',outdated,outdated]);
  for(const [label,userAgent,outdated,banner]of cases){
   await send('Emulation.setUserAgentOverride',{userAgent});
   await send('Page.navigate',{url:web.origin+'/privacy'});await until('Boolean(document.querySelector("#legal-app h1"))');
