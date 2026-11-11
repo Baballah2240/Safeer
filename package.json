@@ -74,6 +74,7 @@
     "mobile:build:driver": "node mobile/build.mjs --driver-only",
     "mobile:save:driver": "node mobile/save.mjs --driver-only",
     "test:passenger-accounts": "node --test tests/passenger-accounts.integration.mjs",
+    "test:passenger-google": "node --test tests/passenger-google.integration.mjs",
     "test:staff-details": "node --test tests/staff-details.integration.mjs"
   },
   "license": "UNLICENSED",

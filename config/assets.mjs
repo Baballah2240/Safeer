@@ -7,6 +7,7 @@ export const publicAssets = {
   '/src/vendor/jsQR.js': ['src/vendor/jsQR.js', 'text/javascript'],
   '/src/vendor/jsQR-LICENSE.txt': ['src/vendor/jsQR-LICENSE.txt', 'text/plain'],
   '/src/passenger-ui.js': ['src/passenger-ui.js', 'text/javascript'],
+  '/src/passenger-account.js': ['src/passenger-account.js', 'text/javascript'],
   '/src/passenger-glass.css': ['src/passenger-glass.css', 'text/css'],
   '/src/coach-journey.jpg': ['src/coach-journey.jpg', 'image/jpeg'],
   '/src/login-form.js': ['src/login-form.js', 'text/javascript'],

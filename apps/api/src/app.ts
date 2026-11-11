@@ -19,12 +19,13 @@ import {OperationsService} from './operations.service.js';
 import {BoardingService} from './boarding.service.js';
 import {FinanceService} from './finance.service.js';
 import {PlatformService} from './platform.service.js';
-import {IdentityError,sessionToken,validCsrf,fail} from './security.js';
+import {IdentityError,sessionToken,validCsrf,csrf,fail} from './security.js';
+import {PassengerService,passengerToken,cookieValue,googleConfig} from './passenger.service.js';
 
 const bodyLimits=JSON.parse(readFileSync(new URL('../../config/http-limits.json',import.meta.url),'utf8')) as {defaultBodyBytes:number;bookingBodyBytes:number};
 const version=JSON.parse(readFileSync(new URL('../../package.json',import.meta.url),'utf8')).version;
 // Hosted HTTPS deployments add Secure; loopback development cannot use it over http.
-let secure='';
+let secure='',webBase='',hostedWeb=false;
 const cookie=(token:string)=>`safeer_session=${token}; Path=/api/v1; HttpOnly; SameSite=Strict; Max-Age=43200${secure}`;
 const clearCookie=()=>`safeer_session=; Path=/api/v1; HttpOnly; SameSite=Strict; Max-Age=0${secure}`;
 // The web proxy is the only caller (loopback host check) and sets this from the hosting edge.
@@ -124,6 +125,31 @@ class TripController {
  @Post(':rid/assignment') assign(@Req() req:Request,@Param('id') id:string,@Param('rid') rid:string,@Body() data:unknown){return this.trips.assign(token(req),id,rid,data).then(reply);}
  @Post(':rid/publish') publish(@Req() req:Request,@Param('id') id:string,@Param('rid') rid:string,@Body() data:unknown){return this.trips.publish(token(req),id,rid,data).then(reply);}
  @Post(':rid/cancel') cancel(@Req() req:Request,@Param('id') id:string,@Param('rid') rid:string,@Body() data:unknown){return this.trips.cancel(token(req),id,rid,data).then(reply);}
+}
+// D68: passenger accounts. Separate cookie and CSRF from staff sessions.
+const passengerCookie=(value:string,days:number)=>`safeer_passenger=${value}; Path=/api/v1/passenger; HttpOnly; SameSite=Strict; Max-Age=${days*86400}${secure}`;
+const stateCookie=(value:string,age:number)=>`safeer_google=${value}; Path=/api/v1/passenger/google; HttpOnly; SameSite=Lax; Max-Age=${age}${secure}`;
+const ptoken=(req:Request)=>passengerToken(req.headers.cookie);
+@Controller('api/v1/passenger')
+class PassengerController {
+ constructor(private readonly passengers:PassengerService){}
+ @Get('google/start') start(@Query('return') back:unknown,@Res() res:Response){
+  const g=googleConfig(hostedWeb);if(!g)return res.redirect(302,'/marketplace?view=profile&signin=unavailable');
+  const {url,cookie:value}=this.passengers.start(g,webBase,back);res.setHeader('Set-Cookie',stateCookie(value,600));return res.redirect(302,url);
+ }
+ @Get('google/callback') async callback(@Query() query:Record<string,unknown>,@Req() req:Request,@Res() res:Response){
+  const g=googleConfig(hostedWeb),clear=stateCookie('',0);
+  if(!g){res.setHeader('Set-Cookie',clear);return res.redirect(302,'/marketplace?view=profile&signin=unavailable');}
+  try{const {token:value,back,days}=await this.passengers.callback(g,webBase,cookieValue(req.headers.cookie,'safeer_google'),query);res.setHeader('Set-Cookie',[clear,passengerCookie(value,days)]);return res.redirect(302,back+(back.includes('?')?'&':'?')+'signin=ok');}
+  catch(error){const code=error instanceof IdentityError?(error.getResponse() as {error?:{code?:string}}).error?.code:'';res.setHeader('Set-Cookie',clear);return res.redirect(302,'/marketplace?view=profile&signin='+(code==='GOOGLE_CANCELLED'?'cancelled':code==='GOOGLE_EMAIL_UNVERIFIED'?'unverified':'failed'));}
+ }
+ @Get('me') async me(@Req() req:Request){const t=ptoken(req),account=await this.passengers.me(t);return reply({account,csrfToken:account&&t?csrf(t):null,googleEnabled:Boolean(googleConfig(hostedWeb))});}
+ @Post('logout') async logout(@Req() req:Request,@Body() data:unknown,@Res({passthrough:true}) res:Response){const r=await this.passengers.signOut(ptoken(req),data);res.setHeader('Set-Cookie',passengerCookie('',0));return reply(r);}
+ @Put('profile') profile(@Req() req:Request,@Body() data:unknown){return this.passengers.saveProfile(ptoken(req),data).then(reply);}
+ @Get('trips') trips(@Req() req:Request){return this.passengers.trips(ptoken(req)).then(reply);}
+ @Post('bookings') link(@Req() req:Request,@Body() data:unknown){return this.passengers.link(ptoken(req),data).then(reply);}
+ @Delete('bookings/:reference') unlink(@Req() req:Request,@Param('reference') reference:string){return this.passengers.unlink(ptoken(req),reference).then(reply);}
+ @Delete('account') async remove(@Req() req:Request,@Res({passthrough:true}) res:Response){const r=await this.passengers.deleteAccount(ptoken(req));res.setHeader('Set-Cookie',passengerCookie('',0));return reply(r);}
 }
 @Controller('api/v1/public')
 class PublicController {
@@ -243,14 +269,14 @@ class PlatformController {
  @Get('notifications') notifications(@Req() req:Request,@Query('before') before:string|undefined){return this.platform.notifications(token(req),before).then(reply);}
  @Post('notifications/:event/read') read(@Req() req:Request,@Param('event') id:string,@Body() data:unknown){return this.platform.read(token(req),id,data).then(reply);}
 }
-@Module({controllers:[PlatformController,FinanceController,IdentityController,CompanyController,LuggageController,ShipmentController,ShipmentTrackingController,OperationsController,TicketingController,BookingController,RouteController,FleetController,TripSeatController,TripController,ReservationController,PublicController,PublicProfileController,BoardingController],providers:[Database,ShipmentService,OperationsService,IdentityService,CompanyService,RouteService,FleetService,TripService,PublicService,ReservationService,TicketingService,LuggageService,BoardingService,FinanceService,PlatformService]})
+@Module({controllers:[PassengerController,PlatformController,FinanceController,IdentityController,CompanyController,LuggageController,ShipmentController,ShipmentTrackingController,OperationsController,TicketingController,BookingController,RouteController,FleetController,TripSeatController,TripController,ReservationController,PublicController,PublicProfileController,BoardingController],providers:[PassengerService,Database,ShipmentService,OperationsService,IdentityService,CompanyService,RouteService,FleetService,TripService,PublicService,ReservationService,TicketingService,LuggageService,BoardingService,FinanceService,PlatformService]})
 export class IdentityModule {}
 
 export async function createIdentityApi({port=4321,webOrigin='http://127.0.0.1:4320'}:{port?:number;webOrigin?:string}={}){
   const origin=new URL(webOrigin);
   const hosted=origin.protocol==='https:'&&!['127.0.0.1','localhost'].includes(origin.hostname);
   if(!(hosted||origin.protocol==='http:'&&origin.hostname==='127.0.0.1')||origin.username||origin.password||origin.pathname!=='/'||origin.search||origin.hash||!Number.isInteger(port)||port<0||port>65535)throw Error('Use a loopback or hosted https web origin and valid identity port.');
-  secure=hosted?'; Secure':'';
+  secure=hosted?'; Secure':'';webBase=origin.origin;hostedWeb=hosted;
   const app=await NestFactory.create(IdentityModule,{logger:false,bodyParser:false,abortOnError:false});
   app.getHttpAdapter().getInstance().disable('x-powered-by');
   const http=app.getHttpServer();http.headersTimeout=10000;http.requestTimeout=15000;http.keepAliveTimeout=5000;http.maxHeadersCount=40;http.maxRequestsPerSocket=100;http.setTimeout(15000,(socket:import('node:net').Socket)=>socket.destroy());
@@ -260,11 +286,15 @@ export async function createIdentityApi({port=4321,webOrigin='http://127.0.0.1:4
     res.setHeader('Permissions-Policy','camera=(), microphone=(), geolocation=(), payment=(), usb=()');
     res.setHeader('Content-Security-Policy',"default-src 'none'; frame-ancestors 'none'");
     const address=app.getHttpServer().address();
-    if(req.headers.host!==`127.0.0.1:${address?.port}`||req.headers.authorization||req.headers['sec-fetch-site']==='cross-site')return res.status(403).json({error:{code:'FORBIDDEN',message:'Request not permitted.'}});
+    if(req.headers.host!==`127.0.0.1:${address?.port}`||req.headers.authorization||req.headers['sec-fetch-site']==='cross-site'&&!(req.method==='GET'&&req.path==='/api/v1/passenger/google/callback'))return res.status(403).json({error:{code:'FORBIDDEN',message:'Request not permitted.'}});
     if(!['GET','POST','PATCH','PUT','DELETE'].includes(req.method))return res.status(405).json({error:{code:'METHOD_NOT_ALLOWED',message:'Method not permitted.'}});
     if(req.method!=='GET'){
       if(req.headers.origin!==origin.origin)return res.status(403).json({error:{code:'INVALID_ORIGIN',message:'Use the local Safeer staff page.'}});
-      if(req.path!=='/api/v1/auth/login'&&!/^\/api\/v1\/public\/holds(\/lookup|\/[^/]+\/release)?$/.test(req.path)){
+      if(req.path.startsWith('/api/v1/passenger/')){
+        const session=passengerToken(req.headers.cookie);
+        if(session&&!validCsrf(session,req.headers['x-csrf-token']))return res.status(403).json({error:{code:'CSRF_REJECTED',message:'Refresh the page and try again.'}});
+      }
+      else if(req.path!=='/api/v1/auth/login'&&!/^\/api\/v1\/public\/holds(\/lookup|\/[^/]+\/release)?$/.test(req.path)){
         let session:string;try{session=token(req);}catch{return res.status(401).json({error:{code:'UNAUTHENTICATED',message:'Sign in to continue.'}});}
         if(!validCsrf(session,req.headers['x-csrf-token']))return res.status(403).json({error:{code:'CSRF_REJECTED',message:'Refresh the staff page and try again.'}});
       }

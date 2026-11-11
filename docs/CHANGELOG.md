@@ -1,5 +1,9 @@
 # Changelog
 
+## Passenger Google sign-in - D70 (D68 step 2), 2026-11-11
+
+New API under /api/v1/passenger (google/start, google/callback, me, logout, profile, trips, bookings, bookings/:reference, account) in apps/api/src/passenger.service.ts. Website Profile gains Google sign-in, account details and booking sync (src/passenger-account.js); checkout pre-fills from the profile. No migration. Test: npm run test:passenger-google.
+
 ## Route stations and staff details - D69, 2026-11-11
 
 Migration 0021_member_contact.sql adds optional company_users.phone and job_title. Route stop station choices follow the chosen city with a clear ROUTE_STATION_CITY error; working company roles always include company.profile.read. The routes browser test selector is updated for the D65 company sidebar. Verified by tests/staff-details.integration.mjs, routes/companies browser workflows and database integration.

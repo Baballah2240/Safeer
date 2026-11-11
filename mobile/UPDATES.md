@@ -1,5 +1,9 @@
 # Safeer mobile status
 
+## Passenger Google sign-in - website, 2026-11-11
+
+Booking website Profile: optional "Sign in with Google", saved name and mobile, sign-out and "Save bookings from this device"; checkout fills the first traveller name and mobile from the profile. Not yet available inside the Android Booking app (that is D68 step 4); no APK change.
+
 ## Route stations and staff details - website, 2026-11-11
 
 Staff screens: each route stop now lists only stations in its city and explains when there are none; saving a mismatched station shows a clear message. Adding or editing staff accepts an optional job title and work phone. Custom company roles always let the person open their company workspace. Phones receive these changes from the website; no new APK.

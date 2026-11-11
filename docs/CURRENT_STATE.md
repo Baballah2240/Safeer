@@ -1,5 +1,9 @@
 # Current state - read this first
 
+## Passenger Google sign-in - D70 (D68 step 2), 2026-11-11
+
+Passengers can sign in with Google on the website Profile page, save name and mobile, and save device bookings to their account; checkout pre-fills from the profile. Hosting needs SAFEER_GOOGLE_CLIENT_ID and SAFEER_GOOGLE_CLIENT_SECRET (Render) and the Google client must list https://safeer.mohbaba.online/api/v1/passenger/google/callback as an authorized redirect URI. Until then the button shows "not available yet". Next: step 3 My Trips across devices.
+
 ## Route stations and staff details - D69, 2026-11-11
 
 Route stops list only stations in their city; staff members have optional job title and work phone; working company roles cannot lose company.profile.read. Migration 0021 adds two nullable company_users columns.

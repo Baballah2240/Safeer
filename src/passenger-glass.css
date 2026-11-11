@@ -103,3 +103,16 @@
  html[data-app-surface] body .journey-card-overlay .journey-company{color:#fff;opacity:1;text-shadow:0 1px 6px #0008}
  html[data-app-surface] body .journey-card-overlay h2{color:#fff}
 }
+
+/* D68: passenger account (Google sign-in). */
+.google-signin{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:46px;padding:10px 20px;margin:6px 0 4px;border:1px solid var(--border);border-radius:15px;background:#fff;color:#1f1f1f;font-weight:600;text-decoration:none}
+.google-signin svg{width:20px;height:20px;flex:none}
+.google-signin:focus-visible{outline:3px solid #586DF4;outline-offset:2px}
+.account-avatar{display:inline-grid;place-items:center;width:64px;height:64px;margin:0 0 14px;border-radius:50%;background:linear-gradient(135deg,#6234D9,#295BE0);color:#fff;font-size:1.3rem;font-weight:700}
+.profile-identity .secondary{display:block;margin:12px auto 0;min-height:44px}
+.account-notice{margin:0 0 14px;padding:10px 14px;border-radius:12px;background:color-mix(in srgb,#295BE0 12%,transparent);color:var(--text)}
+.account-muted{color:var(--muted);font-size:.82rem}
+.account-details form{display:grid;gap:12px;margin-bottom:8px}
+.account-details label{display:grid;gap:6px;font-size:.86rem}
+.account-details input{min-height:44px;padding:8px 12px;border:1px solid var(--border);border-radius:12px;background:var(--surface,transparent);color:inherit;font:inherit}
+.account-form-status:empty{display:none}

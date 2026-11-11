@@ -1,0 +1,38 @@
+// D68: optional passenger account (Google sign-in). Guest booking keeps working without it.
+// The session is an HttpOnly cookie; this module only holds the public profile and the CSRF value.
+export const accountArabic={'Sign in with Google':'تسجيل الدخول عبر Google','Save your details and see your bookings on any device. Booking without an account still works.':'احفظ بياناتك وشاهد حجوزاتك من أي جهاز. ما زال الحجز دون حساب متاحاً.','Google sign-in is not available yet.':'تسجيل الدخول عبر Google غير متاح بعد.','You are signed in.':'تم تسجيل الدخول.','Sign-in was cancelled.':'أُلغي تسجيل الدخول.','Your Google email must be verified.':'يجب أن يكون بريدك في Google موثّقاً.','Sign-in did not complete. Please try again.':'لم يكتمل تسجيل الدخول. حاول مرة أخرى.','Sign out':'تسجيل الخروج','Your details':'بياناتك','Name':'الاسم','Mobile number':'رقم الجوال','Save details':'حفظ البيانات','Saved.':'تم الحفظ.','Check the name and mobile number.':'تحقق من الاسم ورقم الجوال.','Could not save. Try again.':'تعذّر الحفظ. حاول مجدداً.','Save bookings from this device':'حفظ حجوزات هذا الجهاز','Bookings saved to your account:':'الحجوزات المحفوظة في حسابك:','bookings added to your account.':'حجوزات أضيفت إلى حسابك.','No new bookings on this device.':'لا توجد حجوزات جديدة على هذا الجهاز.','New bookings are saved to your account automatically.':'تُحفظ الحجوزات الجديدة في حسابك تلقائياً.'};
+export const account={me:null,csrf:null,googleEnabled:false,loaded:false,notice:'',busy:false};
+const call=async(path,method='GET',data)=>{const r=await fetch('/api/v1/passenger/'+path,{method,credentials:'same-origin',cache:'no-store',headers:{...(method!=='GET'?{'X-CSRF-Token':account.csrf||''}:{}),...(data!==undefined?{'Content-Type':'application/json'}:{})},...(data!==undefined?{body:JSON.stringify(data)}:{})});const j=await r.json().catch(()=>({}));if(!r.ok)throw Object.assign(Error(),{status:r.status,code:j.error?.code});return j.data;};
+const signinNotice={ok:'You are signed in.',cancelled:'Sign-in was cancelled.',unverified:'Your Google email must be verified.',failed:'Sign-in did not complete. Please try again.',unavailable:'Google sign-in is not available yet.'};
+export async function loadAccount(){
+ const url=new URL(location.href),flag=url.searchParams.get('signin');
+ if(flag){account.notice=signinNotice[flag]||'';url.searchParams.delete('signin');history.replaceState(history.state,'',url.pathname+url.search+url.hash);}
+ try{const d=await call('me');account.me=d.account;account.csrf=d.csrfToken;account.googleEnabled=d.googleEnabled;}catch{account.me=null;}
+ account.loaded=true;return account;
+}
+// Links one booking this device already proves with its key. Failures are silent: the guest booking is unaffected.
+export async function linkBooking(reference,key){if(!account.me||!key)return false;try{await call('bookings','POST',{reference,key});return true;}catch{return false;}}
+const initials=name=>String(name||'?').trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+export function accountSection({t,e,link,icon}){
+ const a=account.me,notice=account.notice?`<p class="account-notice" role="status">${account.notice==='bookings added to your account.'?e(account.count)+' ':''}${t(account.notice)}</p>`:'';
+ const start='/api/v1/passenger/google/start?return='+encodeURIComponent('/marketplace?view=profile');
+ if(!a)return `<section class="glass-panel profile-identity">${notice}${icon('profile')}<h2>${t('Guest traveller')}</h2><p>${t('Book without an account. Keep your reference to find a booking on another device.')}</p>${account.googleEnabled?`<a class="google-signin" href="${e(start)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.6 12.3c0-.8-.1-1.5-.2-2.3H12v4.3h6a5 5 0 0 1-2.2 3.3v2.7h3.6c2-1.9 3.2-4.7 3.2-8z"/><path fill="#34A853" d="M12 23c3 0 5.5-1 7.3-2.7l-3.6-2.7c-1 .7-2.2 1-3.7 1-2.9 0-5.3-1.9-6.2-4.5H2.1v2.8A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.8 14.1a6.6 6.6 0 0 1 0-4.2V7.1H2.1a11 11 0 0 0 0 9.8z"/><path fill="#EA4335" d="M12 5.4c1.6 0 3.1.6 4.2 1.7l3.2-3.2A11 11 0 0 0 2.1 7.1l3.7 2.8C6.7 7.3 9.1 5.4 12 5.4z"/></svg><span>${t('Sign in with Google')}</span></a><p>${t('Save your details and see your bookings on any device. Booking without an account still works.')}</p>`:`<p class="account-muted">${t('Google sign-in is not available yet.')}</p>`}<a class="primary" href="${e(link('/booking'))}">${t('My Trips')}</a></section>`;
+ return `<section class="glass-panel profile-identity">${notice}<span class="account-avatar" aria-hidden="true">${e(initials(a.displayName))}</span><h2>${e(a.displayName)}</h2><p dir="ltr">${e(a.email)}</p><p>${t('Bookings saved to your account:')} <strong>${e(a.bookingCount??0)}</strong></p><a class="primary" href="${e(link('/booking'))}">${t('My Trips')}</a><button type="button" class="secondary" data-account-sync ${account.busy?'disabled':''}>${t('Save bookings from this device')}</button><p class="account-muted">${t('New bookings are saved to your account automatically.')}</p></section><section class="glass-panel profile-settings account-details"><h2>${t('Your details')}</h2><form data-account-form><label>${t('Name')}<input name="displayName" required minlength="2" maxlength="100" autocomplete="name" value="${e(a.displayName)}"></label><label>${t('Mobile number')}<input name="mobile" type="tel" dir="ltr" maxlength="30" autocomplete="tel" value="${e(a.mobile||'')}"></label><p class="account-form-status" role="status" data-account-status></p><button class="primary" ${account.busy?'disabled':''}>${t('Save details')}</button></form><div><span>${e(a.email)}</span><button type="button" class="secondary" data-account-signout>${t('Sign out')}</button></div></section>`;
+}
+export function bindAccount(root,{t,render,keys}){
+ const status=text=>{const n=root.querySelector('[data-account-status]');if(n)n.textContent=t(text);};
+ root.querySelector('[data-account-form]')?.addEventListener('submit',async event=>{
+  event.preventDefault();const f=new FormData(event.target);account.busy=true;
+  try{account.me=await call('profile','PUT',{displayName:String(f.get('displayName')).trim(),mobile:String(f.get('mobile')).trim(),travelers:(account.me.travelers||[]).map(x=>({fullName:x.fullName,mobile:x.mobile||''})),version:account.me.version});account.notice='Saved.';}
+  catch(error){account.notice='';account.busy=false;status(error.code==='INVALID_MOBILE'||error.code==='INVALID_INPUT'?'Check the name and mobile number.':'Could not save. Try again.');return;}
+  account.busy=false;render();
+ });
+ root.querySelector('[data-account-signout]')?.addEventListener('click',async()=>{try{await call('logout','POST',{});}catch{}account.me=null;account.csrf=null;account.notice='';render();});
+ root.querySelector('[data-account-sync]')?.addEventListener('click',async()=>{
+  account.busy=true;render();let added=0;for(const ref of keys.list().slice(0,50))if(await linkBooking(ref,keys.get(ref)))added++;
+  try{const d=await call('me');account.me=d.account||account.me;}catch{}
+  account.busy=false;account.notice=added?'bookings added to your account.':'No new bookings on this device.';account.count=added;render();
+ });
+}
+// Fills empty checkout fields from the saved profile. Typed values always win.
+export function prefill(names,seats,mobile){const a=account.me;if(!a)return mobile;if(seats[0]&&!names[seats[0]])names[seats[0]]=a.displayName;return mobile||a.mobile||'';}
