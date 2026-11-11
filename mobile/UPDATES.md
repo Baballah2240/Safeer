@@ -304,3 +304,11 @@ Validation: 26 unit tests, build/docs checks, all 7 shipment integration tests a
 - Hosted shared-source update; no new APK version.
 
 Validation: unit/build/docs checks, 80 menu layouts, 16 tracking layouts, 64 body-masthead/staff-header layouts, 36 Driver theme layouts, boarding/revocation/logout, update discovery and login regressions passed. Focused fields stay clear of the fixed menu button; final sidebar visuals were reviewed.
+
+
+## 2026-11-12 - Staff access matches the app shell
+- Staff access uses the body logo and independent fixed menu button, with modern slide-out navigation and Settings.
+- Permission-scoped staff/company navigation and refresh/sign-out remain available; obsolete preview links and the old top bar/sidebar column are removed from Staff access.
+- Shared hosted update; no APK reinstall required.
+
+Validation: unit/build/docs checks, 32 Staff menu layouts, 64 shared masthead/header layouts, login, 72 company-management layouts and 60 identity/permissions layouts passed. Legacy preview sidebar checks also passed. The time-sensitive operations fixture could not run near the Khartoum day boundary; company and identity workflows were verified independently.

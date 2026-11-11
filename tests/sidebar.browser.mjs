@@ -17,7 +17,7 @@ try{await identityFixture(async f=>{
  const settle=()=>evaluate('new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))');
  const key=async(key,code,virtual)=>{await send('Input.dispatchKeyEvent',{type:'keyDown',key,code,windowsVirtualKeyCode:virtual,...(key==='Enter'?{text:'\r',unmodifiedText:'\r'}:{})});await send('Input.dispatchKeyEvent',{type:'keyUp',key,code,windowsVirtualKeyCode:virtual});};
  let layouts=0;
- for(const [path,ready,languageButton,content,field] of [['/staff','.staff-shortcuts','#staff-language','.staff-content','#change-password [name=currentPassword]'],['/','.metrics','#language-button','.workspace','#company-select']]){
+ for(const [path,ready,languageButton,content,field] of [['/','.metrics','#language-button','.workspace','#company-select']]){
   for(const language of ['en','ar'])for(const theme of ['light','dark'])for(const [width,height] of [[1920,1080],[1366,768],[390,844],[320,740]]){
    const name=`${path}/${language}/${theme}/${width}`;
    await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width<700});

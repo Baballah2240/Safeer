@@ -288,3 +288,7 @@ Unify public shipment tracking with the current Safeer shell: centered branded s
 
 ## Body wordmark and minimal Driver sidebar - 2026-11-11
 Owner clarified that the Safeer logo/name belongs to the page body, independent of the sidebar trigger. Use a normal-flow masthead and a separately fixed, cutout-safe menu button across Booking, Driver and Tracking, superseding directional header hiding. Driver sidebar contains only appearance/language Settings and version; preserve refresh/sign-out on the Driver page and app-update controls in its footer.
+
+
+## Staff access app-shell alignment - 2026-11-12
+Replace Staff access legacy top bar and persistent sidebar column with the shared body wordmark, independent fixed menu button and modal app drawer. Preserve permission-scoped platform/company navigation, account actions, settings, keyboard/focus behavior and login drafts. Legacy fictional preview remains separate.

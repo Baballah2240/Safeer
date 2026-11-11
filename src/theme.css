@@ -493,8 +493,8 @@
 /* Minimal Booking/Driver app bar and branded loading. */
 @media screen {
  html[data-app-surface] body :is(#market,#track-app) .market-bar,html[data-app-surface] body #driver-app .driver-header.driver-compact-header{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;align-items:center;gap:8px;min-height:64px;width:auto;max-width:none;margin:0;padding:10px 16px;border:0;border-radius:0;background:transparent;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
- html body :is(.market-bar,.driver-compact-header) .app-header-name{grid-column:2;text-align:center;font-size:1.15rem;font-weight:750;letter-spacing:.01em;line-height:1.4;color:var(--ink)}
- html body :is(.market-bar,.driver-compact-header)>.sidebar-toggle{grid-column:1;grid-row:1;margin:0;width:44px;height:44px}
+ html body :is(.market-bar,.driver-compact-header,.staff-topbar.app-masthead) .app-header-name{grid-column:2;text-align:center;font-size:1.15rem;font-weight:750;letter-spacing:.01em;line-height:1.4;color:var(--ink)}
+ html body :is(.market-bar,.driver-compact-header,.staff-topbar.app-masthead)>.sidebar-toggle{grid-column:1;grid-row:1;margin:0;width:44px;height:44px}
  html body .app-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;min-height:220px;padding:32px 24px;text-align:center;color:var(--muted)}
  html body .app-loading img{width:48px;height:48px;object-fit:contain}
  html body .app-loading strong{font-size:.9rem;font-weight:500}
@@ -522,7 +522,7 @@
 /* Airy bilingual wordmark, retaining the seamless app bar. */
 @media screen {
  html[data-app-surface] body :is(#market,#track-app) .market-bar,html[data-app-surface] body #driver-app .driver-header.driver-compact-header{padding-block:22px;min-height:88px}
- html body :is(.market-bar,.driver-compact-header) .app-header-name{display:flex;align-items:center;justify-content:center;gap:10px;min-width:0;font-size:1.4rem;font-weight:750;letter-spacing:-.035em;line-height:1.5;text-shadow:none}
+ html body :is(.market-bar,.driver-compact-header,.staff-topbar.app-masthead) .app-header-name{display:flex;align-items:center;justify-content:center;gap:10px;min-width:0;font-size:1.4rem;font-weight:750;letter-spacing:-.035em;line-height:1.5;text-shadow:none}
  html body .app-header-name img{width:26px;height:26px;flex:none;display:block}
  html body .app-header-name [lang=ar]{font-family:"Segoe UI",Tahoma,Arial,sans-serif;font-size:1.65rem;font-weight:700;letter-spacing:0;line-height:1.5}
 }
@@ -553,3 +553,21 @@
  html body .driver-maintenance-content>.drawer-download>span{display:grid;gap:4px}
 }
 @media print{.app-menu-trigger{display:none!important}.driver-main-actions,.driver-app-maintenance{display:none!important}}
+
+/* Staff access shares the app body branding and native modal menu. */
+@media screen {
+ html.staff-app-page{scroll-padding-block-start:calc(var(--safe-top,0px) + 88px)}
+ html body #staff-app .staff-modern-shell{display:block;padding:0;overflow:visible}
+ html body #staff-app .staff-topbar.app-masthead{position:relative;top:auto;z-index:auto;display:grid;grid-template-columns:44px minmax(0,1fr) 44px;align-items:center;gap:8px;width:auto;min-height:calc(100px + var(--safe-top,0px));margin:0;padding:calc(28px + var(--safe-top,0px)) 16px 28px;border:0;border-radius:0;background:transparent;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+ html body #staff-sidebar.staff-app-menu:not([open]){display:none}
+ html body #staff-sidebar.staff-app-menu[open]{display:flex;flex-direction:column;position:fixed;inset-block:0;inset-inline-start:0;inset-inline-end:auto;width:min(370px,calc(100vw - 20px));max-width:100vw;height:100dvh;max-height:100dvh;margin:0;padding:calc(20px + var(--safe-top,0px)) 18px calc(20px + env(safe-area-inset-bottom));gap:0;overflow-y:auto;border:1px solid var(--glass-rim);border-radius:0 28px 28px 0;background:var(--paper);color:var(--ink);box-shadow:12px 0 50px #0004;transform:none;visibility:visible;backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px)}
+ html[dir=rtl] body #staff-sidebar.staff-app-menu[open]{border-radius:28px 0 0 28px;box-shadow:-12px 0 50px #0004}
+ html body #staff-sidebar .market-drawer-head>strong{font-size:1.2rem;color:var(--ink)}
+ html body #staff-sidebar .staff-sidebar-label{margin:20px 12px 8px;font-size:.68rem;color:var(--muted)}
+ html body #staff-sidebar .market-drawer-nav{margin-top:18px}
+ html body #staff-sidebar .drawer-bottom{margin-top:auto;padding-top:24px}
+ html body #staff-sidebar .market-preferences>div{display:flex;align-items:center;justify-content:space-between;gap:12px}
+ html body #staff-sidebar .staff-drawer-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+ html body #staff-sidebar .staff-drawer-actions button{flex:1;min-height:44px;border-radius:14px}
+ html body #staff-sidebar .drawer-version{font-size:.8rem;color:var(--ink)}
+}

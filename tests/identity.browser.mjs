@@ -81,7 +81,7 @@ try{
       if(await evaluate('document.documentElement.dataset.theme')!==theme)await click('[data-theme-toggle]');
       for(const lang of ['en','ar']){
       if(await evaluate('document.documentElement.lang')!==lang)await click('#staff-language');
-      assert.equal(await evaluate('new URL(document.querySelector(\'.staff-preview[href^="/?lang="]\').href).searchParams.get("lang")'),lang);
+      assert.equal(await evaluate('new URL(document.querySelector(\'#staff-sidebar a[href^="/marketplace"]\').href).searchParams.get("lang")'),lang);
       for(const [name,ready] of [['profile','#change-password'],['users','[data-create-user]'],['roles','[data-create-role]'],['sessions','[data-revoke]'],['audit','.staff-table']]){
         await tab(name,ready);
         for(const [width,height] of [[1920,1080],[1366,768],[390,844]]){
@@ -92,7 +92,7 @@ try{
     }
     }
     if(await evaluate('document.documentElement.dataset.theme')!=='dark')await click('[data-theme-toggle]');
-    await click('.staff-preview[href^="/?lang="]');await until('Boolean(document.querySelector("#app .metrics"))');
+    await click('#staff-sidebar a[href^="/marketplace"]');await until('Boolean(document.querySelector("#market-search"))');
     assert.equal(await evaluate('document.documentElement.lang'),'ar');
     assert.equal(await evaluate('document.documentElement.dataset.theme'),'dark');
     await click('a[href^="/staff"]');await until('Boolean(document.querySelector("#change-password"))');
