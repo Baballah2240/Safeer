@@ -1,27 +1,27 @@
 // Generated release metadata. Per-app versions preserve independent Driver/Booking updates.
 export const appRelease={
- "versionName": "0.17.1",
- "versionCode": 17001,
- "tag": "v0.17.1",
- "releasePage": "https://github.com/Baballah2240/Safeer/releases/tag/v0.17.1",
+ "versionName": "0.17.2",
+ "versionCode": 17002,
+ "tag": "v0.17.2",
+ "releasePage": "https://github.com/Baballah2240/Safeer/releases/tag/v0.17.2",
  "apps": {
   "driver": {
-   "versionName": "0.18.2",
-   "versionCode": 18002,
-   "tag": "v0.18.2",
-   "releasePage": "https://github.com/Baballah2240/Safeer/releases/tag/v0.18.2",
-   "url": "https://github.com/Baballah2240/Safeer/releases/download/v0.18.2/Safeer-Driver-0.18.2.apk",
-   "sha256": "61f158c2a0f53575a506a01780e1f47b73403615c44e3aaba74cf0a0aece9454",
-   "bytes": 17656
+   "versionName": "0.18.3",
+   "versionCode": 18003,
+   "tag": "v0.18.3",
+   "releasePage": "https://github.com/Baballah2240/Safeer/releases/tag/v0.18.3",
+   "url": "https://github.com/Baballah2240/Safeer/releases/download/v0.18.3/Safeer-Driver-0.18.3.apk",
+   "sha256": "dec0cf3caed6521aafee354384d3f3123f97afb20c513963dd01cbc79543c89f",
+   "bytes": 17896
   },
   "booking": {
-   "versionName": "0.17.1",
-   "versionCode": 17001,
-   "tag": "v0.17.1",
-   "releasePage": "https://github.com/Baballah2240/Safeer/releases/tag/v0.17.1",
-   "url": "https://github.com/Baballah2240/Safeer/releases/download/v0.17.1/Safeer-Booking-0.17.1.apk",
-   "sha256": "4c29602d0c024005eb1d0d1115f18f2d972f622433c5cd498949a88bfc9ae376",
-   "bytes": 17552
+   "versionName": "0.17.2",
+   "versionCode": 17002,
+   "tag": "v0.17.2",
+   "releasePage": "https://github.com/Baballah2240/Safeer/releases/tag/v0.17.2",
+   "url": "https://github.com/Baballah2240/Safeer/releases/download/v0.17.2/Safeer-Booking-0.17.2.apk",
+   "sha256": "df477351a9b3363a7ac64b16a7b6429cfcc8647bc03e09298b035a6a55f5a52c",
+   "bytes": 17800
   }
  }
 };

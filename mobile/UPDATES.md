@@ -1,5 +1,9 @@
 # Safeer mobile status
 
+## New brand colours and logo - Booking 0.17.2 / 17002, Driver 0.18.3 / 18003, 2026-11-11
+
+Both apps and the website switch to the official SAFEER palette (navy, sky blue, orange) and the new Route Pin logo. The web screens update by themselves; the new launcher icon and native status-bar colours need the new APKs, offered by the in-app update notice. Signed with the existing key (certificate SHA-256 a19fb6c1…7205, same as earlier releases). Release builds and Android lint passed. Physical-phone installation was not performed.
+
 ## Passenger Google sign-in - website, 2026-11-11
 
 Booking website Profile: optional "Sign in with Google", saved name and mobile, sign-out and "Save bookings from this device"; checkout fills the first traveller name and mobile from the profile. Not yet available inside the Android Booking app (that is D68 step 4); no APK change.

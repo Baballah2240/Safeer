@@ -1,5 +1,9 @@
 # Changelog
 
+## Official brand palette and Route Pin logo - D71, 2026-11-11
+
+Navy/sky/orange palette across all web surfaces and the Android shell; new src/brand.svg and Android ic_safeer vector; recoloured src/coach-journey.jpg; Booking 0.17.2/17002 and Driver 0.18.3/18003.
+
 ## Passenger Google sign-in - D70 (D68 step 2), 2026-11-11
 
 New API under /api/v1/passenger (google/start, google/callback, me, logout, profile, trips, bookings, bookings/:reference, account) in apps/api/src/passenger.service.ts. Website Profile gains Google sign-in, account details and booking sync (src/passenger-account.js); checkout pre-fills from the profile. No migration. Test: npm run test:passenger-google.

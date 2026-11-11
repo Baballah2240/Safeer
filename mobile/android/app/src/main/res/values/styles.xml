@@ -1,10 +1,10 @@
 <resources>
     <style name="SafeerTheme" parent="android:style/Theme.Material.Light.NoActionBar">
         <item name="android:fontFamily">sans</item>
-        <item name="android:colorAccent">#295BE0</item>
+        <item name="android:colorAccent">#1E90FF</item>
         <item name="android:windowLightStatusBar">false</item>
-        <item name="android:statusBarColor">#0E1427</item>
-        <item name="android:navigationBarColor">#0E1427</item>
+        <item name="android:statusBarColor">#061A35</item>
+        <item name="android:navigationBarColor">#061A35</item>
         <item name="android:windowActionModeOverlay">true</item>
     </style>
 </resources>

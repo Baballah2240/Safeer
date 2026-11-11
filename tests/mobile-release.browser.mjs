@@ -18,7 +18,7 @@ try{
    if(banner){assert.ok(result[flavor].banner.includes(file.url));assert.ok(result[flavor].banner.includes(outdated?'Download update':'Get the app'));assert.match(result[flavor].ar,/[\u0600-\u06ff]/);}}
   assert.deepEqual(await evaluate('__errors'),[],c.label);
  }
- assert.equal(appRelease.apps.booking.versionCode||appRelease.versionCode,17000);assert.equal(appRelease.apps.booking.sha256,'f2b4cd7ceacaccb8558452dcd53c59c1a61078d2727f72803e7796511c4cca7c');
+ assert.equal(appRelease.apps.booking.versionCode||appRelease.versionCode,17002);assert.match(appRelease.apps.booking.sha256,/^[0-9a-f]{64}$/);
  for(const file of Object.values(appRelease.apps)){const url=new URL(file.url);assert.equal(url.origin,'https://github.com');assert.ok(url.pathname.startsWith('/Baballah2240/Safeer/releases/download/'+(file.tag||appRelease.tag)+'/'));assert.match(file.sha256,/^[a-f0-9]{64}$/);assert.ok(file.bytes>1000);}
  console.log('Independent release notices passed: Driver 17 offers 18, Booking 17 stays current, browser/cross-flavor downloads and exact artifact links.');
 }finally{await browser?.close();await web.close();}

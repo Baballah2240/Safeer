@@ -1,6 +1,6 @@
 /* Public marketplace and company pages. Uses the shared tokens and theme, and stays readable down to 320px. */
 #market{min-height:100vh;color:var(--ink)}
-#market summary:focus-visible{outline:3px solid #d59d37;outline-offset:3px}[data-theme="light"] #market :focus-visible{outline-color:#8a5a00}#market .market-band :focus-visible{outline-color:#f2c675}
+#market summary:focus-visible{outline:3px solid #e67700;outline-offset:3px}[data-theme="light"] #market :focus-visible{outline-color:#8a5a00}#market .market-band :focus-visible{outline-color:#f2c675}
 .market-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 12px;padding:12px clamp(16px,4vw,40px);border-bottom:1px solid var(--border);background:var(--paper)}.market-bar>div{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 .market-brand{display:inline-flex;align-items:center;gap:10px;font-weight:700;color:inherit;text-decoration:none}.market-bar .market-link{display:inline-flex;align-items:center;justify-content:center;font-weight:600;text-decoration:none}
 .market-main{max-width:none;margin:0;padding:0}.market-wrap{width:100%;max-width:1120px;margin-inline:auto;padding-inline:clamp(16px,4vw,40px)}.market-body{display:grid;gap:36px;padding-block:28px 56px}

@@ -1,5 +1,9 @@
 # Current state - read this first
 
+## Official brand palette - D71, 2026-11-11
+
+The whole project now uses navy #0B2D5B, sky blue #1E90FF and orange #FF8C00 with the Route Pin logo. Booking 0.17.2 and Driver 0.18.3 carry the new launcher icon and native colours.
+
 ## Passenger Google sign-in - D70 (D68 step 2), 2026-11-11
 
 Passengers can sign in with Google on the website Profile page, save name and mobile, and save device bookings to their account; checkout pre-fills from the profile. Hosting needs SAFEER_GOOGLE_CLIENT_ID and SAFEER_GOOGLE_CLIENT_SECRET (Render) and the Google client must list https://safeer.mohbaba.online/api/v1/passenger/google/callback as an authorized redirect URI. Until then the button shows "not available yet". Next: step 3 My Trips across devices.
