@@ -526,3 +526,9 @@
  html body .app-header-name img{width:26px;height:26px;flex:none;display:block}
  html body .app-header-name [lang=ar]{font-family:"Segoe UI",Tahoma,Arial,sans-serif;font-size:1.65rem;font-weight:700;letter-spacing:0;line-height:1.5}
 }
+
+@media screen {
+ html[data-app-surface] body #market .market-bar,html[data-app-surface] body #driver-app .driver-header.driver-compact-header{padding-block:24px;transition:transform 220ms cubic-bezier(.22,1,.36,1),opacity 180ms ease}
+ html[data-app-header-hidden=true] body #market .market-bar,html[data-app-header-hidden=true] body #driver-app .driver-header.driver-compact-header{transform:translateY(calc(-100% - var(--header-gap) - 8px));opacity:0;pointer-events:none}
+}
+@media screen and (prefers-reduced-motion:reduce){html[data-app-surface] body #market .market-bar,html[data-app-surface] body #driver-app .driver-header.driver-compact-header{transition:none}}

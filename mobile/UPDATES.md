@@ -279,3 +279,11 @@ Validation: signed release builds and Android lint passed (0 errors); versions/s
 - Shared hosted styling; no APK reinstall required for this refinement.
 
 Validation: 26 unit tests, source build and documentation checks passed; Booking/Driver menus (80 layouts), headers (64 layouts), login and sidebar (32 layouts) passed. Visual QA covered 12 Arabic/English light/dark booking layouts, including field sizing/focus, image separation and overflow.
+
+
+## 2026-11-11 - Scroll-aware header and booking spacing
+- Booking/Driver headers hide when scrolling down and return when scrolling up or reaching the top. Keyboard focus and open drawers keep navigation available; reduced-motion is respected.
+- Added vertical room around the centered name and moved the booking image card and search form lower.
+- Hosted update; no native version change.
+
+Validation: unit/build/documentation checks, 80 Booking/Driver menu layouts, 64 header layouts including down/up scrolling, login and 32 sidebar layouts passed. Twelve bilingual light/dark booking layouts verified the larger visible card gap and field fit.

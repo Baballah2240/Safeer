@@ -262,3 +262,29 @@ addEventListener('focus',()=>void refreshAppRelease());
 addEventListener('online',()=>void refreshAppRelease({force:true}));
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)void refreshAppRelease();});
 if(driverPage()){queueMicrotask(()=>void refreshAppRelease());setInterval(()=>{if(!document.hidden)void refreshAppRelease();},60000);}
+
+// Booking/Driver: directional scrolling keeps the name visible when returning up.
+if(document.documentElement.hasAttribute('data-app-surface')){
+ const page=document.documentElement;
+ let header=null,lastY=0,anchorY=0,direction=0,queued=false;
+ const reveal=()=>{page.removeAttribute('data-app-header-hidden');anchorY=lastY;direction=0;};
+ const follow=()=>{
+  const next=document.querySelector('.market-bar,.driver-header');
+  if(next!==header){header=next;lastY=Math.max(0,scrollY);reveal();}
+ };
+ const update=()=>{
+  queued=false;follow();if(!header)return;
+  const max=Math.max(0,page.scrollHeight-innerHeight),y=Math.min(max,Math.max(0,scrollY)),delta=y-lastY;lastY=y;
+  if(y<=header.offsetHeight+16||page.classList.contains('app-drawer-open')||header.querySelector(':focus-visible')){reveal();return;}
+  if(Math.abs(delta)<1)return;
+  const nextDirection=delta>0?1:-1;
+  if(nextDirection!==direction){direction=nextDirection;anchorY=y-delta;}
+  if(direction>0&&y-anchorY>=14)page.setAttribute('data-app-header-hidden','true');
+  else if(direction<0&&anchorY-y>=8)reveal();
+ };
+ addEventListener('scroll',()=>{if(!queued){queued=true;requestAnimationFrame(update);}},{passive:true});
+ document.addEventListener('focusin',event=>{if(header?.contains(event.target)||event.target.closest('dialog[open]'))reveal();});
+ document.addEventListener('keydown',event=>{if(event.key==='Tab'||event.key==='Home')reveal();});
+ new MutationObserver(follow).observe(document.body,{childList:true,subtree:true});
+ follow();
+}

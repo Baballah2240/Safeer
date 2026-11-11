@@ -276,3 +276,7 @@ The owner clarified that the remaining top indicator is the Android horizontal p
 
 ## Bilingual wordmark and booking form clarity - 2026-11-11
 Refine the centered localized Safeer name with its existing mark and language-specific typography, and increase app-bar vertical padding. Preserve its transparent background. Separate the booking photo from the heading and search form so the image stays clear, and refine native city/date/passenger fields with readable labels, focus states and RTL-safe spacing. No native version change.
+
+
+## Scroll-aware mobile app header - 2026-11-11
+Owner requested an Instagram-style header: hide on downward scrolling and reveal on upward scrolling, with comfortable wordmark padding and more space before the booking card. Scope to Booking/Driver; preserve keyboard access, drawer behavior, safe insets, reduced-motion and Staff headers.

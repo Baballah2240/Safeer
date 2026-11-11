@@ -109,3 +109,5 @@
 }
 
 @media screen {html[data-app-surface=booking] body #market-search .market-field :is(select,input){background:transparent;border:0;box-shadow:none}}
+
+@media screen {html[data-app-surface=booking] body #market .market-main>.market-hero{margin-block-start:36px}html[data-app-surface=booking] body #market-search.market-search-panel{margin-top:32px}}

@@ -29,11 +29,17 @@ try{await identityFixture(async f=>{
    if(page==='preview'){await evaluate('document.querySelector("[data-nav=passengers]").click()');await until('Boolean(document.querySelector("#reservation-form"))');}
    for(const [width,height] of [[1920,1080],[1366,768],[390,844],[320,740]]){
     const label=`${page}/${theme}/${lang}/${width}`;
-    await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width<700});await evaluate('scrollTo(0,0)');await settle();
+    await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width<700});await evaluate('document.activeElement?.blur();scrollTo(0,0)');await settle();
     assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth+2'),label+' overflow');
     const start=await evaluate(`(()=>{const n=document.querySelector('${selector}'),r=n.getBoundingClientRect();return {y:r.top+scrollY,height:r.height,max:document.documentElement.scrollHeight-innerHeight};})()`);
     assert.ok(start.max>start.y+2,label+' must have real scrollable content');
     await evaluate(`scrollTo(0,${Math.min(start.max,start.y+240)})`);await settle();
+    if(page==='booking'||page==='driver'){
+     await settle();assert.equal(await evaluate('document.documentElement.dataset.appHeaderHidden'),'true',label+' hides scrolling down');
+     await evaluate('scrollBy(0,-40)');await settle();await settle();
+     assert.equal(await evaluate('document.documentElement.hasAttribute("data-app-header-hidden")'),false,label+' reveals scrolling up');
+     await evaluate('document.getAnimations().filter(a=>Number.isFinite(a.effect?.getComputedTiming().endTime)).forEach(a=>a.finish())');
+    }
     const state=await evaluate(`(()=>{const n=document.querySelector('${selector}'),r=n.getBoundingClientRect(),c=getComputedStyle(n);return {top:r.top,bottom:r.bottom,left:r.left,right:r.right,height:r.height,position:c.position,blur:c.backdropFilter,measured:parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sticky-header-height')),padding:parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop)};})()`);
     const gap=width<=760?10:12;
     assert.equal(state.position,'sticky',label);assert.ok(Math.abs(state.top-gap)<=1,label+' header must keep its floating top gap');
