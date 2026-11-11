@@ -518,3 +518,11 @@
  html[data-app-surface][data-theme=dark] body .app-loading-screen{--page-art:radial-gradient(ellipse at 92% 4%,#586df447,transparent 47%),radial-gradient(ellipse at 5% 65%,#6234d936,transparent 50%);--page:#0e1427;--ink:#f5f6ff;--muted:#bec6e0;--border:#a2b5ff38}
 }
 @media screen and (prefers-color-scheme:dark){html[data-app-surface]:not([data-theme=light]) body .app-loading-screen{--page-art:radial-gradient(ellipse at 92% 4%,#586df447,transparent 47%),radial-gradient(ellipse at 5% 65%,#6234d936,transparent 50%);--page:#0e1427;--ink:#f5f6ff;--muted:#bec6e0;--border:#a2b5ff38}}
+
+/* Airy bilingual wordmark, retaining the seamless app bar. */
+@media screen {
+ html[data-app-surface] body #market .market-bar,html[data-app-surface] body #driver-app .driver-header.driver-compact-header{padding-block:22px;min-height:88px}
+ html body :is(.market-bar,.driver-compact-header) .app-header-name{display:flex;align-items:center;justify-content:center;gap:10px;min-width:0;font-size:1.4rem;font-weight:750;letter-spacing:-.035em;line-height:1.5;text-shadow:none}
+ html body .app-header-name img{width:26px;height:26px;flex:none;display:block}
+ html body .app-header-name [lang=ar]{font-family:"Segoe UI",Tahoma,Arial,sans-serif;font-size:1.65rem;font-weight:700;letter-spacing:0;line-height:1.5}
+}

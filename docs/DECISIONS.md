@@ -264,3 +264,7 @@ Owner requested the Booking/Driver header be reduced to a centered localized Saf
 Owner requested no colored background behind the centered app name and a professional loading placement. Make the Booking/Driver app bars fully transparent and use a centered full-screen branded loading state for startup and Booking page loads. Keep authenticated Driver operation feedback compact and preserve forms and menu behavior.
 
 The owner clarified that the remaining top indicator is the Android horizontal progress line. Remove that native view and its progress callback in both apps; retain WebChromeClient camera permissions. Release Driver 0.18.2/18002 and Booking 0.17.1/17001 with the existing signing identity.
+
+
+## Bilingual wordmark and booking form clarity - 2026-11-11
+Refine the centered localized Safeer name with its existing mark and language-specific typography, and increase app-bar vertical padding. Preserve its transparent background. Separate the booking photo from the heading and search form so the image stays clear, and refine native city/date/passenger fields with readable labels, focus states and RTL-safe spacing. No native version change.

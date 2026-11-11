@@ -263,3 +263,11 @@ Booking: reference-driven glass My Trips, Upcoming/Past, real route/photo/status
 - Requires installing the new signed APK; the hosted page alone cannot remove the strip from older installed apps.
 
 Validation: signed release builds and Android lint passed (0 errors); versions/signing compatibility and removal of the native progress view were verified in both APKs. Unit/build/documentation checks, Booking/Driver menus, transparent-header, login/sidebar and centered light/dark/reduced-motion loading checks passed. Physical-phone installation was not performed.
+
+
+## 2026-11-11 - Bilingual branding and booking form refinement
+- Centered Safeer wordmark with the existing brand mark, distinct Arabic/English typography and more vertical space.
+- Clearer booking photo with a separate heading and form, refined city/date/passenger labels, stronger field surfaces and keyboard focus.
+- Shared hosted styling; no APK reinstall required for this refinement.
+
+Validation: 26 unit tests, source build and documentation checks passed; Booking/Driver menus (80 layouts), headers (64 layouts), login and sidebar (32 layouts) passed. Visual QA covered 12 Arabic/English light/dark booking layouts, including field sizing/focus, image separation and overflow.

@@ -68,3 +68,44 @@
  html[data-app-surface=booking] .market-help-grid p{margin:0;color:var(--muted);line-height:1.6}
  @media(prefers-reduced-motion:reduce){html[data-app-surface=booking] body .market-popular-card{transition:none}html[data-app-surface=booking] body .market-popular-card:hover{transform:none}}
 }
+
+/* Clear photo, separate editorial heading and calm native form controls. */
+@media screen {
+ html[data-app-surface=booking] .market-hero-art{height:clamp(210px,30vw,360px);max-width:1240px;width:calc(100% - 32px);margin:4px auto 0;border-radius:28px;border:1px solid var(--border);box-shadow:0 12px 36px #333b8414}
+ html[data-app-surface=booking] .market-hero-art img{object-position:center 55%}
+ html[data-app-surface=booking] .market-hero-art::after,html[dir=rtl][data-app-surface=booking] .market-hero-art::after,html[data-app-surface=booking][data-theme=dark] .market-hero-art::after,html[dir=rtl][data-app-surface=booking][data-theme=dark] .market-hero-art::after{background:linear-gradient(0deg,#10172b30,transparent 45%)}
+ html[data-app-surface=booking] .market-hero-caption{bottom:14px;inset-inline-end:14px;padding:5px 11px;font-size:.7rem;background:#10172bbf;backdrop-filter:blur(8px)}
+ html[data-app-surface=booking] .market-hero>.market-wrap{margin-top:26px}
+ html[data-app-surface=booking] .market-hero-title{max-width:24ch;font-size:clamp(1.85rem,4vw,3.2rem);line-height:1.2;letter-spacing:-.035em}
+ html[dir=rtl][data-app-surface=booking] .market-hero-title{letter-spacing:0;line-height:1.45}
+ html[data-app-surface=booking] .market-hero-title::after{display:none}
+ html[data-app-surface=booking] .market-hero>.market-wrap>p{display:block;max-width:60ch;margin:12px 0 0;font-size:.95rem;line-height:1.7}
+ html[data-app-surface=booking] body #market-search.market-search-panel{margin-top:24px;padding:18px;gap:12px;border-radius:26px;background:var(--surface);box-shadow:0 12px 32px #333b8412}
+ html[data-app-surface=booking] body .market-field{position:relative;min-width:0;gap:8px;padding:14px 16px;border:1px solid #b9b7d25c;border-radius:18px;background:#ffffffd9;box-shadow:none;transition:border-color 160ms ease,box-shadow 160ms ease}
+ html[data-app-surface=booking] .market-field-label{gap:7px;font-size:.76rem;font-weight:650;line-height:1.5;color:var(--muted)}
+ html[data-app-surface=booking] .market-field-label svg{width:17px;height:17px}
+ html[data-app-surface=booking] body .market-field :is(select,input){display:block;box-sizing:border-box;width:100%;min-width:0;min-height:44px;margin:0;padding:4px 0;font:inherit;font-size:1rem;font-weight:650;line-height:1.5;color:var(--ink);border-radius:6px}
+ html[data-app-surface=booking] body .market-field select{appearance:none;-webkit-appearance:none;padding-inline-end:24px;text-overflow:ellipsis;cursor:pointer}
+ html[data-app-surface=booking] .market-field:has(select)::after{content:'';position:absolute;inset-inline-end:18px;bottom:28px;width:7px;height:7px;border-right:1.7px solid var(--muted);border-bottom:1.7px solid var(--muted);transform:rotate(45deg);pointer-events:none}
+ html[data-app-surface=booking] .market-field:focus-within{border-color:#6234D9;box-shadow:0 0 0 3px #6234d91c}
+ html[data-app-surface=booking] body .market-field :is(select,input):focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+ html[data-app-surface=booking] .market-field input[type=date]{font-variant-numeric:tabular-nums;cursor:pointer}
+ html[data-app-surface=booking] .market-field input[type=date]::-webkit-calendar-picker-indicator{padding:8px 0 8px 6px;opacity:.75;cursor:pointer}
+ html[data-app-surface=booking][data-theme=dark] body .market-field{background:#151e35;border-color:#a2b5ff38}
+ html[data-app-surface=booking][data-theme=dark] body .market-field:focus-within{border-color:#ad96ff;box-shadow:0 0 0 3px #ad96ff20}
+ html[data-app-surface=booking] body .market-find{font-size:1rem;font-weight:700;border-radius:16px}
+ @media(max-width:560px){
+  html[data-app-surface=booking] .market-hero-art{height:190px;border-radius:24px}
+  html[data-app-surface=booking] .market-hero>.market-wrap{margin-top:22px}
+  html[data-app-surface=booking] .market-hero-title{font-size:1.8rem;max-width:24ch}
+  html[data-app-surface=booking] .market-hero>.market-wrap>p{font-size:.86rem}
+  html[data-app-surface=booking] body #market-search.market-search-panel{margin-top:20px;padding:12px;gap:10px;border-radius:22px}
+  html[data-app-surface=booking] body .market-field{padding:12px;gap:6px;border-radius:15px}
+  html[data-app-surface=booking] .market-field:has(select)::after{inset-inline-end:14px;bottom:25px}
+  html[data-app-surface=booking] body .market-find{min-height:54px}
+ }
+ @media(max-width:360px){html[data-app-surface=booking] body #market-search.market-search-panel{grid-template-columns:minmax(0,1fr)}}
+ @media(prefers-reduced-motion:reduce){html[data-app-surface=booking] body .market-field{transition:none}}
+}
+
+@media screen {html[data-app-surface=booking] body #market-search .market-field :is(select,input){background:transparent;border:0;box-shadow:none}}
