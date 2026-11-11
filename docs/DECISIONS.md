@@ -280,3 +280,7 @@ Refine the centered localized Safeer name with its existing mark and language-sp
 
 ## Scroll-aware mobile app header - 2026-11-11
 Owner requested an Instagram-style header: hide on downward scrolling and reveal on upward scrolling, with comfortable wordmark padding and more space before the booking card. Scope to Booking/Driver; preserve keyboard access, drawer behavior, safe insets, reduced-motion and Staff headers.
+
+
+## Tracking page app-theme integration - 2026-11-11
+Unify public shipment tracking with the current Safeer shell: centered branded scroll-aware header, shared modal menu/Settings and passenger bottom navigation. Match tracking fields, cards and status timeline to the official theme in both languages and light/dark modes. Preserve draft tracking codes, lookup validation, public-only shipment fields and existing server authority.

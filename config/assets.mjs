@@ -42,6 +42,7 @@ export const publicAssets = {
   '/src/booking-home.css': ['src/booking-home.css', 'text/css'],
   '/track': ['track.html', 'text/html'],
   '/src/track.js': ['src/track.js', 'text/javascript'],
+  '/src/track.css': ['src/track.css', 'text/css'],
   '/src/theme.css': ['src/theme.css', 'text/css'],
   '/src/brand.svg': ['src/brand.svg', 'image/svg+xml'],
   '/driver': ['driver.html', 'text/html'],

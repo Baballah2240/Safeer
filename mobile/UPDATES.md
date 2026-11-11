@@ -288,3 +288,11 @@ Validation: 26 unit tests, source build and documentation checks passed; Booking
 
 Validation: unit/build/documentation checks, 80 Booking/Driver menu layouts, 64 header layouts including down/up scrolling, login and 32 sidebar layouts passed. Twelve bilingual light/dark booking layouts verified the larger visible card gap and field fit.
 - Directional header visibility is preserved when data refreshes replace the header markup.
+
+
+## 2026-11-11 - Tracking page shares the app theme
+- Shipment tracking now uses the shared centered header, menu/Settings and passenger navigation.
+- Matched the tracking form, result cards and progress timeline to the official app styling in Arabic/English and light/dark mode.
+- Tracking-code drafts and public-only tracking responses are preserved. Hosted update; no new APK required.
+
+Validation: 26 unit tests, build/docs checks, all 7 shipment integration tests and the shipment browser workflow passed. Tracking passed 16 bilingual light/dark responsive layouts with draft/focus/error checks; 64 shared-header layouts passed. Final mobile visuals were reviewed in both languages.
