@@ -15,6 +15,10 @@ export const appRelease={
    "bytes": 17892
   },
   "booking": {
+   "versionName": "0.17.0",
+   "versionCode": 17000,
+   "tag": "v0.17.0",
+   "releasePage": "https://github.com/Baballah2240/Safeer/releases/tag/v0.17.0",
    "url": "https://github.com/Baballah2240/Safeer/releases/download/v0.17.0/Safeer-Booking-0.17.0.apk",
    "sha256": "f2b4cd7ceacaccb8558452dcd53c59c1a61078d2727f72803e7796511c4cca7c",
    "bytes": 16732

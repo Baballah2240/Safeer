@@ -38,7 +38,10 @@ try{await identityFixture(async f=>{
     const gap=width<=760?10:12;
     assert.equal(state.position,'sticky',label);assert.ok(Math.abs(state.top-gap)<=1,label+' header must keep its floating top gap');
     assert.ok(state.left>=-1&&state.right<=width+1,label+' header clipped');assert.ok(state.bottom<=height,label+' header too tall');
-    assert.ok(Math.abs(state.measured-state.height)<=1&&state.padding>=state.height+gap,label+' focus offset follows header height and top gap');assert.match(state.blur,/blur\(28px\)/,label+' glass');
+    assert.ok(Math.abs(state.measured-state.height)<=1&&state.padding>=state.height+gap,label+' focus offset follows header height and top gap');if(page==='booking'||page==='driver'){
+     assert.equal(state.blur,'none',label+' minimal app bar');
+     assert.ok(await evaluate('(()=>{const e=document.querySelector(".app-header-name"),r=e.getBoundingClientRect(),h=e.parentElement.getBoundingClientRect();return Math.abs((r.left+r.right-h.left-h.right)/2)<=1&&getComputedStyle(e.parentElement).boxShadow==="none"})()'),label+' centered app name without panel shadow');
+    }else assert.match(state.blur,/blur\(28px\)/,label+' glass');
     // Check the actual hit target too: DOM click alone cannot detect an overlay.
     const drawer=page==='booking'?'market':page==='driver'?'driver':null;
     const navigation=drawer?`#${drawer}-menu-toggle`:'[data-theme-toggle]';

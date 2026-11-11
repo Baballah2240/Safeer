@@ -245,3 +245,9 @@ Rebuilt both 0.16.2 website apps with the existing upload certificate; release b
 ## 2026-11-10 - 0.17.0 / 17000 (D64)
 
 Booking: reference-driven glass My Trips, Upcoming/Past, real route/photo/status cards, timeline, seat/boarding and valid device-owned paid-ticket QR, frosted Book/Trips/Profile and passenger-count search intent. Driver: matching exact blue/violet palette and native loading/recovery colors; its separate assignment/boarding workflow is unchanged. Both retain package IDs, signing key and HTTPS website. Migration 0017 is a read-only, proof-checked passenger projection; weaker reference/mobile lookup stays masked/QR-free. Preserve D59 shipments. See docs/archive/MY_TRIPS_GLASS_0.17.0_2026-11-10.md.
+
+
+## 2026-11-11 - Minimal headers and branded loading (web update)
+- Booking and Driver show localized Safeer centered beside the existing menu button without the floating header panel.
+- Branded loading includes an indeterminate progress track, screen-reader status and reduced-motion support.
+- Delivered through the hosted website; app versions and download metadata remain unchanged.

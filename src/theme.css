@@ -489,3 +489,17 @@
   html body .track-facts dt{font-size:.75rem;color:var(--muted)}
   html body .track-facts dd{margin:0;font-weight:600}
 }
+
+/* Minimal Booking/Driver app bar and branded loading. */
+@media screen {
+ html[data-app-surface] body .market-bar,html[data-app-surface] body #driver-app .driver-header.driver-compact-header{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;align-items:center;gap:8px;min-height:64px;width:auto;max-width:none;margin:0;padding:10px 16px;border:0;border-radius:0;background:var(--page);box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+ html body :is(.market-bar,.driver-compact-header) .app-header-name{grid-column:2;text-align:center;font-size:1.15rem;font-weight:750;letter-spacing:.01em;line-height:1.4;color:var(--ink)}
+ html body :is(.market-bar,.driver-compact-header)>.sidebar-toggle{grid-column:1;grid-row:1;margin:0;width:44px;height:44px}
+ html body .app-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;min-height:220px;padding:32px 24px;text-align:center;color:var(--muted)}
+ html body .app-loading img{width:48px;height:48px;object-fit:contain}
+ html body .app-loading strong{font-size:.9rem;font-weight:500}
+ html body .app-loading-track{display:block;width:128px;height:3px;overflow:hidden;border-radius:99px;background:var(--border)}
+ html body .app-loading-track::after{content:'';display:block;width:45%;height:100%;border-radius:inherit;background:var(--accent);animation:safeer-loading 1.4s ease-in-out infinite}
+}
+@keyframes safeer-loading{0%{transform:translateX(-110%)}100%{transform:translateX(330%)}}
+@media(prefers-reduced-motion:reduce){html body .app-loading-track::after{animation:none;margin-inline:auto}}
