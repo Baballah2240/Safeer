@@ -33,7 +33,9 @@ try{await identityFixture(async f=>{
    assert.equal(await evaluate('Boolean(document.querySelector("#staff-logout"))'),signedIn,label+' account controls');
    if(await evaluate('document.documentElement.dataset.theme')!==theme)await click('[data-theme-toggle]');
    assert.ok(await evaluate(`document.querySelector('${field}')===__field&&__field.value==='fictional@example.test'`),label+' theme preserves input');
+   await evaluate('document.querySelector("#staff-sidebar").scrollTop=10000;window.__menuScroll=document.querySelector("#staff-sidebar").scrollTop');
    await click('#staff-language');
+   assert.ok(await evaluate('Math.abs(document.querySelector("#staff-sidebar").scrollTop-__menuScroll)<=3'),label+' language preserves menu scroll');
    assert.ok(await evaluate('document.querySelector("#staff-sidebar").open&&document.querySelector("#staff-settings").open'),label+' language preserves menu');
    if(!signedIn)assert.equal(await evaluate('document.querySelector("#staff-login [name=login]").value'),'fictional@example.test',label+' login draft');
    await click('#staff-language');

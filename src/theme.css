@@ -566,6 +566,8 @@
  html body #staff-sidebar .staff-sidebar-label{margin:20px 12px 8px;font-size:.68rem;color:var(--muted)}
  html body #staff-sidebar .market-drawer-nav{margin-top:18px}
  html body #staff-sidebar .drawer-bottom{margin-top:auto;padding-top:24px}
+ html body #staff-sidebar .market-preferences{grid-template-columns:minmax(0,1fr);gap:16px;padding:16px}
+ html body #staff-sidebar .market-preferences button{width:auto;min-width:128px;max-width:65%;font-size:.8rem}
  html body #staff-sidebar .market-preferences>div{display:flex;align-items:center;justify-content:space-between;gap:12px}
  html body #staff-sidebar .staff-drawer-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
  html body #staff-sidebar .staff-drawer-actions button{flex:1;min-height:44px;border-radius:14px}

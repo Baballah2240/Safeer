@@ -312,3 +312,5 @@ Validation: unit/build/docs checks, 80 menu layouts, 16 tracking layouts, 64 bod
 - Shared hosted update; no APK reinstall required.
 
 Validation: unit/build/docs checks, 32 Staff menu layouts, 64 shared masthead/header layouts, login, 72 company-management layouts and 60 identity/permissions layouts passed. Legacy preview sidebar checks also passed. The time-sensitive operations fixture could not run near the Khartoum day boundary; company and identity workflows were verified independently.
+- Staff appearance and language controls use separate, comfortably spaced rows in the drawer.
+- Language changes preserve the menu scroll position, including long company/admin navigation.
