@@ -25,7 +25,7 @@ try{await identityFixture(async f=>{
   for(const theme of ['dark','light'])for(const lang of ['en','ar']){
    await send('Page.navigate',{url:web.origin+path+'?lang='+lang});await until(`Boolean(document.querySelector(${JSON.stringify(ready)}))`);
    if(await evaluate('document.documentElement.dataset.theme')!==theme)await evaluate('document.querySelector("[data-theme-toggle]").click()');
-   if(page==='driver'){await evaluate('document.querySelector("[data-trip]").click()');await until('Boolean(document.querySelector("#driver-scan"))');}
+   if(page==='driver'){await evaluate('document.querySelector("[data-trip]").click()');await until('Boolean(document.querySelector("#driver-scan"))&&!document.querySelector(".app-loading")');}
    if(page==='preview'){await evaluate('document.querySelector("[data-nav=passengers]").click()');await until('Boolean(document.querySelector("#reservation-form"))');}
    for(const [width,height] of [[1920,1080],[1366,768],[390,844],[320,740]]){
     const label=`${page}/${theme}/${lang}/${width}`;

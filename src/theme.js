@@ -270,7 +270,7 @@ if(document.documentElement.hasAttribute('data-app-surface')){
  const reveal=()=>{page.removeAttribute('data-app-header-hidden');anchorY=lastY;direction=0;};
  const follow=()=>{
   const next=document.querySelector('.market-bar,.driver-header');
-  if(next!==header){header=next;lastY=Math.max(0,scrollY);reveal();}
+  if(next!==header){const initial=!header;header=next;if(initial&&header){lastY=Math.max(0,scrollY);reveal();}}
  };
  const update=()=>{
   queued=false;follow();if(!header)return;

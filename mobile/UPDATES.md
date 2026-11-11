@@ -287,3 +287,4 @@ Validation: 26 unit tests, source build and documentation checks passed; Booking
 - Hosted update; no native version change.
 
 Validation: unit/build/documentation checks, 80 Booking/Driver menu layouts, 64 header layouts including down/up scrolling, login and 32 sidebar layouts passed. Twelve bilingual light/dark booking layouts verified the larger visible card gap and field fit.
+- Directional header visibility is preserved when data refreshes replace the header markup.
