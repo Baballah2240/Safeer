@@ -528,7 +528,28 @@
 }
 
 @media screen {
- html[data-app-surface] body :is(#market,#track-app) .market-bar,html[data-app-surface] body #driver-app .driver-header.driver-compact-header{padding-block:24px;transition:transform 220ms cubic-bezier(.22,1,.36,1),opacity 180ms ease}
- html[data-app-header-hidden=true] body :is(#market,#track-app) .market-bar,html[data-app-header-hidden=true] body #driver-app .driver-header.driver-compact-header{transform:translateY(calc(-100% - var(--header-gap) - 8px));opacity:0;pointer-events:none}
+ html[data-app-surface=booking],html[data-app-surface=driver],html[data-app-surface=tracking]{scroll-padding-block-start:calc(var(--safe-top,0px) + 88px)}
+ html[data-app-surface] body :is(#market,#track-app) .market-bar.app-masthead,html[data-app-surface] body #driver-app .driver-header.app-masthead{position:relative;top:auto;z-index:auto;min-height:calc(100px + var(--safe-top,0px));padding:calc(28px + var(--safe-top,0px)) 16px 28px;transform:none;opacity:1;pointer-events:auto;transition:none}
+ html[data-app-surface=driver] body #driver-app .driver-shell{padding-block-start:var(--safe-top,0px)}
+ html[data-app-surface=driver] body #driver-app .driver-header.app-masthead{min-height:100px;padding-block:28px}
+ html body .app-masthead .app-header-name{min-height:44px}
+ html[data-app-surface] body .app-masthead>.app-menu-trigger{position:fixed;inset-block-start:calc(28px + var(--safe-top,0px));inset-inline-start:16px;z-index:55;grid-column:auto;grid-row:auto;min-width:44px;min-height:44px;margin:0}
+ html body #driver-menu.driver-settings-drawer .market-drawer-head{margin-bottom:24px}
+ html body #driver-menu.driver-settings-drawer .market-drawer-head>strong{font-size:1.2rem;color:var(--ink)}
+ html body #driver-menu.driver-settings-drawer #driver-settings{border:1px solid var(--border);border-radius:20px;background:var(--surface-soft);padding:18px}
+ html body #driver-menu.driver-settings-drawer .market-preferences{display:grid;gap:22px;margin:0;padding:0}
+ html body #driver-menu.driver-settings-drawer .market-preferences>div{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:.88rem;color:var(--muted)}
+ html body #driver-menu.driver-settings-drawer .market-preferences button{min-height:44px;border-radius:12px}
+ html body #driver-menu.driver-settings-drawer .driver-settings-version{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-block-start:auto;padding-top:28px;color:var(--muted)}
+ html body #driver-menu .driver-settings-version .drawer-version{font-size:.8rem;color:var(--ink);background:var(--accent-wash);padding:6px 10px}
+ html body .driver-main-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+ html body .driver-main-actions button{display:flex;align-items:center;gap:8px;min-height:44px;padding:10px 14px;border-radius:14px}
+ html body .driver-main-actions svg{width:18px;height:18px}
+ html body .driver-app-maintenance{margin-top:28px;padding:16px 0;border-top:1px solid var(--border);font-size:.85rem;color:var(--muted)}
+ html body .driver-app-maintenance>summary{cursor:pointer;min-height:44px;align-content:center;font-weight:650}
+ html body .driver-maintenance-content{display:grid;gap:10px;padding-top:12px}
+ html body .driver-maintenance-content>.drawer-download{display:flex;align-items:center;gap:12px;padding:14px;border:1px solid var(--border);border-radius:16px;background:var(--accent-wash);color:var(--ink);text-decoration:none}
+ html body .driver-maintenance-content>.drawer-download>svg{width:22px;height:22px;flex:none}
+ html body .driver-maintenance-content>.drawer-download>span{display:grid;gap:4px}
 }
-@media screen and (prefers-reduced-motion:reduce){html[data-app-surface] body :is(#market,#track-app) .market-bar,html[data-app-surface] body #driver-app .driver-header.driver-compact-header{transition:none}}
+@media print{.app-menu-trigger{display:none!important}.driver-main-actions,.driver-app-maintenance{display:none!important}}

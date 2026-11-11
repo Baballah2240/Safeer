@@ -284,3 +284,7 @@ Owner requested an Instagram-style header: hide on downward scrolling and reveal
 
 ## Tracking page app-theme integration - 2026-11-11
 Unify public shipment tracking with the current Safeer shell: centered branded scroll-aware header, shared modal menu/Settings and passenger bottom navigation. Match tracking fields, cards and status timeline to the official theme in both languages and light/dark modes. Preserve draft tracking codes, lookup validation, public-only shipment fields and existing server authority.
+
+
+## Body wordmark and minimal Driver sidebar - 2026-11-11
+Owner clarified that the Safeer logo/name belongs to the page body, independent of the sidebar trigger. Use a normal-flow masthead and a separately fixed, cutout-safe menu button across Booking, Driver and Tracking, superseding directional header hiding. Driver sidebar contains only appearance/language Settings and version; preserve refresh/sign-out on the Driver page and app-update controls in its footer.

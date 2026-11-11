@@ -31,20 +31,19 @@ try{await identityFixture(async f=>{
     const label=`${page}/${theme}/${lang}/${width}`;
     await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width<700});await evaluate('document.activeElement?.blur();scrollTo(0,0)');await settle();
     assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth+2'),label+' overflow');
-    const start=await evaluate(`(()=>{const n=document.querySelector('${selector}'),r=n.getBoundingClientRect();return {y:r.top+scrollY,height:r.height,max:document.documentElement.scrollHeight-innerHeight};})()`);
+    const start=await evaluate(`(()=>{const n=document.querySelector('${selector}'),r=n.getBoundingClientRect();return {y:r.top+scrollY,menuTop:document.querySelector(".app-menu-trigger")?.getBoundingClientRect().top,height:r.height,max:document.documentElement.scrollHeight-innerHeight};})()`);
     assert.ok(start.max>start.y+2,label+' must have real scrollable content');
     await evaluate(`scrollTo(0,${Math.min(start.max,start.y+240)})`);await settle();
-    if(page==='booking'||page==='driver'){
-     await settle();assert.equal(await evaluate('document.documentElement.dataset.appHeaderHidden'),'true',label+' hides scrolling down');
-     await evaluate('scrollBy(0,-40)');await settle();await settle();
-     assert.equal(await evaluate('document.documentElement.hasAttribute("data-app-header-hidden")'),false,label+' reveals scrolling up');
-     await evaluate('document.getAnimations().filter(a=>Number.isFinite(a.effect?.getComputedTiming().endTime)).forEach(a=>a.finish())');
-    }
-    const state=await evaluate(`(()=>{const n=document.querySelector('${selector}'),r=n.getBoundingClientRect(),c=getComputedStyle(n);return {top:r.top,bottom:r.bottom,left:r.left,right:r.right,height:r.height,position:c.position,blur:c.backdropFilter,measured:parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sticky-header-height')),padding:parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop)};})()`);
+    const state=await evaluate(`(()=>{const n=document.querySelector('${selector}'),r=n.getBoundingClientRect(),c=getComputedStyle(n);return {top:r.top,bottom:r.bottom,left:r.left,right:r.right,height:r.height,scroll:scrollY,menuTop:document.querySelector(".app-menu-trigger")?.getBoundingClientRect().top,position:c.position,blur:c.backdropFilter,measured:parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sticky-header-height')),padding:parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop)};})()`);
     const gap=width<=760?10:12;
-    assert.equal(state.position,'sticky',label);assert.ok(Math.abs(state.top-gap)<=1,label+' header must keep its floating top gap');
+    if(page==='booking'||page==='driver'){
+     assert.equal(state.position,'relative',label+' wordmark belongs to the body');
+     assert.ok(Math.abs(state.top+state.scroll-start.y)<=1,label+' wordmark scrolls with the body');
+     assert.ok(Math.abs(state.menuTop-start.menuTop)<=1,label+' menu button remains fixed independently');
+     assert.equal(state.measured,0,label+' body wordmark needs no sticky clearance');
+    }else{assert.equal(state.position,'sticky',label);assert.ok(Math.abs(state.top-gap)<=1,label+' header must keep its floating top gap');}
     assert.ok(state.left>=-1&&state.right<=width+1,label+' header clipped');assert.ok(state.bottom<=height,label+' header too tall');
-    assert.ok(Math.abs(state.measured-state.height)<=1&&state.padding>=state.height+gap,label+' focus offset follows header height and top gap');if(page==='booking'||page==='driver'){
+    if(page!=='booking'&&page!=='driver')assert.ok(Math.abs(state.measured-state.height)<=1&&state.padding>=state.height+gap,label+' focus offset follows header height and top gap');if(page==='booking'||page==='driver'){
      assert.equal(state.blur,'none',label+' minimal app bar');
      assert.ok(await evaluate('getComputedStyle(document.querySelector(".app-header-name").parentElement).backgroundColor==="rgba(0, 0, 0, 0)"'),label+' transparent app bar');
      assert.ok(await evaluate('(()=>{const e=document.querySelector(".app-header-name"),r=e.getBoundingClientRect(),h=e.parentElement.getBoundingClientRect();return Math.abs((r.left+r.right-h.left-h.right)/2)<=1&&getComputedStyle(e.parentElement).boxShadow==="none"})()'),label+' centered app name without panel shadow');
@@ -60,6 +59,7 @@ try{await identityFixture(async f=>{
     const field={staff:'#change-password [name=currentPassword]',driver:'#driver-incident textarea',booking:'#market-date',preview:'#reservation-form [name=passengerName]'}[page];
     await evaluate(`document.querySelector(${JSON.stringify(field)}).scrollIntoView({block:'start'})`);await settle();
     assert.ok(await evaluate(`document.querySelector(${JSON.stringify(field)}).getBoundingClientRect().top>=document.querySelector('${selector}').getBoundingClientRect().bottom-1`),label+' scrolled form field must clear header');
+    if(drawer)assert.ok(await evaluate(`document.querySelector(${JSON.stringify(field)}).getBoundingClientRect().top>=document.querySelector('#${drawer}-menu-toggle').getBoundingClientRect().bottom+7`),label+' focused field clears fixed menu button');
     if(width===1366||width===320)writeFileSync(join(shots,`${page}-${theme}-${lang}-${width}.png`),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
     assert.deepEqual(await evaluate('__errors'),[],label);layouts++;
    }
@@ -75,5 +75,5 @@ try{await identityFixture(async f=>{
  }
  await send('Emulation.setEmulatedMedia',{media:'print',features:[]});assert.notEqual(await evaluate('getComputedStyle(document.querySelector(".staff-topbar")).position'),'sticky','Screen-only sticky styling does not affect print');
  writeFileSync(join(shots,'result.json'),JSON.stringify({passed:true,built,layouts,scrolling:true,headerReplacement:true,accessibilityPreferences:true,printIsolation:true},null,2)+'\n');
- console.log(`Sticky glass headers: ${layouts} real-data scroll/layout combinations, all four pages, live height/replacement tracking, navigation, accessibility preferences and print isolation passed.`);
+ console.log(`App mastheads and staff headers: ${layouts} real-data scroll/layout combinations, all four pages, live height/replacement tracking, navigation, accessibility preferences and print isolation passed.`);
 },{webOrigin:web.origin});}finally{await browser?.close();await web.close();}

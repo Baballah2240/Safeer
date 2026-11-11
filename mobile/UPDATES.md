@@ -296,3 +296,11 @@ Validation: unit/build/documentation checks, 80 Booking/Driver menu layouts, 64 
 - Tracking-code drafts and public-only tracking responses are preserved. Hosted update; no new APK required.
 
 Validation: 26 unit tests, build/docs checks, all 7 shipment integration tests and the shipment browser workflow passed. Tracking passed 16 bilingual light/dark responsive layouts with draft/focus/error checks; 64 shared-header layouts passed. Final mobile visuals were reviewed in both languages.
+
+
+## 2026-11-11 - Independent body branding and minimal Driver sidebar
+- The Safeer logo/name now scrolls naturally with page content; the menu button stays fixed independently, with safe-area clearance.
+- Driver sidebar contains only Settings and version. Refresh/sign-out remain on the Driver page; app-update controls remain in its footer.
+- Hosted shared-source update; no new APK version.
+
+Validation: unit/build/docs checks, 80 menu layouts, 16 tracking layouts, 64 body-masthead/staff-header layouts, 36 Driver theme layouts, boarding/revocation/logout, update discovery and login regressions passed. Focused fields stay clear of the fixed menu button; final sidebar visuals were reviewed.
