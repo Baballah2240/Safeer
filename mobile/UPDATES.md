@@ -251,3 +251,15 @@ Booking: reference-driven glass My Trips, Upcoming/Past, real route/photo/status
 - Booking and Driver show localized Safeer centered beside the existing menu button without the floating header panel.
 - Branded loading includes an indeterminate progress track, screen-reader status and reduced-motion support.
 - Delivered through the hosted website; app versions and download metadata remain unchanged.
+
+
+## 2026-11-11 - Seamless app bar and centered startup loading
+- Removed the separate background behind the centered app name in Booking and Driver.
+- Startup and Booking page loading now use a centered, full-screen branded state without a top loading card.
+- Driver operation feedback stays compact; reduced-motion and form preservation remain supported.
+
+### Native update: Driver 0.18.2 / Booking 0.17.1
+- Removed the Android horizontal progress strip at the very top.
+- Requires installing the new signed APK; the hosted page alone cannot remove the strip from older installed apps.
+
+Validation: signed release builds and Android lint passed (0 errors); versions/signing compatibility and removal of the native progress view were verified in both APKs. Unit/build/documentation checks, Booking/Driver menus, transparent-header, login/sidebar and centered light/dark/reduced-motion loading checks passed. Physical-phone installation was not performed.

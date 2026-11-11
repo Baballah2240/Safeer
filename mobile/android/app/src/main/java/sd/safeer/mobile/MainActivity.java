@@ -22,7 +22,6 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import java.io.ByteArrayInputStream;
 import java.util.Locale;
@@ -34,7 +33,6 @@ public final class MainActivity extends Activity {
     private static final Uri ORIGIN_URI = Uri.parse(ORIGIN);
     private WebView web;
     private LinearLayout error;
-    private ProgressBar progress;
     private boolean failed;
     private ConnectivityManager connectivity;
     private ConnectivityManager.NetworkCallback networkCallback;
@@ -160,9 +158,6 @@ public final class MainActivity extends Activity {
             shareSafeTop();
             return insets;
         });
-        progress = new ProgressBar(this,null,android.R.attr.progressBarStyleHorizontal);
-        progress.setMax(100);
-        root.addView(progress,new LinearLayout.LayoutParams(-1,dp(3)));
         FrameLayout content = new FrameLayout(this);
         root.addView(content,new LinearLayout.LayoutParams(-1,0,1));
         web = new WebView(this);
@@ -203,10 +198,6 @@ public final class MainActivity extends Activity {
         web.setWebChromeClient(new WebChromeClient(){
             @Override public void onPermissionRequest(PermissionRequest request) { runOnUiThread(() -> cameraPermission(request)); }
             @Override public void onPermissionRequestCanceled(PermissionRequest request) { if (pendingCamera == request) pendingCamera = null; }
-            @Override public void onProgressChanged(WebView view,int value) {
-                progress.setProgress(value);
-                progress.setVisibility(value==100 ? View.GONE : View.VISIBLE);
-            }
         });
         web.setWebViewClient(new WebViewClient(){
             @Override public boolean shouldOverrideUrlLoading(WebView view,WebResourceRequest request) {

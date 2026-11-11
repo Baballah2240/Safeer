@@ -258,3 +258,9 @@ D16: The owner explicitly requested a luggage yes/no choice and description for 
 
 ## Mobile header and loading refinement - 2026-11-11
 Owner requested the Booking/Driver header be reduced to a centered localized Safeer name and existing sidebar button. Preserve the current app palette, routes, drawer controls, Driver dashboard and version metadata. Loading uses branded accessible indeterminate feedback with reduced-motion support. This is a hosted web update; no native version change or APK release is required.
+
+
+## Seamless mobile header and centered loading - 2026-11-11
+Owner requested no colored background behind the centered app name and a professional loading placement. Make the Booking/Driver app bars fully transparent and use a centered full-screen branded loading state for startup and Booking page loads. Keep authenticated Driver operation feedback compact and preserve forms and menu behavior.
+
+The owner clarified that the remaining top indicator is the Android horizontal progress line. Remove that native view and its progress callback in both apps; retain WebChromeClient camera permissions. Release Driver 0.18.2/18002 and Booking 0.17.1/17001 with the existing signing identity.
