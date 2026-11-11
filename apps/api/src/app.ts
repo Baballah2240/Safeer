@@ -159,15 +159,17 @@ class PublicController {
  @Get('companies/:slug') company(@Param('slug') slug:string){return this.market.company(slug).then(reply);}
  @Get('trips') trips(@Query() query:Record<string,unknown>){return this.market.trips(query).then(reply);}
 }
+// Public limits are per visitor. Behind the web proxy the socket is always the proxy itself,
+// so the visitor address comes from client() (x-safeer-client), like sign-in and tracking.
 @Controller('api/v1/public')
 class ReservationController {
  constructor(private readonly reservations:ReservationService){}
  @Get('trips/:id') trip(@Param('id') id:string){return this.reservations.trip(id).then(reply);}
- @Post('holds') hold(@Req() req:Request,@Body() data:unknown){return this.reservations.hold(data,req.socket.remoteAddress||'local').then(reply);}
+ @Post('holds') hold(@Req() req:Request,@Body() data:unknown){return this.reservations.hold(data,client(req)).then(reply);}
  @Get('holds/current') current(@Req() req:Request){return this.reservations.current(req.headers['x-booking-key']).then(reply);}
- @Post('holds/lookup') lookup(@Req() req:Request,@Body() data:unknown){return this.reservations.lookup(data,req.socket.remoteAddress||'local').then(reply);}
+ @Post('holds/lookup') lookup(@Req() req:Request,@Body() data:unknown){return this.reservations.lookup(data,client(req)).then(reply);}
  @Get('holds/:reference') booking(@Req() req:Request,@Param('reference') reference:string){return this.reservations.booking(reference,req.headers['x-booking-key']).then(reply);}
- @Post('holds/:reference/release') release(@Req() req:Request,@Param('reference') reference:string,@Body() data:unknown){return this.reservations.release(reference,data,req.socket.remoteAddress||'local').then(reply);}
+ @Post('holds/:reference/release') release(@Req() req:Request,@Param('reference') reference:string,@Body() data:unknown){return this.reservations.release(reference,data,client(req)).then(reply);}
 }
 @Controller('api/v1/companies/:id/operations')
 class OperationsController {
@@ -212,6 +214,7 @@ class LuggageController {
 class TicketingController {
  constructor(private readonly ticketing:TicketingService){}
  @Get('counter') overview(@Req() req:Request,@Param('id') id:string){return this.ticketing.overview(token(req),id).then(reply);}
+ @Get('counter/trips') day(@Req() req:Request,@Param('id') id:string,@Query('day') day:unknown){return this.ticketing.trips(token(req),id,day).then(reply);}
  @Get('counter/trips/:tid') trip(@Req() req:Request,@Param('id') id:string,@Param('tid') tid:string){return this.ticketing.trip(token(req),id,tid).then(reply);}
  @Put('payment-settings') settings(@Req() req:Request,@Param('id') id:string,@Body() data:unknown){return this.ticketing.settings(token(req),id,data).then(reply);}
  @Post('counters') createCounter(@Req() req:Request,@Param('id') id:string,@Body() data:unknown){return this.ticketing.counter(token(req),id,undefined,data).then(reply);}

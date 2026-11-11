@@ -8,8 +8,8 @@ import {luggageView,bindLuggage,resetLuggage} from './luggage.js';
 import {shipmentsView,bindShipments,resetShipments} from './shipments.js';
 import {operationsView,bindOperations,resetOperations} from './operations.js';
 import {stationView,bindStation,resetStation} from './station.js';
-export const companyState={id:'',section:'operations'};
-export function resetCompanies(){resetFinance();companyState.id='';companyState.section='operations';openBookingNext(null);resetLuggage();resetShipments();resetOperations();resetStation();}
+export const companyState={id:'',section:'operations',tripFrom:''};
+export function resetCompanies(){resetFinance();companyState.id='';companyState.section='operations';companyState.tripFrom='';openBookingNext(null);resetLuggage();resetShipments();resetOperations();resetStation();}
 export async function loadCompanies(api){
   const list=await api('companies');
   if(companyState.id&&!list.items.some(c=>c.id===companyState.id))resetCompanies();
@@ -19,7 +19,7 @@ export async function loadCompanies(api){
   if(workspace.capabilities.routesRead)workspace.routeCatalog=await api('companies/'+companyState.id+'/routes');
   if(workspace.capabilities.fleetRead)workspace.fleet=await api('companies/'+companyState.id+'/fleet');
   if(workspace.capabilities.driversRead)workspace.driverCatalog=await api('companies/'+companyState.id+'/drivers');
-  if(workspace.capabilities.tripsRead)workspace.tripCatalog=await api('companies/'+companyState.id+'/trips');
+  if(workspace.capabilities.tripsRead)workspace.tripCatalog=await api('companies/'+companyState.id+'/trips'+(companyState.tripFrom?'?from='+encodeURIComponent(companyState.tripFrom):''));
   if(workspace.capabilities.profile)workspace.publicProfile=await api('companies/'+companyState.id+'/public-profile');
   return {...workspace,selectionCount:list.items.length,canCreate:list.canCreate};
 }
@@ -63,7 +63,7 @@ export function bindCompanies(root,data,ctx){
   const names=row=>input('nameEn','English name','text',`maxlength="100" value="${e(row?.nameEn||'')}"`)+input('nameAr','Arabic name','text',`dir="rtl" maxlength="100" value="${e(row?.nameAr||'')}"`);
   const optional=(name,label,value='',max=300)=>`<label>${t(label)}<input name="${name}" maxlength="${max}" value="${e(value)}"></label>`;
   const enabled=row=>`<label class="staff-check"><input name="active" type="checkbox" ${row?.active!==false?'checked':''}>${t('Active')}</label>`;
-  root.querySelectorAll('[data-company-open]').forEach(b=>b.onclick=()=>{companyState.id=b.dataset.companyOpen;companyState.section='operations';void refresh();});
+  root.querySelectorAll('[data-company-open]').forEach(b=>b.onclick=()=>{companyState.id=b.dataset.companyOpen;companyState.section='operations';companyState.tripFrom='';void refresh();});
   root.querySelector('[data-company-back]')?.addEventListener('click',()=>{resetCompanies();void refresh();});
   root.querySelectorAll('[data-company-section]').forEach(b=>b.onclick=()=>{companyState.section=b.dataset.companySection;render();});
   const profileForm=row=>{
@@ -77,7 +77,7 @@ export function bindCompanies(root,data,ctx){
   if(companyState.section==='routes')bindRoutes(root,data,ctx);
   if(companyState.section==='fleet')bindFleet(root,data,ctx);
   if(companyState.section==='drivers')bindDrivers(root,data,ctx);
-  if(companyState.section==='trips')bindTrips(root,data,ctx);
+  if(companyState.section==='trips')bindTrips(root,data,{...ctx,setTripFrom:value=>{companyState.tripFrom=value;void refresh();}});
   if(companyState.section==='bookings')bindBookings(root,data,ctx);
   if(companyState.section==='operations')bindOperations(root,data,{...ctx,openSection:(id,then)=>{companyState.section=id;render();setTimeout(()=>then?.());}});
   if(companyState.section==='luggage')bindLuggage(root,data,ctx);

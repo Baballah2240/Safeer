@@ -13,7 +13,9 @@
 ## Notes
 
 - The site answers only on `SAFEER_PUBLIC_ORIGIN`. Requests that reach it through the `onrender.com` address get 403, except the health check.
-- Cookies are `Secure`, and HSTS is sent. Sign-in throttling uses the client address that Render's proxy adds.
+- Cookies are `Secure`, and HSTS is sent. Sign-in and public booking limits use the visitor address: the last `X-Forwarded-For` entry that Render's proxy adds, or Cloudflare's `CF-Connecting-IP` when that last entry is one of Cloudflare's published ranges (the site is behind Cloudflare). If Cloudflare publishes new ranges, update the list in `server.mjs` (D72).
+- `npm run check:live` makes read-only requests to the live site: health, pages and security headers, the update notice data, the APK download links, and which commit the deployed files match. It signs in nowhere and changes nothing.
+- `npm run test:production` runs `scripts/production.mjs` locally against a disposable database owned by a non-superuser, like Render, before a deploy.
 - Back up the database from the Render dashboard. Starter plans keep limited point-in-time recovery, so check yours.
 - Migrations only move forward. Never edit an applied migration.
 - Pushing to GitHub triggers a Render deploy only when auto-deploy is on. Check the deploy status in Render.

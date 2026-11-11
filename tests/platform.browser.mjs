@@ -49,7 +49,10 @@ try{await identityFixture(async f=>{
   assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth+2'),theme+'/'+lang+'/'+width+' notice overflow');
   assert.equal(await evaluate('document.querySelector(".market-notice-message").textContent'),lang==='ar'?arabicNotice:englishNotice);
   assert.equal(await evaluate('document.querySelector(".market-notice-label").textContent'),lang==='ar'?'تحديث السفر':'Travel update');
-  assert.ok(await evaluate('(()=>{const n=document.querySelector(".market-service-notice"),h=document.querySelector(".market-bar"),m=document.querySelector(".market-notice-message"),r=n.getBoundingClientRect(),hr=h.getBoundingClientRect();return Math.abs(r.left-hr.left)<=1&&Math.abs(r.right-hr.right)<=1&&r.top>=hr.bottom&&m.scrollWidth<=m.clientWidth+1&&n.getAttribute("role")==="status";})()'),'Aligned notice with readable wrapping');
+  // D72: the header is an edge-to-edge masthead since the app header simplification, so the notice
+  // lines up with the page's content band below it and stays under the header.
+  const fit=await evaluate('(()=>{const n=document.querySelector(".market-service-notice"),h=document.querySelector(".market-bar"),c=document.querySelector(".market-main .market-band"),m=document.querySelector(".market-notice-message"),r=n.getBoundingClientRect(),cr=c.getBoundingClientRect();return {left:r.left-cr.left,right:r.right-cr.right,top:r.top,headerBottom:h.getBoundingClientRect().bottom,overflow:m.scrollWidth-m.clientWidth,role:n.getAttribute("role")};})()');
+  assert.ok(Math.abs(fit.left)<=1&&Math.abs(fit.right)<=1&&fit.top>=fit.headerBottom&&fit.overflow<=1&&fit.role==='status',`Aligned notice with readable wrapping ${theme}/${lang}/${width}: ${JSON.stringify(fit)}`);
   writeFileSync(join(shots,'notice-'+theme+'-'+lang+'-'+width+'.png'),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));noticeLayouts++;
  }
  for(const name of ['prefers-reduced-transparency','forced-colors']){

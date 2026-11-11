@@ -26,6 +26,12 @@ export class TicketingService {
  },false);}
  overview(token:string,cid:string){return this.staff(token,cid,async c=>(await c.query('SELECT safeer.counter_overview($1) AS row',[cid])).rows[0].row);}
  trip(token:string,cid:string,tid:string){uuid(tid);return this.staff(token,cid,async c=>{const row=(await c.query('SELECT safeer.counter_trip($1,$2) AS row',[cid,tid])).rows[0].row;if(!row)fail('NOT_FOUND',404);return row;});}
+ // D72: departures on one company-local day, for walk-in sales beyond the overview's next 100.
+ trips(token:string,cid:string,day:unknown){
+  const valid=typeof day==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(day)&&!Number.isNaN(Date.parse(day+'T00:00:00Z'))&&new Date(day+'T00:00:00Z').toISOString().slice(0,10)===day;
+  if(!valid)fail('INVALID_INPUT');
+  return this.staff(token,cid,async c=>(await c.query('SELECT safeer.counter_trips($1,$2::date) AS row',[cid,day])).rows[0].row);
+ }
  async settings(token:string,cid:string,input:unknown){
   const data=body(input,['bankTransfer','mobileWallet','version','currentPassword']);
   if(typeof data.bankTransfer!=='boolean'||typeof data.mobileWallet!=='boolean'||!Number.isSafeInteger(data.version)||Number(data.version)<0)fail('INVALID_INPUT');

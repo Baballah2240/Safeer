@@ -16,7 +16,8 @@ export class OperationsService {
   return action(c);
  },false);}
  today(token:string,cid:string,day:unknown){
-  const value=day===undefined||day===''?null:String(day);if(value!==null&&(!dayPattern.test(value)||Number.isNaN(Date.parse(value))))fail('INVALID_INPUT');
+  // Date.parse rolls 2026-02-31 over to March, so the day must also round-trip unchanged.
+  const value=day===undefined||day===''?null:String(day);if(value!==null&&(!dayPattern.test(value)||Number.isNaN(Date.parse(value+'T00:00:00Z'))||new Date(value+'T00:00:00Z').toISOString().slice(0,10)!==value))fail('INVALID_INPUT');
   return this.staff(token,cid,async c=>(await c.query('SELECT safeer.operations_today($1,$2::date) AS row',[cid,value])).rows[0].row);
  }
  trip(token:string,cid:string,tid:string){

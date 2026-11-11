@@ -12,9 +12,14 @@ type Assignment={roleId:string;branchId:string|null;stationId:string|null;scope:
 const optional=(value:unknown,max:number)=>value===undefined?'':text(value,0,max);
 const active=(value:unknown)=>{if(typeof value!=='boolean')fail('INVALID_INPUT');return value;};
 const code=(value:unknown)=>{const s=text(value,1,40).toUpperCase();if(!/^[A-Z0-9_-]+$/.test(s))fail('INVALID_INPUT');return s;};
+// D72: a company time zone must be a named region both JavaScript and PostgreSQL know. PostgreSQL reads a
+// numeric offset such as "+03:00" in POSIX form (west of UTC), the opposite of JavaScript, which would move
+// every departure by hours; an unknown name would fail every later trip write.
+const zonePattern=/^(UTC|[A-Za-z]+(?:\/[A-Za-z0-9_+-]+){1,2})$/;
+export async function knownZone(c:PoolClient,timezone:string){if(!(await c.query('SELECT 1 FROM pg_catalog.pg_timezone_names WHERE name=$1',[timezone])).rowCount)fail('INVALID_TIMEZONE');}
 function settings(data:Record<string,unknown>){
  const holdMinutes=data.holdMinutes;if(typeof holdMinutes!=='number'||!Number.isSafeInteger(holdMinutes)||holdMinutes<5||holdMinutes>1440)fail('INVALID_INPUT');
- const timezone=text(data.timezone,1,80);try{new Intl.DateTimeFormat('en',{timeZone:timezone});}catch{fail('INVALID_INPUT');}
+ const timezone=text(data.timezone,1,80);if(!zonePattern.test(timezone))fail('INVALID_TIMEZONE');try{new Intl.DateTimeFormat('en',{timeZone:timezone});}catch{fail('INVALID_TIMEZONE');}
  if(typeof data.locale!=='string'||!['en','ar'].includes(data.locale))fail('INVALID_INPUT');return {holdMinutes,timezone,locale:String(data.locale)};
 }
 function permissions(value:unknown){const result=list(value,x=>text(x,1,80));if(result.some(p=>!permissionCodes.includes(p)))fail('INVALID_PERMISSION');return result;}
@@ -52,6 +57,7 @@ export class CompanyService {
   await this.identity.reauthenticate(token,data.currentPassword);
   return this.run(token,async(c,p)=>{
    if(!p.superAdministrator)fail('FORBIDDEN',403);
+   await knownZone(c,conf.timezone);
    const templates=(await c.query("SELECT * FROM safeer.roles WHERE scope IN ('company','branch','station') AND builtin AND active ORDER BY code")).rows;
    const template=templates.find(r=>r.code==='company_administrator');
    const adminPermissions=template?(await c.query('SELECT permission_code FROM safeer.role_permissions WHERE role_id=$1',[template.id])).rows.map(r=>r.permission_code):[];
@@ -68,7 +74,7 @@ export class CompanyService {
   const nameEn=text(data.nameEn),nameAr=text(data.nameAr),conf=settings(data),v=version(data.version),email=data.contactEmail===undefined||data.contactEmail===''?'':login(data.contactEmail),phone=optional(data.phone,40),address=optional(data.address,300);
   await this.identity.reauthenticate(token,data.currentPassword);
   return this.run(token,async(c,p)=>{
-   const old=await this.company(c,cid);await this.need(c,cid,'company.profile.manage');
+   const old=await this.company(c,cid);await this.need(c,cid,'company.profile.manage');await knownZone(c,conf.timezone);
    if(!p.superAdministrator&&(data.status!==undefined||data.slug!==undefined))fail('FORBIDDEN',403);
    const status=data.status===undefined?old.status:text(data.status,1,20),slug=data.slug===undefined?old.slug:text(data.slug,1,60).toLowerCase();
    if(!['pending','approved','suspended','archived'].includes(status)||!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug))fail('INVALID_INPUT');

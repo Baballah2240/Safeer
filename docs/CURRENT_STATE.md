@@ -1,5 +1,9 @@
 # Current state - read this first
 
+## Audit fixes - D72, 2026-11-12
+
+A deep audit fixed shared public booking limits (per visitor now, including behind Cloudflare), dead phone/email links in the Android apps (Booking 0.17.3, Driver 0.18.4), a dead Google button inside the apps, offset time zones read backwards by PostgreSQL, a 500 on impossible dashboard dates, trips hidden beyond the first 200 (Trips) and next 100 (walk-in sale), a tracking race and notice alignment. Migration 0022 adds the read-only counter_trips projection. Run npm run test:workflow, npm run test:production and npm run check:live (read-only, live site) for related changes. Results and open items: [the audit](testing/QUALITY_AUDIT_2026-11-12.md). The GitHub releases v0.17.3 and v0.18.4 must be published with the saved APKs after these commits are pushed, or the in-app update link fails.
+
 ## Official brand palette - D71, 2026-11-11
 
 The whole project now uses navy #0B2D5B, sky blue #1E90FF and orange #FF8C00 with the Route Pin logo. Booking 0.17.2 and Driver 0.18.3 carry the new launcher icon and native colours.

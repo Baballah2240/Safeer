@@ -28,6 +28,9 @@ try{await identityFixture(async f=>{
  // Schedule: choosing a route fills the stop times; a date range makes one trip per chosen weekday.
  await click('[data-trip-create]');await until('Boolean(document.querySelector("[data-trip-route]"))');await fill('[data-trip-route]',route);await until('document.querySelectorAll("[name=offset]").length===2');await fill('#staff-dialog [name=date]',date);await fill('#staff-dialog [name=time]','08:30');await fill('#staff-dialog [name=fare]','1500.50');await password();await submit();await saved();
  let trips=need(await f.admin.request(base+'/trips')).items;assert.equal(trips.length,1);assert.equal(trips[0].fareMinor,150050);assert.equal(trips[0].time,'08:30');const tid=trips[0].id;
+ // D72: a later "Show trips from" day leaves earlier trips out; clearing the day brings them back.
+ await until(`Boolean(document.querySelector('[data-trip-view="${tid}"]'))`);await fill('#trip-from',new Date(Date.parse(date+'T12:00:00Z')+2*86400000).toISOString().slice(0,10));
+ await until(`!document.querySelector('[data-trip-view="${tid}"]')&&Boolean(document.querySelector('#trip-from')?.value)`);await fill('#trip-from','');await until(`Boolean(document.querySelector('[data-trip-view="${tid}"]'))`);
  // Publishing too early explains itself in the form.
  await until(`Boolean(document.querySelector('[data-trip-publish="${tid}"]'))`);await click(`[data-trip-publish="${tid}"]`);await password();await submit();await until('Boolean(document.querySelector(".staff-dialog-error").textContent)');assert.match(await evaluate('document.querySelector(".staff-dialog-error").textContent'),/bus, a driver/i);await click('[data-dialog-cancel]');await until('!document.querySelector("#staff-dialog").firstChild');
  await click(`[data-trip-assign="${tid}"]`);await until('Boolean(document.querySelector("#staff-dialog [name=busId]"))');await password();await submit();await saved();

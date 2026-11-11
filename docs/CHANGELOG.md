@@ -1,5 +1,9 @@
 # Changelog
 
+## Whole-workflow and production audit fixes - D72, 2026-11-12
+
+Per-visitor public booking limits behind the proxy and Cloudflare; Android tel:/mailto: links (Booking 0.17.3/17003, Driver 0.18.4/18004); installed-app Google sign-in guidance; named company time zones only; calendar-checked operations day; Trips "Show trips from" with an incomplete-list notice; walk-in sale travel date (migration 0022 counter_trips); newest-only shipment tracking; aligned travel notice. New tests: workflow, production start, audit fixes, installed-app account, Android navigation policy, visitor address; time-of-day-proof operations fixtures; npm run check:live. See [the audit](testing/QUALITY_AUDIT_2026-11-12.md).
+
 ## Official brand palette and Route Pin logo - D71, 2026-11-11
 
 Navy/sky/orange palette across all web surfaces and the Android shell; new src/brand.svg and Android ic_safeer vector; recoloured src/coach-journey.jpg; Booking 0.17.2/17002 and Driver 0.18.3/18003.

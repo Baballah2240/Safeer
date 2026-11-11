@@ -1,5 +1,18 @@
 # Decisions
 
+## 2026-11-12 - Whole-workflow and production audit fixes
+
+D72: The owner asks for a deep bug and gap search, whole-workflow and production tests, a second scan and fixes, kept local until the owner has reviewed them. Fixes, each with a regression test (see [the audit](testing/QUALITY_AUDIT_2026-11-12.md)):
+1. Public hold, lookup and release limits are counted per visitor via client() (x-safeer-client), not per socket; behind the web proxy every visitor shared one budget (120 held seats and 30 lookups per 15 minutes for the whole site).
+2. Behind Cloudflare the last X-Forwarded-For hop is a Cloudflare server, so the proxy takes CF-Connecting-IP as the visitor only when that last hop is inside Cloudflare's published ranges; requests that bypass Cloudflare keep their real last hop. This also corrects the sign-in limiter.
+3. The Android shell hands user-tapped tel: and mailto: links (company phone/email, support address, staff booking phone) to the phone's dialer or mail app; every other non-Safeer page stays blocked. Booking 0.17.3/17003 and Driver 0.18.4/18004.
+4. Inside the installed apps the passenger Profile explains that Google sign-in works on the website instead of showing a button the app shell and Google both block.
+5. Company time zones must be named regions known to PostgreSQL (pg_timezone_names); numeric offsets such as +03:00 are refused with INVALID_TIMEZONE because PostgreSQL reads them in POSIX form (west of UTC), which would move every departure by hours.
+6. The operations dashboard day must round-trip as a real calendar date (2026-02-31 was a 500).
+7. Staff Trips accepts a "Show trips from" date and says when its 200-trip list is incomplete; walk-in sales accept a travel date (migration 0022, read-only counter_trips(uuid,date), GET counter/trips?day=) beyond the overview's next 100 departures.
+8. Shipment tracking applies only the newest lookup's answer; the public travel notice uses the content band's side margins at every width.
+Tests: the operations fixtures choose Africa/Khartoum or Etc/GMT+6 by time of day so the release gate no longer fails in the last 75 minutes of each Khartoum day; new workflow, production-start, audit-fix, installed-app account, Android navigation-policy and visitor-address checks; npm run check:live is a read-only check of the deployed site. No money, refund, boarding, retention or permission rule changes.
+
 ## 2026-11-11 - Official brand palette and logo
 
 D71: The owner supplies the official SAFEER brand identity: navy #0B2D5B (60%, identity and surfaces), sky blue #1E90FF (30%, interactive elements and graphics) and orange #FF8C00 (10%, highlights and key accents), with flat vector marks and no airplane symbols. This supersedes the D64/D65 violet palette everywhere: shared tokens (src/tokens.css, previously still brown underneath), theme/operations/booking/passenger/driver styles, the Android shell colours and launcher icon, and the illustrative coach photo (its purple livery is recoloured to brand blue; no other image content changed). Three logo concepts were produced (Route Pin, Coach & Road, S-Road); the owner-facing recommendation and the adopted mark is Concept 1 "Route Pin": a coach front inside a sky-blue location pin over an orange curved road on a navy rounded square. Success greens, error reds and status ambers stay functional colours. Release Booking 0.17.2/17002 and Driver 0.18.3/18003 with the existing signing identity so the in-app update notice offers the new icon and native colours.

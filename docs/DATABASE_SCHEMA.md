@@ -1,5 +1,9 @@
 # Database schema and migration status
 
+## Counter trips by day - D72, migration 0022, 2026-11-12
+
+Append-only migration 0022_counter_trip_day.sql adds the read-only SECURITY DEFINER projection safeer.counter_trips(uuid,date) with a fixed search_path and no PUBLIC execute: the same fields and company.ticketing.operate check as the counter overview's trip list, for published future departures on one company-local day (at most 100). The runtime role receives EXECUTE through grantIdentityRuntime and the reviewed function list in config/database-security.json. No table, constraint, RLS policy or data change. Company time-zone names are now also checked against pg_timezone_names by the API before they are saved.
+
 ## Driver Trip Dashboard - D66, 2026-11-10
 
 Append-only migration 0019_driver_dashboard.sql extends the private manifest core with authorized booking references, timezone, boarding availability and scheduled stops. The existing shipments wrapper is retained. driver_verify adds alreadyBoarded under the existing lock/unique record; same-company opaque QR can return TICKET_WRONG_TRIP without passenger details. No tables or financial rules change. See [D66 handover](archive/DRIVER_TRIP_DASHBOARD_0.18.0_2026-11-10.md).

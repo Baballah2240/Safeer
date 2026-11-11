@@ -1,5 +1,9 @@
 # Safeer mobile status
 
+## Phone and email links, app sign-in guidance - Booking 0.17.3 / 17003, Driver 0.18.4 / 18004, 2026-11-12
+
+D72: tapping a company phone number or email (company page, booking page), the support email (privacy page) or a passenger number in Staff now opens the phone's dialer or mail app; before, the app shell blocked them silently. Only taps can do this, and every other non-Safeer page stays blocked. Inside the apps the Profile page now says Google sign-in works on the Safeer website instead of showing a button that cannot work in an app. Web-side fixes (per-visitor booking limits, Trips date filter, walk-in sale travel date) reach the apps without reinstalling. Signed with the existing key (certificate SHA-256 a19fb6c1…7205); release build and Android lint passed (2 existing warnings each). Not installed on a physical phone. Publish GitHub releases v0.17.3 and v0.18.4 with Safeer-Booking-0.17.3.apk and Safeer-Driver-0.18.4.apk (and their .sha256 files) right after pushing, because src/app-release.js points the update notice at them.
+
 ## New brand colours and logo - Booking 0.17.2 / 17002, Driver 0.18.3 / 18003, 2026-11-11
 
 Both apps and the website switch to the official SAFEER palette (navy, sky blue, orange) and the new Route Pin logo. The web screens update by themselves; the new launcher icon and native status-bar colours need the new APKs, offered by the in-app update notice. Signed with the existing key (certificate SHA-256 a19fb6c1…7205, same as earlier releases). Release builds and Android lint passed. Physical-phone installation was not performed.

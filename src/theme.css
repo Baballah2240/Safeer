@@ -250,6 +250,7 @@
     html body .driver-header{margin-inline:12px}
     html body :is(.market-bar,.topbar){padding:16px;margin-inline:12px;gap:12px}
     html body .market-band{margin:14px 12px 0;border-radius:22px;padding-block:24px}
+    html body .market-service-notice{margin-inline:12px}
     html body .market-wrap{padding-inline:16px}
     html body #market-search{gap:12px;padding:18px}
     html body :is(input:not([type=checkbox]),select,textarea){font-size:16px;min-height:48px}

@@ -53,17 +53,22 @@ function view(){
  if(menuWasOpen){root.querySelector('#track-menu').showModal();document.documentElement.classList.add('app-drawer-open');root.querySelector('#track-menu-toggle').setAttribute('aria-expanded','true');}
  if(focused)root.querySelector('#'+CSS.escape(focused))?.focus({preventScroll:true});
 }
+// D72: only the newest lookup may show its answer, so a slow earlier reply never replaces a later code's status.
+let lookupSequence=0;
 async function lookup(){
+ const sequence=++lookupSequence,asked=code;
  result=null;problem='';
- if(!pattern.test(code)){problem='invalid';view();root.querySelector('[name=code]').focus();return;}
+ if(!pattern.test(code)){problem='invalid';busy=false;view();root.querySelector('[name=code]').focus();return;}
  busy=true;view();
  const url=new URL(location.href);url.searchParams.set('code',code);history.replaceState(null,'',url);
+ let answer=null,failure='';
  try{
-  const response=await fetch('/api/v1/public/shipments/'+encodeURIComponent(code),{headers:{Accept:'application/json'},cache:'no-store'});
-  if(response.status===404)problem='missing';else if(response.status===429)problem='busy';else if(!response.ok)problem='failed';
-  else result=(await response.json()).data;
- }catch{problem='failed';}
- busy=false;view();
+  const response=await fetch('/api/v1/public/shipments/'+encodeURIComponent(asked),{headers:{Accept:'application/json'},cache:'no-store'});
+  if(response.status===404)failure='missing';else if(response.status===429)failure='busy';else if(!response.ok)failure='failed';
+  else answer=(await response.json()).data;
+ }catch{failure='failed';}
+ if(sequence!==lookupSequence)return;
+ result=answer;problem=failure;busy=false;view();
 }
 view();
 if(code)void lookup();

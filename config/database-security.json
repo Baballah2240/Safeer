@@ -411,6 +411,7 @@
     "safeer.staff_booking(uuid,uuid)",
     "safeer.staff_update_travelers(uuid,uuid,uuid,integer,text,jsonb,text)",
     "safeer.counter_overview(uuid)",
+    "safeer.counter_trips(uuid,date)",
     "safeer.counter_trip(uuid,uuid)",
     "safeer.save_payment_settings(uuid,uuid,boolean,boolean,integer)",
     "safeer.save_counter(uuid,uuid,uuid,uuid,text,text,boolean,integer)",

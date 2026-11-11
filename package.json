@@ -75,7 +75,12 @@
     "mobile:save:driver": "node mobile/save.mjs --driver-only",
     "test:passenger-accounts": "node --test tests/passenger-accounts.integration.mjs",
     "test:passenger-google": "node --test tests/passenger-google.integration.mjs",
-    "test:staff-details": "node --test tests/staff-details.integration.mjs"
+    "test:staff-details": "node --test tests/staff-details.integration.mjs",
+    "test:workflow": "node --test tests/workflow.integration.mjs",
+    "test:production": "node --test tests/production.integration.mjs",
+    "test:audit-fixes": "node --test tests/audit-fixes.integration.mjs",
+    "test:passenger-app:browser": "node tests/passenger-app-account.browser.mjs",
+    "check:live": "node scripts/check-live.mjs"
   },
   "license": "UNLICENSED",
   "dependencies": {

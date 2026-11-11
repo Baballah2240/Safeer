@@ -77,3 +77,13 @@ test('static assets revalidate with ETags while pages stay no-store (D57)', asyn
     await page.arrayBuffer();
   } finally { await app.close(); }
 });
+
+test('hosted visitor address: Cloudflare\'s client header only counts when the last hop is Cloudflare (D72)',async()=>{
+  const {edgeClient}=await import('../server.mjs');
+  assert.equal(edgeClient({'x-forwarded-for':'203.0.113.5'}),'203.0.113.5','no CDN: the edge-added address');
+  assert.equal(edgeClient({'x-forwarded-for':'198.51.100.7, 104.23.1.1','cf-connecting-ip':'198.51.100.7'}),'198.51.100.7','via Cloudflare: the visitor');
+  assert.equal(edgeClient({'x-forwarded-for':'2001:db8::9, 2606:4700:10::6816:1','cf-connecting-ip':'2001:db8::9'}),'2001:db8::9','IPv6 Cloudflare hop');
+  assert.equal(edgeClient({'x-forwarded-for':'5.6.7.8, 203.0.113.9','cf-connecting-ip':'5.6.7.8'}),'203.0.113.9','bypassing Cloudflare cannot choose its own address');
+  assert.equal(edgeClient({'x-forwarded-for':'198.51.100.7, 172.70.1.2','cf-connecting-ip':'not-an-address'}),'172.70.1.2','a malformed client header is ignored');
+  assert.equal(edgeClient({}),'','no forwarding header: the API falls back to the socket');
+});

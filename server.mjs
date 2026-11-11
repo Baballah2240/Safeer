@@ -4,6 +4,7 @@ import {readFileSync} from 'node:fs';
 import {resolve} from 'node:path';
 import {createHash} from 'node:crypto';
 import {pathToFileURL} from 'node:url';
+import {BlockList,isIP} from 'node:net';
 import {publicAssets} from './config/assets.mjs';
 import {appRelease} from './src/app-release.js';
 
@@ -15,6 +16,18 @@ const forwardedHeaders=headers=>{
   const excluded=new Set(['connection','keep-alive','proxy-connection','proxy-authenticate','proxy-authorization','te','trailer','transfer-encoding','upgrade',...String(headers.connection||'').split(',').map(x=>x.trim().toLowerCase())]);
   return Object.fromEntries(Object.entries(headers).filter(([name])=>!excluded.has(name.toLowerCase())));
 };
+// D72: the hosted site sits behind Cloudflare and then Render's edge, which appends the address it saw,
+// so the last X-Forwarded-For entry is a Cloudflare server shared by many visitors. Only when that hop
+// is one of Cloudflare's published ranges is Cloudflare's own CF-Connecting-IP taken as the visitor;
+// a request that bypasses Cloudflare keeps its real last hop, so the header cannot be forged that way.
+const cloudflare=new BlockList();
+for(const range of ['173.245.48.0/20','103.21.244.0/22','103.22.200.0/22','103.31.4.0/22','141.101.64.0/18','108.162.192.0/18','190.93.240.0/20','188.114.96.0/20','197.234.240.0/22','198.41.128.0/17','162.158.0.0/15','104.16.0.0/13','104.24.0.0/14','172.64.0.0/13','131.0.72.0/22'])cloudflare.addSubnet(range.split('/')[0],Number(range.split('/')[1]),'ipv4');
+for(const range of ['2400:cb00::/32','2606:4700::/32','2803:f800::/32','2405:b500::/32','2405:8100::/32','2a06:98c0::/29','2c0f:f248::/32'])cloudflare.addSubnet(range.split('/')[0],Number(range.split('/')[1]),'ipv6');
+const fromCloudflare=address=>{const kind=isIP(address);return kind===4?cloudflare.check(address,'ipv4'):kind===6?cloudflare.check(address,'ipv6'):false;};
+export function edgeClient(headers){
+  const last=String(headers['x-forwarded-for']||'').split(',').map(x=>x.trim()).filter(Boolean).at(-1)||'',viaCloudflare=String(headers['cf-connecting-ip']||'').trim();
+  return fromCloudflare(last)&&isIP(viaCloudflare)?viaCloudflare:last;
+}
 
 export async function startServer({port = 4320, built = false, identityApiUrl, publicOrigin, loopbackOnly = false} = {}) {
   const hosted = publicOrigin ? new URL(publicOrigin) : null;
@@ -46,7 +59,7 @@ export async function startServer({port = 4320, built = false, identityApiUrl, p
       catch{response.writeHead(503,{'Content-Type':'application/json'});response.end(JSON.stringify({error:{code:'IDENTITY_UNAVAILABLE',message:'Review the local identity API configuration.'}}));return;}
       const bodyLimit=request.method==='POST'&&path==='/api/v1/public/holds'?bodyLimits.bookingBodyBytes:bodyLimits.defaultBodyBytes;
       if(Number(request.headers['content-length']||0)>bodyLimit){response.writeHead(413);response.end('Request too large');return;}
-      const upstream=upstreamRequest({hostname:target.hostname,port:target.port,method:request.method,path:request.url,headers:{...forwardedHeaders(request.headers),host:target.host,'x-safeer-client':hosted?String(request.headers['x-forwarded-for']||'').split(',').pop().trim():request.socket.remoteAddress}},incoming=>{
+      const upstream=upstreamRequest({hostname:target.hostname,port:target.port,method:request.method,path:request.url,headers:{...forwardedHeaders(request.headers),host:target.host,'x-safeer-client':hosted?edgeClient(request.headers):request.socket.remoteAddress}},incoming=>{
         response.writeHead(incoming.statusCode,forwardedHeaders(incoming.headers));incoming.pipe(response);
       });
       upstream.setTimeout(10000,()=>upstream.destroy());

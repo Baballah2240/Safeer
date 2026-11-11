@@ -28,10 +28,12 @@ export class TripService {
   if(!rows[0].ok)fail('FORBIDDEN',403);
  }
  private audit(c:PoolClient,cid:string,p:Principal,action:string,target:string){return c.query('INSERT INTO safeer.company_audit(id,company_id,actor_id,action,target_id) VALUES($1,$2,$3,$4,$5)',[randomUUID(),cid,p.id,action,target]);}
- async trips(token:string,cid:string,rawFrom?:string){uuid(cid);const from=rawFrom===undefined?null:day(rawFrom);return this.run(token,async c=>{
+ // D72: the list holds at most 200 trips from the chosen day; "more" tells staff to pick a later day
+ // instead of silently hiding departures they still need to manage.
+ async trips(token:string,cid:string,rawFrom?:string){uuid(cid);const from=rawFrom===undefined||rawFrom===''?null:day(rawFrom);return this.run(token,async c=>{
   await this.access(c,cid);
-  const items=(await c.query(`SELECT ${tripFields},(SELECT row_to_json(a) FROM (SELECT ${assignmentFields} FROM safeer.trip_assignments x WHERE x.company_id=t.company_id AND x.trip_id=t.id AND x.replaced_at IS NULL) a) AS assignment FROM safeer.trips t WHERE t.company_id=$1 AND t.arrival_at>=COALESCE(($2::date)::timestamp AT TIME ZONE t.timezone,clock_timestamp()-interval '1 day') ORDER BY t.departure_at,t.id LIMIT 200`,[cid,from])).rows;
-  return {items,canManage:(await c.query('SELECT safeer.trip_manage($1) AS ok',[cid])).rows[0].ok};
+  const rows=(await c.query(`SELECT ${tripFields},(SELECT row_to_json(a) FROM (SELECT ${assignmentFields} FROM safeer.trip_assignments x WHERE x.company_id=t.company_id AND x.trip_id=t.id AND x.replaced_at IS NULL) a) AS assignment FROM safeer.trips t WHERE t.company_id=$1 AND t.arrival_at>=COALESCE(($2::date)::timestamp AT TIME ZONE t.timezone,clock_timestamp()-interval '1 day') ORDER BY t.departure_at,t.id LIMIT 201`,[cid,from])).rows;
+  return {items:rows.slice(0,200),more:rows.length>200,from,canManage:(await c.query('SELECT safeer.trip_manage($1) AS ok',[cid])).rows[0].ok};
  });}
  async detail(token:string,cid:string,id:string){uuid(cid);uuid(id);return this.run(token,async c=>{
   await this.access(c,cid);const trip=(await c.query(`SELECT ${tripFields} FROM safeer.trips t WHERE t.company_id=$1 AND t.id=$2`,[cid,id])).rows[0];if(!trip)fail('NOT_FOUND',404);

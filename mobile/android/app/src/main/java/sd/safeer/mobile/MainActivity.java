@@ -57,6 +57,13 @@ public final class MainActivity extends Activity {
             && path != null && path.startsWith("/Baballah2240/Safeer/releases/");
     }
 
+    // D72: company phone numbers and email addresses (and the support address) open the
+    // phone's own dialer or mail app; only a user tap starts them and no web page leaves Safeer.
+    static boolean contactLink(Uri uri, boolean userGesture) {
+        String scheme = uri.getScheme();
+        return userGesture && ("tel".equals(scheme) || "mailto".equals(scheme));
+    }
+
     private boolean driverCameraPage() {
         String current = web == null ? null : web.getUrl();
         if (!"driver".equals(BuildConfig.FLAVOR) || current == null || isFinishing() || isDestroyed()) return false;
@@ -203,7 +210,7 @@ public final class MainActivity extends Activity {
             @Override public boolean shouldOverrideUrlLoading(WebView view,WebResourceRequest request) {
                 Uri target = request.getUrl();
                 if (allowed(target)) return false;
-                if (releaseDownload(target)) {
+                if (releaseDownload(target) || contactLink(target, request.hasGesture())) {
                     try { startActivity(new android.content.Intent(android.content.Intent.ACTION_VIEW, target)); }
                     catch (android.content.ActivityNotFoundException ignored) { }
                 }

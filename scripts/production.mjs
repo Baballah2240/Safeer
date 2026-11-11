@@ -42,7 +42,9 @@ if(!(await api.db.pool.query('SELECT count(*)::int AS n FROM safeer.users')).row
   // Shown once in the private service log; it must be changed at first sign-in.
   console.log(`First owner created: ${account.login}. Temporary password: ${account.temporaryPassword}`);
 }
-const web=await startServer({port:Number(process.env.PORT||10000),built:true,identityApiUrl:api.origin,publicOrigin:origin.origin});
+// SAFEER_LOOPBACK_ONLY=1 is for the local production test only (tests/production.integration.mjs), so a
+// developer machine never exposes the disposable instance to its network. Render leaves it unset.
+const web=await startServer({port:Number(process.env.PORT||10000),built:true,identityApiUrl:api.origin,publicOrigin:origin.origin,loopbackOnly:process.env.SAFEER_LOOPBACK_ONLY==='1'});
 console.log(`Safeer is serving ${origin.origin}`);
 const stop=()=>web.close().then(()=>api.close()).finally(()=>process.exit(0));
 process.once('SIGINT',stop);process.once('SIGTERM',stop);
