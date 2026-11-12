@@ -50,9 +50,9 @@ export async function verifyIdToken(idToken:string,g:Google,nonce:string){
  const now=Date.now()/1000;
  if(!good||!g.issuers.includes(String(claims.iss))||claims.aud!==g.clientId||typeof claims.exp!=='number'||claims.exp<now-60||typeof claims.iat!=='number'||claims.iat>now+300||claims.nonce!==nonce)fail('GOOGLE_TOKEN_INVALID',401);
  if(claims.email_verified!==true||typeof claims.email!=='string'||typeof claims.sub!=='string'||!/^[0-9A-Za-z_-]{1,255}$/.test(claims.sub))fail('GOOGLE_EMAIL_UNVERIFIED',401);
- const picture=typeof claims.picture==='string'&&/^https:\/\/[^\s"'<>]{1,500}$/.test(claims.picture)?claims.picture:null;
+ // D75: the Google profile photo is never displayed (D70 shows initials), so its address is not kept.
  const name=typeof claims.name==='string'&&claims.name.trim()?claims.name.trim().slice(0,100):String(claims.email).split('@')[0].slice(0,100);
- return {sub:claims.sub,email:String(claims.email).slice(0,254),name,picture};
+ return {sub:claims.sub,email:String(claims.email).slice(0,254),name};
 }
 
 @Injectable()
@@ -82,7 +82,7 @@ export class PassengerService {
   const data=await response.json().catch(()=>({})) as {id_token?:unknown};
   if(!response.ok||typeof data.id_token!=='string')fail('GOOGLE_TOKEN_INVALID',401);
   const who=await verifyIdToken(data.id_token,g,nonce),token=secret();
-  await this.call('SELECT safeer.passenger_sign_in($1,$2,$3,$4,gen_random_uuid(),$5,$6) AS r',[who.sub,who.email,who.name,who.picture,passengerHash(token),SESSION_DAYS]);
+  await this.call('SELECT safeer.passenger_sign_in($1,$2,$3,$4,gen_random_uuid(),$5,$6) AS r',[who.sub,who.email,who.name,null,passengerHash(token),SESSION_DAYS]);
   return {token,back,days:SESSION_DAYS};
  }
  async me(token:string|null){if(!token)return null;return await this.call('SELECT safeer.passenger_me($1) AS r',[passengerHash(token)])??null;}

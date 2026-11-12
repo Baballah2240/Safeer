@@ -112,3 +112,18 @@ No new HTTP route. Assigned trip replies add timezone. The manifest adds serverN
 ## D67 mobile release discovery
 
 Public read-only GET/HEAD /mobile/releases returns the existing per-app release metadata with Cache-Control: no-store and no credentials. Other methods are rejected. The Driver client validates versions, hash/size and exact canonical Safeer GitHub release URLs before replacing its last known metadata; stale/downgraded/invalid responses are rejected. This endpoint has no account, trip or booking data and performs no installation.
+
+## D70/D75 passenger accounts (Google sign-in)
+
+Routes under /api/v1/passenger. The session is the HttpOnly SameSite=Strict cookie safeer_passenger (path /api/v1/passenger, 30 days); writes need its X-CSRF-Token from GET me and the web Origin.
+
+| Method | Path | Purpose |
+|---|---|---|
+| GET | /google/start?return= | Starts Google OpenID Connect (PKCE S256, nonce, signed 10-minute state cookie) and returns to an allow-listed path; ?signin=unavailable without credentials |
+| GET | /google/callback | The only cross-site GET accepted; verifies the ID token (RS256, issuer, audience, expiry, nonce, verified email), keeps the Google account ID, email and name (not the photo, D75) and opens the session |
+| GET | /me | {account, csrfToken, googleEnabled} |
+| POST | /logout | Ends the session |
+| PUT | /profile | Versioned name, mobile and up to ten travelers |
+| GET | /trips | Bookings linked to the account |
+| POST, DELETE | /bookings, /bookings/{reference} | Link a booking proven by the device key; unlink it |
+| DELETE | /account | Deletes the account, travelers, links and sessions and clears the cookie; bookings stay guest bookings (D75) |

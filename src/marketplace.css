@@ -49,3 +49,6 @@
 @media(max-width:760px){.market-service-notice{margin-top:12px;padding:16px;gap:12px;border-radius:20px}.market-notice-icon{flex-basis:36px;width:36px;height:36px;border-radius:12px}.market-notice-icon svg{width:20px;height:20px}.market-notice-message{font-size:.9rem}}
 @media print{.market-service-notice{display:none}}
 .market-travelers{display:grid;gap:10px;margin:14px 0 0;padding:0;border:0;min-width:0}.market-travelers legend{padding:0;margin-bottom:8px;color:var(--ink);font-weight:700}.market-travelers label,.market-lookup label{display:grid;gap:4px;font-size:.85rem;font-weight:600}.market-travelers input,.market-lookup input{width:100%;min-height:44px}.market-lookup{display:grid;gap:12px}.market-subhead{margin:6px 0 4px;font-size:1rem}.market-aside .market-rows li{align-items:center}.market-aside .market-rows button{min-height:44px;margin-inline-start:auto}
+/* D75: privacy links at the end of the booking home page and the no-JavaScript description. */
+.market-legal{padding-block:4px 0}
+.market-noscript{padding-block:24px;display:grid;gap:8px}

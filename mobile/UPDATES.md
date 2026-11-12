@@ -1,5 +1,9 @@
 # Safeer mobile status
 
+## Google sign-in readiness - website, 2026-11-12
+
+D75: The privacy and account deletion pages cover Google sign-in, the signed-in Profile can delete the account, and the booking home page links the privacy policy. Phones receive this from the website; no new APK. Google sign-in inside the apps is still D68 step 4.
+
 ## Handover back to Claude - 2026-11-12
 
 Codex hands the Android apps back to Claude. No app change: Booking stays 0.17.3/17003 and Driver 0.18.4/18004. Checked on this computer: live site 19/19 with both APK downloads working, signed release build and lint pass, and the rebuilt APKs are byte-identical to the published ones with the same certificate. mobile/README.md now describes the current website-connected apps instead of the old USB test channel. See [the handover](../docs/archive/MOBILE_HANDOVER_2026-11-12.md).

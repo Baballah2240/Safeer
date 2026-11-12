@@ -1,33 +1,12 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {createServer} from 'node:http';
-import {createHash,generateKeyPairSync,randomUUID,sign} from 'node:crypto';
+import {randomUUID} from 'node:crypto';
+import {fakeGoogle} from './support/fake-google.mjs';
 import {identityFixture} from './support/identity-db.mjs';
 
 // D68 step 2: Google sign-in through the API against a loopback stand-in for Google (own RSA key).
 const ok=(r,status=201)=>{assert.equal(r.status,status,r.raw);return r.data;};
 const future=(days=10)=>new Date(Date.now()+days*86400000).toISOString().slice(0,10);
-const b64=v=>Buffer.from(typeof v==='string'?v:JSON.stringify(v)).toString('base64url');
-async function fakeGoogle(){
- const {privateKey,publicKey}=generateKeyPairSync('rsa',{modulusLength:2048}),kid='test-key';
- const codes=new Map(),state={claims:{}};
- const server=createServer(async(req,res)=>{
-  const url=new URL(req.url,'http://x');
-  if(url.pathname==='/certs'){res.setHeader('Content-Type','application/json');return res.end(JSON.stringify({keys:[{...publicKey.export({format:'jwk'}),kid,alg:'RS256',use:'sig'}]}));}
-  if(url.pathname==='/token'){
-   let raw='';for await(const c of req)raw+=c;const form=new URLSearchParams(raw),entry=codes.get(form.get('code'));codes.delete(form.get('code'));
-   if(!entry||createHash('sha256').update(form.get('code_verifier')||'').digest('base64url')!==entry.challenge||form.get('client_secret')!=='test-secret-value'){res.statusCode=400;return res.end('{}');}
-   const now=Math.floor(Date.now()/1000),claims={iss:base,aud:'test-client.apps',sub:'g-123',email:'Amna@Example.com',email_verified:true,name:'Fictional Amna',iat:now,exp:now+600,nonce:entry.nonce,...state.claims};
-   const head=b64({alg:'RS256',kid,typ:'JWT'})+'.'+b64(claims);
-   res.setHeader('Content-Type','application/json');return res.end(JSON.stringify({id_token:head+'.'+sign('RSA-SHA256',Buffer.from(head),privateKey).toString('base64url')}));
-  }
-  res.statusCode=404;res.end();
- });
- await new Promise(r=>server.listen(0,'127.0.0.1',r));const base=`http://127.0.0.1:${server.address().port}`;
- // Plays the user's consent: turns the auth URL into a code bound to its PKCE challenge and nonce.
- const consent=auth=>{const u=new URL(auth),code=randomUUID();codes.set(code,{challenge:u.searchParams.get('code_challenge'),nonce:u.searchParams.get('nonce')});return {code,state:u.searchParams.get('state')};};
- return {base,consent,state,close:()=>new Promise(r=>server.close(r))};
-}
 async function trip(f){
  const pw={currentPassword:f.password},cid=ok(await f.admin.request('companies','POST',{nameEn:'Fictional Google Co',nameAr:'Fictional Google Co',slug:'google-demo',holdMinutes:30,timezone:'Africa/Khartoum',locale:'en',...pw})).id;
  const w=ok(await f.admin.request('companies/'+cid),200);ok(await f.admin.request('companies/'+cid,'PATCH',{...w.company,id:undefined,status:'approved',...pw}),200);
@@ -85,9 +64,19 @@ test('Google sign-in verifies the ID token, opens a passenger session and links 
   assert.equal((await write('bookings','POST',{reference:hold.reference,key})).status,201);
   const trips=(await (await go('trips',{cookie:first.session})).json()).data;assert.deepEqual(trips.items.map(b=>b.reference),[hold.reference]);
   // Another Google account cannot take the same booking.
-  g.state.claims={sub:'g-other',email:'other@example.com'};const other=await signIn();g.state.claims={};
+  g.state.claims={sub:'g-other',email:'other@example.com',picture:'https://lh3.googleusercontent.com/a/fictional-photo'};const other=await signIn();g.state.claims={};
   const otherCsrf=(await (await go('me',{cookie:other.session})).json()).data.csrfToken;
   assert.equal((await go('bookings',{method:'POST',cookie:other.session,headers:{Origin:origin,'Content-Type':'application/json','X-CSRF-Token':otherCsrf},body:JSON.stringify({reference:hold.reference,key})})).status,409);
+  // D75: the Google photo address is not kept, and a passenger deletes their own account over HTTP.
+  const otherRow=async()=>(await f.migration.query("SELECT picture_url FROM safeer.passenger_accounts WHERE provider_subject='g-other'")).rows;
+  assert.deepEqual(await otherRow(),[{picture_url:null}],'The Google profile photo address is not stored.');
+  const remove=csrf=>go('account',{method:'DELETE',cookie:other.session,headers:{Origin:origin,'X-CSRF-Token':csrf}});
+  assert.equal((await remove('0'.repeat(64))).status,403,'Deleting needs the passenger CSRF token.');
+  const gone=await remove(otherCsrf);assert.equal(gone.status,200,await gone.clone().text());assert.equal((await gone.json()).data.deleted,true);
+  assert.match(gone.headers.getSetCookie().find(c=>c.startsWith('safeer_passenger='))||'',/^safeer_passenger=; .*Max-Age=0/,'The session cookie is cleared.');
+  assert.equal((await (await go('me',{cookie:other.session})).json()).data.account,null,'The session ends with the account.');
+  assert.deepEqual(await otherRow(),[],'The account row is gone.');
+  assert.deepEqual((await (await go('trips',{cookie:first.session})).json()).data.items.map(b=>b.reference),[hold.reference],'Other accounts keep their bookings.');
 
   assert.equal((await write('logout','POST',{})).status,201);
   assert.equal((await (await go('me',{cookie:first.session})).json()).data.account,null,'Signing out ends the session.');

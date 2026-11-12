@@ -20,6 +20,19 @@
 - Migrations only move forward. Never edit an applied migration.
 - Pushing to GitHub triggers a Render deploy only when auto-deploy is on. Check the deploy status in Render.
 
+## Google sign-in for passengers (D70, D75)
+
+Passenger accounts are optional. Without these two keys the Profile page says Google sign-in is not available yet, and guest booking is unchanged.
+
+1. In Google Cloud Console (console.cloud.google.com), create or pick a project for Safeer.
+2. Google Auth Platform > Branding: app name `Safeer`, a user support email, the logo (a 120x120 PNG of the Route Pin mark, under 1 MB), application home page `https://safeer.mohbaba.online/marketplace`, privacy policy `https://safeer.mohbaba.online/privacy`, authorized domain `mohbaba.online`, and a developer contact email.
+3. Audience: External, then publish the app. Safeer asks only for `openid email profile`, which Google treats as non-sensitive.
+4. Clients > Create client > Web application. Authorized redirect URI, exactly: `https://safeer.mohbaba.online/api/v1/passenger/google/callback`. No JavaScript origin is needed. Copy the client ID and the client secret; the secret is shown only once.
+5. In Render, open the Safeer web service > Environment, set `SAFEER_GOOGLE_CLIENT_ID` and `SAFEER_GOOGLE_CLIENT_SECRET`, and save so it redeploys. Never put the secret in Git, chat or logs.
+6. In Google Search Console, add the domain `mohbaba.online`, add the TXT record it shows in Namecheap (Domain List > mohbaba.online > Advanced DNS), and verify. Use a Google account that owns the Cloud project.
+7. Back in Google Auth Platform, choose Verify branding. Until Google approves it, the sign-in screen shows the site address instead of the Safeer name and logo; sign-in itself still works.
+8. Run `npm run check:live`: it reports "Google sign-in configured". Then sign in once from Profile on the website, and delete that test account from Profile if you want.
+
 # Hosting on a Namecheap VPS (Ubuntu 24.04)
 
 `deploy/setup-ubuntu.sh` installs Node 24, PostgreSQL 16, Nginx and a Let's Encrypt certificate, and runs Safeer under systemd as the unprivileged `safeer` user.

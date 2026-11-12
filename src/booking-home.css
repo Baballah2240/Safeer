@@ -62,7 +62,9 @@
  html[data-app-surface=booking] .market-point>span{width:10px;height:10px;border-radius:50%}
  html[data-app-surface=booking] .market-point-pickup>span{background:#FF8C00}
  html[data-app-surface=booking] .market-point-dropoff>span{background:#E67700}
- html[data-app-surface=booking] .market-help{margin-block:24px calc(140px + env(safe-area-inset-bottom))}
+ html[data-app-surface=booking] .market-help{margin-block:24px 0}
+ /* D75: the privacy links now end the home page, so they keep the space above the bottom navigation. */
+ html[data-app-surface=booking] .market-legal{margin-block-end:calc(140px + env(safe-area-inset-bottom))}
  html[data-app-surface=booking] .market-help-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
  html[data-app-surface=booking] .market-help-grid h3{margin:0 0 6px;font-size:1rem}
  html[data-app-surface=booking] .market-help-grid p{margin:0;color:var(--muted);line-height:1.6}

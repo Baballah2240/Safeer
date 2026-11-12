@@ -1,5 +1,9 @@
 # Current state - read this first
 
+## Google sign-in readiness - D75, 2026-11-12
+
+The site is ready for Google's brand verification: the privacy policy covers Google sign-in, passengers can delete their account from Profile, and the booking home page links the privacy policy. Google sign-in is still off on the live site until the owner adds SAFEER_GOOGLE_CLIENT_ID and SAFEER_GOOGLE_CLIENT_SECRET in Render (steps in [HOSTING.md](HOSTING.md)). Still open: D68 step 3 (My Trips across devices) and step 4 (sign-in inside the Android apps).
+
 ## Mobile handover to Claude - 2026-11-12
 
 Claude takes the Android apps back from Codex. Booking 0.17.3/17003 and Driver 0.18.4/18004 are published and current; nothing was rebuilt for release or installed. State, release steps and open items: [the handover](archive/MOBILE_HANDOVER_2026-11-12.md).

@@ -1,5 +1,14 @@
 # Decisions
 
+## 2026-11-12 - Google sign-in readiness: privacy policy, account deletion and home-page links
+
+D75: The owner continues the Google work (D68/D70). Google's brand verification for the consent screen needs a public home page that describes the app and links to the privacy policy, a privacy policy on the same domain that explains how Google user data is used, and verified ownership of the domain.
+1. The privacy policy covers optional passenger accounts and Google sign-in. It states what Google provides (account ID, email, name) and what the passenger adds (a changed name, a mobile number, up to ten travellers), plus booking links and sessions. It gives the purpose, says the Google email and ID are not shared with bus companies and are never sold or used for advertising, states retention (until the account is deleted; sessions last 30 days), and includes the Google API Services User Data Policy (Limited Use) statement. The deletion page replaces "Passengers do not create accounts" with self-service deletion.
+2. D68 step 5: the signed-in Profile offers Delete account with a confirmation. It calls DELETE /api/v1/passenger/account, which removes the account, saved details, travellers, booking links and sessions; bookings remain guest bookings under the D31 erasure policy.
+3. The booking home page ends with the Privacy policy and Delete account links, and marketplace.html carries a description and those links that work without JavaScript.
+4. Data minimisation: Safeer no longer stores the Google profile photo address, which it never displayed (D70 shows initials).
+The Google Cloud client, domain verification and the Render keys are owner actions (docs/HOSTING.md). No migration, no APK.
+
 ## 2026-11-12 - Direct staff permissions and company access when creating a user
 
 D73: The owner wants to give a person their permissions directly when adding them, and to choose their company while creating a user.

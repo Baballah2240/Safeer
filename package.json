@@ -82,6 +82,7 @@
     "test:production": "node --test tests/production.integration.mjs",
     "test:audit-fixes": "node --test tests/audit-fixes.integration.mjs",
     "test:passenger-app:browser": "node tests/passenger-app-account.browser.mjs",
+    "test:passenger-privacy:browser": "node tests/passenger-privacy.browser.mjs",
     "check:live": "node scripts/check-live.mjs"
   },
   "license": "UNLICENSED",
