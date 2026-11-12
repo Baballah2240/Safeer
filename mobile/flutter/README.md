@@ -1,6 +1,6 @@
 # Safeer Flutter apps (D74)
 
-Two native Flutter apps, **Safeer Passenger** and **Safeer Driver**, built from the "Safeer Glass" brief with the current Safeer fonts (Inter, Noto Sans Arabic) and colours (navy #0B2D5B, sky blue #1E90FF, orange #FF8C00 and the website's light/dark tokens). They use the existing Safeer API; nothing on the server changed. The published WebView apps in `mobile/android` stay the live apps until the owner decides otherwise (see "Status" below).
+Two native Flutter apps, **Safeer Passenger** and **Safeer Driver**, built from the "Safeer Glass" brief with the Safeer fonts (Inter, Noto Sans Arabic) and the D71 colours (navy #0B2D5B, sky blue #1E90FF, orange #FF8C00 and their light/dark tokens). D77: the owner kept these colours after D76 moved the website and WebView apps to the warm palette, so do not convert them. They use the existing Safeer API; nothing on the server changed. The published WebView apps in `mobile/android` stay the live apps until the owner decides otherwise (see "Status" below).
 
 ```
 mobile/flutter/

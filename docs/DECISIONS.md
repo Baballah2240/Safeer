@@ -18,6 +18,10 @@ D75: The owner continues the Google work (D68/D70). Google's brand verification 
 4. Data minimisation: Safeer no longer stores the Google profile photo address, which it never displayed (D70 shows initials).
 The Google Cloud client, domain verification and the Render keys are owner actions (docs/HOSTING.md). No migration, no APK.
 
+## 2026-11-12 - Flutter apps keep the navy palette (exception to D76)
+
+D77: After D76 moved the website and the WebView apps to the warm sand/orange/deep green palette, the owner chose to keep the Flutter Passenger and Driver previews (D74) on the D71 navy #0B2D5B, sky blue #1E90FF and orange #FF8C00 colours, logo and launcher icon. Do not convert mobile/flutter to the D76 palette without a new owner instruction. Fonts stay Inter and Noto Sans Arabic in both.
+
 ## 2026-11-12 - Native Flutter Passenger and Driver apps (Safeer Glass)
 
 D74: The owner wants the mobile apps built in Flutter from a "Safeer Glass" brief, keeping the current fonts and colours instead of the brief's turquoise palette.
