@@ -305,3 +305,7 @@ Owner clarified that the Safeer logo/name belongs to the page body, independent 
 
 ## Staff access app-shell alignment - 2026-11-12
 Replace Staff access legacy top bar and persistent sidebar column with the shared body wordmark, independent fixed menu button and modal app drawer. Preserve permission-scoped platform/company navigation, account actions, settings, keyboard/focus behavior and login drafts. Legacy fictional preview remains separate.
+
+
+## Shared Arabic/English typography - 2026-11-12
+Owner approved Noto Sans Arabic for Arabic and Inter for English/numerals across Safeer. Bundle licensed variable WOFF2 subsets locally; retain SIL OFL notices and source checksums. Use a shared 26/28px wordmark, 24px semibold page headings, 16px body/inputs and 14-16px medium labels/buttons, with generous Arabic line spacing. Preserve official colors, responsive controls, native picker behavior and all operational authority.

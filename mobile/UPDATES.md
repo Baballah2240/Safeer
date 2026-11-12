@@ -318,3 +318,11 @@ Validation: unit/build/docs checks, 80 menu layouts, 16 tracking layouts, 64 bod
 Validation: unit/build/docs checks, 32 Staff menu layouts, 64 shared masthead/header layouts, login, 72 company-management layouts and 60 identity/permissions layouts passed. Legacy preview sidebar checks also passed. The time-sensitive operations fixture could not run near the Khartoum day boundary; company and identity workflows were verified independently.
 - Staff appearance and language controls use separate, comfortably spaced rows in the drawer.
 - Language changes preserve the menu scroll position, including long company/admin navigation.
+
+
+## 2026-11-12 - Shared Noto Sans Arabic and Inter typography
+- Bundled local fonts for all screens, with license notices and source checksums.
+- Consistent wordmarks, headings, 16px body/inputs and medium-weight controls; increased Arabic line spacing and Inter numerals for dates/prices.
+- Official text colors and operational behavior remain unchanged. Hosted update; no APK version change.
+
+Validation: 28 unit tests and build/docs checks passed on the current audited source. Actual custom-font rendering, Inter numerals, local-only delivery and overflow were verified across 72 bilingual/theme/viewport combinations. Staff/Driver/Booking/Tracking menus, 64 masthead layouts, Driver appearance, login, and audited passenger-account/tracking checks passed. Font licenses and provenance are bundled.

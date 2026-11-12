@@ -1,5 +1,12 @@
 // One explicit public-asset list for the local server and static build.
 export const publicAssets = {
+  '/src/typography.css': ['src/typography.css', 'text/css'],
+  '/src/fonts/inter-latin.woff2': ['src/fonts/inter-latin.woff2', 'font/woff2'],
+  '/src/fonts/inter-latin-ext.woff2': ['src/fonts/inter-latin-ext.woff2', 'font/woff2'],
+  '/src/fonts/noto-sans-arabic.woff2': ['src/fonts/noto-sans-arabic.woff2', 'font/woff2'],
+  '/src/fonts/Inter-OFL.txt': ['src/fonts/Inter-OFL.txt', 'text/plain'],
+  '/src/fonts/Noto-Sans-Arabic-OFL.txt': ['src/fonts/Noto-Sans-Arabic-OFL.txt', 'text/plain'],
+  '/src/fonts/README.md': ['src/fonts/README.md', 'text/plain'],
   '/src/app-update-data.js': ['src/app-update-data.js', 'text/javascript'],
   '/src/driver-dashboard.js': ['src/driver-dashboard.js', 'text/javascript'],
   '/src/driver-dashboard.css': ['src/driver-dashboard.css', 'text/css'],
