@@ -118,8 +118,8 @@ void main() {
         await tester.pumpAndSettle();
         await tester.enterText(find.byType(TextField), 'TKT-00001110');
         await tester.pumpAndSettle();
-        await tester.scrollUntilVisible(find.textContaining('TKT-00001110').hitTestable(), 80, scrollable: find.byType(Scrollable).first);
-        expect(find.textContaining('TKT-00001110'), findsOneWidget);
+        await tester.scrollUntilVisible(find.textContaining('00001110').hitTestable(), 80, scrollable: find.byType(Scrollable).first);
+        expect(find.textContaining('00001110'), findsOneWidget);
         expect(find.text('Mohamed Ahmed'), findsNothing);
       });
     }

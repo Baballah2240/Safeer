@@ -47,7 +47,7 @@ class SolidCard extends StatelessWidget {
       side: BorderSide(color: highlight ? SafeerBrand.sky : p.border, width: highlight ? 2 : 1),
     );
     Widget content = Padding(padding: padding, child: child);
-    if (semanticLabel != null) content = Semantics(label: semanticLabel, button: onTap != null, excludeSemantics: true, child: content);
+    if (semanticLabel != null) content = Semantics(label: semanticLabel, button: onTap != null, onTap: onTap, excludeSemantics: true, child: content);
     return Material(
       color: p.paper,
       shape: shape,

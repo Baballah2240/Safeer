@@ -11,8 +11,12 @@ String latinDigits(String value) => value.replaceAllMapped(RegExp('[\u0660-\u066
       return String.fromCharCode(0x30 + (c >= 0x06F0 ? c - 0x06F0 : c - 0x0660));
     });
 
-/// Keeps codes such as SF-ABCD2345, TKT-12345678 or seat 3A readable inside Arabic text.
-String ltr(String value) => '\u2066$value\u2069';
+/// Keeps codes such as SF-ABCD2345, TKT-12345678, SD-KH 4521 or seat 3A readable inside Arabic
+/// text, and on one line: a word joiner after each hyphen and no-break spaces (found on a phone,
+/// where "SD-KH 3307" broke after its hyphen).
+String ltr(String value) => '\u2066${unbroken(value)}\u2069';
+
+String unbroken(String value) => value.replaceAll('-', '-\u2060').replaceAll(' ', '\u00A0');
 
 bool _zonesReady = false;
 void _zones() {

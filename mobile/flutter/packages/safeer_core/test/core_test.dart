@@ -125,6 +125,10 @@ void main() {
     test('latin digits and isolates for codes', () {
       expect(latinDigits('\u0661\u0662:\u0663\u0660'), '12:30');
       expect(ltr('SF-ABCD2345').runes.first, 0x2066);
+      // Found on a phone: codes must not break at hyphens or spaces.
+      expect(unbroken('SD-KH 3307').contains(' '), isFalse);
+      expect(unbroken('SD-KH 3307').runes, contains(0x2060));
+      expect(unbroken('SD-KH 3307').replaceAll(String.fromCharCode(0x2060), '').replaceAll(String.fromCharCode(0xA0), ' '), 'SD-KH 3307');
     });
   });
 
@@ -158,6 +162,13 @@ void main() {
       final other = ReservationRequest(tripId: trips.first.id, seats: [seat], key: uuidV4(), mobile: '0912345678', travellers: [Traveller(seat, 'Someone Else')]);
       await expectLater(repo.reserve(other), throwsA(isA<ApiException>().having((e) => e.code, 'code', 'SEATS_UNAVAILABLE')));
       expect(await repo.departures(from: 'KSL', to: 'DNG', date: DateTime(2026, 11, 13)), isEmpty);
+
+      // 08:30: seat 3A looks free, is taken by someone else on the first try, then shows as taken.
+      final morning = trips.firstWhere((t) => t.time == '08:30');
+      expect((await repo.seatMap(morning.id)).seats.firstWhere((s) => s.label == '3A').available, isTrue);
+      final contested = ReservationRequest(tripId: morning.id, seats: const ['3A'], key: uuidV4(), mobile: '0912345678', travellers: const [Traveller('3A', 'Test Person')]);
+      await expectLater(repo.reserve(contested), throwsA(isA<ApiException>().having((e) => e.code, 'code', 'SEATS_UNAVAILABLE')));
+      expect((await repo.seatMap(morning.id)).seats.firstWhere((s) => s.label == '3A').available, isFalse);
     });
   });
 }

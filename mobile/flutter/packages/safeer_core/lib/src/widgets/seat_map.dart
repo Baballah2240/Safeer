@@ -71,6 +71,7 @@ class _Seat extends StatelessWidget {
       enabled: !taken,
       selected: selected,
       label: s.seatSemantics(seat.label, state),
+      onTap: taken ? null : onTap,
       excludeSemantics: true,
       child: Material(
         color: bg,

@@ -8,6 +8,10 @@ D76: the website inside both apps switches to sand, orange, deep green and charc
 
 D75: The privacy and account deletion pages cover Google sign-in, the signed-in Profile can delete the account, and the booking home page links the privacy policy. Phones receive this from the website; no new APK. Google sign-in inside the apps is still D68 step 4.
 
+## Flutter previews on a phone - 2026-11-12
+
+D74 follow-up, first physical-phone test: HONOR X7d 5G (LGN-NX1), Android 16, 360x805 dp, Arabic. Optimized profile builds of both previews (sd.safeer.booking.dev / sd.safeer.driver.dev, demo data) were installed beside the published apps, which were not changed. Checked: Passenger Explore, departures and the seat map in Arabic; Driver demo sign-in, Today's Trips (Khartoum time, coach, boarded count), the camera opening and the torch, and demo scans (7 to 8 boarded once; already scanned, another trip's ticket and a refunded ticket left it at 8). Fixed from what the phone showed: screen readers could not activate the main button, the Explore pickers, seats, cards or scanner buttons (labels hid the tap action; regression test added); codes such as SD-KH 3307 broke after the hyphen; Scan ticket wrapped in Arabic; the demo-codes button was announced as a switch; the demo seat-change case (08:30, seats 3A/3B) could start already taken. Not yet on the phone: confirming a booking, the saved ticket, offline scans, the passenger list and English.
+
 ## Flutter live-API tests - 2026-11-12
 
 D74 follow-up: npm run test:flutter:live runs the Flutter apps' API clients and the Driver boarding controller against a disposable local Safeer server (website proxy, API, throwaway PostgreSQL, fictional data). 6 tests pass: native sign-in with Origin/CSRF/cookie, public trips and seat map, booking retry key and seat conflict, paid-ticket QR geometry, wrong-trip and invalid tickets refused, boarding counted once, offline scan settled by the server. No app or server code change; nothing installed on a phone.

@@ -56,6 +56,13 @@ android {
     }
 }
 
+// Profile builds (optimized, for trying on a phone) are debug-signed: keep them on the .dev IDs
+// so they can never collide with the published apps, whichever order Flutter creates them in.
+android.buildTypes.matching { it.name == "profile" }.configureEach {
+    applicationIdSuffix = ".dev"
+    versionNameSuffix = "-dev"
+}
+
 gradle.taskGraph.whenReady {
     if (upload.getProperty("storeFile") == null && allTasks.any { it.path.startsWith(":app:") && it.name.contains("Release") }) {
         throw GradleException("Release builds need the Safeer upload key: %USERPROFILE%/.android/safeer-upload.properties (see mobile/PLAY_STORE.md).")

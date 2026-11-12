@@ -187,6 +187,7 @@ class _PickerField extends StatelessWidget {
     return Semantics(
       button: true,
       label: '$label: ${value ?? hint}',
+      onTap: onTap,
       excludeSemantics: true,
       child: InkWell(
         borderRadius: BorderRadius.circular(14),

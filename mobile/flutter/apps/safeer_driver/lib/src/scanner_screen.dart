@@ -152,6 +152,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
               icon: on ? Icons.flashlight_off : Icons.flashlight_on,
               label: on ? s.torchOff : s.torchOn,
               selected: on,
+              toggle: true,
               onTap: state.torchState == TorchState.unavailable ? null : () => _camera!.toggleTorch(),
             );
           },
@@ -195,11 +196,14 @@ class _ScannerScreenState extends State<ScannerScreen> {
 }
 
 class _RoundAction extends StatelessWidget {
-  const _RoundAction({required this.icon, required this.label, required this.onTap, this.selected = false, this.wide = false});
+  const _RoundAction({required this.icon, required this.label, required this.onTap, this.selected = false, this.wide = false, this.toggle = false});
   final IconData icon;
   final String label;
   final VoidCallback? onTap;
   final bool selected, wide;
+
+  /// Only the torch is an on/off control; other round buttons are plain buttons.
+  final bool toggle;
   @override
   Widget build(BuildContext context) {
     final body = Material(
@@ -223,7 +227,7 @@ class _RoundAction extends StatelessWidget {
         ),
       ),
     );
-    return Semantics(button: true, label: label, toggled: onTap == null ? null : (wide ? null : selected), excludeSemantics: true, child: wide ? body : Tooltip(message: label, child: body));
+    return Semantics(button: true, label: label, enabled: onTap != null, toggled: toggle && onTap != null ? selected : null, onTap: onTap, excludeSemantics: true, child: wide ? body : Tooltip(message: label, child: body));
   }
 }
 

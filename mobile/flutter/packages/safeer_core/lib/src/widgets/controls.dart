@@ -20,6 +20,8 @@ class PrimaryButton extends StatelessWidget {
       button: true,
       enabled: enabled,
       label: text,
+      // The label replaces the inner widgets for screen readers, so the tap action goes here too.
+      onTap: enabled ? onPressed : null,
       excludeSemantics: true,
       child: Opacity(
         opacity: enabled || busy ? 1 : 0.55,
@@ -38,13 +40,13 @@ class PrimaryButton extends StatelessWidget {
               child: ConstrainedBox(
                 constraints: const BoxConstraints(minHeight: 56),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                   child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                     if (busy)
                       const SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white))
                     else if (icon != null)
                       Icon(icon, color: Colors.white, size: 22),
-                    if (busy || icon != null) const SizedBox(width: 10),
+                    if (busy || icon != null) const SizedBox(width: 8),
                     Flexible(child: Text(text, textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w600))),
                   ]),
                 ),

@@ -65,6 +65,8 @@ class DemoPassengerRepository implements PassengerRepository {
   bool _occupied(String tripId, String seat) {
     if (_taken.contains('$tripId/$seat')) return true;
     if (tripId.endsWith('-2')) return true; // the 13:15 departure is full
+    // On the 08:30 departure 3A and 3B look free until someone tries to reserve them.
+    if (tripId.endsWith('-1') && (seat == '3A' || seat == '3B')) return false;
     return _hash('$tripId/$seat') % 10 < 4;
   }
 
