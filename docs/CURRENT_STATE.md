@@ -1,5 +1,9 @@
 # Current state - read this first
 
+## Custom permissions - D73, 2026-11-12
+
+When adding staff (Company staff, or Users > Create user with a company), choose a ready-made role or "Custom permissions (this person only)" and tick what the person may do. The server stores custom permissions as a personal role, hidden from Company roles. Only company administrators and the owner can set them. See D73 in [DECISIONS.md](DECISIONS.md).
+
 ## Audit fixes - D72, 2026-11-12
 
 A deep audit fixed shared public booking limits (per visitor now, including behind Cloudflare), dead phone/email links in the Android apps (Booking 0.17.3, Driver 0.18.4), a dead Google button inside the apps, offset time zones read backwards by PostgreSQL, a 500 on impossible dashboard dates, trips hidden beyond the first 200 (Trips) and next 100 (walk-in sale), a tracking race and notice alignment. Migration 0022 adds the read-only counter_trips projection. Run npm run test:workflow, npm run test:production and npm run check:live (read-only, live site) for related changes. Results and open items: [the audit](testing/QUALITY_AUDIT_2026-11-12.md). The GitHub releases v0.17.3 and v0.18.4 must be published with the saved APKs after these commits are pushed, or the in-app update link fails.

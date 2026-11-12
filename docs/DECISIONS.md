@@ -1,5 +1,15 @@
 # Decisions
 
+## 2026-11-12 - Direct staff permissions and company access when creating a user
+
+D73: The owner wants to give a person their permissions directly when adding them, and to choose their company while creating a user.
+1. Company staff (Add staff member / Edit membership) offers "Custom permissions (this person only)" beside the ready-made roles: tick the permissions, then leave Branch empty for the whole company, or Station empty for the whole branch.
+2. The server keeps those permissions as a personal company role (code personal_<id>, shown as "Custom permissions") assigned only to that person, so every existing control still applies: company_can, row-level security, assignment_allowed, the last-administrator guard and the company audit. No migration.
+3. Only people who may manage roles company-wide (company administrators and the owner) can set custom permissions, and no one can grant a permission they do not hold company-wide (PRIVILEGE_ESCALATION). Branch and station managers keep choosing ready-made roles; they can keep or remove someone's custom permissions within their own access, but not change them.
+4. Personal roles never appear in Company roles or the role list, cannot be edited through the roles endpoint, cannot be given to another person, and are switched off with their permissions removed when no longer used (roles are never deleted). As for roles, Company profile: read is added automatically except for driver-only sets.
+5. Users > Create user (platform owner) can choose a company and the same access rows, creating the account and its company membership in one step with a one-time temporary password. Without a company it creates a platform account as before.
+No money, booking, boarding or retention rule changes.
+
 ## 2026-11-12 - Whole-workflow and production audit fixes
 
 D72: The owner asks for a deep bug and gap search, whole-workflow and production tests, a second scan and fixes, kept local until the owner has reviewed them. Fixes, each with a regression test (see [the audit](testing/QUALITY_AUDIT_2026-11-12.md)):

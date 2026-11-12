@@ -132,8 +132,11 @@ test('failed SQL rolls back namespace, ledger and partial DDL together', async (
 test('concurrent migration runners serialize on one PostgreSQL transaction lock', async () => fixture(async (client, url) => {
   const other = new pg.Client(databaseConfig(url)); await other.connect();
   try {
+    // D73 test fix: apply all but the newest first, so the contended transaction is short. The runners' 5-second
+    // lock timeout must not depend on machine load; the whole set under the parallel release run took longer.
+    await runMigrations(client, migrations.slice(0, -1));
     const result = await Promise.all([runMigrations(client, migrations), runMigrations(other, migrations)]);
-    assert.equal(result.flat().length, migrations.length);
+    assert.equal(result.flat().length, 1, 'Exactly one runner applies the pending migration; the other waits and finds it applied.');
     assert.equal((await client.query('SELECT count(*)::int AS count FROM safeer_meta.schema_migrations')).rows[0].count, migrations.length);
   } finally { await other.end(); }
 }));

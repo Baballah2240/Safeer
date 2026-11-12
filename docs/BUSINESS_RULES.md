@@ -123,6 +123,7 @@ These are approved target invariants unless marked as an open policy. The curren
 - Staff sign in through the local identity service; this does not turn the passenger demo into real shared inventory or grant a company membership.
 - Temporary passwords must be changed before other authenticated operations. Password resets and account disabling revoke sessions; role changes are effective on the next authorization check.
 - Every privileged account/role change requires current-password reauthentication and explicit server permission. Prevent self-escalation, reserve owner and non-platform template edits to Super Administrators and keep at least one active protected owner, even under concurrent changes.
+- D73: a person can be given custom permissions instead of a ready-made role. They are stored as that person's own personal company role, which is never listed as a company role or given to anyone else. Only people who manage roles company-wide can set them, never beyond the permissions those people hold company-wide; branch and station managers can keep or remove them. Unused personal roles are switched off, never deleted.
 - Company, branch, station and trip templates cannot be assigned globally. Company/resource access begins only after Section 03 membership/scope checks exist. Platform support has no default financial authority.
 - Preserve identity audit/history; never log password, cookie, CSRF or request payload secrets. Recovery is a privileged local operation, never an unauthenticated web endpoint.
 

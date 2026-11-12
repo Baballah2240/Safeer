@@ -1,7 +1,7 @@
 import {shimmer} from './loading.js';
 import {loginFormState} from './login-form.js';
 import {citiesView,bindCities} from './routes.js';
-import {companyView,bindCompanies,loadCompanies,resetCompanies,companySidebar} from './companies.js';
+import {companyView,bindCompanies,loadCompanies,resetCompanies,companySidebar,accessEditor} from './companies.js';
 import {platformView,bindPlatform,loadPlatform,resetPlatform,notificationsView} from './platform.js';
 import {companyState} from './companies.js';
 import {themeButton,drawerIcon,bindSideDrawer,appVersionLabel,legalLinks,passwordField} from './theme.js';
@@ -58,6 +58,8 @@ async function refresh(){
     const loaded=tab==='platform'?await loadPlatform(api):tab==='notifications'?await api('notifications'+(cursor?'?before='+encodeURIComponent(cursor):'')):tab==='companies'?await loadCompanies(api):tab==='cities'?await api('cities'):tab==='users'?await api('identity/users'+(cursor?'?after='+encodeURIComponent(cursor):'')):tab==='roles'?await api('identity/roles'):tab==='sessions'?await api('auth/sessions'):tab==='audit'?await api('identity/audit'):null;
     if(sequence!==refreshVersion)return;
     if(tab==='users'&&loaded&&can('identity.roles.read')){const roles=await api('identity/roles');loaded.roleNames=Object.fromEntries(roles.items.map(role=>[role.id,role.displayName]));}
+    // D73: the owner may give a new account its company access while creating it.
+    if(tab==='users'&&loaded&&me.superAdministrator&&can('identity.users.manage'))loaded.companies=(await api('companies')).items;
     if(sequence===refreshVersion)data=loaded;
   }catch(error){if(sequence===refreshVersion){message=error.message;bad=true;data=null;}}
   finally{if(sequence===refreshVersion){loading=false;render();}}
@@ -65,7 +67,7 @@ async function refresh(){
 function openForm(title,html,action){
   dialog.innerHTML=`<h2>${e(t(title))}</h2><div class="staff-dialog-error" role="alert"></div><form>${html}<div class="staff-actions"><button class="staff-primary">${t('Save')}</button><button type="button" data-dialog-cancel>${t('Cancel')}</button></div></form>`;
   const form=dialog.querySelector('form');dialog.querySelector('[data-dialog-cancel]').onclick=()=>dialog.close();
-  form.onsubmit=async event=>{event.preventDefault();const buttons=[...form.querySelectorAll('button')],disabled=buttons.map(b=>b.disabled);buttons.forEach(b=>b.disabled=true);try{const result=await action(new FormData(form));message='Saved.';bad=false;await refresh();if(dialog.open)await new Promise(resolve=>{dialog.addEventListener('close',resolve,{once:true});dialog.close();});if(result?.temporaryPassword&&me)showSecret(result.user.login,result.temporaryPassword);}catch(error){if(dialog.open&&dialog.querySelector('.staff-dialog-error'))dialog.querySelector('.staff-dialog-error').textContent=t(error.message);else{message=error.message;bad=true;render();}buttons.forEach((b,i)=>b.disabled=disabled[i]);}};
+  form.onsubmit=async event=>{event.preventDefault();const buttons=[...form.querySelectorAll('button')],disabled=buttons.map(b=>b.disabled);buttons.forEach(b=>b.disabled=true);try{const result=await action(new FormData(form));message='Saved.';bad=false;await refresh();if(dialog.open)await new Promise(resolve=>{dialog.addEventListener('close',resolve,{once:true});dialog.close();});if(result?.temporaryPassword&&me)showSecret(result.user.login,result.temporaryPassword);}catch(error){const box=dialog.open&&dialog.querySelector('.staff-dialog-error');if(box){box.textContent=t(error.message);box.scrollIntoView?.({block:'nearest'});}else{message=error.message;bad=true;render();}buttons.forEach((b,i)=>b.disabled=disabled[i]);}};
   dialog.showModal();
 }
 function showSecret(login,password){
@@ -93,7 +95,24 @@ function bind(){
   root.querySelector('#staff-refresh')?.addEventListener('click',()=>{message='';void refresh();});
   root.querySelectorAll('[data-tab]').forEach(button=>button.onclick=()=>{tab=button.dataset.tab;cursor=null;message='';void refresh();});
   const passwordForm=root.querySelector('#change-password');if(passwordForm)passwordForm.onsubmit=async event=>{event.preventDefault();const fields=new FormData(passwordForm);if(fields.get('newPassword')!==fields.get('confirmPassword')){message='Password confirmation does not match.';bad=true;render();return;}passwordForm.querySelector('button').disabled=true;try{await api('auth/password','POST',{currentPassword:fields.get('currentPassword'),newPassword:fields.get('newPassword')});message='Password changed.';bad=false;await refresh();}catch(error){message=error.message;bad=true;render();}};
-  root.querySelector('[data-create-user]')?.addEventListener('click',()=>openForm('Create user',input('displayName','Display name','text','maxlength="100"')+input('login','Email','email','maxlength="254" autocomplete="off"')+currentPassword(),f=>api('identity/users','POST',Object.fromEntries(f))));
+  // D73: with a company chosen, the account and its company membership (role or custom permissions) are
+  // created together through Company staff's endpoint; without one, a platform account as before.
+  root.querySelector('[data-create-user]')?.addEventListener('click',()=>{
+    const companies=data?.companies||[];let access=null;
+    openForm('Create user',input('displayName','Display name','text','maxlength="100"')+input('login','Email','email','maxlength="254" autocomplete="off"')+(companies.length?`<label>${t('Company (optional)')}<select name="companyId"><option value="">${e(t('No company yet'))}</option>${companies.map(c=>`<option value="${e(c.id)}">${e(language==='ar'?c.nameAr:c.nameEn)}</option>`).join('')}</select></label><p class="staff-muted">${t('Choose a company to give this person access now, or add them later in Company staff.')}</p><div data-company-access></div>`:'')+currentPassword(),f=>{
+      const cid=f.get('companyId')||'',fields={displayName:f.get('displayName'),login:f.get('login'),currentPassword:f.get('currentPassword')};
+      if(!cid)return api('identity/users','POST',fields);
+      if(access?.company!==cid)throw Error('COMPANY_ACCESS_LOADING');
+      return api('companies/'+cid+'/members','POST',{...fields,existing:false,assignments:access.editor.read(dialog.querySelector('[data-company-access]'))});
+    });
+    const pick=dialog.querySelector('[name=companyId]'),box=dialog.querySelector('[data-company-access]');
+    if(pick)pick.onchange=async()=>{
+      const cid=pick.value;access=null;box.replaceChildren();if(!cid)return;
+      box.innerHTML=`<p role="status">${e(t('Loading company access…'))}</p>`;
+      try{const workspace=await api('companies/'+cid);if(pick.value!==cid)return;const editor=accessEditor(workspace,{t,e});box.innerHTML=editor.html();editor.bind(box);access={company:cid,editor};}
+      catch(error){if(pick.value===cid)box.innerHTML=`<p class="staff-alert bad" role="alert">${e(t(error.message))}</p>`;}
+    };
+  });
   root.querySelectorAll('[data-edit-user]').forEach(button=>button.onclick=()=>{const u=data.items.find(u=>u.id===button.dataset.editUser);openForm('Edit user',input('displayName','Display name','text',`maxlength="100" value="${e(u.displayName)}"`)+`<label class="staff-check"><input type="checkbox" name="active" ${u.active?'checked':''}>${t('Active')}</label>`+currentPassword(),f=>api('identity/users/'+u.id,'PATCH',{displayName:f.get('displayName'),active:f.has('active'),version:u.version,currentPassword:f.get('currentPassword')}));});
   root.querySelectorAll('[data-reset-user]').forEach(button=>button.onclick=()=>{const u=data.items.find(u=>u.id===button.dataset.resetUser);openForm('Reset password',`<p><bdi>${e(u.login)}</bdi></p>`+currentPassword(),f=>api(`identity/users/${u.id}/password`,'POST',{version:u.version,currentPassword:f.get('currentPassword')}));});
   root.querySelectorAll('[data-assign-user]').forEach(button=>button.onclick=async()=>{try{const u=data.items.find(u=>u.id===button.dataset.assignUser),roles=(await api('identity/roles')).items.filter(r=>r.scope==='platform'&&r.active);openForm('Assign roles',`<p><bdi>${e(u.login)}</bdi></p><fieldset class="staff-checks"><legend>${t('Platform roles')}</legend>${roles.map(r=>`<label><input type="checkbox" name="roleIds" value="${r.id}" ${u.roleIds.includes(r.id)?'checked':''}>${e(t(r.displayName))}</label>`).join('')}</fieldset>`+currentPassword(),f=>api(`identity/users/${u.id}/roles`,'PUT',{roleIds:f.getAll('roleIds'),version:u.version,currentPassword:f.get('currentPassword')}));}catch(error){message=error.message;bad=true;render();}});

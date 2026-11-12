@@ -1,5 +1,9 @@
 # Changelog
 
+## Custom permissions for one person, company access when creating a user - D73, 2026-11-12
+
+Company staff can give a person "Custom permissions (this person only)" instead of a ready-made role, for the whole company, one branch or one station. The server keeps them as that person's personal company role, so the existing permission checks, row-level security, last-administrator guard and audit all apply. Only company-wide role managers set them, and never beyond their own permissions. Users > Create user (owner) can choose a company and the same access, creating the account and membership in one step. Staff dialogs now scroll to their error message. No migration; website only, no new APK. Tests: direct-permissions.integration.mjs (2 tests) and direct-permissions.browser.mjs. The concurrent-migration test now contends over one pending migration instead of the whole set, so the release gate no longer fails its 5-second lock wait when the machine is busy.
+
 ## Whole-workflow and production audit fixes - D72, 2026-11-12
 
 Per-visitor public booking limits behind the proxy and Cloudflare; Android tel:/mailto: links (Booking 0.17.3/17003, Driver 0.18.4/18004); installed-app Google sign-in guidance; named company time zones only; calendar-checked operations day; Trips "Show trips from" with an incomplete-list notice; walk-in sale travel date (migration 0022 counter_trips); newest-only shipment tracking; aligned travel notice. New tests: workflow, production start, audit fixes, installed-app account, Android navigation policy, visitor address; time-of-day-proof operations fixtures; npm run check:live. See [the audit](testing/QUALITY_AUDIT_2026-11-12.md).

@@ -8,7 +8,7 @@ import {mobileNumber} from './reservation.service.js';
 
 const permissionCodes=['company.profile.read','company.profile.manage','company.resources.read','company.resources.manage','company.members.read','company.members.manage','company.roles.read','company.roles.manage','company.audit.read','company.routes.read','company.routes.manage','company.fleet.read','company.fleet.manage','company.drivers.read','company.drivers.manage','company.trips.read','company.trips.manage','company.bookings.read','company.bookings.manage','company.luggage.operate','company.luggage.resolve','company.shipments.operate','company.shipments.resolve','company.shipments.prices','company.ticketing.operate','company.payments.late','company.sessions.manage','company.driver.operate','company.journeys.manage','company.finance.read'];
 const supportCodes=['company.profile.read','company.resources.read','company.audit.read','company.routes.read'];
-type Assignment={roleId:string;branchId:string|null;stationId:string|null;scope:string};
+type Assignment={roleId:string|null;branchId:string|null;stationId:string|null;scope:string;permissions:string[]|null};
 const optional=(value:unknown,max:number)=>value===undefined?'':text(value,0,max);
 const active=(value:unknown)=>{if(typeof value!=='boolean')fail('INVALID_INPUT');return value;};
 const code=(value:unknown)=>{const s=text(value,1,40).toUpperCase();if(!/^[A-Z0-9_-]+$/.test(s))fail('INVALID_INPUT');return s;};
@@ -23,6 +23,11 @@ function settings(data:Record<string,unknown>){
  if(typeof data.locale!=='string'||!['en','ar'].includes(data.locale))fail('INVALID_INPUT');return {holdMinutes,timezone,locale:String(data.locale)};
 }
 function permissions(value:unknown){const result=list(value,x=>text(x,1,80));if(result.some(p=>!permissionCodes.includes(p)))fail('INVALID_PERMISSION');return result;}
+// D69: working permissions also open the company workspace; driver-only sets use the Driver app.
+const withProfile=(requested:string[])=>requested.some(x=>x!=='company.driver.operate')&&!requested.includes('company.profile.read')?[...requested,'company.profile.read']:requested;
+// D73: permissions given straight to one person are kept as that person's own company role, so every
+// existing check (company_can, row-level security, assignment_allowed, the last-administrator guard) applies.
+const personal=(code:unknown)=>typeof code==='string'&&code.startsWith('personal_');
 
 @Injectable()
 export class CompanyService {
@@ -41,7 +46,7 @@ export class CompanyService {
   const company=(await c.query(`SELECT co.id,co.slug,co.name_en AS "nameEn",co.name_ar AS "nameAr",co.status,co.version,co.contact_email AS "contactEmail",co.phone,co.address,s.hold_minutes AS "holdMinutes",s.timezone,s.locale FROM safeer.companies co JOIN safeer.company_settings s ON s.company_id=co.id WHERE co.id=$1`,[cid])).rows[0];if(!company)fail('NOT_FOUND',404);
   const branches=(await c.query(`SELECT id,code,name_en AS "nameEn",name_ar AS "nameAr",active,version,safeer.company_can(company_id,'company.resources.manage',id) AS "canEdit" FROM safeer.branches WHERE company_id=$1 ORDER BY code`,[cid])).rows;
   const stations=(await c.query(`SELECT id,branch_id AS "branchId",code,name_en AS "nameEn",name_ar AS "nameAr",address,city_id AS "cityId",active,version,safeer.company_can(company_id,'company.resources.manage',branch_id,id) AS "canEdit" FROM safeer.stations WHERE company_id=$1 ORDER BY code`,[cid])).rows;
-  const roles=await this.has(c,cid,'company.roles.read')?(await c.query(`SELECT r.id,r.code,r.display_name AS "displayName",r.scope,r.active,r.version,COALESCE(array_agg(p.permission_code ORDER BY p.permission_code) FILTER(WHERE p.permission_code IS NOT NULL),'{}') AS permissions FROM safeer.company_roles r LEFT JOIN safeer.company_role_permissions p ON (p.company_id,p.role_id)=(r.company_id,r.id) WHERE r.company_id=$1 GROUP BY r.id ORDER BY r.code`,[cid])).rows:[];
+  const roles=await this.has(c,cid,'company.roles.read')?(await c.query(`SELECT r.id,r.code,r.display_name AS "displayName",r.scope,r.active,r.version,left(r.code,9)='personal_' AS personal,COALESCE(array_agg(p.permission_code ORDER BY p.permission_code) FILTER(WHERE p.permission_code IS NOT NULL),'{}') AS permissions FROM safeer.company_roles r LEFT JOIN safeer.company_role_permissions p ON (p.company_id,p.role_id)=(r.company_id,r.id) WHERE r.company_id=$1 GROUP BY r.id ORDER BY r.code`,[cid])).rows:[];
   const members=await this.has(c,cid,'company.members.read')?(await c.query(`SELECT m.id,m.user_id AS "userId",m.display_name AS "displayName",m.job_title AS "jobTitle",m.phone,u.normalized_login AS login,m.active,u.active AS "accountActive",m.version,safeer.member_visible(m.company_id,m.id,true) AS "canEdit",COALESCE((SELECT json_agg(json_build_object('roleId',a.role_id,'scope',a.scope,'branchId',a.branch_id,'stationId',a.station_id) ORDER BY a.id) FROM safeer.company_user_roles a WHERE (a.company_id,a.member_id)=(m.company_id,m.id)),'[]') AS assignments FROM safeer.company_users m JOIN safeer.users u ON u.id=m.user_id WHERE m.company_id=$1 ORDER BY m.display_name,m.id`,[cid])).rows:[];
   const audit=await this.has(c,cid,'company.audit.read')?(await c.query(`SELECT id,actor_id AS "actorId",action,target_id AS "targetId",occurred_at AS "occurredAt" FROM safeer.company_audit WHERE company_id=$1 ORDER BY occurred_at DESC,id LIMIT 100`,[cid])).rows:[];
   const grants=await this.can(c,cid,'company.members.manage')?(await c.query(`SELECT g.id,u.normalized_login AS login,g.reason,g.expires_at AS "expiresAt",g.revoked_at AS "revokedAt",g.expires_at>clock_timestamp() AND g.revoked_at IS NULL AS active,COALESCE((SELECT array_agg(permission_code ORDER BY permission_code) FROM safeer.support_access_grant_permissions p WHERE (p.company_id,p.grant_id)=(g.company_id,g.id)),'{}') AS permissions FROM safeer.support_access_grants g JOIN safeer.users u ON u.id=g.support_user_id WHERE g.company_id=$1 ORDER BY g.created_at DESC,g.id`,[cid])).rows:[];
@@ -99,18 +104,54 @@ export class CompanyService {
    if(!result.rowCount)fail('STALE_VERSION',409);await this.audit(c,p,cid,kind==='branches'?'branch.saved':'station.saved',rid,kind==='branches'?rid:branchId,kind==='stations'?rid:null);return {id:rid};
   },true);
  }
- private async assignments(c:PoolClient,cid:string,value:unknown){
+ // Each assignment is a ready role ({roleId}) or, D73, custom permissions for this person ({permissions}).
+ // own: this member's current personal roles, which only this member may keep.
+ private async assignments(c:PoolClient,cid:string,value:unknown,own:Set<string>){
   if(!Array.isArray(value)||value.length>10)fail('INVALID_INPUT');const assignments:Assignment[]=[],unique=new Set();
-  for(const input of value){const data=body(input,['roleId','branchId','stationId']);const rid=uuid(data.roleId),role=(await c.query('SELECT * FROM safeer.company_roles WHERE company_id=$1 AND id=$2 AND active',[cid,rid])).rows[0];if(!role)fail('INVALID_ROLE_SCOPE');
+  for(const input of value){const data=body(input,['roleId','branchId','stationId','permissions']),custom=data.permissions!==undefined;
    const bid=data.branchId===undefined||data.branchId===null?null:uuid(data.branchId),sid=data.stationId===undefined||data.stationId===null?null:uuid(data.stationId);
-   if((role.scope==='company'&&(bid||sid))||(role.scope==='branch'&&(!bid||sid))||(role.scope==='station'&&(!bid||!sid)))fail('INVALID_RESOURCE_SCOPE');
+   let rid:string|null=null,scope='',perms:string[]=[];
+   if(custom){
+    // No branch means the whole company; a branch without a station means the whole branch.
+    if(data.roleId!==undefined)fail('INVALID_INPUT');if(sid&&!bid)fail('INVALID_RESOURCE_SCOPE');
+    perms=withProfile(permissions(data.permissions));if(!perms.length)fail('INVALID_PERMISSION');scope=sid?'station':bid?'branch':'company';
+   }else{
+    rid=uuid(data.roleId);const role=(await c.query('SELECT * FROM safeer.company_roles WHERE company_id=$1 AND id=$2 AND active',[cid,rid])).rows[0];
+    if(!role||(personal(role.code)&&!own.has(rid)))fail('INVALID_ROLE_SCOPE');scope=role.scope;
+    if((scope==='company'&&(bid||sid))||(scope==='branch'&&(!bid||sid))||(scope==='station'&&(!bid||!sid)))fail('INVALID_RESOURCE_SCOPE');
+    perms=(await c.query('SELECT permission_code FROM safeer.company_role_permissions WHERE company_id=$1 AND role_id=$2',[cid,rid])).rows.map(r=>r.permission_code as string);
+   }
    if(bid&&!(await c.query('SELECT 1 FROM safeer.branches WHERE company_id=$1 AND id=$2 AND active',[cid,bid])).rowCount)fail('INVALID_RESOURCE_SCOPE');
    if(sid&&!(await c.query('SELECT 1 FROM safeer.stations WHERE company_id=$1 AND branch_id=$2 AND id=$3 AND active',[cid,bid,sid])).rowCount)fail('INVALID_RESOURCE_SCOPE');
    await this.need(c,cid,'company.members.manage',bid,sid);
-   const perms=(await c.query('SELECT permission_code FROM safeer.company_role_permissions WHERE company_id=$1 AND role_id=$2',[cid,rid])).rows.map(r=>r.permission_code as string);
-   for(const perm of perms)if(!await this.can(c,cid,perm,bid,sid))fail('PRIVILEGE_ESCALATION',403);
-   const key=[rid,bid,sid].join(':');if(unique.has(key))fail('INVALID_INPUT');unique.add(key);assignments.push({roleId:rid,branchId:bid,stationId:sid,scope:role.scope});
+   // Writing a personal role needs company-wide role management and, as row-level security also requires,
+   // every granted permission held company-wide.
+   if(custom)await this.need(c,cid,'company.roles.manage');
+   for(const perm of perms)if(!await this.can(c,cid,perm,custom?null:bid,custom?null:sid))fail('PRIVILEGE_ESCALATION',403);
+   const key=[custom?'custom':rid,bid,sid].join(':');if(unique.has(key))fail('INVALID_INPUT');unique.add(key);
+   assignments.push({roleId:rid,branchId:bid,stationId:sid,scope,permissions:custom?perms:null});
   }return assignments;
+ }
+ // D73: create or update the personal roles behind custom assignments, reusing this member's spare ones of the
+ // same scope (a role's scope never changes), and switch off spares no longer used. Roles are never deleted;
+ // an unused personal role grants nothing because only its own member may be assigned it.
+ private async personalRoles(c:PoolClient,cid:string,own:{id:string;scope:string}[],assignments:Assignment[]){
+  const kept=new Set(assignments.map(a=>a.roleId)),spare=own.filter(r=>!kept.has(r.id));
+  for(const a of assignments){
+   if(!a.permissions)continue;
+   const i=spare.findIndex(r=>r.scope===a.scope),rid=i<0?randomUUID():spare.splice(i,1)[0].id;
+   if(i<0)await c.query('INSERT INTO safeer.company_roles(id,company_id,code,display_name,scope) VALUES($1,$2,$3,$4,$5)',[rid,cid,'personal_'+rid.replaceAll('-',''),'Custom permissions',a.scope]);
+   else await c.query('UPDATE safeer.company_roles SET active=true,version=version+1 WHERE company_id=$1 AND id=$2',[cid,rid]);
+   await c.query('DELETE FROM safeer.company_role_permissions WHERE company_id=$1 AND role_id=$2',[cid,rid]);
+   for(const perm of a.permissions)await c.query('INSERT INTO safeer.company_role_permissions(company_id,role_id,permission_code) VALUES($1,$2,$3)',[cid,rid,perm]);
+   a.roleId=rid;
+  }
+  // A branch or station manager may remove someone's custom permissions without managing roles; the unused
+  // role is then simply left unassigned.
+  if(spare.length&&await this.can(c,cid,'company.roles.manage'))for(const r of spare){
+   await c.query('DELETE FROM safeer.company_role_permissions WHERE company_id=$1 AND role_id=$2',[cid,r.id]);
+   await c.query('UPDATE safeer.company_roles SET active=false,version=version+1 WHERE company_id=$1 AND id=$2',[cid,r.id]);
+  }
  }
  async member(token:string,cid:string,id:string|undefined,input:unknown){
   uuid(cid);if(id)uuid(id);const data=body(input,id?['displayName','jobTitle','phone','active','assignments','version','currentPassword']:['displayName','jobTitle','phone','login','existing','assignments','currentPassword']);
@@ -121,13 +162,17 @@ export class CompanyService {
   const temporaryPassword=!id&&!data.existing?secret().slice(0,24):null,encoded=temporaryPassword?await hashPassword(temporaryPassword):null;
   return this.run(token,async(c,p)=>{
    await this.company(c,cid);if(!await this.has(c,cid,'company.members.manage'))fail('FORBIDDEN',403);
-   const assignments=await this.assignments(c,cid,data.assignments);if(enabled&&!assignments.length)fail('INVALID_ROLE_SCOPE');
+   // D73: this member's own personal roles, the only ones they may keep.
+   const own:{id:string;scope:string}[]=id?(await c.query(`SELECT DISTINCT r.id,r.scope FROM safeer.company_user_roles a JOIN safeer.company_roles r ON (r.company_id,r.id)=(a.company_id,a.role_id) WHERE a.company_id=$1 AND a.member_id=$2 AND left(r.code,9)='personal_'`,[cid,id])).rows:[];
+   const assignments=await this.assignments(c,cid,data.assignments,new Set(own.map(r=>r.id)));if(enabled&&!assignments.length)fail('INVALID_ROLE_SCOPE');
    const mid=id||randomUUID();let uid='';
    if(id){const old=(await c.query('SELECT * FROM safeer.company_users WHERE company_id=$1 AND id=$2',[cid,id])).rows[0];if(!old)fail('NOT_FOUND',404);
     if(!(await c.query('SELECT safeer.member_visible($1,$2,true) AS ok',[cid,id])).rows[0].ok)fail('FORBIDDEN',403);
+    await this.personalRoles(c,cid,own,assignments);
     uid=old.user_id;const result=await c.query('UPDATE safeer.company_users SET display_name=$1,active=$2,job_title=$6,phone=$7,version=version+1 WHERE company_id=$3 AND id=$4 AND version=$5 RETURNING id',[displayName,enabled,cid,id,v,jobTitle,phone]);if(!result.rowCount)fail('STALE_VERSION',409);
     await c.query('DELETE FROM safeer.company_user_roles WHERE company_id=$1 AND member_id=$2',[cid,id]);
    }else{
+    await this.personalRoles(c,cid,own,assignments);
     if(data.existing){if(!p.superAdministrator)fail('FORBIDDEN',403);const u=(await c.query('SELECT id FROM safeer.users WHERE normalized_login=$1 AND active',[email])).rows[0];if(!u)fail('NOT_FOUND',404);uid=u.id;}
     else{uid=randomUUID();await c.query('INSERT INTO safeer.users(id,normalized_login,display_name,password_hash) VALUES($1,$2,$3,$4)',[uid,email,displayName,encoded]);}
     await c.query('INSERT INTO safeer.company_users(id,company_id,user_id,display_name,job_title,phone) VALUES($1,$2,$3,$4,$5,$6)',[mid,cid,uid,displayName,jobTitle,phone]);
@@ -139,10 +184,12 @@ export class CompanyService {
  }
  async role(token:string,cid:string,id:string|undefined,input:unknown){
   uuid(cid);if(id)uuid(id);const data=body(input,id?['displayName','active','permissions','version','currentPassword']:['displayName','scope','permissions','currentPassword']);
-  const name=text(data.displayName),requested=permissions(data.permissions),perms=requested.some(x=>x!=='company.driver.operate')&&!requested.includes('company.profile.read')?[...requested,'company.profile.read']:requested,enabled=id?active(data.active):true,v=id?version(data.version):1;
+  const name=text(data.displayName),perms=withProfile(permissions(data.permissions)),enabled=id?active(data.active):true,v=id?version(data.version):1;
   const scope=id?'':text(data.scope,1,20);if(!id&&!['company','branch','station'].includes(scope))fail('INVALID_ROLE_SCOPE');await this.identity.reauthenticate(token,data.currentPassword);
   return this.run(token,async(c,p)=>{
    await this.company(c,cid);await this.need(c,cid,'company.roles.manage');for(const perm of perms)await this.need(c,cid,perm);
+   // D73: a personal role changes only through its member's membership.
+   if(id&&personal((await c.query('SELECT code FROM safeer.company_roles WHERE company_id=$1 AND id=$2',[cid,id])).rows[0]?.code))fail('INVALID_ROLE_SCOPE');
    const rid=id||randomUUID();if(id){const result=await c.query('UPDATE safeer.company_roles SET display_name=$1,active=$2,version=version+1 WHERE company_id=$3 AND id=$4 AND version=$5 RETURNING id',[name,enabled,cid,id,v]);if(!result.rowCount){const exists=(await c.query('SELECT id FROM safeer.company_roles WHERE company_id=$1 AND id=$2',[cid,id])).rowCount;fail(exists?'STALE_VERSION':'NOT_FOUND',exists?409:404);}}
    else await c.query('INSERT INTO safeer.company_roles(id,company_id,code,display_name,scope) VALUES($1,$2,$3,$4,$5)',[rid,cid,'custom_'+rid.replaceAll('-',''),name,scope]);
    await c.query('DELETE FROM safeer.company_role_permissions WHERE company_id=$1 AND role_id=$2',[cid,rid]);for(const perm of perms)await c.query('INSERT INTO safeer.company_role_permissions(company_id,role_id,permission_code) VALUES($1,$2,$3)',[cid,rid,perm]);

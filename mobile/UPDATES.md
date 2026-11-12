@@ -1,5 +1,9 @@
 # Safeer mobile status
 
+## Custom staff permissions - website, 2026-11-12
+
+D73: Staff screens can give a person custom permissions instead of a ready-made role, and the owner can choose a company and access while creating a user. Phones receive this from the website; no new APK.
+
 ## Phone and email links, app sign-in guidance - Booking 0.17.3 / 17003, Driver 0.18.4 / 18004, 2026-11-12
 
 D72: tapping a company phone number or email (company page, booking page), the support email (privacy page) or a passenger number in Staff now opens the phone's dialer or mail app; before, the app shell blocked them silently. Only taps can do this, and every other non-Safeer page stays blocked. Inside the apps the Profile page now says Google sign-in works on the Safeer website instead of showing a button that cannot work in an app. Web-side fixes (per-visitor booking limits, Trips date filter, walk-in sale travel date) reach the apps without reinstalling. Signed with the existing key (certificate SHA-256 a19fb6c1…7205); release build and Android lint passed (2 existing warnings each). Not installed on a physical phone. Publish GitHub releases v0.17.3 and v0.18.4 with Safeer-Booking-0.17.3.apk and Safeer-Driver-0.18.4.apk (and their .sha256 files) right after pushing, because src/app-release.js points the update notice at them.
