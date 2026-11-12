@@ -1,5 +1,9 @@
 # Current state - read this first
 
+## Mobile handover to Claude - 2026-11-12
+
+Claude takes the Android apps back from Codex. Booking 0.17.3/17003 and Driver 0.18.4/18004 are published and current; nothing was rebuilt for release or installed. State, release steps and open items: [the handover](archive/MOBILE_HANDOVER_2026-11-12.md).
+
 ## Custom permissions - D73, 2026-11-12
 
 When adding staff (Company staff, or Users > Create user with a company), choose a ready-made role or "Custom permissions (this person only)" and tick what the person may do. The server stores custom permissions as a personal role, hidden from Company roles. Only company administrators and the owner can set them. See D73 in [DECISIONS.md](DECISIONS.md).

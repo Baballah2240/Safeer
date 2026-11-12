@@ -1,5 +1,9 @@
 # Safeer mobile status
 
+## Handover back to Claude - 2026-11-12
+
+Codex hands the Android apps back to Claude. No app change: Booking stays 0.17.3/17003 and Driver 0.18.4/18004. Checked on this computer: live site 19/19 with both APK downloads working, signed release build and lint pass, and the rebuilt APKs are byte-identical to the published ones with the same certificate. mobile/README.md now describes the current website-connected apps instead of the old USB test channel. See [the handover](../docs/archive/MOBILE_HANDOVER_2026-11-12.md).
+
 ## Custom staff permissions - website, 2026-11-12
 
 D73: Staff screens can give a person custom permissions instead of a ready-made role, and the owner can choose a company and access while creating a user. Phones receive this from the website; no new APK.

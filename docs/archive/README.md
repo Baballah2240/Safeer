@@ -1,6 +1,6 @@
 # Section archives and source checkpoints
 
-Latest mobile handover: [Codex mobile handover (D57/D58/D60)](MOBILE_HANDOVER_2026-11-09.md).
+Latest mobile handover: [Codex to Claude, 2026-11-12](MOBILE_HANDOVER_2026-11-12.md). Earlier: [Claude to Codex (D57/D58/D60)](MOBILE_HANDOVER_2026-11-09.md).
 
 Latest login follow-up: [D54 login reliability](LOGIN_RELIABILITY_2026-11-08.md). Source-only checkpoint: archives/Safeer-0.16.0-Login-2026-11-08.zip.
 
