@@ -574,3 +574,24 @@
  html body #staff-sidebar .staff-drawer-actions button{flex:1;min-height:44px;border-radius:14px}
  html body #staff-sidebar .drawer-version{font-size:.8rem;color:var(--ink)}
 }
+
+/* Shared in-content shimmer: leave the wordmark and navigation available. */
+html body .safeer-shimmer{box-sizing:border-box;width:min(100%,960px);margin:16px auto 28px;padding:0 20px;color:var(--muted)}
+html body .shimmer-status{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+html body .shimmer-shapes{display:grid;gap:18px}
+html body .shimmer-card{display:grid;gap:18px;min-width:0;padding:26px;border:1px solid var(--border);border-radius:24px;background:var(--surface);box-shadow:var(--shadow-panel)}
+html body .shimmer-block{position:relative;display:block;overflow:hidden;isolation:isolate;height:20px;border-radius:8px;background:var(--border);background:color-mix(in srgb,var(--muted) 14%,transparent);opacity:.85}
+html body .shimmer-block::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 15%,var(--glass-highlight) 50%,transparent 85%);transform:translateX(-100%);animation:safeer-shimmer 1.8s ease-in-out infinite}
+html body .shimmer-title{width:54%;height:28px}
+html body .shimmer-line{width:78%;height:14px}
+html body .shimmer-short{width:32%;height:14px}
+html body .shimmer-fields{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-block:6px}
+html body .shimmer-fields .shimmer-block{height:62px;border-radius:14px}
+html body .shimmer-card:nth-child(2) .shimmer-block::after{animation-delay:.12s}
+html body .safeer-shimmer-compact{padding:0;width:100%;margin-block:16px}
+html[dir=rtl] body .shimmer-block::after{animation-direction:reverse}
+@keyframes safeer-shimmer{to{transform:translateX(100%)}}
+@media(min-width:700px){html body .shimmer-shapes{grid-template-columns:1fr 1fr}html body .safeer-shimmer-compact .shimmer-shapes{grid-template-columns:1fr}}
+@media(max-width:400px){html body .safeer-shimmer{padding-inline:12px}html body .shimmer-card{padding:20px}}
+@media(prefers-reduced-motion:reduce){html body .shimmer-block::after{animation:none;transform:none;opacity:.35}}
+@media print{html body .safeer-shimmer{display:none}}

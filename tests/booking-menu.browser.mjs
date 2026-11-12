@@ -22,7 +22,7 @@ try{await identityFixture(async f=>{
   assert.equal(await evaluate('document.querySelector("#market-menu").open'),false,label);
   const field=path==='/booking'?'#market-lookup-reference':'#market-date',value=path==='/booking'?'SF-23456789':'2026-12-01';
   await evaluate(`window.__field=document.querySelector('${field}');__field.value='${value}';__field.dispatchEvent(new Event('input',{bubbles:true}));`);
-  await click('#market-menu-toggle');assert.equal(await evaluate('document.querySelector("#market-menu-toggle").getAttribute("aria-expanded")'),'true');
+  await click('#market-menu-toggle');await evaluate('document.getAnimations().filter(a=>Number.isFinite(a.effect?.getComputedTiming().endTime)).forEach(a=>a.finish())');assert.equal(await evaluate('document.querySelector("#market-menu-toggle").getAttribute("aria-expanded")'),'true');
   assert.ok(await evaluate('document.querySelector("#market-menu").contains(document.activeElement)'),label+' initial focus');
   await evaluate(`document.querySelector('${field}').focus()`);assert.ok(await evaluate(`!document.activeElement.matches('${field}')`),label+' inert background');
   for(let n=0;n<3;n++){await key('Tab','Tab',9);assert.ok(await evaluate('document.querySelector("#market-menu").contains(document.activeElement)'),label+' keyboard containment');}

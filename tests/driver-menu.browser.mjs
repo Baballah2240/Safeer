@@ -26,7 +26,7 @@ try{await identityFixture(async f=>{
    if(signedIn){await click('[data-trip]');await until('Boolean(document.querySelector("#driver-incident button:not(:disabled)"))');}
    const field=signedIn?'#driver-incident textarea':'#driver-login [name=login]',value=signedIn?'Fictional unsaved incident':'fictional@example.test';
    await evaluate(`window.__field=document.querySelector('${field}');__field.value='${value}';__field.dispatchEvent(new Event('input',{bubbles:true}));`);
-   await click('#driver-menu-toggle');assert.ok(await evaluate('document.querySelector("#driver-menu").contains(document.activeElement)'),label+' focus');
+   await click('#driver-menu-toggle');await evaluate('document.getAnimations().filter(a=>Number.isFinite(a.effect?.getComputedTiming().endTime)).forEach(a=>a.finish())');assert.ok(await evaluate('document.querySelector("#driver-menu").contains(document.activeElement)'),label+' focus');
    await evaluate(`document.querySelector('${field}').focus()`);assert.ok(await evaluate(`!document.activeElement.matches('${field}')`),label+' inert background');
    assert.equal(await evaluate('document.querySelector("#driver-menu").dataset.appFlavor'),'driver',label+' separate app identity');
    assert.ok(await evaluate('document.documentElement.classList.contains("app-drawer-open")'),label+' background scroll locked');

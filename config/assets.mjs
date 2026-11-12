@@ -1,5 +1,6 @@
 // One explicit public-asset list for the local server and static build.
 export const publicAssets = {
+  '/src/loading.js': ['src/loading.js', 'text/javascript'],
   '/src/typography.css': ['src/typography.css', 'text/css'],
   '/src/fonts/inter-latin.woff2': ['src/fonts/inter-latin.woff2', 'font/woff2'],
   '/src/fonts/inter-latin-ext.woff2': ['src/fonts/inter-latin-ext.woff2', 'font/woff2'],

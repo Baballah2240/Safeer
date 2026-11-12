@@ -326,3 +326,9 @@ Validation: unit/build/docs checks, 32 Staff menu layouts, 64 shared masthead/he
 - Official text colors and operational behavior remain unchanged. Hosted update; no APK version change.
 
 Validation: 28 unit tests and build/docs checks passed on the current audited source. Actual custom-font rendering, Inter numerals, local-only delivery and overflow were verified across 72 bilingual/theme/viewport combinations. Staff/Driver/Booking/Tracking menus, 64 masthead layouts, Driver appearance, login, and audited passenger-account/tracking checks passed. Font licenses and provenance are bundled.
+
+## Shimmer placeholders - 2026-11-12
+
+Booking startup and saved trips, Driver loading/refresh, Staff workspace loading and shipment lookup now use shared rounded shimmer placeholders. Light/dark themes, Arabic RTL, translated screen-reader status and reduced motion are supported. Loading stays inside the page so the app name and menu remain visible. No top progress strip, artificial delay or native update; reopen the app after the website update.
+
+Validation: 28 unit tests, build/docs checks, 32 delayed-request shimmer layouts, Staff (32), Driver (40), Booking (40), Tracking (16) and login browser regressions passed. Verified Arabic/English, light/dark, reduced motion, request completion and visible mastheads. Native metadata was saved without changing the published app versions.

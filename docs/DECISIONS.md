@@ -309,3 +309,7 @@ Replace Staff access legacy top bar and persistent sidebar column with the share
 
 ## Shared Arabic/English typography - 2026-11-12
 Owner approved Noto Sans Arabic for Arabic and Inter for English/numerals across Safeer. Bundle licensed variable WOFF2 subsets locally; retain SIL OFL notices and source checksums. Use a shared 26/28px wordmark, 24px semibold page headings, 16px body/inputs and 14-16px medium labels/buttons, with generous Arabic line spacing. Preserve official colors, responsive controls, native picker behavior and all operational authority.
+
+## Mobile shimmer loading - 2026-11-12
+
+Use shared, theme-aware skeleton cards for Booking, saved trips, Driver, Staff and shipment lookup while requests are pending. Keep the app name and menu visible; no top progress strip or artificial loading delay. Decorative shapes are hidden from assistive technology, with one translated status and reduced-motion support. No native version change.
