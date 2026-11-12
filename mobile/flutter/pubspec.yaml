@@ -1,0 +1,11 @@
+# Safeer Flutter workspace (D74): one shared package and two apps, resolved together.
+name: safeer_flutter
+publish_to: none
+environment:
+  sdk: ^3.13.0
+workspace:
+  - packages/safeer_core
+  - apps/safeer_passenger
+  - apps/safeer_driver
+dev_dependencies:
+  flutter_lints: ^6.0.0

@@ -1,0 +1,22 @@
+name: safeer_driver
+description: Safeer Driver app (D74).
+publish_to: none
+# Preview build: versionCode 1 is below the published WebView apps, so it cannot replace them by accident.
+version: 0.1.0+1
+resolution: workspace
+environment:
+  sdk: ^3.13.0
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  mobile_scanner: ^7.5.0
+  safeer_core:
+    path: ../../packages/safeer_core
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+flutter:
+  uses-material-design: true

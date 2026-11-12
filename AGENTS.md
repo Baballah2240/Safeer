@@ -11,6 +11,8 @@
 - D64 supersedes the black/brown palette for Booking and Driver app surfaces: use the exact owner-provided violet/blue/pink/yellow glass colors. Passenger /booking is My Trips; Book/Trips/Profile keep existing routes and guest access. Migration 0017 adds proof-checked schedule/paid-ticket presentation: never expose QR to reference/mobile lookup or unpaid/refunded/cancelled bookings, and never fabricate a QR. Keep Driver distinct and preserve D59 shipments. See docs/archive/MY_TRIPS_GLASS_0.17.0_2026-11-10.md.
 
 
+- D74: Flutter Passenger/Driver apps live in mobile/flutter (pub workspace; Flutter 3.47.9 is installed at C:/Users/Lenovo/dev/flutter). Keep the D71 colours and bundled Inter/Noto Sans Arabic, the server-decided booking/QR/boarding rules and demo data in debug builds. Run flutter analyze and flutter test in packages/safeer_core and both apps. They are previews: do not publish them or raise their versionCode above the WebView apps without the owner. See mobile/flutter/README.md.
+
 - Mobile apps returned from Codex to Claude on 2026-11-12: read docs/archive/MOBILE_HANDOVER_2026-11-12.md first (the 2026-11-09 handover and continuation are history). Work from the Safeer repository clone, never the Stocrant copy.
 
 - D60: after every website app build run npm.cmd run mobile:save, commit the regenerated src/app-release.js, and attach both APKs to the GitHub release tag v<versionName>. Never commit APKs or the upload key. The repository is intended to be public: keep secrets and real personal data out of tracked files.

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Safeer navy behind the Route Pin mark while Flutter starts. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/safeer_page" />
+    <item android:width="96dp" android:height="96dp" android:gravity="center" android:drawable="@drawable/ic_safeer" />
+</layer-list>

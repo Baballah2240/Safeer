@@ -7,7 +7,7 @@ Two small Android apps open the real Safeer website (https://safeer.mohbaba.onli
 | Safeer Booking | sd.safeer.booking | /marketplace | 0.17.3 (17003) |
 | Safeer Driver | sd.safeer.driver | /driver | 0.18.4 (18004) |
 
-Android 8 (API 26) or later. Both apps are signed with the private Safeer upload key and published as GitHub releases (`v<versionName>`, files `Safeer-Booking-<v>.apk` / `Safeer-Driver-<v>.apk` with `.sha256`). The apps show an update notice when `src/app-release.js` names a newer version. Change history: [UPDATES.md](UPDATES.md). Current handover: [docs/archive/MOBILE_HANDOVER_2026-11-12.md](../docs/archive/MOBILE_HANDOVER_2026-11-12.md).
+Android 8 (API 26) or later. Both apps are signed with the private Safeer upload key and published as GitHub releases (`v<versionName>`, files `Safeer-Booking-<v>.apk` / `Safeer-Driver-<v>.apk` with `.sha256`). The apps show an update notice when `src/app-release.js` names a newer version. Change history: [UPDATES.md](UPDATES.md). Native Flutter previews of both apps (D74, not published) are in [flutter/](flutter/README.md). Current handover: [docs/archive/MOBILE_HANDOVER_2026-11-12.md](../docs/archive/MOBILE_HANDOVER_2026-11-12.md).
 
 ## Install on a phone
 

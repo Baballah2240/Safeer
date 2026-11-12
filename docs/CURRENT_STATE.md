@@ -4,6 +4,10 @@
 
 The site is ready for Google's brand verification: the privacy policy covers Google sign-in, passengers can delete their account from Profile, and the booking home page links the privacy policy. Google sign-in is still off on the live site until the owner adds SAFEER_GOOGLE_CLIENT_ID and SAFEER_GOOGLE_CLIENT_SECRET in Render (steps in [HOSTING.md](HOSTING.md)). Still open: D68 step 3 (My Trips across devices) and step 4 (sign-in inside the Android apps).
 
+## Flutter apps preview - D74, 2026-11-12
+
+Native Flutter Safeer Passenger and Safeer Driver are in mobile/flutter, sharing packages/safeer_core, with the current fonts and colours. They use the existing API with no server change, and demo data in debug builds. The published WebView apps remain the live apps; replacing them is the owner's decision, once the missing features are added. How to run, test and build, and what still needs a backend or a phone: [mobile/flutter/README.md](../mobile/flutter/README.md).
+
 ## Mobile handover to Claude - 2026-11-12
 
 Claude takes the Android apps back from Codex. Booking 0.17.3/17003 and Driver 0.18.4/18004 are published and current; nothing was rebuilt for release or installed. State, release steps and open items: [the handover](archive/MOBILE_HANDOVER_2026-11-12.md).
