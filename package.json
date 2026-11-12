@@ -83,7 +83,8 @@
     "test:audit-fixes": "node --test tests/audit-fixes.integration.mjs",
     "test:passenger-app:browser": "node tests/passenger-app-account.browser.mjs",
     "test:passenger-privacy:browser": "node tests/passenger-privacy.browser.mjs",
-    "check:live": "node scripts/check-live.mjs"
+    "check:live": "node scripts/check-live.mjs",
+    "test:flutter:live": "npm run build:api && node mobile/flutter/tool/run-live-tests.mjs"
   },
   "license": "UNLICENSED",
   "dependencies": {

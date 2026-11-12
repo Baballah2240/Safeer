@@ -85,13 +85,19 @@ The app tests run the full Passenger and Driver flows on 360x640 and 320x568 pho
 - pending scans being counted once after reconnecting;
 - the API client's Origin, cookie and CSRF handling.
 
+Against a real server, with fictional data in a throwaway database (the same `SAFEER_TEST_DATABASE_URL` as the other integration tests):
+
+    npm run test:flutter:live      # from the repository root; needs flutter on PATH
+
+This starts the website proxy and API on 127.0.0.1 and creates a company, two trips, paid tickets and a driver. It then runs `tool/live_api_test.dart` (both API clients) and `tool/live_boarding_test.dart` (the Driver boarding controller), and drops the database. Never run these against the hosted site.
+
 Screenshots for review, using the real fonts:
 
     flutter test tool/screens_test.dart --update-goldens   # writes build/screens/*.png in each app
 
 ## Still needs a backend or a physical phone
 
-- **Live data**: departures, seat maps, reservations, ticket QR codes, driver sign-in, trip lists, manifests and boarding all need the Safeer API. The live client is covered by unit tests with recorded reply shapes. It has not been run against the live site, and should not be with real bookings.
+- **Live data**: departures, seat maps, reservations, ticket QR codes, driver sign-in, trip lists, manifests and boarding all need the Safeer API. `npm run test:flutter:live` checks both clients against a real local server through the website proxy, covering Origin, CSRF and cookies, reply shapes, the booking retry key, seat conflicts, QR geometry, wrong-trip refusal and boarding once. They have not been run against the hosted site, which would create real records.
 - **Camera**: scanning, the torch, the permission prompt and the denied-permission fallback need a real Android phone. Tests replace the camera.
 - **No physical-phone test was done.** This PC has no Android emulator image, so installation, back gestures, the system date picker, outdoor contrast and the TalkBack labels have not been checked on a device.
 - **Not in the Flutter apps yet**: shipments, company pages, booking lookup by reference and mobile, passenger accounts and Google sign-in, driver notifications, incidents, departure/arrival, and the in-app update notice. These still need the WebView apps.

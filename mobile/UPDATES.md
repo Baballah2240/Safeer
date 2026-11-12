@@ -4,6 +4,10 @@
 
 D75: The privacy and account deletion pages cover Google sign-in, the signed-in Profile can delete the account, and the booking home page links the privacy policy. Phones receive this from the website; no new APK. Google sign-in inside the apps is still D68 step 4.
 
+## Flutter live-API tests - 2026-11-12
+
+D74 follow-up: npm run test:flutter:live runs the Flutter apps' API clients and the Driver boarding controller against a disposable local Safeer server (website proxy, API, throwaway PostgreSQL, fictional data). 6 tests pass: native sign-in with Origin/CSRF/cookie, public trips and seat map, booking retry key and seat conflict, paid-ticket QR geometry, wrong-trip and invalid tickets refused, boarding counted once, offline scan settled by the server. No app or server code change; nothing installed on a phone.
+
 ## Flutter Passenger and Driver apps (preview) - 2026-11-12
 
 D74: new native Flutter apps in mobile/flutter, built from the Safeer Glass brief with the current Inter/Noto Sans Arabic fonts and SAFEER colours. Passenger: Explore with a frosted search card over the coach photo, departures with loading/empty/error states, seat map with legend, review and reservation (pay at the station), and My Trips with the ticket QR saved for offline use. Driver: Today's Trips with the active assignment first, full-screen scanner with torch and typed ticket numbers, result for every outcome, passenger list with search, and "Pending verification" for scans made without a connection. Same API and rules as the website; demo data in debug builds. Debug builds install beside the current apps (.dev IDs). Nothing is published and the WebView apps stay the live apps: the Flutter apps do not yet have shipments, company pages, accounts, notifications, incidents, departure/arrival or the update notice. 36 automated tests and flutter analyze pass; no physical phone or camera test. See [mobile/flutter/README.md](flutter/README.md).

@@ -4,6 +4,10 @@
 
 The privacy policy and the account deletion page now cover optional passenger accounts and Google sign-in in English and Arabic, including the Google API Services User Data Policy (Limited Use) statement, so Google can verify the consent screen. The signed-in Profile has Delete account with a confirmation (D68 step 5). The booking home page ends with the Privacy policy and Delete account links, and marketplace.html has a description and those links without JavaScript. Safeer no longer keeps the Google profile photo address. docs/HOSTING.md lists the owner's Google Cloud, Search Console and Render steps. No migration; website only, no new APK. Tests: passenger-privacy.browser.mjs and new account-deletion and photo checks in passenger-google.integration.mjs.
 
+## Flutter live-API tests - D74 follow-up, 2026-11-12
+
+mobile/flutter/tool/live-server.mjs and run-live-tests.mjs (npm run test:flutter:live, needs SAFEER_TEST_DATABASE_URL and flutter): a disposable local server built from the existing test fixtures, then packages/safeer_core/tool/live_api_test.dart (5 tests) and apps/safeer_driver/tool/live_boarding_test.dart (1 test). All pass.
+
 ## Flutter Passenger and Driver apps (preview) - D74, 2026-11-12
 
 mobile/flutter pub workspace: packages/safeer_core (SAFEER palette and light/dark tokens, bundled Inter and Noto Sans Arabic TTF, English/Arabic strings with right-to-left layout, models for the existing public/driver replies, API client with Origin/CSRF, demo repositories, private storage, glass and solid components, seat map, server-geometry QR view) and two apps with separate entry points. Passenger: Explore, Departures, seat selection and review, reservation, My Trips and offline ticket. Driver: sign-in, Today's Trips, scanner with torch and typed ticket numbers, scan outcomes, passenger list, pending verification queue. Release builds keep sd.safeer.booking / sd.safeer.driver and the upload key; debug builds use .dev IDs. Tests: 11 shared, 12 Passenger and 13 Driver, including small-phone English/Arabic flows, offline ticket reopening, duplicate and wrong-trip scans. No API or database change.
