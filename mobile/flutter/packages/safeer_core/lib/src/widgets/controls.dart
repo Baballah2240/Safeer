@@ -17,6 +17,8 @@ class PrimaryButton extends StatelessWidget {
     final enabled = onPressed != null && !busy;
     final text = busy ? (busyLabel ?? label) : label;
     return Semantics(
+      // Its own node: inside a card it must not merge with the card text (seen on a phone).
+      container: true,
       button: true,
       enabled: enabled,
       label: text,

@@ -25,6 +25,7 @@ void main() {
           PrimaryButton(label: 'Find departures', onPressed: () => taps.add('button')),
           const PrimaryButton(label: 'Disabled', onPressed: null),
           SolidCard(semanticLabel: 'Departs 08:30', onTap: () => taps.add('card'), child: const Text('card')),
+          SolidCard(child: Column(children: [const Text('Khartoum to Port Sudan'), PrimaryButton(label: 'Show ticket', onPressed: () => taps.add('ticket'))])),
           SizedBox(width: 300, child: SeatMapView(map: map, selected: const {}, onToggle: (s) => taps.add('seat ${s.label}'))),
         ]),
       ),
@@ -43,7 +44,11 @@ void main() {
     tester.semantics.tap(find.semantics.byLabel('Find departures'));
     tester.semantics.tap(find.semantics.byLabel('Departs 08:30'));
     tester.semantics.tap(find.semantics.byLabel(s.seatSemantics('1A', s.seatAvailable)));
-    expect(taps, ['button', 'card', 'seat 1A']);
+    // A button inside a card stays its own node instead of turning the whole card into a button.
+    expect(tester.getSemantics(find.bySemanticsLabel('Show ticket')), isSemantics(label: 'Show ticket', isButton: true, hasTapAction: true));
+    expect(tester.getSemantics(find.text('Khartoum to Port Sudan')), isSemantics(isButton: false, hasTapAction: false));
+    tester.semantics.tap(find.semantics.byLabel('Show ticket'));
+    expect(taps, ['button', 'card', 'seat 1A', 'ticket']);
     handle.dispose();
   });
 }
