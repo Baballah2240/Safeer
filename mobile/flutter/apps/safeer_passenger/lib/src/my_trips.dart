@@ -14,7 +14,9 @@ class MyTripsController extends ChangeNotifier {
 
   List<SavedBooking> saved = [];
   bool loaded = false, refreshing = false, offline = false;
-  final Set<String> _fresh = {};
+  /// Bookings confirmed by the server in the latest refresh (or just made). Rebuilt on every
+  /// refresh, so an offline refresh never leaves an old "up to date" mark (seen on a phone).
+  Set<String> _fresh = {};
 
   bool isFresh(String reference) => _fresh.contains(reference);
 
@@ -30,12 +32,13 @@ class MyTripsController extends ChangeNotifier {
     refreshing = true;
     notifyListeners();
     var reachable = true;
+    final confirmed = <String>{};
     for (final b in List.of(saved)) {
       if (b.gone) continue;
       try {
         final fresh = await repository.booking(b.reference, b.key);
         await store.save(b.key, fresh, at: _clock());
-        _fresh.add(b.reference);
+        confirmed.add(b.reference);
       } on NetworkException {
         reachable = false;
         break;
@@ -44,6 +47,7 @@ class MyTripsController extends ChangeNotifier {
       }
     }
     offline = !reachable;
+    _fresh = confirmed;
     saved = await store.all();
     refreshing = false;
     notifyListeners();

@@ -10,7 +10,12 @@ import 'trip_store.dart';
 /// Labelled sample data (D74). Companies, people and tickets are invented. The app shows a
 /// "Demo data" banner whenever this repository is used.
 class DemoPassengerRepository implements PassengerRepository {
-  DemoPassengerRepository({this.latency = const Duration(milliseconds: 450), DateTime Function()? clock}) : _clock = clock ?? DateTime.now;
+  DemoPassengerRepository({this.latency = const Duration(milliseconds: 450), DateTime Function()? clock, this.remember}) : _clock = clock ?? DateTime.now;
+
+  /// Bookings saved on the phone. A real server keeps bookings across app restarts; the demo
+  /// "server" lives in memory, so it answers from this copy instead of "not found" (seen on a
+  /// phone after an app update).
+  final TripStore? remember;
 
   final Duration latency;
   final DateTime Function() _clock;
@@ -213,6 +218,9 @@ class DemoPassengerRepository implements PassengerRepository {
     final b = _byKey[key];
     if (b != null && b.reference == reference) return b;
     if (key == seedKey) return seededBooking();
+    for (final saved in await remember?.all() ?? const <SavedBooking>[]) {
+      if (saved.reference == reference && saved.key == key) return saved.booking;
+    }
     throw ApiException(404, 'NOT_FOUND');
   }
 

@@ -11,6 +11,8 @@ class QrView extends StatelessWidget {
   final double size;
   @override
   Widget build(BuildContext context) => Semantics(
+        // Its own node, so the ticket details around it are read separately (seen on a phone).
+        container: true,
         image: true,
         label: semanticLabel,
         child: Container(

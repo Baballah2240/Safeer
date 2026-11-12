@@ -15,7 +15,7 @@ Future<void> main() async {
   final trips = TripStore(store);
   final PassengerRepository repository;
   if (config.demo) {
-    final demo = DemoPassengerRepository();
+    final demo = DemoPassengerRepository(remember: trips);
     await demo.seed(trips);
     repository = demo;
   } else {

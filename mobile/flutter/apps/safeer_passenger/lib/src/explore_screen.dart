@@ -118,9 +118,9 @@ class _ExploreScreenState extends State<ExploreScreen> {
               Flexible(child: Semantics(label: s.demoBanner, excludeSemantics: true, child: StatusBadge(icon: Icons.science_outlined, label: s.demoData, tone: StatusTone.warning, dense: true))),
           ]),
           SizedBox(height: ((size.height - 640) * 0.5).clamp(12.0, 120.0)),
-          Semantics(header: true, child: Text(s.heroTitle, style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.white))),
+          Semantics(header: true, child: Text(s.heroTitle, style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.white, shadows: _heroShadow))),
           const SizedBox(height: 2),
-          Text(s.heroSubtitle, style: const TextStyle(color: Color(0xE6FFFFFF), fontSize: 16, fontWeight: FontWeight.w500)),
+          Text(s.heroSubtitle, style: const TextStyle(color: Color(0xF2FFFFFF), fontSize: 16, fontWeight: FontWeight.w600, shadows: _heroShadow)),
           const SizedBox(height: 14),
           GlassPanel(
             padding: const EdgeInsets.all(16),
@@ -174,6 +174,9 @@ class _ExploreScreenState extends State<ExploreScreen> {
     ]);
   }
 }
+
+/// Keeps white hero text readable over the pale parts of the photo in the light theme.
+const _heroShadow = [Shadow(color: Color(0xB3000000), blurRadius: 10), Shadow(color: Color(0x66000000), blurRadius: 2, offset: Offset(0, 1))];
 
 class _PickerField extends StatelessWidget {
   const _PickerField({required this.label, required this.icon, required this.value, required this.hint, required this.onTap});
