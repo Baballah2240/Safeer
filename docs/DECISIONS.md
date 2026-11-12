@@ -1,5 +1,14 @@
 # Decisions
 
+## 2026-11-12 - Warm Safeer palette everywhere and the public home page
+
+D76: The owner approves the new public website and asks for its colours and look across the whole project. This supersedes the D71 navy/sky-blue palette everywhere; the Route Pin shape and the Inter/Noto Sans Arabic typography stay.
+1. Palette (WCAG AA for text): sand #FAF5EC/#F3E9D8/#E8D9BF/#D6BF98, orange #E8772A for accents and #B9530F for filled buttons with white text (4.88:1), deep green #123A2D for identity surfaces and #1F5D49 for green text and icons, charcoal #1D211F for text and #4E5651 for secondary text. Dark mode uses a charcoal green (page #0E1311, panels #161D1A) with sand text and orange #F4A261 accents.
+2. Shared tokens (src/tokens.css) are redefined; hard-coded colours in the other stylesheets are converted by role: navy becomes deep green, sky-blue fills become the accessible orange, pale blues become sand, blue greys become warm greys, and leftover violets join the same families. Error reds and warning golds keep their meaning; QR codes stay black on white.
+3. The Route Pin logo is recoloured (deep green tile, orange pin, sand road). The Android shell uses the same colours for its accent, status bar, navigation bar and launcher icon: Booking 0.17.4/17004 and Driver 0.18.5/18005, signed with the existing key.
+4. The public website becomes the home page at / (home.html with src/home.*; every asset local, no inline styles, so the strict Content-Security-Policy is unchanged). Its booking, tracking, staff and privacy links are relative. The earlier client-side demo workspace moves from / to /demo.
+5. Honest content only: example routes and an example parcel are labelled, there are no invented testimonials or numbers, and motion respects reduced-motion and works without JavaScript.
+
 ## 2026-11-12 - Google sign-in readiness: privacy policy, account deletion and home-page links
 
 D75: The owner continues the Google work (D68/D70). Google's brand verification for the consent screen needs a public home page that describes the app and links to the privacy policy, a privacy policy on the same domain that explains how Google user data is used, and verified ownership of the domain.

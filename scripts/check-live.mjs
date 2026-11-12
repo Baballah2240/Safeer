@@ -23,7 +23,7 @@ const health=await get('/api/v1/health'),h=(await health.json().catch(()=>({})))
 note('health responds',health.status===200,`status ${health.status}, version ${h.version??'?'}, database ${h.database??'?'}`);
 note('database connected',h.database==='connected');
 for(const job of ['holds','retention'])note(`maintenance ${job}`,h.maintenance?.[job]?.state==='ok',`${h.maintenance?.[job]?.state??'?'}, last ${h.maintenance?.[job]?.lastSuccessAt??'never'}`);
-for(const page of ['/','/marketplace','/booking','/staff','/driver','/track','/privacy','/account-deletion']){
+for(const page of ['/','/demo','/marketplace','/booking','/staff','/driver','/track','/privacy','/account-deletion']){
  const r=await get(page),csp=r.headers.get('content-security-policy')||'',hsts=r.headers.get('strict-transport-security')||'';
  note('page '+page,r.status===200&&/script-src 'self'/.test(csp)&&/max-age=\d+/.test(hsts)&&r.headers.get('x-content-type-options')==='nosniff',`status ${r.status}${hsts?'':' no HSTS'}${csp?'':' no CSP'}`);
 }

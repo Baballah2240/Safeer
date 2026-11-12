@@ -17,7 +17,7 @@ try{await identityFixture(async f=>{
   const r=await fetch(web.origin+'/src/fonts/'+file);assert.equal(r.status,200);assert.match(r.headers.get('content-type'),/font\/woff2/);assert.equal(Buffer.from(await r.arrayBuffer()).subarray(0,4).toString(),'wOF2');
  }
  let layouts=0;
- for(const [page,path,ready] of [['booking','/marketplace','#market-search'],['driver','/driver','#driver-login'],['tracking','/track','#track-form'],['staff','/staff','#staff-login'],['legal','/privacy','#legal-app h1'],['preview','/','#company-select']])for(const lang of ['en','ar'])for(const theme of ['light','dark'])for(const width of [320,390,1366]){
+ for(const [page,path,ready] of [['booking','/marketplace','#market-search'],['driver','/driver','#driver-login'],['tracking','/track','#track-form'],['staff','/staff','#staff-login'],['legal','/privacy','#legal-app h1'],['preview','/demo','#company-select']])for(const lang of ['en','ar'])for(const theme of ['light','dark'])for(const width of [320,390,1366]){
   const label=`${page}/${lang}/${theme}/${width}`;
   await evaluate('document.body.replaceChildren()');
   await send('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:width<700});

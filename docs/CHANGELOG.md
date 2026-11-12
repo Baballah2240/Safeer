@@ -1,5 +1,9 @@
 # Changelog
 
+## Warm palette everywhere and the public home page - D76, 2026-11-12
+
+The public website is the home page at / (home.html with src/home.css, src/home.js, src/home-boot.js and WebP copies of the coach photo) in English and Arabic, with scroll reveals, a moving bus along the three steps, reduced-motion and no-JavaScript support, and relative links to booking, tracking, staff and privacy. The earlier demo workspace moves to /demo. The whole project switches from the D71 navy/sky-blue palette to sand, orange, deep green and charcoal: shared tokens are redefined for light and dark, and 392 hard-coded colours are converted by role. Filled buttons use #B9530F (white text 4.88:1). The Route Pin logo, the Android launcher icon, accent and system bars use the new colours: Booking 0.17.4/17004 and Driver 0.18.5/18005. Tests: home.browser.mjs; /demo replaces / in the demo tests; version pins and the selected-tab colour updated.
+
 ## Google sign-in readiness: privacy policy, account deletion, home-page links - D75, 2026-11-12
 
 The privacy policy and the account deletion page now cover optional passenger accounts and Google sign-in in English and Arabic, including the Google API Services User Data Policy (Limited Use) statement, so Google can verify the consent screen. The signed-in Profile has Delete account with a confirmation (D68 step 5). The booking home page ends with the Privacy policy and Delete account links, and marketplace.html has a description and those links without JavaScript. Safeer no longer keeps the Google profile photo address. docs/HOSTING.md lists the owner's Google Cloud, Search Console and Render steps. No migration; website only, no new APK. Tests: passenger-privacy.browser.mjs and new account-deletion and photo checks in passenger-google.integration.mjs.

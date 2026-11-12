@@ -1,5 +1,9 @@
 # Safeer mobile status
 
+## Warm palette - Booking 0.17.4 / 17004, Driver 0.18.5 / 18005, 2026-11-12
+
+D76: the website inside both apps switches to sand, orange, deep green and charcoal without reinstalling. The new APKs change only the native parts: the recoloured Route Pin launcher icon, the orange accent and the deep green status and navigation bars. Signed with the existing key. Not installed on a physical phone. Publish GitHub releases v0.17.4 and v0.18.5 with Safeer-Booking-0.17.4.apk and Safeer-Driver-0.18.5.apk (and their .sha256 files) right after pushing, because src/app-release.js points the update notice at them.
+
 ## Google sign-in readiness - website, 2026-11-12
 
 D75: The privacy and account deletion pages cover Google sign-in, the signed-in Profile can delete the account, and the booking home page links the privacy policy. Phones receive this from the website; no new APK. Google sign-in inside the apps is still D68 step 4.

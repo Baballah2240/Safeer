@@ -1,24 +1,25 @@
-/* Shared bento / glass palette for the website and USB Android clients. */
+/* D76 warm Safeer palette for the website and the Android clients: sand, orange, deep green, charcoal, white.
+   Text pairs meet WCAG AA; filled buttons use #B9530F (white text 4.88:1). */
 :root {
   color-scheme:light;font-family:"Segoe UI",Tahoma,Arial,sans-serif;font-synthesis:none;color:var(--ink);background:var(--page);
-  --ink:#0b1f3a;--muted:#52667f;--accent:#0b2d5b;--warning:#a85300;--warning-fill:#ff8c00;--border:#cfdcec;--paper:#ffffff;--page:#eef4fb;
-  --surface:#ffffffed;--surface-soft:#ffffffb8;--glass-control:#ffffff4d;--glass-highlight:#ffffffa6;--glass-edge:#ffffffa6;--glass-shadow:#0b2d5b1c;--accent-wash:#1e90ff12;
-  --page-art:radial-gradient(ellipse at 88% 8%,#1e90ff33,transparent 48%),radial-gradient(ellipse at 12% 56%,#0b2d5b1f,transparent 46%),radial-gradient(ellipse at 68% 92%,#ffffffb3,transparent 50%);
+  --ink:#1d211f;--muted:#4e5651;--accent:#1f5d49;--warning:#8a5a00;--warning-fill:#e9a82b;--border:#e2d5be;--paper:#ffffff;--page:#faf5ec;
+  --surface:#ffffffed;--surface-soft:#ffffffb8;--glass-control:#ffffff4d;--glass-highlight:#ffffffa6;--glass-edge:#ffffffa6;--glass-shadow:#3c280f1c;--accent-wash:#e8772a14;
+  --page-art:radial-gradient(ellipse at 88% 8%,#f4a26138,transparent 48%),radial-gradient(ellipse at 12% 56%,#1f5d491a,transparent 46%),radial-gradient(ellipse at 68% 92%,#ffffffb3,transparent 50%);
   --header-gap:calc(12px + var(--safe-top,0px));--header-glass:#ffffff40;--header-reflection:#ffffff8c;--header-edge:#ffffffbf;
   --glass-tile:#ffffff8c;--glass-sheen:#ffffff45;--glass-rim:#ffffffb3;
-  --sidebar-glass:#0b2d5bd9;--sidebar-sheen:#e6f1fd2e;
+  --sidebar-glass:#123a2dd9;--sidebar-sheen:#f3e9d82e;
   /* Compatibility aliases keep page components on the same material system. */
-  --material-paper:var(--surface);--material-control:var(--glass-control);--material-enamel:linear-gradient(135deg,#1e90ff,#0b2d5b);--material-navy:linear-gradient(130deg,#0b2d5b,#05142b);
-  --shadow-panel:0 10px 32px #0b2d5b0c,inset 0 1px 0 #ffffffa6;--shadow-control:0 4px 14px var(--glass-shadow),inset 0 1px 0 var(--glass-highlight),inset 1px 0 0 #ffffff45,inset 0 -1px 0 #0b2d5b1a;--shadow-inset:inset 0 1px 3px #0b2d5b08;
+  --material-paper:var(--surface);--material-control:var(--glass-control);--material-enamel:linear-gradient(135deg,#b9530f,#9a4410);--material-navy:linear-gradient(130deg,#184b3a,#0e2a20);
+  --shadow-panel:0 10px 32px #3c280f0f,inset 0 1px 0 #ffffffa6;--shadow-control:0 4px 14px var(--glass-shadow),inset 0 1px 0 var(--glass-highlight),inset 1px 0 0 #ffffff45,inset 0 -1px 0 #3c280f1a;--shadow-inset:inset 0 1px 3px #3c280f08;
 }
 @media screen {
   :root:not([data-theme="light"]) {
-    color-scheme:dark;--ink:#eaf2fc;--muted:#9fb4cf;--accent:#8cc8ff;--warning:#ffb04d;--warning-fill:#ffa733;--border:#23406a;--paper:#0b2346;--page:#061a35;
-    --surface:#0b2346ed;--surface-soft:#103063b3;--glass-control:#e6f1fd0d;--glass-highlight:#e6f1fd4d;--glass-edge:#cfe4ff47;--glass-shadow:#00000030;--accent-wash:#1e90ff14;
-    --page-art:radial-gradient(ellipse at 88% 8%,#1e90ff40,transparent 48%),radial-gradient(ellipse at 8% 56%,#0b2d5b99,transparent 46%),radial-gradient(ellipse at 68% 94%,#0b234670,transparent 50%);
-    --header-glass:#0b234638;--header-reflection:#e6f1fd45;--header-edge:#cfe4ff73;
-    --glass-tile:#0b234670;--glass-sheen:#e6f1fd14;--glass-rim:#e6f1fd4d;
-    --sidebar-glass:#05142b59;--sidebar-sheen:#e6f1fd1c;
-    --material-navy:linear-gradient(130deg,#0b2d5b,#05142b);--shadow-panel:0 12px 36px #00000028,inset 0 1px 0 #cfe4ff14;--shadow-inset:inset 0 1px 4px #00000020;
+    color-scheme:dark;--ink:#f2ece2;--muted:#b3bcb5;--accent:#f4a261;--warning:#f2c14e;--warning-fill:#e9a82b;--border:#2e3b35;--paper:#161d1a;--page:#0e1311;
+    --surface:#161d1aed;--surface-soft:#1f2a25b3;--glass-control:#f3e9d80d;--glass-highlight:#f3e9d84d;--glass-edge:#e8d9bf47;--glass-shadow:#00000030;--accent-wash:#f4a26114;
+    --page-art:radial-gradient(ellipse at 88% 8%,#e8772a26,transparent 48%),radial-gradient(ellipse at 8% 56%,#1f5d4980,transparent 46%),radial-gradient(ellipse at 68% 94%,#161d1a70,transparent 50%);
+    --header-glass:#161d1a38;--header-reflection:#f3e9d845;--header-edge:#e8d9bf73;
+    --glass-tile:#161d1a70;--glass-sheen:#f3e9d814;--glass-rim:#f3e9d84d;
+    --sidebar-glass:#0a0f0d59;--sidebar-sheen:#f3e9d81c;
+    --material-navy:linear-gradient(130deg,#184b3a,#0e2a20);--shadow-panel:0 12px 36px #00000028,inset 0 1px 0 #e8d9bf14;--shadow-inset:inset 0 1px 4px #00000020;
   }
 }

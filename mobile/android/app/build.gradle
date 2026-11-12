@@ -13,8 +13,8 @@ android {
     defaultConfig {
         minSdk 26
         targetSdk 35
-        versionCode 17003
-        versionName '0.17.3'
+        versionCode 17004
+        versionName '0.17.4'
     }
     buildFeatures { buildConfig true }
     signingConfigs {
@@ -30,8 +30,8 @@ android {
     flavorDimensions += 'workspace'
     productFlavors {
         driver {
-            versionCode 18004
-            versionName '0.18.4'
+            versionCode 18005
+            versionName '0.18.5'
             dimension 'workspace'
             applicationId 'sd.safeer.driver'
             resValue 'string', 'app_name', 'Safeer Driver'

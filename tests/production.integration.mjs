@@ -73,7 +73,7 @@ test('production start: Render command migrates, limits its runtime role, serves
   const health=await owner.send('/api/v1/health',{host:'10.0.0.8:'+port});const h=ok(health,200);
   assert.equal(h.database,'connected');assert.equal(h.mode,'local-identity');
   assert.equal((await owner.send('/staff',{host:'safeer.onrender.example'})).status,403);
-  for(const page of ['/','/staff','/marketplace','/booking','/driver','/track','/privacy','/account-deletion']){
+  for(const page of ['/','/demo','/staff','/marketplace','/booking','/driver','/track','/privacy','/account-deletion']){
    const r=await owner.send(page);assert.equal(r.status,200,page);
    assert.match(r.headers['strict-transport-security']||'',/max-age=31536000/,page+' HSTS');
    assert.match(r.headers['content-security-policy']||'',/default-src 'self'; script-src 'self'/,page+' CSP');

@@ -1,0 +1,312 @@
+<!doctype html>
+<!-- D76 public home page. Every asset is local and there are no inline styles or scripts (strict CSP). -->
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Safeer | Land travel and parcel shipping across Sudan</title>
+<meta name="description" content="Safeer: book seats with approved bus companies and send parcels between Sudan's cities. Choose your seat online, pay at the station and follow every step.">
+<meta name="theme-color" content="#FAF5EC">
+<link rel="icon" href="/src/brand.svg" type="image/svg+xml">
+
+<link rel="preload" as="image" type="image/webp" href="/src/coach-1280.webp" imagesrcset="/src/coach-800.webp 800w, /src/coach-1280.webp 1280w, /src/coach-1672.webp 1672w" imagesizes="(min-width: 960px) 74vw, 100vw">
+<link rel="stylesheet" href="/src/home.css">
+<script src="/src/home-boot.js"></script>
+<script src="/src/home.js" defer></script>
+</head>
+<body>
+<svg class="sprite" aria-hidden="true" focusable="false">
+  <symbol id="i-badge" viewBox="0 0 24 24"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-zap" viewBox="0 0 24 24"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></symbol>
+  <symbol id="i-smile" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><path d="M9 9h.01"/><path d="M15 9h.01"/></symbol>
+  <symbol id="i-seat" viewBox="0 0 24 24"><path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3"/><path d="M3 16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v1.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V11a2 2 0 0 0-4 0z"/><path d="M5 18v2"/><path d="M19 18v2"/></symbol>
+  <symbol id="i-receipt" viewBox="0 0 24 24"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></symbol>
+  <symbol id="i-timer" viewBox="0 0 24 24"><path d="M10 2h4"/><path d="m12 14 3-3"/><circle cx="12" cy="14" r="8"/></symbol>
+  <symbol id="i-qr" viewBox="0 0 24 24"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></symbol>
+  <symbol id="i-luggage" viewBox="0 0 24 24"><path d="M6 20a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2"/><path d="M8 18V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v14"/><path d="M10 20h4"/><circle cx="16" cy="20" r="2"/><circle cx="8" cy="20" r="2"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></symbol>
+  <symbol id="i-package" viewBox="0 0 24 24"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.7 4.73a2 2 0 0 0 2 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/></symbol>
+  <symbol id="i-banknote" viewBox="0 0 24 24"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></symbol>
+  <symbol id="i-route" viewBox="0 0 24 24"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></symbol>
+  <symbol id="i-user-check" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m16 11 2 2 4-4"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+  <symbol id="i-ban" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+  <symbol id="i-bus" viewBox="0 0 24 24"><path d="M8 6v6"/><path d="M15 6v6"/><path d="M2 12h19.6"/><path d="M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3"/><circle cx="7" cy="18" r="2"/><path d="M9 18h5"/><circle cx="16" cy="18" r="2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 5-5.54 10.19-7.4 11.8a1 1 0 0 1-1.2 0C9.54 20.19 4 15 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></symbol>
+  <symbol id="i-office" viewBox="0 0 24 24"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+</svg>
+
+<a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
+<div class="scroll-progress" aria-hidden="true"><span></span></div>
+
+<header class="site-header" data-header>
+  <div class="container header-inner">
+    <a class="brand" href="#top" data-i18n-attr="aria-label:brand.home" aria-label="Safeer, back to top">
+      <img src="/src/brand.svg" width="36" height="36" alt="">
+      <span class="brand-name">Safeer<span class="brand-ar" lang="ar"> سفير</span></span>
+    </a>
+    <nav class="site-nav" data-nav data-i18n-attr="aria-label:nav.label" aria-label="Main">
+      <ul id="site-menu">
+        <li><a href="#about" data-i18n="nav.about">About</a></li>
+        <li><a href="#travel" data-i18n="nav.travel">Travel</a></li>
+        <li><a href="#shipping" data-i18n="nav.shipping">Shipping</a></li>
+        <li><a href="#how" data-i18n="nav.how">How it works</a></li>
+        <li><a href="#routes" data-i18n="nav.routes">Routes</a></li>
+        <li class="nav-book"><a class="btn btn-primary" href="/marketplace" data-safeer data-i18n="cta.book">Book a trip</a></li>
+      </ul>
+    </nav>
+    <div class="header-actions">
+      <button class="lang-toggle" type="button" data-lang-toggle lang="ar" aria-label="التبديل إلى العربية">العربية</button>
+      <a class="btn btn-primary btn-sm header-book" href="/marketplace" data-safeer data-i18n="cta.book">Book a trip</a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu" data-menu-toggle>
+        <svg class="icon icon-open" aria-hidden="true"><use href="#i-menu"/></svg><svg class="icon icon-close" aria-hidden="true"><use href="#i-x"/></svg>
+        <span class="sr-only" data-i18n="nav.menu">Menu</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <!-- Hero: the bus photo anchors the page. -->
+  <section class="hero" id="top" aria-labelledby="hero-title">
+    <div class="hero-media" data-hero-media>
+      <picture>
+        <source type="image/webp" srcset="/src/coach-800.webp 800w, /src/coach-1280.webp 1280w, /src/coach-1672.webp 1672w" sizes="(min-width: 960px) 74vw, 100vw">
+        <img src="/src/coach-journey.jpg" width="1672" height="941" alt="A white intercity coach on a desert highway" data-i18n-attr="alt:hero.alt" fetchpriority="high" decoding="async">
+      </picture>
+    </div>
+    <div class="container hero-inner" data-hero-copy>
+      <div class="hero-copy">
+        <p class="eyebrow" data-hero-item data-i18n="hero.eyebrow">Land travel &amp; city-to-city shipping in Sudan</p>
+        <h1 id="hero-title" data-hero-item data-i18n="hero.title">Travel and ship between Sudan’s cities, the trusted way.</h1>
+        <p class="lead" data-hero-item data-i18n="hero.lead">Book a seat with approved bus companies, or send a parcel on the same buses. Choose your seat online, pay at the station and follow every step.</p>
+        <div class="hero-ctas" data-hero-item>
+          <a class="btn btn-primary btn-lg" href="/marketplace" data-safeer><span data-i18n="cta.book">Book a trip</span><svg class="icon icon-arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+          <a class="btn btn-ghost btn-lg" href="#shipping"><svg class="icon" aria-hidden="true"><use href="#i-package"/></svg><span data-i18n="cta.send">Send a parcel</span></a>
+        </div>
+        <ul class="hero-chips" data-hero-item>
+          <li><svg class="icon" aria-hidden="true"><use href="#i-badge"/></svg><span data-i18n="chip.approved">Approved bus companies</span></li>
+          <li><svg class="icon" aria-hidden="true"><use href="#i-banknote"/></svg><span data-i18n="chip.pay">Pay at the station</span></li>
+          <li><svg class="icon" aria-hidden="true"><use href="#i-qr"/></svg><span data-i18n="chip.track">QR tickets &amp; tracking codes</span></li>
+        </ul>
+      </div>
+    </div>
+    <a class="scroll-cue" href="#about" data-i18n-attr="aria-label:hero.scroll" aria-label="Scroll to learn more"><svg class="icon" aria-hidden="true"><use href="#i-down"/></svg></a>
+  </section>
+
+  <!-- About -->
+  <section class="section about" id="about" aria-labelledby="about-title">
+    <div class="container about-grid">
+      <div class="about-copy" data-reveal>
+        <p class="eyebrow" data-i18n="about.eyebrow">About Safeer</p>
+        <h2 id="about-title" data-i18n="about.title">One platform for the road between cities.</h2>
+        <p class="lead" data-i18n="about.p1">Safeer brings approved Sudanese bus companies together in one place, so you can find a trip, choose your seat and send a parcel without the guesswork.</p>
+        <p data-i18n="about.p2">The companies run the buses and the stations. Safeer keeps every booking, ticket and parcel organized and easy to follow.</p>
+      </div>
+      <ul class="values" data-reveal-group>
+        <li class="value-card" data-reveal><span class="icon-chip green"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg></span><h3 data-i18n="value.safe.t">Safe</h3><p data-i18n="value.safe.d">Only approved bus companies, and every ticket is checked at boarding.</p></li>
+        <li class="value-card" data-reveal><span class="icon-chip orange"><svg class="icon" aria-hidden="true"><use href="#i-zap"/></svg></span><h3 data-i18n="value.fast.t">Fast</h3><p data-i18n="value.fast.d">Find a trip and hold your seats in a few taps, on any phone.</p></li>
+        <li class="value-card" data-reveal><span class="icon-chip green"><svg class="icon" aria-hidden="true"><use href="#i-list"/></svg></span><h3 data-i18n="value.org.t">Organized</h3><p data-i18n="value.org.d">Clear fares, receipts and tracking codes for every booking and parcel.</p></li>
+        <li class="value-card" data-reveal><span class="icon-chip orange"><svg class="icon" aria-hidden="true"><use href="#i-smile"/></svg></span><h3 data-i18n="value.welcome.t">Welcoming</h3><p data-i18n="value.welcome.d">Arabic and English, and no account needed to book.</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Passenger travel -->
+  <section class="section travel" id="travel" aria-labelledby="travel-title">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow" data-i18n="travel.eyebrow">Passenger travel</p>
+        <h2 id="travel-title" data-i18n="travel.title">Comfortable seats, clear plans.</h2>
+        <p class="lead" data-i18n="travel.lead">Compare published trips between cities, see the fare before you commit and pick the seats you want.</p>
+      </div>
+      <div class="travel-grid">
+        <figure class="travel-media" data-reveal>
+          <div class="photo-frame"><picture><source type="image/webp" srcset="/src/coach-800.webp 800w, /src/coach-1280.webp 1280w" sizes="(min-width: 960px) 40vw, 100vw"><img src="/src/coach-journey.jpg" width="1672" height="941" alt="" loading="lazy" decoding="async"></picture></div>
+          <div class="seat-card" aria-hidden="true">
+            <p class="seat-card-title" data-i18n="seat.title">Pick your seats</p>
+            <svg class="seat-map" viewBox="0 0 168 196" focusable="false">
+              <rect class="bus-front" x="4" y="4" width="160" height="22" rx="8"/>
+              <g class="seats">
+                <rect class="taken" x="8" y="36" width="30" height="26" rx="7"/><rect x="44" y="36" width="30" height="26" rx="7"/><rect class="taken" x="94" y="36" width="30" height="26" rx="7"/><rect class="taken" x="130" y="36" width="30" height="26" rx="7"/>
+                <rect x="8" y="68" width="30" height="26" rx="7"/><rect class="picked" x="44" y="68" width="30" height="26" rx="7"/><rect class="picked" x="94" y="68" width="30" height="26" rx="7"/><rect x="130" y="68" width="30" height="26" rx="7"/>
+                <rect class="taken" x="8" y="100" width="30" height="26" rx="7"/><rect x="44" y="100" width="30" height="26" rx="7"/><rect x="94" y="100" width="30" height="26" rx="7"/><rect class="taken" x="130" y="100" width="30" height="26" rx="7"/>
+                <rect x="8" y="132" width="30" height="26" rx="7"/><rect class="taken" x="44" y="132" width="30" height="26" rx="7"/><rect x="94" y="132" width="30" height="26" rx="7"/><rect x="130" y="132" width="30" height="26" rx="7"/>
+                <rect x="8" y="164" width="30" height="26" rx="7"/><rect x="44" y="164" width="30" height="26" rx="7"/><rect class="taken" x="94" y="164" width="30" height="26" rx="7"/><rect x="130" y="164" width="30" height="26" rx="7"/>
+              </g>
+            </svg>
+            <p class="seat-legend"><span class="key picked"></span><span data-i18n="seat.picked">Your seats</span><span class="key taken"></span><span data-i18n="seat.taken">Taken</span></p>
+          </div>
+        </figure>
+        <ul class="feature-grid" data-reveal-group>
+          <li class="feature" data-reveal><span class="icon-chip orange"><svg class="icon" aria-hidden="true"><use href="#i-seat"/></svg></span><div><h3 data-i18n="travel.f1.t">Choose your seat</h3><p data-i18n="travel.f1.d">See the seat map and pick a seat for every traveler.</p></div></li>
+          <li class="feature" data-reveal><span class="icon-chip orange"><svg class="icon" aria-hidden="true"><use href="#i-receipt"/></svg></span><div><h3 data-i18n="travel.f2.t">Know the fare first</h3><p data-i18n="travel.f2.d">Every trip shows its price before you hold a seat.</p></div></li>
+          <li class="feature" data-reveal><span class="icon-chip orange"><svg class="icon" aria-hidden="true"><use href="#i-timer"/></svg></span><div><h3 data-i18n="travel.f3.t">Hold now, pay at the station</h3><p data-i18n="travel.f3.d">Your seats are held for a set time while you pay the company in person.</p></div></li>
+          <li class="feature" data-reveal><span class="icon-chip orange"><svg class="icon" aria-hidden="true"><use href="#i-qr"/></svg></span><div><h3 data-i18n="travel.f4.t">QR ticket for boarding</h3><p data-i18n="travel.f4.d">After payment your ticket appears on your phone, and the driver checks it as you board.</p></div></li>
+          <li class="feature" data-reveal><span class="icon-chip orange"><svg class="icon" aria-hidden="true"><use href="#i-luggage"/></svg></span><div><h3 data-i18n="travel.f5.t">Luggage, tagged</h3><p data-i18n="travel.f5.d">Declare your bags when you book, and the station tags them for the trip.</p></div></li>
+          <li class="feature" data-reveal><span class="icon-chip orange"><svg class="icon" aria-hidden="true"><use href="#i-user"/></svg></span><div><h3 data-i18n="travel.f6.t">Book as a guest</h3><p data-i18n="travel.f6.d">No account needed. Keep your booking reference to find it again.</p></div></li>
+        </ul>
+      </div>
+      <p class="section-cta" data-reveal><a class="btn btn-primary" href="/marketplace" data-safeer><span data-i18n="cta.find">Find a trip</span><svg class="icon icon-arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a></p>
+    </div>
+  </section>
+
+  <!-- Shipping -->
+  <section class="section shipping on-dark" id="shipping" aria-labelledby="shipping-title">
+    <div class="container shipping-grid">
+      <div class="shipping-copy">
+        <div data-reveal>
+          <p class="eyebrow" data-i18n="ship.eyebrow">City-to-city shipping</p>
+          <h2 id="shipping-title" data-i18n="ship.title">Send parcels on the buses you trust.</h2>
+          <p class="lead" data-i18n="ship.lead">Drop your parcel at the bus company’s office. It travels on a scheduled trip and waits safely at the destination office until the right person collects it.</p>
+        </div>
+        <ul class="ship-list" data-reveal-group>
+          <li data-reveal><svg class="icon" aria-hidden="true"><use href="#i-package"/></svg><div><h3 data-i18n="ship.f1.t">Simple, fixed prices</h3><p data-i18n="ship.f1.d">One price per item type: envelope, small parcel, large parcel or other item.</p></div></li>
+          <li data-reveal><svg class="icon" aria-hidden="true"><use href="#i-receipt"/></svg><div><h3 data-i18n="ship.f2.t">Pay once at drop-off</h3><p data-i18n="ship.f2.d">You get a printed receipt with your tracking code.</p></div></li>
+          <li data-reveal><svg class="icon" aria-hidden="true"><use href="#i-route"/></svg><div><h3 data-i18n="ship.f3.t">Track every step</h3><p data-i18n="ship.f3.d">Follow it from received to on the bus, arrived and collected.</p></div></li>
+          <li data-reveal><svg class="icon" aria-hidden="true"><use href="#i-user-check"/></svg><div><h3 data-i18n="ship.f4.t">Only the right receiver</h3><p data-i18n="ship.f4.d">The receiver’s name and phone number must match what you gave.</p></div></li>
+          <li data-reveal><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg><div><h3 data-i18n="ship.f5.t">Private by design</h3><p data-i18n="ship.f5.d">Public tracking shows the status and offices only, never names or numbers.</p></div></li>
+        </ul>
+        <p class="ship-note" data-reveal><svg class="icon" aria-hidden="true"><use href="#i-ban"/></svg><span data-i18n="ship.note">Not accepted: cash, weapons, hazardous goods, live animals or perishable food.</span></p>
+        <p data-reveal><a class="btn btn-primary" href="/track" data-safeer><span data-i18n="cta.track">Track a parcel</span><svg class="icon icon-arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a></p>
+      </div>
+      <div class="track-card" data-reveal data-track>
+        <div class="track-head">
+          <span class="badge" data-i18n="track.example">Example parcel</span>
+          <span class="track-code"><span data-i18n="track.code">Tracking code</span> <b dir="ltr">SH-••••••</b></span>
+        </div>
+        <p class="track-route"><svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg><span data-i18n="city.portsudan">Port Sudan</span><svg class="icon icon-arrow" aria-hidden="true"><use href="#i-arrow"/></svg><span data-i18n="city.kassala">Kassala</span></p>
+        <ol class="track-steps">
+          <li class="done"><span class="dot"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg></span><span data-i18n="track.s1">Received at the office</span></li>
+          <li class="done"><span class="dot"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg></span><span data-i18n="track.s2">Loaded on the bus</span></li>
+          <li class="current" aria-current="step"><span class="dot"></span><span data-i18n="track.s3">In transit</span><span class="now" data-i18n="track.now">Now</span></li>
+          <li><span class="dot"></span><span data-i18n="track.s4">Arrived at the destination office</span></li>
+          <li><span class="dot"></span><span data-i18n="track.s5">Handed over to the receiver</span></li>
+        </ol>
+        <div class="track-photo" aria-hidden="true"><img src="/src/coach-800.webp" width="800" height="450" alt="" loading="lazy" decoding="async"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="section how" id="how" aria-labelledby="how-title">
+    <div class="container">
+      <div class="section-head center" data-reveal>
+        <p class="eyebrow" data-i18n="how.eyebrow">How it works</p>
+        <h2 id="how-title" data-i18n="how.title">Three simple steps.</h2>
+      </div>
+      <div class="how-tabs" role="tablist" data-i18n-attr="aria-label:how.tabs" aria-label="Choose a service" data-reveal>
+        <button type="button" role="tab" id="tab-travel" aria-selected="true" aria-controls="panel-travel"><svg class="icon" aria-hidden="true"><use href="#i-seat"/></svg><span data-i18n="how.tab.travel">Travel</span></button>
+        <button type="button" role="tab" id="tab-ship" aria-selected="false" aria-controls="panel-ship" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#i-package"/></svg><span data-i18n="how.tab.ship">Shipping</span></button>
+      </div>
+      <div class="steps-wrap" data-steps data-reveal>
+        <div class="steps-track" aria-hidden="true"><span class="steps-fill"></span><span class="steps-bus"><svg class="icon" aria-hidden="true"><use href="#i-bus"/></svg></span></div>
+        <ol class="steps" id="panel-travel" role="tabpanel" aria-labelledby="tab-travel" tabindex="0">
+          <li><span class="step-num" aria-hidden="true">01</span><h3 data-i18n="how.t1.t">Find your trip</h3><p data-i18n="how.t1.d">Choose your route and date, compare trips and pick your seats.</p></li>
+          <li><span class="step-num" aria-hidden="true">02</span><h3 data-i18n="how.t2.t">Hold and pay</h3><p data-i18n="how.t2.d">Your seats are held while you pay at the company’s station.</p></li>
+          <li><span class="step-num" aria-hidden="true">03</span><h3 data-i18n="how.t3.t">Board and go</h3><p data-i18n="how.t3.d">Show your QR ticket to the driver and enjoy the ride.</p></li>
+        </ol>
+        <ol class="steps" id="panel-ship" role="tabpanel" aria-labelledby="tab-ship" tabindex="0" hidden>
+          <li><span class="step-num" aria-hidden="true">01</span><h3 data-i18n="how.s1.t">Drop it off</h3><p data-i18n="how.s1.d">Bring your parcel to the company’s office with the receiver’s name and phone number.</p></li>
+          <li><span class="step-num" aria-hidden="true">02</span><h3 data-i18n="how.s2.t">It travels by bus</h3><p data-i18n="how.s2.d">Pay the fixed price, keep your tracking code and follow its journey.</p></li>
+          <li><span class="step-num" aria-hidden="true">03</span><h3 data-i18n="how.s3.t">Collected safely</h3><p data-i18n="how.s3.d">The receiver shows matching details at the destination office.</p></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- Routes -->
+  <section class="section routes" id="routes" aria-labelledby="routes-title">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow" data-i18n="routes.eyebrow">Routes</p>
+        <h2 id="routes-title" data-i18n="routes.title">Major routes across Sudan.</h2>
+        <p class="lead" data-i18n="routes.lead">Bus companies on Safeer publish their own trips and schedules. Search to see what is available on your route.</p>
+      </div>
+      <ul class="route-grid" data-reveal-group>
+        <li class="route-card" data-reveal><div class="route-cities"><span data-i18n="city.khartoum">Khartoum</span><svg class="route-line" viewBox="0 0 120 24" preserveAspectRatio="none" aria-hidden="true"><path d="M6 12C40 0 80 24 114 12" pathLength="1"/><circle class="start" cx="6" cy="12" r="4.5"/><circle class="end" cx="114" cy="12" r="4.5"/></svg><span data-i18n="city.portsudan">Port Sudan</span></div><div class="route-meta"><span class="route-kinds"><svg class="icon" aria-hidden="true"><use href="#i-seat"/></svg><svg class="icon" aria-hidden="true"><use href="#i-package"/></svg><span class="sr-only" data-i18n="routes.both">Passengers and parcels</span></span><a href="/marketplace" data-safeer><span data-i18n="routes.see">See trips</span><svg class="icon icon-arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a></div></li>
+        <li class="route-card" data-reveal><div class="route-cities"><span data-i18n="city.khartoum">Khartoum</span><svg class="route-line" viewBox="0 0 120 24" preserveAspectRatio="none" aria-hidden="true"><path d="M6 12C40 24 80 0 114 12" pathLength="1"/><circle class="start" cx="6" cy="12" r="4.5"/><circle class="end" cx="114" cy="12" r="4.5"/></svg><span data-i18n="city.madani">Wad Madani</span></div><div class="route-meta"><span class="route-kinds"><svg class="icon" aria-hidden="true"><use href="#i-seat"/></svg><svg class="icon" aria-hidden="true"><use href="#i-package"/></svg><span class="sr-only" data-i18n="routes.both">Passengers and parcels</span></span><a href="/marketplace" data-safeer><span data-i18n="routes.see">See trips</span><svg class="icon icon-arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a></div></li>
+        <li class="route-card" data-reveal><div class="route-cities"><span data-i18n="city.khartoum">Khartoum</span><svg class="route-line" viewBox="0 0 120 24" preserveAspectRatio="none" aria-hidden="true"><path d="M6 12C40 0 80 24 114 12" pathLength="1"/><circle class="start" cx="6" cy="12" r="4.5"/><circle class="end" cx="114" cy="12" r="4.5"/></svg><span data-i18n="city.atbara">Atbara</span></div><div class="route-meta"><span class="route-kinds"><svg class="icon" aria-hidden="true"><use href="#i-seat"/></svg><svg class="icon" aria-hidden="true"><use href="#i-package"/></svg><span class="sr-only" data-i18n="routes.both">Passengers and parcels</span></span><a href="/marketplace" data-safeer><span data-i18n="routes.see">See trips</span><svg class="icon icon-arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a></div></li>
+        <li class="route-card" data-reveal><div class="route-cities"><span data-i18n="city.portsudan">Port Sudan</span><svg class="route-line" viewBox="0 0 120 24" preserveAspectRatio="none" aria-hidden="true"><path d="M6 12C40 24 80 0 114 12" pathLength="1"/><circle class="start" cx="6" cy="12" r="4.5"/><circle class="end" cx="114" cy="12" r="4.5"/></svg><span data-i18n="city.kassala">Kassala</span></div><div class="route-meta"><span class="route-kinds"><svg class="icon" aria-hidden="true"><use href="#i-seat"/></svg><svg class="icon" aria-hidden="true"><use href="#i-package"/></svg><span class="sr-only" data-i18n="routes.both">Passengers and parcels</span></span><a href="/marketplace" data-safeer><span data-i18n="routes.see">See trips</span><svg class="icon icon-arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a></div></li>
+        <li class="route-card" data-reveal><div class="route-cities"><span data-i18n="city.kassala">Kassala</span><svg class="route-line" viewBox="0 0 120 24" preserveAspectRatio="none" aria-hidden="true"><path d="M6 12C40 0 80 24 114 12" pathLength="1"/><circle class="start" cx="6" cy="12" r="4.5"/><circle class="end" cx="114" cy="12" r="4.5"/></svg><span data-i18n="city.gedaref">Gedaref</span></div><div class="route-meta"><span class="route-kinds"><svg class="icon" aria-hidden="true"><use href="#i-seat"/></svg><svg class="icon" aria-hidden="true"><use href="#i-package"/></svg><span class="sr-only" data-i18n="routes.both">Passengers and parcels</span></span><a href="/marketplace" data-safeer><span data-i18n="routes.see">See trips</span><svg class="icon icon-arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a></div></li>
+        <li class="route-card" data-reveal><div class="route-cities"><span data-i18n="city.kosti">Kosti</span><svg class="route-line" viewBox="0 0 120 24" preserveAspectRatio="none" aria-hidden="true"><path d="M6 12C40 24 80 0 114 12" pathLength="1"/><circle class="start" cx="6" cy="12" r="4.5"/><circle class="end" cx="114" cy="12" r="4.5"/></svg><span data-i18n="city.obeid">El Obeid</span></div><div class="route-meta"><span class="route-kinds"><svg class="icon" aria-hidden="true"><use href="#i-seat"/></svg><svg class="icon" aria-hidden="true"><use href="#i-package"/></svg><span class="sr-only" data-i18n="routes.both">Passengers and parcels</span></span><a href="/marketplace" data-safeer><span data-i18n="routes.see">See trips</span><svg class="icon icon-arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Trust -->
+  <section class="section trust" id="trust" aria-labelledby="trust-title">
+    <div class="container">
+      <div class="section-head center" data-reveal>
+        <p class="eyebrow" data-i18n="trust.eyebrow">Why Safeer</p>
+        <h2 id="trust-title" data-i18n="trust.title">Built for peace of mind.</h2>
+        <p class="lead" data-i18n="trust.lead">Every part of Safeer is designed so you always know what happens next.</p>
+      </div>
+      <ul class="trust-grid" data-reveal-group>
+        <li data-reveal><span class="icon-chip green"><svg class="icon" aria-hidden="true"><use href="#i-badge"/></svg></span><h3 data-i18n="trust.p1.t">Approved companies only</h3><p data-i18n="trust.p1.d">Bus companies appear on Safeer only after they are approved.</p></li>
+        <li data-reveal><span class="icon-chip green"><svg class="icon" aria-hidden="true"><use href="#i-receipt"/></svg></span><h3 data-i18n="trust.p2.t">Prices you see upfront</h3><p data-i18n="trust.p2.d">Trip fares and parcel prices are shown before you pay.</p></li>
+        <li data-reveal><span class="icon-chip green"><svg class="icon" aria-hidden="true"><use href="#i-banknote"/></svg></span><h3 data-i18n="trust.p3.t">A receipt for every payment</h3><p data-i18n="trust.p3.d">Payments are recorded at the station, with a receipt you can keep.</p></li>
+        <li data-reveal><span class="icon-chip green"><svg class="icon" aria-hidden="true"><use href="#i-qr"/></svg></span><h3 data-i18n="trust.p4.t">Tickets checked at boarding</h3><p data-i18n="trust.p4.d">Drivers check every ticket, so only booked travelers board.</p></li>
+        <li data-reveal><span class="icon-chip green"><svg class="icon" aria-hidden="true"><use href="#i-user-check"/></svg></span><h3 data-i18n="trust.p5.t">Parcels for the right person</h3><p data-i18n="trust.p5.d">A parcel is handed over only when the receiver’s details match.</p></li>
+        <li data-reveal><span class="icon-chip green"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg></span><h3 data-i18n="trust.p6.t">Your data kept private</h3><p data-i18n="trust.p6.d">Passenger details are erased 90 days after the trip.</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Booking and request -->
+  <section class="section cta" id="contact" aria-labelledby="cta-title">
+    <div class="container">
+      <div class="cta-panel on-dark" data-reveal>
+        <div class="cta-photo" aria-hidden="true"><img src="/src/coach-1280.webp" width="1280" height="720" alt="" loading="lazy" decoding="async"></div>
+        <div class="cta-copy">
+          <h2 id="cta-title" data-i18n="cta.title">Where are you heading?</h2>
+          <p class="lead" data-i18n="cta.lead">Book your seat or send a parcel today. Questions about a trip? Contact the bus company from its page on Safeer.</p>
+        </div>
+        <div class="cta-cards">
+          <article class="cta-card travel-card">
+            <span class="icon-chip"><svg class="icon" aria-hidden="true"><use href="#i-seat"/></svg></span>
+            <h3 data-i18n="cta.book.t">Book a trip</h3>
+            <p data-i18n="cta.book.d">Search routes, compare trips and choose your seat.</p>
+            <a class="btn btn-primary" href="/marketplace" data-safeer><span data-i18n="cta.book.btn">Search trips</span><svg class="icon icon-arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+          </article>
+          <article class="cta-card ship-card">
+            <span class="icon-chip"><svg class="icon" aria-hidden="true"><use href="#i-office"/></svg></span>
+            <h3 data-i18n="cta.send.t">Send a parcel</h3>
+            <p data-i18n="cta.send.d">Drop it at the company’s office and follow it with your tracking code.</p>
+            <a class="btn btn-light" href="/track" data-safeer><span data-i18n="cta.track">Track a parcel</span><svg class="icon icon-arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+          </article>
+        </div>
+        <p class="cta-company"><a href="/staff" data-safeer data-i18n="cta.company">Run a bus company? Sign in to the staff workspace.</a></p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer on-dark">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <a class="brand" href="#top" data-i18n-attr="aria-label:brand.home" aria-label="Safeer, back to top"><img src="/src/brand.svg" width="36" height="36" alt=""><span class="brand-name">Safeer<span class="brand-ar" lang="ar"> سفير</span></span></a>
+      <p data-i18n="footer.desc">Land travel and city-to-city shipping across Sudan, with approved bus companies.</p>
+      <button class="lang-toggle" type="button" data-lang-toggle lang="ar" aria-label="التبديل إلى العربية">العربية</button>
+    </div>
+    <nav class="footer-links" data-i18n-attr="aria-label:footer.label" aria-label="Footer">
+      <div><h2 data-i18n="footer.travel">Travel</h2><ul><li><a href="/marketplace" data-safeer data-i18n="footer.book">Book a trip</a></li><li><a href="/booking" data-safeer data-i18n="footer.mytrips">My trips</a></li></ul></div>
+      <div><h2 data-i18n="footer.shipping">Shipping</h2><ul><li><a href="/track" data-safeer data-i18n="footer.track">Track a parcel</a></li><li><a href="#shipping" data-i18n="footer.howship">How shipping works</a></li></ul></div>
+      <div><h2 data-i18n="footer.safeer">Safeer</h2><ul><li><a href="#about" data-i18n="footer.about">About</a></li><li><a href="/staff" data-safeer data-i18n="footer.companies">For bus companies</a></li></ul></div>
+      <div><h2 data-i18n="footer.help">Help</h2><ul><li><a href="/privacy" data-safeer data-i18n="footer.privacy">Privacy policy</a></li><li><a href="/account-deletion" data-safeer data-i18n="footer.delete">Delete account and data</a></li></ul></div>
+    </nav>
+  </div>
+  <div class="container footer-bottom">
+    <p>© <span data-year>2026</span> <span data-i18n="footer.rights">Safeer. All rights reserved.</span></p>
+    <p dir="ltr">safeer.mohbaba.online</p>
+  </div>
+</footer>
+</body>
+</html>

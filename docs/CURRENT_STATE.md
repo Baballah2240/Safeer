@@ -1,5 +1,9 @@
 # Current state - read this first
 
+## Warm palette and home page - D76, 2026-11-12
+
+safeer.mohbaba.online/ is the new public home page; the old demo is at /demo. Every surface (booking, staff, driver, tracking, legal pages, Android shell) uses sand, orange, deep green and charcoal instead of navy and sky blue. Booking 0.17.4 and Driver 0.18.5 carry the new launcher icon; publish GitHub releases v0.17.4 and v0.18.5 right after pushing, because the update notice points at them.
+
 ## Google sign-in readiness - D75, 2026-11-12
 
 The site is ready for Google's brand verification: the privacy policy covers Google sign-in, passengers can delete their account from Profile, and the booking home page links the privacy policy. Google sign-in is still off on the live site until the owner adds SAFEER_GOOGLE_CLIENT_ID and SAFEER_GOOGLE_CLIENT_SECRET in Render (steps in [HOSTING.md](HOSTING.md)). Still open: D68 step 3 (My Trips across devices) and step 4 (sign-in inside the Android apps).

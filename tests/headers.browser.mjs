@@ -20,7 +20,7 @@ try{await identityFixture(async f=>{
  const settle=()=>evaluate('new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))');
  const cookie=async value=>{const i=value.indexOf('=');await send('Network.setCookie',{name:value.slice(0,i),value:value.slice(i+1),url:web.origin,httpOnly:true,sameSite:'Strict'});};
  let layouts=0;
- for(const [page,path,selector,ready] of [['staff','/staff','.staff-topbar','.staff-shortcuts'],['driver','/driver','.driver-header','[data-trip]'],['booking','/marketplace','.market-bar','.market-trip'],['preview','/','.topbar','.metrics']]){
+ for(const [page,path,selector,ready] of [['staff','/staff','.staff-topbar','.staff-shortcuts'],['driver','/driver','.driver-header','[data-trip]'],['booking','/marketplace','.market-bar','.market-trip'],['preview','/demo','.topbar','.metrics']]){
   await cookie(page==='driver'?s.driver.c.cookie:f.admin.cookie);
   for(const theme of ['dark','light'])for(const lang of ['en','ar']){
    await send('Page.navigate',{url:web.origin+path+'?lang='+lang});await until(`Boolean(document.querySelector(${JSON.stringify(ready)}))`);

@@ -25,7 +25,7 @@
 Passenger accounts are optional. Without these two keys the Profile page says Google sign-in is not available yet, and guest booking is unchanged.
 
 1. In Google Cloud Console (console.cloud.google.com), create or pick a project for Safeer.
-2. Google Auth Platform > Branding: app name `Safeer`, a user support email, the logo (a 120x120 PNG of the Route Pin mark, under 1 MB), application home page `https://safeer.mohbaba.online/marketplace`, privacy policy `https://safeer.mohbaba.online/privacy`, authorized domain `mohbaba.online`, and a developer contact email.
+2. Google Auth Platform > Branding: app name `Safeer`, a user support email, the logo (a 120x120 PNG of the D76 Route Pin mark, under 1 MB), application home page `https://safeer.mohbaba.online/`, privacy policy `https://safeer.mohbaba.online/privacy`, authorized domain `mohbaba.online`, and a developer contact email.
 3. Audience: External, then publish the app. Safeer asks only for `openid email profile`, which Google treats as non-sensitive.
 4. Clients > Create client > Web application. Authorized redirect URI, exactly: `https://safeer.mohbaba.online/api/v1/passenger/google/callback`. No JavaScript origin is needed. Copy the client ID and the client secret; the secret is shown only once.
 5. In Render, open the Safeer web service > Environment, set `SAFEER_GOOGLE_CLIENT_ID` and `SAFEER_GOOGLE_CLIENT_SECRET`, and save so it redeploys. Never put the secret in Git, chat or logs.

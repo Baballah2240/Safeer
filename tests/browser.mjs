@@ -16,7 +16,7 @@ try {
   const click = selector => evaluate(`document.querySelector(${JSON.stringify(selector)}).click()`);
   const shot = async name => writeFileSync(join(shots, name + '.png'), Buffer.from((await send('Page.captureScreenshot', {format: 'png'})).data, 'base64'));
   await send('Emulation.setDeviceMetricsOverride', {width: 1366, height: 900, deviceScaleFactor: 1, mobile: false});
-  await send('Page.navigate', {url: app.origin});
+  await send('Page.navigate', {url: app.origin + '/demo'});
   await until('Boolean(document.querySelector(".metrics"))');
   // D65: staff and preview open in the light glass theme.
   assert.equal(await evaluate('document.documentElement.dataset.theme'),'light');

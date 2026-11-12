@@ -26,7 +26,7 @@ try{await identityFixture(async f=>{
   await send('Emulation.setUserAgentOverride',{userAgent:browserUa});await profilePage(lang);
   assert.match(await evaluate('document.querySelector(".google-signin")?.getAttribute("href")||""'),/^\/api\/v1\/passenger\/google\/start\?return=/,lang+' browser offers Google sign-in');
   assert.equal(await evaluate('Boolean(document.querySelector("[data-account-app-note]"))'),false);
-  await send('Emulation.setUserAgentOverride',{userAgent:browserUa+' SafeerApp/17003 (booking)'});await profilePage(lang);
+  await send('Emulation.setUserAgentOverride',{userAgent:browserUa+' SafeerApp/17004 (booking)'});await profilePage(lang);
   assert.equal(await evaluate('Boolean(document.querySelector(".google-signin"))'),false,lang+' installed app hides the Google button');
   const note=await evaluate('document.querySelector("[data-account-app-note]").textContent');
   assert.ok(lang==='ar'?note.includes('Google')&&/[\u0600-\u06ff]/.test(note):note.includes('website'),note);
