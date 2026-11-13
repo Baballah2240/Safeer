@@ -56,3 +56,29 @@ html:not([data-theme=light]) #staff-dialog .trip-readiness .is-done svg{color:#7
 html:not([data-theme=light]) #staff-dialog .trip-readiness .is-missing{border-color:#9a6263;background:#462c32}
 html:not([data-theme=light]) #staff-dialog .trip-readiness .is-missing svg{color:#ffb3a6}
 #staff-dialog .trip-readiness-note{font-weight:600}
+
+/* D81: staff layouts. A confirmation is a toast at the bottom (never under the floating menu button, visible wherever
+   the page is scrolled); a company that is not approved says so on every page; on phones tables become cards. */
+.staff-main>.staff-alert.staff-toast{position:fixed;z-index:60;inset-inline:0;bottom:calc(20px + env(safe-area-inset-bottom));width:max-content;max-width:min(520px,calc(100vw - 32px));margin:0 auto;display:flex;align-items:center;gap:10px;padding:12px 18px;border:1px solid var(--border);border-radius:999px;background:var(--paper);color:var(--ink);font-weight:600;box-shadow:0 12px 32px #0000002e;animation:staff-toast 5s ease forwards;animation-delay:var(--toast-age,0ms)}
+.staff-main>.staff-alert.staff-toast::before{content:'';flex:none;width:6px;height:11px;margin:-3px 4px 0;border:solid #1f7a4d;border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
+html:not([data-theme=light]) .staff-main>.staff-alert.staff-toast::before{border-color:#7fd4a2}
+.staff-main>.staff-alert.staff-toast.is-done{display:none}
+@keyframes staff-toast{0%{opacity:0;transform:translateY(10px)}6%{opacity:1;transform:none}88%{opacity:1;transform:none}100%{opacity:0;transform:translateY(6px);visibility:hidden}}
+@media (prefers-reduced-motion:reduce){.staff-main>.staff-alert.staff-toast{animation:staff-toast-calm 5s step-end forwards;animation-delay:var(--toast-age,0ms)}}
+@keyframes staff-toast-calm{0%,99%{visibility:visible}100%{visibility:hidden}}
+html body .staff-alert.company-approval{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px 18px;margin:0 0 18px;padding:14px 18px;border:1px solid #e9a82b80;border-radius:16px;background:#fdf3dc;color:#5c3d00}
+.company-approval-copy{display:grid;gap:4px;min-width:min(100%,280px);flex:1}
+.company-approval-copy strong{font-size:15px}
+html body .company-approval-copy span{font-size:14px;color:#5c4a24}
+html:not([data-theme=light]) body .staff-alert.company-approval{border-color:#e9a82b66;background:#3a2e14;color:#ffe2a6}
+html:not([data-theme=light]) body .company-approval-copy span{color:#e9d6ac}
+@media (max-width:640px){
+ .staff-table-wrap:has(>table.staff-table.has-labels){overflow:visible;border:0;border-radius:0;background:none;box-shadow:none;padding:0}
+ table.staff-table.has-labels,table.staff-table.has-labels tbody{display:block;width:100%;min-width:0}
+ table.staff-table.has-labels thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+ table.staff-table.has-labels tbody tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px;margin:0 0 10px;padding:14px;border:1px solid var(--border);border-radius:16px;background:var(--surface,var(--paper))}
+ table.staff-table.has-labels tbody td{display:grid;align-content:start;gap:2px;min-width:0;padding:0;border:0;text-align:start;white-space:normal;overflow-wrap:anywhere;background:none;box-shadow:none}
+ table.staff-table.has-labels tbody td[data-label]::before{content:attr(data-label);font-size:12px;font-weight:600;color:var(--muted)}
+ table.staff-table.has-labels tbody td>*{justify-self:start;text-align:start}
+ table.staff-table.has-labels tbody td[colspan]{grid-column:1/-1}
+}

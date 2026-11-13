@@ -57,6 +57,17 @@ try{await identityFixture(async f=>{
   assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth+2'),`${lang}/${width} panel fits`);
   await shot(`overview-${lang}-${width}`);
  }
+ // D81: Latin digits in Arabic, departures as labelled cards on phones, and a company that is not approved says who approves it.
+ await send('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});await open('ar');
+ assert.ok(await evaluate('[...document.querySelectorAll(".ops-row-open bdi")].every(n=>/^[0-9]{2}:[0-9]{2}/.test(n.textContent))'),'Arabic times use Latin digits');
+ assert.equal(await evaluate('getComputedStyle(document.querySelector(".ops-table tbody tr")).display'),'grid','departures are cards on phones');
+ assert.ok(await evaluate('[...document.querySelectorAll(".ops-table tbody td:nth-child(4)")].every(td=>td.dataset.label)'),'every card value is labelled');
+ {const w=(await f.admin.request('companies/'+s.cid)).data;assert.equal((await f.admin.request('companies/'+s.cid,'PATCH',{...w.company,id:undefined,status:'pending',currentPassword:f.password})).status,200);}
+ await send('Emulation.setDeviceMetricsOverride',{width:1440,height:960,deviceScaleFactor:1,mobile:false});await open('en');await until('Boolean(document.querySelector(".company-approval"))');
+ const approvalNote=await evaluate('document.querySelector(".company-approval").textContent');assert.ok(approvalNote.includes('waiting for approval')&&approvalNote.includes('full platform access'),approvalNote);
+ await shot('overview-pending-en-1440');
+ await click('.company-approval [data-company-edit]');await until('Boolean(document.querySelector("#staff-dialog [name=status]"))');await click('[data-dialog-cancel]');
+ {const w=(await f.admin.request('companies/'+s.cid)).data;assert.equal((await f.admin.request('companies/'+s.cid,'PATCH',{...w.company,id:undefined,status:'approved',currentPassword:f.password})).status,200);}
  // Readers without trips access do not get the Overview.
  const clerk=await staff(f,s,['company.profile.read','company.bookings.read']);assert.equal((await clerk.c.request(s.base+'/operations')).status,403);
  assert.deepEqual(await evaluate('__errors'),[]);

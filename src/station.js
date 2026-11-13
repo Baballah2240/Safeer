@@ -1,5 +1,5 @@
 // Station counter: cash sessions, walk-in sales, counters and accepted payment methods. Money is only ever recorded by the server.
-export const moneyText=(minor,currency,language)=>new Intl.NumberFormat(language==='ar'?'ar-SD':'en-GB',{style:'currency',currency,maximumFractionDigits:2}).format(minor/100);
+export const moneyText=(minor,currency,language)=>new Intl.NumberFormat(language==='ar'?'ar-SD-u-nu-latn':'en-GB',{style:'currency',currency,maximumFractionDigits:2}).format(minor/100);
 export const methodLabel={cash:'Cash',bank_transfer:'Bank transfer',mobile_wallet:'Mobile wallet'};
 export const methodOptions=settings=>['cash',...(settings.bankTransfer?['bank_transfer']:[]),...(settings.mobileWallet?['mobile_wallet']:[])];
 const toMinor=value=>Math.round(Number(value)*100);

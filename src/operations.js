@@ -26,7 +26,7 @@ export function bindOperations(root,data,ctx){
  if(state.company!==cid){resetOperations();state.company=cid;}
  clearInterval(state.timer);
  const tz=data.company.timezone;
- const time=(value,zone=tz)=>new Intl.DateTimeFormat(language==='ar'?'ar-SD':'en-GB',{hour:'2-digit',minute:'2-digit',timeZone:zone}).format(new Date(value));
+ const time=(value,zone=tz)=>new Intl.DateTimeFormat(language==='ar'?'ar-SD-u-nu-latn':'en-GB',{hour:'2-digit',minute:'2-digit',timeZone:zone}).format(new Date(value));
  const route=row=>{const name=language==='ar'?row.routeAr:row.routeEn,parts=String(name).split(/\s+(?:to|→|إلى)\s+/);return parts.length===2?`<span class="ops-route">${e(parts[0])}<span class="ops-arrow" aria-hidden="true">${language==='ar'?'←':'→'}</span><span class="sr-only"> ${t('to')} </span>${e(parts[1])}</span>`:`<span class="ops-route">${e(name)}</span>`;};
  const driver=row=>row.driverEn?e(language==='ar'?row.driverAr:row.driverEn):'—';
  const badge=status=>{const [label,icon,tone]=statusInfo[status]||statusInfo.scheduled;return `<span class="ops-status ops-${tone}">${svg(icon)}<span>${t(label)}</span></span>`;};
@@ -55,7 +55,7 @@ export function bindOperations(root,data,ctx){
   const day=root.querySelector('#ops-day');
   if(failed&&!view){body.innerHTML=`<div class="ops-error" role="alert"><p>${e(t(failed))}</p><button type="button" class="staff-primary" data-ops-retry>${t('Try again')}</button></div>`;body.querySelector('[data-ops-retry]').onclick=()=>void load();return;}
   if(!view)return;
-  if(day)day.textContent=new Intl.DateTimeFormat(language==='ar'?'ar-SD':'en-GB',{dateStyle:'full',timeZone:tz}).format(new Date(view.asOf));
+  if(day)day.textContent=new Intl.DateTimeFormat(language==='ar'?'ar-SD-u-nu-latn':'en-GB',{dateStyle:'full',timeZone:tz}).format(new Date(view.asOf));
   body.innerHTML=`${failed?`<p class="staff-alert bad" role="alert">${e(t(failed))}</p>`:''}<div class="ops-kpis">${kpis(view.summary)}</div><div class="ops-layout ${state.trip?'ops-with-panel':''}"><section class="ops-main" aria-labelledby="ops-table-title"><h2 id="ops-table-title">${t('Today\'s departures')}</h2>${table(view.departures)}${attention(view.attention)}</section>${panel()}</div>`;
   // CSP forbids inline style attributes; set the bar width through the CSSOM.
   body.querySelectorAll('[data-pct]').forEach(bar=>{bar.style.width=bar.dataset.pct+'%';});

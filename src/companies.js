@@ -30,10 +30,13 @@ export function companyView(data,{t,e,language}){
   const button=(attr,label)=>`<button type="button" ${attr}>${t(label)}</button>`;
   if(!data.company)return `<section class="staff-panel"><header class="staff-section-head"><div><h1>${t('Companies')}</h1><p>${t('Only companies you are authorized to access appear here.')}</p></div>${data.canCreate?button('data-company-create class="staff-primary"','Create company'):''}</header><div class="staff-grid">${data.items.map(c=>`<article class="staff-record"><strong>${name(c)}</strong><p><bdi>${e(c.slug)}</bdi></p>${badge(c.status)}<div class="staff-actions">${button(`data-company-open="${c.id}"`,'Open company')}</div></article>`).join('')||`<p>${t('No company access assigned.')}</p>`}</div></section>`;
   const c=data.company,cap=data.capabilities;
-  const when=value=>new Intl.DateTimeFormat(language==='ar'?'ar-SD':'en-GB',{dateStyle:'medium',timeStyle:'short',timeZone:c.timezone}).format(new Date(value));
+  const when=value=>new Intl.DateTimeFormat(language==='ar'?'ar-SD-u-nu-latn':'en-GB',{dateStyle:'medium',timeStyle:'short',timeZone:c.timezone}).format(new Date(value));
   const sections=companySections(cap);
   if(!sections.some(([id])=>id===companyState.section))companyState.section=sections[0][0];
-  const title=`<header class="staff-welcome"><div><p class="staff-eyebrow">${t('Company workspace')}</p><h1>${name(c)}</h1><p>${t('Your access is limited to your assigned company and resources.')}</p></div><div class="staff-actions">${badge(c.status)}${data.selectionCount>1||data.canCreate?button('data-company-back','All companies'):''}</div></header>`;
+  // D81: until a Super Administrator approves the company its trips cannot be published or booked; say so on every page.
+  const approvalTitle={pending:'This company is waiting for approval. Its trips cannot be published until it is approved.',suspended:'This company is suspended. Its trips cannot be published or booked.',archived:'This company is archived. Its trips cannot be published or booked.'}[c.status];
+  const approval=approvalTitle?`<aside class="staff-alert company-approval" role="note"><span class="company-approval-copy"><strong>${t(approvalTitle)}</strong><span>${t(cap.superAdministrator?'You have full platform access: open Edit company and set Approval status to Approved.':'Only a Super Administrator (the Safeer owner, with full platform access) can approve a company. Ask them to approve it.')}</span></span>${cap.superAdministrator&&cap.profile?button('data-company-edit class="staff-primary"','Edit company'):''}</aside>`:'';
+  const title=`<header class="staff-welcome"><div><p class="staff-eyebrow">${t('Company workspace')}</p><h1>${name(c)}</h1><p>${t('Your access is limited to your assigned company and resources.')}</p></div><div class="staff-actions">${badge(c.status)}${data.selectionCount>1||data.canCreate?button('data-company-back','All companies'):''}</div></header>`+approval;
   const branch=id=>data.branches.find(b=>b.id===id),station=id=>data.stations.find(s=>s.id===id);
   const assignment=a=>`${e(t(data.roles.find(r=>r.id===a.roleId)?.displayName||'Company roles'))}${a.branchId?' · '+(branch(a.branchId)?name(branch(a.branchId)):t('branch')):''}${a.stationId?' / '+(station(a.stationId)?name(station(a.stationId)):t('station')):''}`;
   let content='';
@@ -44,7 +47,7 @@ export function companyView(data,{t,e,language}){
   if(companyState.section==='drivers')content=driversView(data,{t,e,language});
   if(companyState.section==='trips')content=tripsView(data,{t,e,language});
   if(companyState.section==='bookings')content=bookingsView(data,{t,e,language});
-  if(companyState.section==='operations')return content=operationsView(data,{t,e,language}),`<p class="ops-company"><span>${name(c)}</span>${badge(c.status)}${data.selectionCount>1||data.canCreate?button('data-company-back class="secondary"','All companies'):''}</p>`+content;
+  if(companyState.section==='operations')return content=operationsView(data,{t,e,language}),`<p class="ops-company"><span>${name(c)}</span>${badge(c.status)}${data.selectionCount>1||data.canCreate?button('data-company-back class="secondary"','All companies'):''}</p>`+approval+content;
   if(companyState.section==='luggage')content=luggageView(data,{t,e,language});
   if(companyState.section==='shipments')content=shipmentsView(data,{t,e,language});
   if(companyState.section==='finance')content=financeView(data,{t,e,language});
@@ -71,7 +74,7 @@ export function bindCompanies(root,data,ctx){
     openForm(row?'Edit company':'Create company',names(row)+(isSuper?input('slug','Company slug','text',`pattern="[a-z0-9]+(-[a-z0-9]+)*" maxlength="60" value="${e(row?.slug||'')}"`):'')+(row&&isSuper?select('status','Approval status',['pending','approved','suspended','archived'].map(v=>[v,t(v)]),row.status):'')+optional('contactEmail','Contact email',row?.contactEmail||'',254)+optional('phone','Phone',row?.phone||'',40)+optional('address','Address',row?.address||'')+input('holdMinutes','Hold duration (minutes)','number',`min="5" max="1440" value="${row?.holdMinutes||30}"`)+input('timezone','Timezone','text',`value="${e(row?.timezone||'Africa/Khartoum')}"`)+select('locale','Default language',[['en',t('English')],['ar',t('Arabic')]],row?.locale||'en')+currentPassword(),async f=>{const values=Object.fromEntries(f);values.holdMinutes=Number(values.holdMinutes);const result=await api('companies'+(row?'/'+row.id:''),row?'PATCH':'POST',{...values,...(row?{version:row.version}:{})});companyState.id=result.id;return result;});
   };
   root.querySelector('[data-company-create]')?.addEventListener('click',()=>profileForm());
-  root.querySelector('[data-company-edit]')?.addEventListener('click',()=>profileForm(data.company));
+  root.querySelectorAll('[data-company-edit]').forEach(node=>node.addEventListener('click',()=>profileForm(data.company)));
   if(!data.company)return;
   const cid=data.company.id,cap=data.capabilities,path='companies/'+cid;
   if(companyState.section==='routes')bindRoutes(root,data,ctx);

@@ -1,5 +1,9 @@
 # Current state - read this first
 
+## Staff layouts - D81, 2026-11-13
+
+A company that is not approved shows a notice on every company page: only a Super Administrator (the Safeer owner) approves it, from Edit company > Approval status. Staff screens use Latin digits in Arabic, phone tables are cards, and "Saved." is a bottom toast ([D81](DECISIONS.md)).
+
 ## Search-first booking hero - D79, 2026-11-13
 
 The booking page opens with a compact header, a clear coach photo, the heading and the full search card on the first screen; on laptops the Book/Trips/Profile links sit at the top right instead of covering the form. Website only; no app or API change ([D79](DECISIONS.md)).

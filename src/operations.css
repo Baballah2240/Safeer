@@ -117,3 +117,30 @@
 }
 @keyframes ops-panel-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @media print{.ops-head-actions,.ops-row-open{box-shadow:none}.ops-panel{position:static}}
+
+/* D81: balanced departures table on wide screens (the route no longer takes most of the width), selected row as a
+   card on phones, and attention items that stack instead of squeezing the route. */
+@media (min-width:1024px){
+ html body .ops-table{table-layout:fixed}
+ html body .ops-table th:nth-child(1){width:11%}html body .ops-table th:nth-child(2){width:27%}html body .ops-table th:nth-child(3){width:12%}html body .ops-table th:nth-child(4){width:17%}
+ html body .ops-table th:nth-child(5),html body .ops-table th:nth-child(6){width:10%}html body .ops-table th:nth-child(7){width:13%}
+ html body .ops-table td{overflow-wrap:anywhere}
+}
+@media (max-width:640px){
+ html body .ops-table.has-labels{min-width:0}
+ /* Compact departure cards: time and status on top, the route on its own line, then the four facts. */
+ html body .ops-table.has-labels tbody td:nth-child(1){order:0;align-content:center}
+ html body .ops-table.has-labels tbody td:nth-child(7){order:1;justify-self:end;align-content:center}
+ html body .ops-table.has-labels tbody td:nth-child(2){order:2;grid-column:1/-1;min-width:0;font-weight:600}
+ html body .ops-table.has-labels tbody td:nth-child(n+3):not(:nth-child(7)){order:3}
+ html body .ops-table.has-labels tbody td:is(:nth-child(1),:nth-child(2),:nth-child(7))::before{display:none}
+ html body .ops-table.has-labels .ops-row-open{justify-self:start;min-height:36px;padding:0;background:none;box-shadow:none;font-size:1.15rem}
+ html body .ops-table.has-labels tr.ops-row-selected{border-color:var(--ops-selected,#123a2d);box-shadow:inset 3px 0 0 var(--ops-selected,#123a2d)}
+ html[dir=rtl] body .ops-table.has-labels tr.ops-row-selected{box-shadow:inset -3px 0 0 var(--ops-selected,#123a2d)}
+ html body .ops-table.has-labels tr.ops-row-selected td{background:none}
+ html body .ops-table.has-labels tr.ops-row-selected td:first-child{box-shadow:none}
+ .ops-attention li{grid-template-columns:minmax(0,1fr);gap:6px}
+ .ops-attention li>*{justify-self:start}
+ .ops-attention small{grid-column:1}
+ html body .ops-attention-trip{flex-wrap:wrap;row-gap:2px}
+}

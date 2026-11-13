@@ -25,7 +25,7 @@ const link=path=>{const url=new URL(path,location.origin);url.searchParams.set('
 const navText=key=>({Book:w('book'),Trips:w('trips'),Profile:w('profile'),'Passenger navigation':w('navigation')})[key]||key;
 const parcelIcon=()=>drawerIcon('M3 7l9-4 9 4v10l-9 4-9-4zM3 7l9 4 9-4M12 11v10');
 const steps=['received','loaded','in_transit','arrived','delivered'];
-const when=(row,value)=>value?new Intl.DateTimeFormat(language==='ar'?'ar-SD':'en-GB',{dateStyle:'medium',timeStyle:'short',timeZone:row.timezone}).format(new Date(value)):'';
+const when=(row,value)=>value?new Intl.DateTimeFormat(language==='ar'?'ar-SD-u-nu-latn':'en-GB',{dateStyle:'medium',timeStyle:'short',timeZone:row.timezone}).format(new Date(value)):'';
 const pick=(row,key)=>language==='ar'?row[key+'Ar']:row[key+'En'];
 
 function progress(row){

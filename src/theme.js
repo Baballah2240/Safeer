@@ -176,8 +176,17 @@ function revealView(){
   });
 }
 let revealQueued=false;
-new MutationObserver(()=>{if(revealQueued)return;revealQueued=true;requestAnimationFrame(()=>{revealQueued=false;revealView();});}).observe(document.body,{childList:true,subtree:true});
-revealView();
+// D81: on phones a staff table shows each row as a card; every cell carries its column name for that layout.
+function labelTables(){
+  document.querySelectorAll('table.staff-table').forEach(table=>{
+    const heads=[...table.querySelectorAll('thead th')].map(th=>th.textContent.trim());if(!heads.length)return;
+    table.querySelectorAll('tbody tr').forEach(row=>[...row.children].forEach((cell,i)=>{if(cell.colSpan===1&&heads[i]&&!cell.hasAttribute('data-label'))cell.setAttribute('data-label',heads[i]);}));
+    table.classList.add('has-labels');
+  });
+}
+// Labels are added in the observer itself (before the next paint), so a refreshed table never shows unlabelled.
+new MutationObserver(()=>{labelTables();if(revealQueued)return;revealQueued=true;requestAnimationFrame(()=>{revealQueued=false;revealView();});}).observe(document.body,{childList:true,subtree:true});
+labelTables();revealView();
 
 // Stronger header glass once the page scrolls under it.
 const markScroll=()=>document.documentElement.classList.toggle('page-scrolled',scrollY>8);

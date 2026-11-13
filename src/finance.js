@@ -18,7 +18,7 @@ export function bindFinance(root,data,ctx){
  const money=(v,c)=>`<bdi>${e(formatMinor(v,language,c))}</bdi>`;
  const name=x=>e(language==='ar'?x.nameAr:x.nameEn);
  const station=x=>e(language==='ar'?x.stationAr:x.stationEn);
- const date=v=>e(new Intl.DateTimeFormat(language==='ar'?'ar-SD':'en-GB',{timeZone:data.company.timezone,dateStyle:'medium',timeStyle:'short'}).format(new Date(v)));
+ const date=v=>e(new Intl.DateTimeFormat(language==='ar'?'ar-SD-u-nu-latn':'en-GB',{timeZone:data.company.timezone,dateStyle:'medium',timeStyle:'short'}).format(new Date(v)));
  const query=()=>new URLSearchParams(Object.entries(filters).map(([k,v])=>[k,String(v)])).toString();
  const method=k=>t({cash:'Cash',bank_transfer:'Bank transfer',mobile_wallet:'Mobile wallet'}[k]||k);
  const table=(headers,rows)=>`<div class="staff-table-wrap" tabindex="0" role="region" aria-label="${e(t(headers[0]))}"><table class="staff-table"><thead><tr>${headers.map(h=>`<th scope="col">${t(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(cell=>`<td>${cell}</td>`).join('')}</tr>`).join('')}</tbody></table>${rows.length?'':`<p>${t('No matching records.')}</p>`}</div>`;

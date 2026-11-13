@@ -28,7 +28,7 @@ Object.assign(ar,{"Trip dashboard":"لوحة الرحلة","Scan ticket":"مسح
 ar.TICKET_WRONG_TRIP=ar['Wrong trip'];
 const t=k=>language==='ar'?(ar[k]||k):(errors[k]||k);
 const e=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const when=value=>new Intl.DateTimeFormat(language==='ar'?'ar-SD':'en-GB',{dateStyle:'medium',timeStyle:'short',timeZone:manifest?.timezone||selected?.timezone||'Africa/Khartoum'}).format(new Date(value));
+const when=value=>new Intl.DateTimeFormat(language==='ar'?'ar-SD-u-nu-latn':'en-GB',{dateStyle:'medium',timeStyle:'short',timeZone:manifest?.timezone||selected?.timezone||'Africa/Khartoum'}).format(new Date(value));
 const reset=()=>{camera.stop();view='dashboard';passengerQuery='';passengerFilter='all';pendingScan=null;scanResult=null;epoch++;ticketRevision++;me=null;csrf='';trips=[];selected=null;manifest=null;checked=null;checkedInput=null;scan='';manualNumber='';manualEntryOpen=false;incident={kind:'delay',note:'',key:crypto.randomUUID()};};
 function invalidateTicket(){ticketRevision++;checked=null;checkedInput=null;root.querySelector('.driver-check')?.remove();}
 function checkTicket(input){

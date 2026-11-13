@@ -1,5 +1,14 @@
 # Decisions
 
+## 2026-11-13 - Staff layouts: approval notice, Latin digits, phone cards, toasts
+
+D81: The owner asked to improve the operations overview and all similar staff layouts, and to say who approves a company.
+1. Company approval: only a Super Administrator (the Safeer owner, with full platform access) can change a company's approval status (company.service: status changes need superAdministrator). Every company page now shows a notice while the company is pending, suspended or archived, saying its trips cannot be published; a Super Administrator gets an Edit company button there, others are told to ask the Safeer owner. The Publish trip checklist (D80) uses the same wording.
+2. Digits: Arabic dates, times and amounts in the staff, driver and tracking screens use Latin digits (ar-SD-u-nu-latn), as the owner's typography decision (Inter for numerals) and the booking site already do. Counts and times no longer mix two digit styles.
+3. Tables: on phones (640px and below) every staff table shows each row as a card with labelled values instead of a table that scrolls sideways; on the overview each departure card shows time and status first, then the route, vehicle, driver, booked and boarded. On wide screens the departures table has balanced columns. Attention items stack on phones.
+4. Confirmations such as "Saved." appear as a toast at the bottom, visible wherever the page is scrolled and never under the floating menu button, and fade after about five seconds without replaying on refresh. Errors stay in the page.
+No API, database or permission change.
+
 ## 2026-11-13 - Publish trip shows what is missing
 
 D80: The owner tried to publish a trip and saw the server's "not ready" message as plain text above a password field and a Save button. The Publish trip dialog now lists the checks the database makes before publishing (migration 0006): an approved company, a bus and driver assigned, both active, a fare above 0 and a future departure. Each is marked done or missing with what to do; the password is asked for and the button, now labelled Publish trip, is enabled only when everything is done. The server still refuses an unready trip with TRIP_NOT_READY, whose message now also names the approved company. In every staff dialog, server errors show as an error box and paragraphs no longer add their own margins to the form spacing. Reauthentication for trip changes (D18) is unchanged.

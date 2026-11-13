@@ -1,5 +1,9 @@
 # Changelog
 
+## Staff layouts - D81, 2026-11-13
+
+Company pages show an approval notice while a company is not approved (with Edit company for Super Administrators); Arabic staff, driver and tracking screens use Latin digits; staff tables become labelled cards on phones and the departures table has balanced columns; attention items stack on phones; "Saved." is a bottom toast that never sits under the menu button. tests/operations.browser.mjs and tests/trips.browser.mjs check these.
+
 ## Publish trip readiness checklist - D80, 2026-11-13
 
 The Publish trip dialog lists company approval, bus and driver assignment, active bus and driver, fare and future departure as done or missing with what to do, asks for the password only when the trip is ready, and labels its button Publish trip. Staff dialog errors show as error boxes and dialog paragraphs keep even spacing. tests/trips.browser.mjs checks both states.
