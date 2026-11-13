@@ -37,3 +37,22 @@ dialog{color:var(--ink);width:min(540px,calc(100vw - 32px));max-height:calc(100d
 .ticket-qr{width:150px;height:150px;display:block;margin:16px auto;break-inside:avoid}
 .staff-panel .platform-filters{display:flex;align-items:end;flex-wrap:wrap;gap:12px}.platform-filters label{flex:1;min-width:160px}.platform-summary{grid-template-columns:repeat(auto-fit,minmax(155px,1fr))}.platform-money dl{margin:12px 0 0}.platform-money dl>div{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin:8px 0}.platform-money dd{margin:0;font-weight:700}.notification-item h2{font-size:1.05rem;margin:10px 0}.notification-item small{overflow-wrap:anywhere}.notification-unread{border-inline-start:3px solid var(--accent)}.staff-panel textarea,#staff-dialog textarea{width:100%;resize:vertical;min-height:80px;padding:10px;background:var(--paper);color:var(--ink);border:1px solid var(--border);border-radius:10px;font:inherit}#platform-filters+ p{margin-bottom:0}
 @media(max-width:600px){.staff-panel .platform-filters{align-items:stretch}.platform-filters label,.platform-filters button{flex-basis:100%;min-width:0}.platform-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.platform-summary article{min-width:0}}
+/* D79: dialogs. Server errors look like errors; paragraphs rely on the form gap instead of doubling it; the Publish
+   trip checklist shows what is still missing before the password is asked. Dark is the staff default theme. */
+dialog form>p{margin:0}
+#staff-dialog .staff-dialog-error:empty{display:none}
+#staff-dialog .staff-dialog-error:not(:empty){margin:0 0 16px;padding:12px 14px;border:1px solid #d69d92;border-radius:14px;background:#fff0ed;color:#a43229;font-weight:600;line-height:1.5}
+html:not([data-theme=light]) #staff-dialog .staff-dialog-error:not(:empty){border-color:#9a6263;background:#462c32;color:#ffd1c7}
+.staff-visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+#staff-dialog .trip-readiness{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+#staff-dialog .trip-readiness li{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:12px;line-height:1.45}
+#staff-dialog .trip-readiness svg{flex:none;width:20px;height:20px;margin-top:1px}
+#staff-dialog .trip-readiness li>span{display:grid;gap:2px;min-width:0}
+#staff-dialog .trip-readiness small{color:var(--muted);font-size:13px}
+#staff-dialog .trip-readiness .is-done svg{color:#1f7a4d}
+#staff-dialog .trip-readiness .is-missing{border-color:#d69d92;background:#fff0ed}
+#staff-dialog .trip-readiness .is-missing svg{color:#b42318}
+html:not([data-theme=light]) #staff-dialog .trip-readiness .is-done svg{color:#7fd4a2}
+html:not([data-theme=light]) #staff-dialog .trip-readiness .is-missing{border-color:#9a6263;background:#462c32}
+html:not([data-theme=light]) #staff-dialog .trip-readiness .is-missing svg{color:#ffb3a6}
+#staff-dialog .trip-readiness-note{font-weight:600}

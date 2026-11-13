@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-11-13 - Publish trip shows what is missing
+
+D80: The owner tried to publish a trip and saw the server's "not ready" message as plain text above a password field and a Save button. The Publish trip dialog now lists the checks the database makes before publishing (migration 0006): an approved company, a bus and driver assigned, both active, a fare above 0 and a future departure. Each is marked done or missing with what to do; the password is asked for and the button, now labelled Publish trip, is enabled only when everything is done. The server still refuses an unready trip with TRIP_NOT_READY, whose message now also names the approved company. In every staff dialog, server errors show as an error box and paragraphs no longer add their own margins to the form spacing. Reauthentication for trip changes (D18) is unchanged.
+
 ## 2026-11-13 - Search-first booking hero
 
 D79: The owner asks to improve the top of the passenger booking page. On a laptop the floating Book/Trips/Profile bar covered the search form, on phones it covered the Find trips button, the photo sat in a card inside another card (a green slab in dark mode) and the header took 100px. Following the UI UX Pro Max marketplace pattern (the search is the main action) and its navigation rules (fixed bars must not cover content or a focused field; wide screens carry navigation at the top):

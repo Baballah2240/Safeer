@@ -64,8 +64,9 @@ async function refresh(){
   }catch(error){if(sequence===refreshVersion){message=error.message;bad=true;data=null;}}
   finally{if(sequence===refreshVersion){loading=false;render();}}
 }
-function openForm(title,html,action){
-  dialog.innerHTML=`<h2>${e(t(title))}</h2><div class="staff-dialog-error" role="alert"></div><form>${html}<div class="staff-actions"><button class="staff-primary">${t('Save')}</button><button type="button" data-dialog-cancel>${t('Cancel')}</button></div></form>`;
+// D79: a dialog can name its action (Publish trip instead of Save) and keep it disabled until the record is ready.
+function openForm(title,html,action,{submit='Save',disabled=false}={}){
+  dialog.innerHTML=`<h2>${e(t(title))}</h2><div class="staff-dialog-error" role="alert"></div><form>${html}<div class="staff-actions"><button class="staff-primary" ${disabled?'disabled':''}>${t(submit)}</button><button type="button" data-dialog-cancel>${t('Cancel')}</button></div></form>`;
   const form=dialog.querySelector('form');dialog.querySelector('[data-dialog-cancel]').onclick=()=>dialog.close();
   form.onsubmit=async event=>{event.preventDefault();const buttons=[...form.querySelectorAll('button')],disabled=buttons.map(b=>b.disabled);buttons.forEach(b=>b.disabled=true);try{const result=await action(new FormData(form));message='Saved.';bad=false;await refresh();if(dialog.open)await new Promise(resolve=>{dialog.addEventListener('close',resolve,{once:true});dialog.close();});if(result?.temporaryPassword&&me)showSecret(result.user.login,result.temporaryPassword);}catch(error){const box=dialog.open&&dialog.querySelector('.staff-dialog-error');if(box){box.textContent=t(error.message);box.scrollIntoView?.({block:'nearest'});}else{message=error.message;bad=true;render();}buttons.forEach((b,i)=>b.disabled=disabled[i]);}};
   dialog.showModal();

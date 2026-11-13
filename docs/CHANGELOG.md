@@ -1,5 +1,9 @@
 # Changelog
 
+## Publish trip readiness checklist - D80, 2026-11-13
+
+The Publish trip dialog lists company approval, bus and driver assignment, active bus and driver, fare and future departure as done or missing with what to do, asks for the password only when the trip is ready, and labels its button Publish trip. Staff dialog errors show as error boxes and dialog paragraphs keep even spacing. tests/trips.browser.mjs checks both states.
+
 ## Search-first booking hero - D79, 2026-11-13
 
 The top of the booking page is redesigned: a 64px header, one layer instead of a card inside a card, and a shorter clear coach photo followed by the 24px heading and the search card, so the whole search, button included, is on the first screen on phones, tablets and laptops. From 1024px the Book/Trips/Profile links move from the floating bottom bar (which covered the search form) to a pill at the top right, on booking and tracking pages; phones keep the bottom bar with room kept above it. Field icons are readable in dark mode. New test: tests/booking-hero.browser.mjs (npm run test:booking-hero:browser), 28 layouts with a stand-in API, no database.
