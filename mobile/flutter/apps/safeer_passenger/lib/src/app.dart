@@ -6,7 +6,8 @@ import 'explore_screen.dart';
 import 'my_trips.dart';
 import 'settings_screen.dart';
 
-const passengerVersion = '0.1.0 (1)';
+// Shown in Settings; keep it equal to the version line in pubspec.yaml (D78).
+const passengerVersion = '0.19.0 (19000)';
 
 /// Shared services for the Passenger screens.
 class PassengerScope extends InheritedWidget {

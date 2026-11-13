@@ -54,6 +54,16 @@ android {
             signingConfig = signingConfigs.findByName("upload")
         }
     }
+
+    // D78: compress the native libraries in the APK (about half the download); Android unpacks them at install.
+    packaging { jniLibs { useLegacyPackaging = true } }
+}
+
+// D78: release APKs are for ARM phones only; leave out the x86_64 libraries some plugins bring.
+androidComponents {
+    onVariants(selector().withBuildType("release")) { variant ->
+        variant.packaging.jniLibs.excludes.add("lib/x86_64/**")
+    }
 }
 
 // Profile builds (optimized, for trying on a phone) are debug-signed: keep them on the .dev IDs

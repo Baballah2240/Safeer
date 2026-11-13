@@ -75,6 +75,9 @@ export async function startServer({port = 4320, built = false, identityApiUrl, p
     }
     try {
       if(path==='/mobile/releases'){response.writeHead(200,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});response.end(request.method==='HEAD'?undefined:JSON.stringify(appRelease));return;}
+      // D78: stable download links for the home page; each one sends the phone to the current release file.
+      const download=/^\/mobile\/download\/(booking|driver)$/.exec(path)?.[1];
+      if(download){response.writeHead(302,{Location:appRelease.apps[download].url,'Cache-Control':'no-store'});response.end();return;}
       if (path === '/api/v1/health') {
         response.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
         response.end(request.method === 'HEAD' ? undefined : JSON.stringify({data: {service: 'safeer', version, mode: 'local-prototype', database: 'not-connected', maintenance:{holds:{state:'disabled',lastSuccessAt:null},retention:{state:'disabled',lastSuccessAt:null}}}}));

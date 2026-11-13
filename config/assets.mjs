@@ -52,6 +52,9 @@ export const publicAssets = {
   '/src/companies.js': ['src/companies.js', 'text/javascript'],
   '/src/theme.js': ['src/theme.js', 'text/javascript'],
   '/src/app-release.js': ['src/app-release.js', 'text/javascript'],
+  // D78: what the retired WebView apps show instead of Safeer.
+  '/src/app-retired.js': ['src/app-retired.js', 'text/javascript'],
+  '/src/app-retired.css': ['src/app-retired.css', 'text/css'],
   '/src/shipments.js': ['src/shipments.js', 'text/javascript'],
   '/src/operations.js': ['src/operations.js', 'text/javascript'],
   '/src/operations.css': ['src/operations.css', 'text/css'],

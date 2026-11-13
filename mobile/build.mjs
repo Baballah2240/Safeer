@@ -1,3 +1,5 @@
+// D78: RETIRED. Builds the old WebView apps (mobile/android), which are no longer published; kept for reference.
+// The published apps are the Flutter apps: npm run mobile:build (mobile/flutter/tool/build-release.mjs).
 import {existsSync,readdirSync,readFileSync} from 'node:fs';
 import {resolve,join} from 'node:path';
 import {spawnSync} from 'node:child_process';

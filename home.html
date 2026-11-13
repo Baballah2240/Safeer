@@ -13,6 +13,7 @@
 <link rel="stylesheet" href="/src/home.css">
 <script src="/src/home-boot.js"></script>
 <script src="/src/home.js" defer></script>
+<script type="module" src="/src/app-retired.js"></script>
 </head>
 <body>
 <svg class="sprite" aria-hidden="true" focusable="false">
@@ -41,6 +42,8 @@
   <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 5-5.54 10.19-7.4 11.8a1 1 0 0 1-1.2 0C9.54 20.19 4 15 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></symbol>
   <symbol id="i-office" viewBox="0 0 24 24"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></symbol>
   <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/></symbol>
 </svg>
 
 <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
@@ -287,6 +290,32 @@
       </div>
     </div>
   </section>
+
+  <!-- D78: the Android apps. The links go through the site, which sends each one to the current release file. -->
+  <section class="section apps" id="apps" aria-labelledby="apps-title">
+    <div class="container">
+      <div class="section-head center" data-reveal>
+        <p class="eyebrow" data-i18n="apps.eyebrow">Safeer on your phone</p>
+        <h2 id="apps-title" data-i18n="apps.title">The Safeer apps for Android.</h2>
+        <p class="lead" data-i18n="apps.lead">Book trips and keep your tickets in Safeer Passenger. Drivers check tickets at boarding with Safeer Driver.</p>
+      </div>
+      <ul class="app-grid" data-reveal-group>
+        <li class="app-card" data-reveal>
+          <span class="icon-chip orange"><svg class="icon" aria-hidden="true"><use href="#i-seat"/></svg></span>
+          <h3 data-i18n="apps.p.t">Safeer Passenger</h3>
+          <p data-i18n="apps.p.d">Find trips, choose your seats and open your QR ticket, even without internet.</p>
+          <a class="btn btn-primary" href="/mobile/download/booking" data-app-download="booking"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span data-i18n="apps.p.btn">Download Passenger app</span></a>
+        </li>
+        <li class="app-card" data-reveal>
+          <span class="icon-chip green"><svg class="icon" aria-hidden="true"><use href="#i-qr"/></svg></span>
+          <h3 data-i18n="apps.d.t">Safeer Driver</h3>
+          <p data-i18n="apps.d.d">For bus company drivers: today’s trips, the passenger list and ticket scanning.</p>
+          <a class="btn btn-ghost" href="/mobile/download/driver" data-app-download="driver"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span data-i18n="apps.d.btn">Download Driver app</span></a>
+        </li>
+      </ul>
+      <p class="app-note" data-reveal><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg><span data-i18n="apps.note">For Android 8 or later. Your phone may ask you to allow installing apps from your browser.</span></p>
+    </div>
+  </section>
 </main>
 
 <footer class="site-footer on-dark">
@@ -299,7 +328,7 @@
     <nav class="footer-links" data-i18n-attr="aria-label:footer.label" aria-label="Footer">
       <div><h2 data-i18n="footer.travel">Travel</h2><ul><li><a href="/marketplace" data-safeer data-i18n="footer.book">Book a trip</a></li><li><a href="/booking" data-safeer data-i18n="footer.mytrips">My trips</a></li></ul></div>
       <div><h2 data-i18n="footer.shipping">Shipping</h2><ul><li><a href="/track" data-safeer data-i18n="footer.track">Track a parcel</a></li><li><a href="#shipping" data-i18n="footer.howship">How shipping works</a></li></ul></div>
-      <div><h2 data-i18n="footer.safeer">Safeer</h2><ul><li><a href="#about" data-i18n="footer.about">About</a></li><li><a href="/staff" data-safeer data-i18n="footer.companies">For bus companies</a></li></ul></div>
+      <div><h2 data-i18n="footer.safeer">Safeer</h2><ul><li><a href="#about" data-i18n="footer.about">About</a></li><li><a href="#apps" data-i18n="footer.apps">Android apps</a></li><li><a href="/staff" data-safeer data-i18n="footer.companies">For bus companies</a></li></ul></div>
       <div><h2 data-i18n="footer.help">Help</h2><ul><li><a href="/privacy" data-safeer data-i18n="footer.privacy">Privacy policy</a></li><li><a href="/account-deletion" data-safeer data-i18n="footer.delete">Delete account and data</a></li></ul></div>
     </nav>
   </div>

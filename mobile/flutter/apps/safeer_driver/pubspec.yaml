@@ -1,8 +1,9 @@
 name: safeer_driver
 description: Safeer Driver app (D74).
 publish_to: none
-# Preview build: versionCode 1 is below the published WebView apps, so it cannot replace them by accident.
-version: 0.1.0+1
+# D78: the published app. 19000 is above the retired WebView apps (Booking 17004, Driver 18005), so it
+# installs over them as an update (same app ID and signing key).
+version: 0.19.0+19000
 resolution: workspace
 environment:
   sdk: ^3.13.0

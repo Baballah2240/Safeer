@@ -1,3 +1,4 @@
+// D78: RETIRED. Built Play bundles of the old WebView apps; kept for reference. Flutter Play bundles: mobile/PLAY_STORE.md.
 // Google Play bundles: npm.cmd run mobile:release -- --origin https://your.domain
 // Builds signed Driver and Booking .aab files into ignored mobile/releases/play/. Uploading is a manual Play Console step.
 import {existsSync,readdirSync,readFileSync,mkdirSync,copyFileSync,writeFileSync} from 'node:fs';

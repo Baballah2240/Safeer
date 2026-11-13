@@ -39,6 +39,9 @@ note('update notice serves this checkout\'s release data',same,same?'':`deployed
 for(const [flavor,file] of Object.entries((served||appRelease).apps||{})){
  const r=await get(file.url,{method:'HEAD',redirect:'follow'});
  note(`${flavor} APK download`,r.status===200,`${file.url} -> ${r.status}${r.status===404?' (create the GitHub release and attach this file)':''}`);
+ // D78: the home page links to /mobile/download/<flavor>, which must lead to the same file.
+ const link=await get('/mobile/download/'+flavor);
+ note(`home page ${flavor} download link`,link.status===302&&link.headers.get('location')===file.url,`status ${link.status} -> ${link.headers.get('location')??'no redirect'}`);
 }
 
 // Static files: the server's ETag is a hash of the exact bytes it serves, and the build copies committed

@@ -1,5 +1,9 @@
 # Current state - read this first
 
+## Flutter apps are the published apps - D78, 2026-11-13
+
+Safeer Passenger and Safeer Driver (mobile/flutter) are now the Android apps, both 0.19.0/19000 with the existing app IDs and key, so each installs over the old WebView app. The website's downloads point to GitHub release v0.19.0 (Safeer-Booking-0.19.0.apk, about 17 MB, and Safeer-Driver-0.19.0.apk, about 22 MB) and the home page has a "Safeer apps for Android" section; the old WebView apps show only "This app has been replaced" with the download. Publish v0.19.0 right after pushing. The live booking site works but lists no trips until a bus company is set up in /staff and publishes trips (cities, company approved and listed, branch and station, route, vehicle, driver, published trip). Not in the Flutter apps yet: shipments, company pages, booking lookup, passenger accounts, the driver's notifications, incidents and departure/arrival, and an in-app update notice ([D78](DECISIONS.md)).
+
 ## Warm palette and home page - D76, 2026-11-12
 
 safeer.mohbaba.online/ is the new public home page; the old demo is at /demo. Every surface (booking, staff, driver, tracking, legal pages, Android shell) uses sand, orange, deep green and charcoal instead of navy and sky blue. Booking 0.17.4 and Driver 0.18.5 carry the new launcher icon; publish GitHub releases v0.17.4 and v0.18.5 right after pushing, because the update notice points at them.
@@ -10,7 +14,7 @@ The site is ready for Google's brand verification: the privacy policy covers Goo
 
 ## Flutter apps preview - D74, 2026-11-12
 
-Native Flutter Safeer Passenger and Safeer Driver are in mobile/flutter, sharing packages/safeer_core, with the current fonts and colours. They use the existing API with no server change, and demo data in debug builds. The published WebView apps remain the live apps; replacing them is the owner's decision, once the missing features are added. How to run, test and build, and what still needs a backend or a phone: [mobile/flutter/README.md](../mobile/flutter/README.md).
+Native Flutter Safeer Passenger and Safeer Driver are in mobile/flutter, sharing packages/safeer_core, with the current fonts and colours. They use the existing API with no server change, and demo data in debug builds. D78 made them the published apps (see above). How to run, test and build, and what still needs a backend or a phone: [mobile/flutter/README.md](../mobile/flutter/README.md).
 
 ## Mobile handover to Claude - 2026-11-12
 

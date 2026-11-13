@@ -1,5 +1,14 @@
 # Safeer mobile status
 
+## Flutter apps published - Safeer Passenger 0.19.0 / 19000, Safeer Driver 0.19.0 / 19000, 2026-11-13
+
+D78: the Flutter apps replace the WebView apps. They keep the app IDs (sd.safeer.booking for Safeer Passenger, sd.safeer.driver for Safeer Driver) and the upload key with a higher versionCode, so installing the new APK over the old app is an Android update. Built from the D74/D77 code with the version raised and smaller release packaging (ARM only, compressed native libraries). Files for GitHub release v0.19.0:
+- Safeer-Booking-0.19.0.apk, 18,050,340 bytes, SHA-256 50fc9f98f6748c41d5f0d814c8f290a6170209b45386f44e0d2b584fb6040045
+- Safeer-Driver-0.19.0.apk, 23,041,034 bytes, SHA-256 6fea470c3a003663509b49adf1424e8d8f24018488b3f0ce36f1282e42408900
+- Both signed with the certificate SHA-256 a19fb6c1832196283aa3cf342ac4c2aa78b56d736702f8bccca1d8fcf8df7205.
+
+These release APKs were not installed on a phone (none was connected); the D74 session tested the same code as profile builds on an HONOR X7d. Website changes in the same commit: the old WebView apps show only "This app has been replaced" with the download, and the home page and the booking and driver pages offer the new apps. Publish GitHub release v0.19.0 with both APKs and their .sha256 files right after pushing, because src/app-release.js points at it.
+
 ## Warm palette - Booking 0.17.4 / 17004, Driver 0.18.5 / 18005, 2026-11-12
 
 D76: the website inside both apps switches to sand, orange, deep green and charcoal without reinstalling. The new APKs change only the native parts: the recoloured Route Pin launcher icon, the orange accent and the deep green status and navigation bars. Signed with the existing key. Not installed on a physical phone. Publish GitHub releases v0.17.4 and v0.18.5 with Safeer-Booking-0.17.4.apk and Safeer-Driver-0.18.5.apk (and their .sha256 files) right after pushing, because src/app-release.js points the update notice at them.

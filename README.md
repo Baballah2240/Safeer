@@ -1,5 +1,7 @@
 # Safeer / Sudan Transport
 
+D78 (2026-11-13): the Android apps are the Flutter apps Safeer Passenger and Safeer Driver 0.19.0 in mobile/flutter; the older WebView apps in mobile/android are retired. See [mobile/README.md](mobile/README.md).
+
 Both local Android clients now use fullscreen sidebar navigation and Settings; Driver retains its scoped operational actions inside the sidebar. USB version 0.16.0-usb.5/16005. See [D52 handover](docs/archive/MOBILE_FULLSCREEN_2026-11-05.md).
 
 

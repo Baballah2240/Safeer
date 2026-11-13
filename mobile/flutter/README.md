@@ -1,6 +1,6 @@
 # Safeer Flutter apps (D74)
 
-Two native Flutter apps, **Safeer Passenger** and **Safeer Driver**, built from the "Safeer Glass" brief with the Safeer fonts (Inter, Noto Sans Arabic) and the D71 colours (navy #0B2D5B, sky blue #1E90FF, orange #FF8C00 and their light/dark tokens). D77: the owner kept these colours after D76 moved the website and WebView apps to the warm palette, so do not convert them. They use the existing Safeer API; nothing on the server changed. The published WebView apps in `mobile/android` stay the live apps until the owner decides otherwise (see "Status" below).
+Two native Flutter apps, **Safeer Passenger** and **Safeer Driver**, built from the "Safeer Glass" brief with the Safeer fonts (Inter, Noto Sans Arabic) and the D71 colours (navy #0B2D5B, sky blue #1E90FF, orange #FF8C00 and their light/dark tokens). D77: the owner kept these colours after D76 moved the website and WebView apps to the warm palette, so do not convert them. They use the existing Safeer API; nothing on the server changed. D78 (2026-11-13): these are the published Safeer apps, 0.19.0/19000, and the WebView apps in `mobile/android` are retired (see "Build").
 
 ```
 mobile/flutter/
@@ -66,9 +66,9 @@ Driver:
     flutter build apk --debug      # app ID sd.safeer.booking.dev / sd.safeer.driver.dev, installs beside the current apps
     flutter build apk --release    # app ID sd.safeer.booking / sd.safeer.driver, signed with the Safeer upload key
 
-The APKs land in each app's `build/app/outputs/flutter-apk/`. Copies with a `SHA256SUMS` file are kept in the ignored `mobile/releases/flutter/`. Install a debug APK with `adb install -r <apk>` or by opening it on the phone.
+The APKs land in each app's `build/app/outputs/flutter-apk/`. `npm run mobile:save` keeps the published copies, each with a `.sha256` file, in the ignored `mobile/releases/`. Install a debug APK with `adb install -r <apk>` or by opening it on the phone.
 
-Release builds refuse to start without `%USERPROFILE%\.android\safeer-upload.properties`. They are preview builds (version 0.1.0, versionCode 1), lower than the published WebView apps, so Android will not install them over those apps. Replacing the WebView apps needs a higher versionCode and the owner's decision. Nothing here is published, and `mobile:save` / `src/app-release.js` are for the WebView apps only.
+Release builds refuse to start without `%USERPROFILE%\.android\safeer-upload.properties`. D78: release builds are the published apps. From the repository root, `npm run mobile:build` builds both for ARM phones and `npm run mobile:save` checks each APK's package, version and signing certificate, saves it and updates `src/app-release.js` (the website's download links); then publish the GitHub release `v<versionName>` (see [../README.md](../README.md)). The version is the `version:` line in each pubspec.yaml: raise the code above the last release for every update. Release APKs leave out x86_64 libraries and keep native libraries compressed, about half the download; debug and profile builds keep every ABI.
 
 ## Check
 
@@ -101,4 +101,4 @@ Screenshots for review, using the real fonts:
 - **Camera**: scanning, the torch, the permission prompt and the denied-permission fallback need a real Android phone. Tests replace the camera.
 - **Physical phone**: an HONOR X7d 5G (Android 16, 360x805 dp) ran both flows in Arabic and English: booking (including a seat taken at confirmation), My Trips, the QR ticket online and offline, Driver sign-in, Today's Trips, the camera, the torch, demo scans counted once, an offline scan settled on reconnect, and the passenger list. The screen-reader tree was checked through uiautomator, which found and fixed several missing or merged labels. Not checked: scanning a real printed QR with the camera, TalkBack itself, outdoor brightness and the system date picker.
 - **Trying it on a phone**: `flutter build apk --profile --target-platform android-arm64` gives an optimized build on the .dev IDs, with demo data, that installs beside the published apps (`adb install -r build/app/outputs/flutter-apk/app-profile.apk`). On Windows, if `adb devices` is empty but Device Manager lists the phone's "ADB Interface" under the generic WinUsb driver, the phone is not announcing the Android debug interface; HONOR's USB driver, or adding the standard ADB interface GUID to that device, fixes it.
-- **Not in the Flutter apps yet**: shipments, company pages, booking lookup by reference and mobile, passenger accounts and Google sign-in, driver notifications, incidents, departure/arrival, and the in-app update notice. These still need the WebView apps.
+- **Not in the Flutter apps yet**: shipments, company pages, booking lookup by reference and mobile, passenger accounts and Google sign-in, driver notifications, incidents, departure/arrival, and the in-app update notice. They stay on the website in a phone browser; the WebView apps are retired (D78). Until the apps get an update notice, a newer version reaches a phone only when it is downloaded again from the website.

@@ -1,0 +1,25 @@
+/* D78: the screen the retired WebView apps show instead of Safeer (see app-retired.js). D76 palette; text meets 4.5:1. */
+html.app-retired-on,html.app-retired-on body{background:#FAF5EC!important;margin:0!important;padding:0!important;overflow-x:hidden;visibility:visible!important}
+html.app-retired-on body>:not(.app-retired){display:none!important}
+html.app-retired-on .app-retired{box-sizing:border-box;display:grid;place-items:center;min-height:100vh;min-height:100dvh;padding:max(24px,calc(var(--safe-top,0px) + 16px)) 16px 32px;background:radial-gradient(120% 55% at 100% 0%,rgba(232,119,42,.16),transparent 60%),#FAF5EC;color:#1D211F;font-family:'Inter','Noto Sans Arabic',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:16px;line-height:1.55;text-align:start}
+html.app-retired-on .app-retired[hidden]{display:none}
+html.app-retired-on .app-retired *,html.app-retired-on .app-retired *::before,html.app-retired-on .app-retired *::after{box-sizing:border-box}
+html.app-retired-on .app-retired-card{width:100%;max-width:440px;padding:clamp(18px,5.5vw,24px);border-radius:24px;background:#FFFFFF;border:1px solid rgba(29,33,31,.12);box-shadow:0 2px 8px rgba(60,40,15,.06),0 14px 36px rgba(60,40,15,.10)}
+html.app-retired-on .app-retired-top{display:flex;align-items:center;gap:10px;margin:0 0 22px}
+html.app-retired-on .app-retired-top img{display:block;width:36px;height:36px}
+html.app-retired-on .app-retired-brand{font-size:1.15rem;font-weight:700;color:#123A2D}
+html.app-retired-on .app-retired-lang{margin-inline-start:auto;min-height:44px;padding:8px 16px;border-radius:999px;border:1.5px solid rgba(18,58,45,.26);background:#FFFFFF;color:#123A2D;font:inherit;font-size:.95rem;font-weight:600;cursor:pointer}
+html.app-retired-on .app-retired-eyebrow{margin:0 0 6px;font-size:.8rem;font-weight:650;letter-spacing:.08em;text-transform:uppercase;color:#9A4A10}
+html.app-retired-on .app-retired[dir=rtl] .app-retired-eyebrow{letter-spacing:0;font-size:.9rem}
+html.app-retired-on .app-retired h1{margin:0 0 10px;font-size:1.6rem;font-weight:700;line-height:1.2;color:#1D211F}
+html.app-retired-on .app-retired h1:focus{outline:none}
+html.app-retired-on .app-retired p{margin:0 0 16px;color:#4E5651}
+html.app-retired-on .app-retired-download{display:flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:12px 16px;border-radius:999px;background:#B9530F;color:#FFFFFF;font-weight:650;text-align:center;text-decoration:none;box-shadow:0 6px 18px rgba(185,83,15,.26)}
+html.app-retired-on .app-retired-download:active{background:#A9490C}
+html.app-retired-on .app-retired-download svg{width:22px;height:22px;flex:none}
+html.app-retired-on .app-retired p.app-retired-meta{margin:10px 0 20px;font-size:.875rem;text-align:center}
+html.app-retired-on .app-retired-steps{margin:0 0 18px;padding-inline-start:22px;color:#1D211F}
+html.app-retired-on .app-retired-steps li+li{margin-top:6px}
+html.app-retired-on .app-retired p.app-retired-note{margin:0;padding:12px 14px;border-radius:14px;background:#F3E9D8;color:#1D211F;font-size:.9rem;overflow-wrap:anywhere}
+html.app-retired-on .app-retired :focus-visible{outline:3px solid #B9530F;outline-offset:3px}
+@media (max-width:360px){html.app-retired-on .app-retired h1{font-size:1.4rem}}

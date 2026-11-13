@@ -1,3 +1,4 @@
+import './app-retired.js';
 import {validateAppRelease} from './app-update-data.js';
 import {appRelease} from './app-release.js';
 const storageKey='safeer.theme';
@@ -201,13 +202,15 @@ export const legalLinks=language=>{
 
 // D60: download and update notices for the Android apps. The installed app adds
 // "SafeerApp/<versionCode> (<flavor>)" to its user agent; files live on GitHub releases.
+// D78: the downloads are the Flutter apps (Safeer Passenger and Safeer Driver). Only the retired WebView
+// apps send that user agent, and app-retired.js shows them the new app's download instead of the page.
 let releases=validateAppRelease(appRelease);
 const installed=/SafeerApp\/(\d+) \((driver|booking)\)/.exec(navigator.userAgent);
 const androidBrowser=!installed&&/Android/i.test(navigator.userAgent);
 const downloadIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>';
 const appWords=(language,flavor)=>language==='ar'
-  ?{name:flavor==='driver'?'تطبيق سفير للسائق':'تطبيق سفير للحجز',update:'يتوفر تحديث جديد',updateLink:'تنزيل التحديث',get:'احصل على التطبيق',getLink:'تنزيل',download:'تنزيل تطبيق أندرويد',version:'الإصدار'}
-  :{name:flavor==='driver'?'Safeer Driver app':'Safeer Booking app',update:'A new version is available',updateLink:'Download update',get:'Get the app',getLink:'Download',download:'Download Android app',version:'Version'};
+  ?{name:flavor==='driver'?'تطبيق سفير السائق':'تطبيق سفير المسافر',update:'يتوفر تحديث جديد',updateLink:'تنزيل التحديث',get:'احصل على التطبيق',getLink:'تنزيل',download:'تنزيل تطبيق أندرويد',version:'الإصدار'}
+  :{name:flavor==='driver'?'Safeer Driver app':'Safeer Passenger app',update:'A new version is available',updateLink:'Download update',get:'Get the app',getLink:'Download',download:'Download Android app',version:'Version'};
 export const releaseFor=flavor=>releases.apps[flavor]||null;
 export const appOutdated=(flavor=installed?.[2])=>{const file=releaseFor(flavor);return Boolean(installed&&installed[2]===flavor&&file&&Number(installed[1])<file.versionCode);};
 export const appVersionLabel=(flavor=installed?.[2])=>{const file=releaseFor(flavor)||releases;return file?'v'+file.versionName:'';};

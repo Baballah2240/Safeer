@@ -1,5 +1,16 @@
 # Decisions
 
+## 2026-11-13 - The Flutter apps replace the WebView apps
+
+D78: The owner makes the Flutter Passenger and Driver apps (D74) the main Safeer apps, connects them to the website and disconnects the old WebView versions.
+1. Both Flutter apps are published as version 0.19.0 (versionCode 19000), above Booking 0.17.4/17004 and Driver 0.18.5/18005, with the same application IDs (sd.safeer.booking for Safeer Passenger, sd.safeer.driver for Safeer Driver) and the same upload key, so each one installs over the old app as an Android update. One GitHub release, v0.19.0, holds both files (Safeer-Booking-0.19.0.apk and Safeer-Driver-0.19.0.apk, each with a .sha256). Release builds use the live site over HTTPS only (D74). The D77 colours stay.
+2. Release APKs are for ARM phones (armeabi-v7a and arm64-v8a) and keep their native libraries compressed, which halves the download (Passenger about 17 MB, Driver about 22 MB, instead of 35 and 49 MB); Android unpacks them at install. Debug and profile builds keep every ABI for emulators.
+3. The website offers only the new apps. src/app-release.js points to v0.19.0, so the booking and driver pages' download links and "Get the app" notice lead to them, and the home page has a "Safeer apps for Android" section whose buttons use /mobile/download/booking and /mobile/download/driver (a no-store redirect to the current release file).
+4. The WebView apps are disconnected. They identify themselves with "SafeerApp/<code> (<flavor>)", which the Flutter apps never send because they do not load the website. On every page those old apps now show only "This app has been replaced" (English or Arabic) with the download of the new app and how to install it over the old one; the page underneath is hidden and cannot be used. Bookings made in the old Booking app stay on the server and can be found in a browser with Find your booking (reference and mobile number).
+5. npm run mobile:build builds the Flutter release APKs, and npm run mobile:save checks each APK's package, version and signing certificate before saving it to mobile/releases/ and regenerating src/app-release.js. The WebView-only scripts (mobile:usb, mobile:build:usb, mobile:save:usb, mobile:build:hosted, mobile:release) are removed; mobile/android stays in the repository for reference only and is no longer built or published.
+6. Not in the Flutter apps yet, so still on the website in a phone browser: shipments, company pages, booking lookup by reference and mobile, passenger accounts and Google sign-in, and the driver's notifications, incidents and departure/arrival (the website's /driver page, camera scanning included, works in a phone browser). The apps have no in-app update notice either, so until they do, a newer version reaches a phone only when it is downloaded again from the website.
+No server API, database, booking, boarding or retention rule changes.
+
 ## 2026-11-12 - Warm Safeer palette everywhere and the public home page
 
 D76: The owner approves the new public website and asks for its colours and look across the whole project. This supersedes the D71 navy/sky-blue palette everywhere; the Route Pin shape and the Inter/Noto Sans Arabic typography stay.

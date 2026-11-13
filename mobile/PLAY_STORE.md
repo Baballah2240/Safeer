@@ -1,5 +1,7 @@
 # Publishing Safeer Driver and Safeer Booking on Google Play
 
+D78 (2026-11-13): the apps are now the Flutter apps in [flutter/](flutter/README.md). The bundle script below (`mobile:release`, mobile/release.mjs) built the retired WebView apps and is no longer wired to npm. For the Flutter apps, build a bundle with `flutter build appbundle --release` in mobile/flutter/apps/safeer_passenger and apps/safeer_driver (same upload key and app IDs). The checklist, Play Console and data safety notes still apply; the Driver app also uses the camera for ticket scanning.
+
 The apps are prepared for Play. Four things must happen before upload.
 
 ## Before you build
