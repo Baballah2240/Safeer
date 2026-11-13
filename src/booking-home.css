@@ -113,3 +113,43 @@
 @media screen {html[data-app-surface=booking] body #market-search .market-field :is(select,input){background:transparent;border:0;box-shadow:none}}
 
 @media screen {html[data-app-surface=booking] body #market .market-main>.market-hero{margin-block-start:36px}html[data-app-surface=booking] body #market-search.market-search-panel{margin-top:32px}}
+
+
+/* D79: search-first booking hero (UI UX Pro Max marketplace pattern: the search is the main action). The photo
+   stays clear and separate from the heading and the form, and headings keep the shared 24px semibold scale (both
+   owner choices). The hero is one layer instead of a card inside a card, and the photo, heading and search are
+   sized so the whole search, button included, shows on the first screen and above the navigation. */
+@media screen {
+ html[data-app-surface=booking] body #market .market-main>.market-hero{margin-top:12px;padding:0 0 16px;background:none;border:0;border-radius:0;box-shadow:none;overflow:visible;-webkit-backdrop-filter:none;backdrop-filter:none}
+ html[data-app-surface=booking] body #market .market-hero-art{width:auto;max-width:1180px;height:clamp(150px,20vw,300px);margin:0 auto;border-radius:24px;box-shadow:0 14px 36px #3c280f1f}
+ html[data-app-surface=booking][data-theme=dark] body #market .market-hero-art{box-shadow:0 14px 36px #00000059}
+ html[data-app-surface=booking] body #market .market-hero>.market-wrap{max-width:1180px;margin:16px auto 0;padding-inline:4px}
+ html[data-app-surface=booking] body #market .market-hero>.market-wrap>p{max-width:62ch;margin:6px 0 0}
+ html[data-app-surface=booking] body #market #market-search.market-search-panel{margin:16px 0 0;padding:12px;gap:10px;align-items:stretch;border:1px solid #123a2d1f;border-radius:24px;background:#fcf9f3;box-shadow:0 18px 40px #3c280f1f,0 2px 6px #3c280f12}
+ html[data-app-surface=booking][data-theme=dark] body #market #market-search.market-search-panel{background:#161d1a;border-color:#d6bf9838;box-shadow:0 18px 40px #00000066}
+ html[data-app-surface=booking] body #market #market-search .market-field{gap:2px;padding:10px 14px;border-radius:16px;background:#fff}
+ html[data-app-surface=booking][data-theme=dark] body #market #market-search .market-field{background:#1d2622}
+ html[data-app-surface=booking] body #market #market-search .market-field :is(select,input){min-height:40px}
+ html[data-app-surface=booking] body #market .market-field:has(select)::after{bottom:24px}
+ html[data-app-surface=booking] body #market .market-field .market-field-label svg{color:#b9530f}
+ html[data-app-surface=booking][data-theme=dark] body #market .market-field .market-field-label svg{color:#f4a261}
+ html[data-app-surface=booking] body #market #market-search .market-buttons{align-self:stretch}
+ html[data-app-surface=booking] body #market #market-search .market-find{height:100%;min-height:56px;padding-inline:26px;border-radius:16px}
+ @media (max-width:1023px){html[data-app-surface=booking] body #market .market-hero-art{height:clamp(140px,26vw,240px)}}
+ @media (max-width:640px){
+  html[data-app-surface=booking] body #market .market-main>.market-hero{margin-top:6px}
+  html[data-app-surface=booking] body #market .market-hero-art{height:clamp(120px,38vw,160px);border-radius:20px}
+  html[data-app-surface=booking] body #market .market-hero>.market-wrap{margin-top:12px;padding-inline:2px}
+  html[data-app-surface=booking] body #market .market-hero>.market-wrap>p{font-size:.86rem;line-height:1.55}
+  html[data-app-surface=booking] body #market #market-search.market-search-panel{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:12px;padding:10px;gap:8px;border-radius:22px}
+  html[data-app-surface=booking] body #market #market-search .market-field{padding:8px 12px;border-radius:14px}
+  html[data-app-surface=booking] body #market .market-field:has(select)::after{inset-inline-end:14px;bottom:22px}
+  html[data-app-surface=booking] body #market #market-search .market-buttons{grid-column:1/-1}
+  html[data-app-surface=booking] body #market #market-search .market-find{min-height:52px;width:100%}
+ }
+ @media (max-width:400px){html[data-app-surface=booking] body #market #market-search .market-field{padding-inline:10px}html[data-app-surface=booking] body #market #market-search .market-field input[type=date]{font-size:.94rem}html[data-app-surface=booking] body #market #market-search .market-field input[type=date]::-webkit-calendar-picker-indicator{padding-inline:2px 0;margin:0}}
+ @media (max-width:359px){html[data-app-surface=booking] body #market #market-search.market-search-panel{padding:8px;gap:6px}html[data-app-surface=booking] body #market #market-search .market-field{padding:8px}html[data-app-surface=booking] body #market #market-search .market-field-label{font-size:.72rem}html[data-app-surface=booking] body #market #market-search .market-field input[type=date]{font-size:.86rem}html[data-app-surface=booking] body #market .market-field:has(select)::after{inset-inline-end:10px}html[data-app-surface=booking] body #market #market-search .market-find{min-height:48px}}
+ /* Short phones: a smaller photo and no subtitle keep the search above the bottom bar. */
+ @media (max-width:640px) and (max-height:760px){html[data-app-surface=booking] body #market .market-hero-art{height:clamp(96px,30vw,120px)}html[data-app-surface=booking] body #market .market-hero>.market-wrap>p{display:none}}
+ @media (max-width:640px) and (max-height:620px){html[data-app-surface=booking] body #market .market-main>.market-hero{margin-top:4px}html[data-app-surface=booking] body #market .market-hero-art{height:84px;border-radius:16px}html[data-app-surface=booking] body #market .market-hero>.market-wrap{margin-top:8px}html[data-app-surface=booking] body #market #market-search.market-search-panel{margin-top:8px}}
+}

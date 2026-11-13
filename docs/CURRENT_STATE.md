@@ -1,5 +1,9 @@
 # Current state - read this first
 
+## Search-first booking hero - D79, 2026-11-13
+
+The booking page opens with a compact header, a clear coach photo, the heading and the full search card on the first screen; on laptops the Book/Trips/Profile links sit at the top right instead of covering the form. Website only; no app or API change ([D79](DECISIONS.md)).
+
 ## Flutter apps are the published apps - D78, 2026-11-13
 
 Safeer Passenger and Safeer Driver (mobile/flutter) are now the Android apps, both 0.19.0/19000 with the existing app IDs and key, so each installs over the old WebView app. The website's downloads point to GitHub release v0.19.0 (Safeer-Booking-0.19.0.apk, about 17 MB, and Safeer-Driver-0.19.0.apk, about 22 MB) and the home page has a "Safeer apps for Android" section; the old WebView apps show only "This app has been replaced" with the download. Publish v0.19.0 right after pushing. The live booking site works but lists no trips until a bus company is set up in /staff and publishes trips (cities, company approved and listed, branch and station, route, vehicle, driver, published trip). Not in the Flutter apps yet: shipments, company pages, booking lookup, passenger accounts, the driver's notifications, incidents and departure/arrival, and an in-app update notice ([D78](DECISIONS.md)).

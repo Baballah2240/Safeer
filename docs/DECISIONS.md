@@ -1,5 +1,14 @@
 # Decisions
 
+## 2026-11-13 - Search-first booking hero
+
+D79: The owner asks to improve the top of the passenger booking page. On a laptop the floating Book/Trips/Profile bar covered the search form, on phones it covered the Find trips button, the photo sat in a card inside another card (a green slab in dark mode) and the header took 100px. Following the UI UX Pro Max marketplace pattern (the search is the main action) and its navigation rules (fixed bars must not cover content or a focused field; wide screens carry navigation at the top):
+1. The booking and parcel tracking headers are 64px instead of 100px; the floating menu button follows.
+2. From 1024px wide, the Book, Trips and Profile links sit in a pill at the top right (top left in Arabic) instead of floating at the bottom. Phones keep the bottom bar, and the page keeps room above it for focused fields (scroll padding).
+3. The booking hero is one layer instead of a card inside a card. The coach photo stays clear and separate from the heading and the search (as the owner chose earlier) and the heading keeps the shared 24px semibold scale, but the photo is shorter (150 to 300px, smaller on short phones) and the search card follows closely. The field icons use the orange accent in both themes (the date and passenger icons were dark green on dark).
+4. On every tested size (1677, 1440, 1024, 768, 390, 360 and 320 px), theme and language, the whole search including its button shows on the first screen and never under the navigation (tests/booking-hero.browser.mjs).
+No change to booking rules, the API or the Flutter apps.
+
 ## 2026-11-13 - The Flutter apps replace the WebView apps
 
 D78: The owner makes the Flutter Passenger and Driver apps (D74) the main Safeer apps, connects them to the website and disconnects the old WebView versions.

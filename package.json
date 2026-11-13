@@ -80,6 +80,7 @@
     "test:passenger-privacy:browser": "node tests/passenger-privacy.browser.mjs",
     "test:home:browser": "node tests/home.browser.mjs",
     "test:app-retired:browser": "node tests/app-retired.browser.mjs",
+    "test:booking-hero:browser": "node tests/booking-hero.browser.mjs",
     "check:live": "node scripts/check-live.mjs",
     "test:flutter:live": "npm run build:api && node mobile/flutter/tool/run-live-tests.mjs"
   },

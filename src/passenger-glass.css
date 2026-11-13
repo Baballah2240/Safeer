@@ -117,3 +117,22 @@
 .account-details label{display:grid;gap:6px;font-size:.86rem}
 .account-details input{min-height:44px;padding:8px 12px;border:1px solid var(--border);border-radius:12px;background:var(--surface,transparent);color:inherit;font:inherit}
 .account-form-status:empty{display:none}
+
+/* D79: a compact header, and passenger navigation that never covers the page (booking and parcel tracking).
+   Phones keep the bottom bar with room kept above it for focused fields; from 1024px the same Book, Trips and
+   Profile links sit at the top right, beside the header, instead of floating over the search form. */
+@media screen {
+ html:is([data-app-surface=booking],[data-app-surface=tracking]) body :is(#market,#track-app) .market-bar.app-masthead{min-height:calc(64px + var(--safe-top,0px));padding:calc(10px + var(--safe-top,0px)) 16px 10px}
+ html:is([data-app-surface=booking],[data-app-surface=tracking]) body .app-masthead>.app-menu-trigger{inset-block-start:calc(10px + var(--safe-top,0px))}
+ html:is([data-app-surface=booking],[data-app-surface=tracking]){scroll-padding-block-start:calc(var(--safe-top,0px) + 72px);scroll-padding-block-end:calc(100px + env(safe-area-inset-bottom))}
+ @media (min-width:1024px){
+  html:is([data-app-surface=booking],[data-app-surface=tracking]){scroll-padding-block-end:24px}
+  html:is([data-app-surface=booking],[data-app-surface=tracking]) body .passenger-bottom-nav{top:calc(10px + var(--safe-top,0px));bottom:auto;inset-inline-start:auto;inset-inline-end:clamp(16px,2.5vw,32px);width:auto;margin:0;grid-template-columns:repeat(3,auto);gap:4px;padding:5px;border-radius:999px;box-shadow:0 10px 28px #3c280f1f,inset 0 1px 0 #ffffff8c}
+  html:is([data-app-surface=booking],[data-app-surface=tracking])[data-theme=dark] body .passenger-bottom-nav{box-shadow:0 10px 28px #00000059,inset 0 1px 0 #e8d9bf26}
+  html:is([data-app-surface=booking],[data-app-surface=tracking]) body .passenger-bottom-nav a{grid-auto-flow:column;justify-content:center;align-items:center;gap:8px;min-height:44px;padding:0 18px;border-radius:999px;font-size:.92rem}
+  html:is([data-app-surface=booking],[data-app-surface=tracking]) body .passenger-bottom-nav svg{width:20px;height:20px}
+  html[data-app-surface=booking] body .market-main{padding-bottom:56px}
+  html[data-app-surface=booking] body .market-legal{margin-block-end:24px}
+ }
+ @media (min-width:1024px) and (max-width:1199px){html:is([data-app-surface=booking],[data-app-surface=tracking]) body .passenger-bottom-nav a{padding:0 12px;gap:6px}}
+}

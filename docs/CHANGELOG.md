@@ -1,5 +1,9 @@
 # Changelog
 
+## Search-first booking hero - D79, 2026-11-13
+
+The top of the booking page is redesigned: a 64px header, one layer instead of a card inside a card, and a shorter clear coach photo followed by the 24px heading and the search card, so the whole search, button included, is on the first screen on phones, tablets and laptops. From 1024px the Book/Trips/Profile links move from the floating bottom bar (which covered the search form) to a pill at the top right, on booking and tracking pages; phones keep the bottom bar with room kept above it. Field icons are readable in dark mode. New test: tests/booking-hero.browser.mjs (npm run test:booking-hero:browser), 28 layouts with a stand-in API, no database.
+
 ## Flutter apps replace the WebView apps - D78, 2026-11-13
 
 Safeer Passenger and Safeer Driver, the Flutter apps (D74), are published as 0.19.0/19000 under the existing application IDs and upload key, so each installs over Booking 0.17.4 or Driver 0.18.5 as an Android update. Release APKs are ARM-only with compressed native libraries (about 17 and 22 MB instead of 35 and 49 MB). src/app-release.js points to GitHub release v0.19.0. The home page gains a "Safeer apps for Android" section whose buttons use /mobile/download/booking and /mobile/download/driver (no-store redirects to the current files), and the booking and driver pages name the new apps in their download links. The old WebView apps now show only "This app has been replaced" (src/app-retired.js, English and Arabic) with the new app's download. npm run mobile:build builds the Flutter release APKs, and npm run mobile:save checks each APK's package, version and signing certificate before saving it and regenerating src/app-release.js; the WebView-only scripts are removed. New: tests/app-retired.browser.mjs (npm run test:app-retired:browser); check:live also checks the home page download links.
