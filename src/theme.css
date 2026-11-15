@@ -334,6 +334,9 @@
   html body .legal-page{max-width:860px;margin:0 auto;padding:12px 16px 40px}
   html body .legal-top{position:relative;top:0;width:auto;max-width:none;margin:12px 0 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
   html body .legal-body{line-height:1.75}
+  html body .legal-title{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  html body .legal-top .staff-topbar-title.legal-title{flex-direction:row;justify-content:space-between;width:100%}
+  html body .legal-back{display:inline-flex;align-items:center;gap:6px;min-height:40px;white-space:nowrap}
   html body .legal-body h2{margin:26px 0 8px;font-size:17px}
 }
 
