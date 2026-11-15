@@ -40,15 +40,17 @@ class DriverTrip {
 }
 
 class ManifestPassenger {
-  const ManifestPassenger({required this.ticket, required this.bookingReference, required this.seat, required this.name, required this.valid, required this.boardedAt});
+  const ManifestPassenger({required this.ticket, required this.bookingReference, required this.seat, required this.name, required this.valid, required this.boardedAt, this.boards, this.leaves});
   final String ticket, bookingReference, seat;
+  /// D89: where this passenger gets on and off (null on older servers).
+  final Bilingual? boards, leaves;
   final String? name;
   final bool valid;
   final DateTime? boardedAt;
   bool get boarded => boardedAt != null;
 
   ManifestPassenger withBoarded(DateTime at) =>
-      ManifestPassenger(ticket: ticket, bookingReference: bookingReference, seat: seat, name: name, valid: valid, boardedAt: boardedAt ?? at);
+      ManifestPassenger(ticket: ticket, bookingReference: bookingReference, seat: seat, name: name, valid: valid, boardedAt: boardedAt ?? at, boards: boards, leaves: leaves);
 
   factory ManifestPassenger.fromJson(Map<String, Object?> j) => ManifestPassenger(
         ticket: _s(j['ticket']),
@@ -57,6 +59,8 @@ class ManifestPassenger {
         name: j['name'] is String && (j['name'] as String).isNotEmpty ? j['name'] as String : null,
         valid: j['valid'] == true,
         boardedAt: _d(j['boardedAt']),
+        boards: j['boardsEn'] is String ? Bilingual(_s(j['boardsEn']), _s(j['boardsAr'])) : null,
+        leaves: j['leavesEn'] is String ? Bilingual(_s(j['leavesEn']), _s(j['leavesAr'])) : null,
       );
 }
 
@@ -133,8 +137,9 @@ class Credential {
 enum ScanStatus { boarded, verified, alreadyBoarded, wrongTrip, invalid, notSafeer, boardingClosed, pending, failed }
 
 class ScanResult {
-  const ScanResult(this.status, {this.ticket, this.seat, this.name, this.boardedAt, this.credential, this.code});
+  const ScanResult(this.status, {this.ticket, this.seat, this.name, this.boardedAt, this.credential, this.code, this.boards, this.leaves});
   final ScanStatus status;
+  final Bilingual? boards, leaves;
   final String? ticket, seat, name, code;
   final DateTime? boardedAt;
   final Credential? credential;
@@ -147,5 +152,7 @@ class ScanResult {
         name: j['name'] as String?,
         boardedAt: _d(j['boardedAt']),
         credential: credential,
+        boards: j['boardsEn'] is String ? Bilingual(_s(j['boardsEn']), _s(j['boardsAr'])) : null,
+        leaves: j['leavesEn'] is String ? Bilingual(_s(j['leavesEn']), _s(j['leavesAr'])) : null,
       );
 }

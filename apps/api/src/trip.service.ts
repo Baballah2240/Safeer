@@ -8,12 +8,14 @@ import {body,text,uuid,version,fail} from './security.js';
 const day=(value:unknown)=>{if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value)||Number.isNaN(Date.parse(value+'T00:00:00Z'))||new Date(value+'T00:00:00Z').toISOString().slice(0,10)!==value)fail('INVALID_INPUT');return value;};
 const clock=(value:unknown)=>{if(typeof value!=='string'||!/^([01]\d|2[0-3]):[0-5]\d$/.test(value))fail('INVALID_INPUT');return value;};
 const fare=(value:unknown)=>{if(!Number.isSafeInteger(value)||Number(value)<0||Number(value)>100000000)fail('INVALID_INPUT');return Number(value);};
+// D90: hours a booked seat stays reserved for payment on this trip (1, 2 or 3); null uses the company default (at most 3 hours).
+const holdHours=(value:unknown)=>{if(value===undefined||value===null)return null;if(![1,2,3].includes(value as number))fail('INVALID_HOLD_HOURS');return (value as number)*60;};
 const offsets=(value:unknown)=>{
  if(!Array.isArray(value)||value.length<2||value.length>30)fail('INVALID_TRIP_STOPS');
  value.forEach((minutes,i)=>{if(!Number.isInteger(minutes)||minutes<0||minutes>10080||(i===0&&minutes!==0)||(i>0&&minutes<=value[i-1]))fail('INVALID_TRIP_STOPS');});
  return value as number[];
 };
-const tripFields=`t.id,t.route_id AS "routeId",t.route_version AS "routeVersion",t.route_code AS "routeCode",t.route_name_en AS "routeNameEn",t.route_name_ar AS "routeNameAr",t.status,t.timezone,t.departure_at AS "departureAt",t.arrival_at AS "arrivalAt",to_char(t.departure_at AT TIME ZONE t.timezone,'YYYY-MM-DD') AS date,to_char(t.departure_at AT TIME ZONE t.timezone,'HH24:MI') AS time,t.fare_minor AS "fareMinor",t.currency,t.cancel_reason AS "cancelReason",t.published_at AS "publishedAt",t.canceled_at AS "canceledAt",t.version`;
+const tripFields=`t.id,t.route_id AS "routeId",t.route_version AS "routeVersion",t.route_code AS "routeCode",t.route_name_en AS "routeNameEn",t.route_name_ar AS "routeNameAr",t.status,t.timezone,t.departure_at AS "departureAt",t.arrival_at AS "arrivalAt",to_char(t.departure_at AT TIME ZONE t.timezone,'YYYY-MM-DD') AS date,to_char(t.departure_at AT TIME ZONE t.timezone,'HH24:MI') AS time,t.fare_minor AS "fareMinor",t.currency,t.hold_minutes AS "holdMinutes",safeer.trip_hold_minutes(t) AS "effectiveHoldMinutes",(extract(epoch FROM t.arrival_at-t.departure_at)/60)::int AS "durationMinutes",t.cancel_reason AS "cancelReason",t.published_at AS "publishedAt",t.canceled_at AS "canceledAt",t.version`;
 const assignmentFields='id,bus_id AS "busId",driver_id AS "driverId",layout_id AS "layoutId",layout_revision AS "layoutRevision",seat_count AS "seatCount",bus_code AS "busCode",bus_registration AS "busRegistration",driver_name_en AS "driverNameEn",driver_name_ar AS "driverNameAr",assigned_at AS "assignedAt",replaced_at AS "replacedAt",replaced_reason AS "replacedReason"';
 
 @Injectable()
@@ -43,8 +45,8 @@ export class TripService {
  });}
  // Repeating dates save together or not at all.
  async create(token:string,cid:string,input:unknown){
-  uuid(cid);const data=body(input,['routeId','dates','time','offsets','fareMinor','currency','currentPassword']);
-  const routeId=uuid(data.routeId),time=clock(data.time),minutes=offsets(data.offsets),amount=fare(data.fareMinor),currency=text(data.currency??'SDG',3,3).toUpperCase();
+  uuid(cid);const data=body(input,['routeId','dates','time','offsets','fareMinor','currency','holdHours','currentPassword']);
+  const hold=holdHours(data.holdHours),routeId=uuid(data.routeId),time=clock(data.time),minutes=offsets(data.offsets),amount=fare(data.fareMinor),currency=text(data.currency??'SDG',3,3).toUpperCase();
   if(!/^[A-Z]{3}$/.test(currency)||!Array.isArray(data.dates)||data.dates.length<1||data.dates.length>31)fail('INVALID_INPUT');
   const dates=data.dates.map(day);if(new Set(dates).size!==dates.length)fail('INVALID_INPUT');
   await this.identity.reauthenticate(token,data.currentPassword);
@@ -56,7 +58,7 @@ export class TripService {
    const ids:string[]=[];
    for(const date of dates){
     const id=randomUUID();
-    await c.query(`INSERT INTO safeer.trips(id,company_id,route_id,route_version,route_code,route_name_en,route_name_ar,stop_count,timezone,departure_at,arrival_at,fare_minor,currency,created_by) SELECT $1,$2,$3,0,'','','',2,$4,d,d+make_interval(mins=>$5::int),$6,$7,$8 FROM (SELECT ($9::date+$10::time) AT TIME ZONE $4::text AS d) x`,[id,cid,routeId,zone,minutes.at(-1),amount,currency,p.id,date,time]);
+    await c.query(`INSERT INTO safeer.trips(id,company_id,route_id,route_version,route_code,route_name_en,route_name_ar,stop_count,timezone,departure_at,arrival_at,fare_minor,currency,created_by,hold_minutes) SELECT $1,$2,$3,0,'','','',2,$4,d,d+make_interval(mins=>$5::int),$6,$7,$8,$11 FROM (SELECT ($9::date+$10::time) AT TIME ZONE $4::text AS d) x`,[id,cid,routeId,zone,minutes.at(-1),amount,currency,p.id,date,time,hold]);
     for(const [index,value] of minutes.entries())await c.query("INSERT INTO safeer.trip_stops(company_id,trip_id,stop_index,offset_minutes,city_id,city_name_en,city_name_ar) SELECT $1,$2,$3,$4,s.city_id,'','' FROM safeer.route_stops s WHERE s.company_id=$1 AND s.route_id=$5 AND s.stop_index=$3",[cid,id,index,value,routeId]);
     await this.audit(c,cid,p,'trip.created',id);ids.push(id);
    }
@@ -64,12 +66,12 @@ export class TripService {
   },true);
  }
  async update(token:string,cid:string,id:string,input:unknown){
-  uuid(cid);uuid(id);const data=body(input,['date','time','offsets','fareMinor','version','currentPassword']);
-  const date=day(data.date),time=clock(data.time),minutes=offsets(data.offsets),amount=fare(data.fareMinor),v=version(data.version);
+  uuid(cid);uuid(id);const data=body(input,['date','time','offsets','fareMinor','version','holdHours','currentPassword']);
+  const hold=holdHours(data.holdHours),date=day(data.date),time=clock(data.time),minutes=offsets(data.offsets),amount=fare(data.fareMinor),v=version(data.version);
   await this.identity.reauthenticate(token,data.currentPassword);
   return this.run(token,async(c,p)=>{
    await this.access(c,cid,true);
-   const result=await c.query(`UPDATE safeer.trips t SET departure_at=($1::date+$2::time) AT TIME ZONE t.timezone,arrival_at=(($1::date+$2::time) AT TIME ZONE t.timezone)+make_interval(mins=>$3::int),fare_minor=$4,version=version+1 WHERE t.company_id=$5 AND t.id=$6 AND t.version=$7 RETURNING t.id`,[date,time,minutes.at(-1),amount,cid,id,v]);
+   const result=await c.query(`UPDATE safeer.trips t SET departure_at=($1::date+$2::time) AT TIME ZONE t.timezone,arrival_at=(($1::date+$2::time) AT TIME ZONE t.timezone)+make_interval(mins=>$3::int),fare_minor=$4,hold_minutes=$8,version=version+1 WHERE t.company_id=$5 AND t.id=$6 AND t.version=$7 RETURNING t.id`,[date,time,minutes.at(-1),amount,cid,id,v,hold]);
    if(!result.rowCount)fail('STALE_VERSION',409);
    for(const [index,value] of minutes.entries()){const stop=await c.query('UPDATE safeer.trip_stops SET offset_minutes=$1 WHERE company_id=$2 AND trip_id=$3 AND stop_index=$4',[value,cid,id,index]);if(!stop.rowCount)fail('INVALID_TRIP_STOPS');}
    await c.query('SET CONSTRAINTS ALL IMMEDIATE');await this.audit(c,cid,p,'trip.updated',id);return {id};

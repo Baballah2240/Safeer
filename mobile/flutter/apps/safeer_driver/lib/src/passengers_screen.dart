@@ -188,6 +188,7 @@ class _PassengerRow extends StatelessWidget {
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(x.name ?? s.nameRemoved, style: t.titleSmall?.copyWith(fontStyle: x.name == null ? FontStyle.italic : null)),
             Text('${ltr(x.ticket)} · ${ltr(x.bookingReference)}', style: t.bodySmall),
+            if (x.boards != null && x.leaves != null) Text(s.journey(x.boards!.pick(s.isArabic), x.leaves!.pick(s.isArabic)), style: t.bodySmall),
             const SizedBox(height: 4),
             StatusBadge(icon: icon, label: label, tone: tone, dense: true),
           ]),

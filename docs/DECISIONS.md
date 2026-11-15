@@ -1,5 +1,12 @@
 # Decisions
 
+## 2026-11-15 - Trip times in hours and seat holds
+
+D90: The owner asked to enter each trip's expected time in hours and the booking (seat hold before payment) time in hours, at most 3 hours.
+1. Stop times are entered in hours with quarter-hour steps and stored in minutes as before; the last stop is the expected trip time.
+2. Each trip may set its own hold of 1, 2 or 3 hours (trips.hold_minutes); without one it uses the company default. No hold lasts more than 3 hours: safeer.trip_hold_minutes caps it, existing company defaults above 180 minutes were lowered, and the company setting now allows 5-180 minutes.
+3. The Flutter apps 0.20.0 send the journey's stops with the seat map and the hold, so a part-route search is booked at its own price; before this an app booking of a part-route result would have booked the whole trip.
+
 ## 2026-11-15 - Stop-to-stop journeys
 
 D89: The owner asked for picking up and dropping off passengers between stops, priced by a price list.

@@ -156,6 +156,11 @@ class DepartureCard extends StatelessWidget {
             const SizedBox(width: 6),
             Expanded(child: Text('${s.pickup}: ${d.pickup.pick(ar)}', style: t.bodyMedium)),
           ]),
+          // D89: a journey between middle stops of a longer route.
+          if (d.partial) ...[
+            const SizedBox(height: 4),
+            Text('${s.partOfRoute}: ${s.journey(d.fromName.pick(ar), d.toName.pick(ar))}', style: t.bodySmall?.copyWith(color: p.muted)),
+          ],
           const SizedBox(height: 12),
           Row(children: [
             Expanded(

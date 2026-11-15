@@ -63,15 +63,21 @@ class Departure {
     required this.seatsLeft,
     required this.busType,
     required this.stops,
+    this.fromIndex,
+    this.toIndex,
+    this.partial = false,
   });
 
   final String id, fromCode, toCode, date, time, arrivalDate, arrivalTime, currency;
+  /// The passenger's own stops on the trip (null on older servers: the whole trip).
+  final int? fromIndex, toIndex;
+  final bool partial;
   final Bilingual company, route, fromName, toName, busType;
   final int durationMinutes, fareMinor, seatCount, seatsLeft;
   final List<TripStop> stops;
 
   /// Pickup is the first stop's station, or its city when the company has no station.
-  Bilingual get pickup => stops.isEmpty ? fromName : stops.first.place;
+  Bilingual get pickup => stops.isEmpty ? fromName : stops[(fromIndex ?? 0).clamp(0, stops.length - 1)].place;
 
   factory Departure.fromJson(Map<String, Object?> j) => Departure(
         id: _s(j['id']),
@@ -92,6 +98,9 @@ class Departure {
         seatsLeft: j.containsKey('seatsLeft') ? _i(j['seatsLeft']) : _i(j['seatCount']),
         busType: Bilingual.from(j, 'busType'),
         stops: _list(j['stops']).map(TripStop.fromJson).toList(),
+        fromIndex: j['fromIndex'] is num ? (j['fromIndex'] as num).toInt() : null,
+        toIndex: j['toIndex'] is num ? (j['toIndex'] as num).toInt() : null,
+        partial: j['partial'] == true,
       );
 }
 
@@ -126,8 +135,9 @@ class Traveller {
 }
 
 class ReservationRequest {
-  const ReservationRequest({required this.tripId, required this.seats, required this.key, required this.mobile, required this.travellers});
+  const ReservationRequest({required this.tripId, required this.seats, required this.key, required this.mobile, required this.travellers, this.fromIndex, this.toIndex});
   final String tripId, key, mobile;
+  final int? fromIndex, toIndex;
   final List<String> seats;
   final List<Traveller> travellers;
   Map<String, Object?> toJson() => {
@@ -136,6 +146,8 @@ class ReservationRequest {
         'key': key,
         'mobile': mobile,
         'travelers': travellers.map((t) => t.toJson()).toList(),
+        if (fromIndex != null && toIndex != null) 'fromIndex': fromIndex,
+        if (fromIndex != null && toIndex != null) 'toIndex': toIndex,
       };
 }
 

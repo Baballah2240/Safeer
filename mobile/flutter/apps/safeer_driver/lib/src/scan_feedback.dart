@@ -42,6 +42,7 @@ class ScanResultPanel extends StatelessWidget {
             if (result.seat != null) InfoPair(label: s.seat, value: result.seat!, ltrValue: true, large: true),
             if (result.name != null) InfoPair(label: s.passenger, value: result.name!),
             if (result.ticket != null) InfoPair(label: s.ticketNumber, value: result.ticket!, ltrValue: true),
+            if (result.boards != null && result.leaves != null) InfoPair(label: s.journeyLabel, value: s.journey(result.boards!.pick(s.isArabic), result.leaves!.pick(s.isArabic))),
           ]),
         if (actions.isNotEmpty) ...[
           if (hasPerson) const SizedBox(height: 14),

@@ -146,7 +146,7 @@ class DemoPassengerRepository implements PassengerRepository {
   }
 
   @override
-  Future<SeatMap> seatMap(String tripId) async {
+  Future<SeatMap> seatMap(String tripId, {int? from, int? to}) async {
     await _wait();
     final (from, to, day, slot) = _decode(tripId);
     return SeatMap.fromJson({..._tripJson(from, to, day, slot), 'holdMinutes': 30, 'rows': _rows, 'columns': _columns, 'seats': [

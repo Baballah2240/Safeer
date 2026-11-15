@@ -15,7 +15,8 @@ async function setup(f){
  const route=ok(await f.admin.request(base+'/routes','POST',{code:'R3',nameEn:'Three Stops',nameAr:'Three Stops',active:true,stops:cities.map(cityId=>({cityId})),...pw})).id;
  const layout=ok(await f.admin.request(base+'/fleet/layouts','POST',{code:'L1',nameEn:'Coach',nameAr:'Coach',active:true,rows:1,columns:3,seats:[1,2,3].map(i=>({row:1,column:i,label:String(i)})),...pw})).id;
  const bus=ok(await f.admin.request(base+'/fleet/buses','POST',{code:'B1',registration:'REG B1',layoutId:layout,layoutRevision:1,active:true,...pw})).id,driver=ok(await f.admin.request(base+'/drivers','POST',{employeeCode:'D1',nameEn:'Driver',nameAr:'Driver',active:true,...pw})).id;
- const trip=ok(await f.admin.request(base+'/trips','POST',{routeId:route,dates:[future()],time:'07:00',offsets:[0,60,120],fareMinor:300000,...pw})).ids[0];
+ // D90: the trip holds booked seats for 2 hours before payment.
+ const trip=ok(await f.admin.request(base+'/trips','POST',{routeId:route,dates:[future()],time:'07:00',offsets:[0,60,120],fareMinor:300000,holdHours:2,...pw})).ids[0];
  ok(await f.admin.request(`${base}/trips/${trip}/assignment`,'POST',{busId:bus,driverId:driver,version:1,...pw}));ok(await f.admin.request(`${base}/trips/${trip}/publish`,'POST',{version:2,...pw}));
  ok(await f.admin.request(base+'/public-profile','PUT',{listed:true,aboutEn:'',aboutAr:'',version:0,...pw}),200);
  return {cid,base,pw,route,trip,cities};
@@ -68,4 +69,16 @@ test('stop-to-stop journeys use the price list, reuse seats after a drop-off and
  ok(await f.admin.request(`${s.base}/routes/${s.route}`,'PATCH',{code:'R3',nameEn:'Two Stops',nameAr:'Two Stops',active:true,stops:[s.cities[0],s.cities[2]].map(cityId=>({cityId})),version:again.route.version,...s.pw}),200);
  assert.equal(ok(await f.admin.request(fares),200).fares.length,0,'New stops clear the old prices.');
  assert.equal(ok(await f.client().request('public/trips?from=STP_BB&to=STP_CC'),200).items.length,0,'The existing trip no longer matches the route, so its middle journeys are not priced.');
+}));
+
+test('each trip holds booked seats for 1 to 3 hours, and no hold lasts longer than 3 hours',async()=>identityFixture(async f=>{
+ const s=await setup(f);
+ const listed=ok(await f.admin.request(s.base+'/trips'),200).items.find(x=>x.id===s.trip);
+ assert.deepEqual([listed.holdMinutes,listed.effectiveHoldMinutes,listed.durationMinutes],[120,120,120],'The trip reports its hold and expected travel time.');
+ const held=ok(await hold(f,s.trip,['3']));assert.equal(held.holdMinutes,120);
+ const minutes=(Date.parse(held.expiresAt)-Date.parse(held.serverNow))/60000;assert.ok(minutes>118&&minutes<=120,'The hold lasts two hours: '+minutes);
+ assert.equal(ok(await f.client().request('public/trips/'+s.trip),200).holdMinutes,120,'Passengers see the trip hold time.');
+ assert.equal((await f.admin.request(s.base+'/trips','POST',{routeId:s.route,dates:[future(12)],time:'07:00',offsets:[0,60,120],fareMinor:1000,holdHours:4,...s.pw})).error?.code,'INVALID_HOLD_HOURS');
+ const w=ok(await f.admin.request(s.base),200).company;
+ assert.equal((await f.admin.request(s.base,'PATCH',{nameEn:w.nameEn,nameAr:w.nameAr,status:w.status,contactEmail:w.contactEmail,holdMinutes:240,timezone:w.timezone,locale:w.locale,version:w.version,...s.pw})).status,400,'A company default above 3 hours is refused.');
 }));

@@ -7,7 +7,7 @@ abstract class PassengerRepository {
   bool get isDemo;
   Future<List<City>> cities();
   Future<List<Departure>> departures({required String from, required String to, required DateTime date});
-  Future<SeatMap> seatMap(String tripId);
+  Future<SeatMap> seatMap(String tripId, {int? from, int? to});
 
   /// Holds the seats for the company's deadline. Retrying with the same [ReservationRequest.key]
   /// returns the same booking instead of a second one (server idempotency).
@@ -38,7 +38,7 @@ class LivePassengerRepository implements PassengerRepository {
   }
 
   @override
-  Future<SeatMap> seatMap(String tripId) async => SeatMap.fromJson((await api.get('public/trips/${Uri.encodeComponent(tripId)}') as Map).cast());
+  Future<SeatMap> seatMap(String tripId, {int? from, int? to}) async => SeatMap.fromJson((await api.get('public/trips/${Uri.encodeComponent(tripId)}', query: from != null && to != null ? {'from': '$from', 'to': '$to'} : null) as Map).cast());
 
   @override
   Future<Booking> reserve(ReservationRequest request) async => Booking((await api.post('public/holds', request.toJson()) as Map).cast());

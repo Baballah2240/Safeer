@@ -33,6 +33,13 @@ try{await identityFixture(async f=>{
  await fill('#staff-dialog [name=fare-0-1]','2,000');await fill('#staff-dialog [name=fare-1-2]','3500.50');await fill('#staff-dialog [name=currentPassword]',f.password);await shot('prices-en');
  await evaluate('document.querySelector("#staff-dialog form").requestSubmit()');await until('!document.querySelector("#staff-dialog").open');
  assert.deepEqual(need(await f.admin.request(`${base}/routes/${route}/fares`)).fares.map(x=>x.fareMinor),[200000,350050]);
+ // D90: Schedule trips takes stop times in hours and a seat hold of 1-3 hours; the list shows both.
+ await click('[data-company-section=trips]');await until('Boolean(document.querySelector("[data-trip-create]"))');
+ assert.ok(await evaluate('document.querySelector(".trip-times").textContent.includes("8 h")'),'Expected trip time in hours.');
+ await click('[data-trip-create]');await until('Boolean(document.querySelector("[data-trip-route]"))');await fill('[data-trip-route]',route);await until('document.querySelectorAll("[name=offset]").length===3');
+ assert.deepEqual(await evaluate('[...document.querySelectorAll("#staff-dialog [name=holdHours] option")].map(o=>o.value)'),['1','2','3']);
+ assert.equal(await evaluate('document.querySelectorAll("[name=offset]")[2].value'),'2','Stop times are in hours.');
+ await evaluate('document.querySelector("#staff-dialog [name=holdHours]").scrollIntoView({block:"start"})');await settle();await shot('schedule-en');await evaluate('document.querySelector("#staff-dialog").close()');
  // A passenger searches Wad Madani to Kassala.
  for(const [lang,width,height] of [['en',390,844],['ar',390,844],['en',1366,900]]){
   await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width<700});

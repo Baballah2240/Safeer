@@ -52,6 +52,9 @@ class _ReviewScreenState extends State<ReviewScreen> {
       key: _key,
       mobile: _mobile.text.replaceAll(RegExp(r'[\s\-()]'), ''),
       travellers: [for (final e in _names.entries) Traveller(e.key, e.value.text.trim())],
+      // D89: book exactly the journey the passenger searched (part of the route at its own price).
+      fromIndex: widget.map.trip.partial ? widget.map.trip.fromIndex : null,
+      toIndex: widget.map.trip.partial ? widget.map.trip.toIndex : null,
     );
     try {
       final booking = await scope.repository.reserve(request);

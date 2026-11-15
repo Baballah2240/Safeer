@@ -71,6 +71,10 @@ class SafeerStrings {
   String seatsLeft(int n) => _t(n == 1 ? '1 seat left' : '$n seats left', 'المقاعد المتاحة: $n');
   String get soldOut => _t('Full', 'ممتلئة');
   String get pickup => _t('Pickup', 'نقطة الصعود');
+  // D89: a passenger's own stops.
+  String journey(String from, String to) => isArabic ? '$from ← $to' : '$from → $to';
+  String get journeyLabel => _t('Journey', 'الرحلة');
+  String get partOfRoute => _t('Part of the route', 'جزء من المسار');
   String get operator => _t('Operator', 'الشركة');
   String get fare => _t('Fare', 'السعر');
   String get perSeat => _t('per seat', 'للمقعد');

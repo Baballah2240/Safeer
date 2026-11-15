@@ -171,4 +171,22 @@ void main() {
       expect((await repo.seatMap(morning.id)).seats.firstWhere((s) => s.label == '3A').available, isFalse);
     });
   });
+
+  // D89: a journey between middle stops keeps its stops for the seat map and the hold; drivers see each passenger's stops.
+  test('part-route journeys keep their stops', () {
+    final d = Departure.fromJson({'id': 't1', 'fromIndex': 1, 'toIndex': 2, 'partial': true, 'fareMinor': 150000, 'stops': [
+      {'cityNameEn': 'A', 'cityNameAr': 'أ'}, {'cityNameEn': 'B', 'cityNameAr': 'ب', 'stationNameEn': 'B Station', 'stationNameAr': 'محطة ب'}, {'cityNameEn': 'C', 'cityNameAr': 'ج'},
+    ]});
+    expect([d.fromIndex, d.toIndex, d.partial], [1, 2, true]);
+    expect(d.pickup.pick(false), 'B Station');
+    final whole = ReservationRequest(tripId: 't1', seats: const ['1'], key: 'k', mobile: '0912345678', travellers: const [Traveller('1', 'A Person')]).toJson();
+    expect(whole.containsKey('fromIndex'), isFalse);
+    final part = ReservationRequest(tripId: 't1', seats: const ['1'], key: 'k', mobile: '0912345678', travellers: const [Traveller('1', 'A Person')], fromIndex: 1, toIndex: 2).toJson();
+    expect([part['fromIndex'], part['toIndex']], [1, 2]);
+    final p = ManifestPassenger.fromJson({'ticket': 'TKT-00000001', 'seat': '1', 'valid': true, 'boardsEn': 'Wad Madani', 'boardsAr': 'ود مدني', 'leavesEn': 'Kassala', 'leavesAr': 'كسلا'});
+    expect([p.boards?.pick(false), p.leaves?.pick(true)], ['Wad Madani', 'كسلا']);
+    expect(p.withBoarded(DateTime.utc(2026)).boards?.pick(false), 'Wad Madani');
+    final r = ScanResult.fromReply({'ticket': 'TKT-00000001', 'seat': '1', 'boardsEn': 'Wad Madani', 'boardsAr': 'ود مدني', 'leavesEn': 'Kassala', 'leavesAr': 'كسلا'}, board: true);
+    expect(r.leaves?.pick(false), 'Kassala');
+  });
 }

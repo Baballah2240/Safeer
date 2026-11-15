@@ -1,5 +1,7 @@
 # Safeer
 
+- D90 (2026-11-15): hold time comes only from safeer.trip_hold_minutes (per-trip 1-3 hours, else the company default, never more than 180 minutes). Trip forms take hours; the API keeps minutes (offsets) and holdHours.
+
 - D89 (2026-11-15): stop-to-stop journeys (migration 0025, route_fares, safeer.segment_fare/seat_taken/trip_doc). A booking's journey is its seat allocations' segment [from,to); always check seat availability with segment overlap (safeer.seat_taken), never per trip. Journey prices come only from safeer.segment_fare. Keep the old whole-trip function signatures working for the published apps.
 
 - D87 (2026-11-15): monthly invoices (migration 0024, safeer.invoice_issue/invoice_settle, invoice-pdf.ts). Never compute invoice amounts in the API or browser; the database function is the single source. The runtime role must stay read-only on company_invoices. PDFs share contract-pdf.ts (document/serialize); English PDFs fall back to the Arabic font for non-Latin text.

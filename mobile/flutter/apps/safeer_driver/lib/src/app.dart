@@ -8,7 +8,7 @@ import 'sign_in_screen.dart';
 import 'trips_screen.dart';
 
 // Shown in Settings; keep it equal to the version line in pubspec.yaml (D78).
-const driverVersion = '0.19.0 (19000)';
+const driverVersion = '0.20.0 (20000)';
 
 class DriverScope extends InheritedWidget {
   const DriverScope({super.key, required this.session, required this.settings, required this.config, this.camera, required super.child});

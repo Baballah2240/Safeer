@@ -32,7 +32,7 @@ class _SeatScreenState extends State<SeatScreen> {
   Future<void> _load() async {
     setState(() => _error = null);
     try {
-      final map = await PassengerScope.of(context).repository.seatMap(widget.departure.id);
+      final map = await PassengerScope.of(context).repository.seatMap(widget.departure.id, from: widget.departure.partial ? widget.departure.fromIndex : null, to: widget.departure.partial ? widget.departure.toIndex : null);
       if (!mounted) return;
       final free = {for (final s in map.seats) if (s.available) s.label};
       setState(() {

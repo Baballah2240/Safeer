@@ -1,5 +1,9 @@
 # Changelog
 
+## Trip times in hours, seat holds of 1-3 hours, apps 0.20.0 - D90, 2026-11-15
+
+Migration 0026 adds trips.hold_minutes (60, 120 or 180) and safeer.trip_hold_minutes; every hold now lasts at most 3 hours (company defaults above 180 minutes are lowered to 180 and the company form allows at most 180). Schedule trips and Edit trip take stop times in hours (quarter hours) with the last stop labelled Expected trip time, and a Seat hold before payment of 1, 2 or 3 hours (holdHours, INVALID_HOLD_HOURS); the trip list shows the expected trip time and the seat hold. The Flutter apps 0.20.0 book part-route journeys at their own price (passenger) and show each passenger's boarding and drop-off stop (driver).
+
 ## Stop-to-stop journeys with a price list - D89, 2026-11-15
 
 Migration 0025 adds route_fares and makes booking, search, the station counter, tickets, the driver manifest and operations aware of the passenger's own stops. Routes > Prices between stops sets one price per pair of stops; the whole route keeps each trip's fare and an unpriced journey is not sold. Search matches any stop (every stop city is offered); the trip page has Board at / Get off at; holds and counter sales accept fromIndex/toIndex; a seat freed at a middle stop is sold again and overlapping journeys never share a seat (existing range exclusion). Tickets, bookings and the passenger itinerary show the passenger's stops and boarding time; drivers see where each passenger boards and gets off and can keep boarding later-stop passengers after departure until arrival; Operations shows the load on each stretch. New endpoints: GET/PUT companies/:id/routes/:rid/fares. OpenAPI: 105 paths / 121 operations. Tests: tests/stop-to-stop.integration.mjs and tests/stop-to-stop.browser.mjs.
