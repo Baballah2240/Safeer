@@ -1,5 +1,15 @@
 # Decisions
 
+## 2026-11-15 - Stop-to-stop journeys
+
+D89: The owner asked for picking up and dropping off passengers between stops, priced by a price list.
+1. Prices: route_fares holds one price per (from stop, to stop) of a route, set by route managers (Routes > Prices between stops). The whole route always uses the trip's own fare. A journey without a price is not sold (SEGMENT_NOT_PRICED). Prices are in the trip's currency. Saving a route with different stops clears its price list, and safeer.segment_fare only prices a trip whose stop snapshot still matches the route, so an edited route never prices an old trip wrongly.
+2. Seats: bookings store the journey as the seat allocation range [from,to) (D11). Holds check overlap on that range only, so a seat freed at a middle stop is sold again; the existing exclusion constraint still refuses overlapping journeys. The booking's fare is the journey price at the time of the hold.
+3. Search and pages: public_trip_rows matches a trip when it stops at the origin and later at the destination (first match after the origin) and that journey has a price; times, duration, price and seats left are for that journey; public_cities lists every stop city. The trip page (?from=&to=) offers Board at / Get off at, limited to priced journeys.
+4. Counter: counter_trip and counter_sale take the stops the same way; the clerk picks them before the seats.
+5. Driver and operations: the manifest and ticket checks name where each passenger boards and gets off. After departure, boarding stays open until arrival when passengers board at later stops; tickets boarding at the first stop are refused once the bus has left. Operations shows the occupied seats on each stretch.
+6. Old function signatures stay and book the whole trip, so the published passenger app keeps working unchanged.
+
 ## 2026-11-15 - Monthly invoices
 
 D87: The D82 contract promised a monthly invoice with the fee and commission; the owner asked to add it and to close the D86 review gaps.

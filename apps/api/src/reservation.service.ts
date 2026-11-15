@@ -4,7 +4,7 @@ import {randomBytes,randomUUID} from 'node:crypto';
 import type {PoolClient} from 'pg';
 import {Database} from './database.js';
 import {IdentityService} from './identity.service.js';
-import {body,digest,text,uuid,version,fail} from './security.js';
+import {body,digest,text,uuid,version,fail,stopIndex} from './security.js';
 
 const alphabet='23456789ABCDEFGHJKLMNPQRSTUVWXYZ',referencePattern=/^SF-[2-9A-HJ-NP-Z]{8}$/;
 const reference=()=>'SF-'+[...randomBytes(8)].map(byte=>alphabet[byte%32]).join('');
@@ -74,7 +74,8 @@ export class ReservationService implements OnModuleInit,OnModuleDestroy {
   if(!row)fail('NOT_FOUND',404);
   return {...row,tickets:(row.tickets as Array<Record<string,unknown>>).map(({qrToken,...ticket})=>({...ticket,...(typeof qrToken==='string'?{qr:ticketQr(qrToken)}:{})}))};
  }
- async trip(id:string){uuid(id);const row=await this.one('SELECT safeer.public_trip($1) AS row',[id]);if(!row)fail('NOT_FOUND',404);return row;}
+ // D89: the trip page for one journey (from and to are stop indexes; missing means the whole trip).
+ async trip(id:string,from?:unknown,to?:unknown){uuid(id);const row=await this.one('SELECT safeer.public_trip($1,$2::integer,$3::integer) AS row',[id,stopIndex(from),stopIndex(to)]);if(!row)fail('NOT_FOUND',404);return row;}
  // Counts seats, not requests, so one client cannot hold whole buses a few requests at a time.
  private async throttle(client:string,seats:number){if(await this.spend('hold:'+client,seats)>120)fail('RATE_LIMITED',429,'Please wait and try again.');}
  private async spend(name:string,amount:number){
@@ -94,11 +95,12 @@ export class ReservationService implements OnModuleInit,OnModuleDestroy {
  private static reference(value:unknown){const code=typeof value==='string'?value.trim().toUpperCase():'';if(!referencePattern.test(code))fail('NOT_FOUND',404);return code;}
  // Holds use the shared service lock so different trips never wait on each other. Each trip is serialized by its own row lock.
  async hold(input:unknown,client:string){
-  const data=body(input,['tripId','seats','key','mobile','travelers']),tripId=uuid(data.tripId),labels=seatLabels(data.seats),access=accessHash(data.key),mobile=mobileNumber(data.mobile),people=travelers(data.travelers,labels);
-  const request=digest('safeer-request-v1:'+data.key+JSON.stringify([tripId,[...labels].sort(),mobile,people]));
+  const data=body(input,['tripId','seats','key','mobile','travelers','fromIndex','toIndex']),tripId=uuid(data.tripId),labels=seatLabels(data.seats),access=accessHash(data.key),mobile=mobileNumber(data.mobile),people=travelers(data.travelers,labels),from=stopIndex(data.fromIndex),to=stopIndex(data.toIndex);
+  // The journey is part of the request, so a retry with other stops is refused instead of returning the first hold.
+  const request=digest('safeer-request-v1:'+data.key+JSON.stringify([tripId,[...labels].sort(),mobile,people,...(from===null&&to===null?[]:[[from,to]])]));
   // A retry of a hold that already exists costs nothing, so a lost reply can always be recovered.
   if(!await this.one('SELECT safeer.public_booking_by_key($1) AS row',[access]))await this.throttle(client,labels.length);
-  const row=await this.db.transaction(async c=>(await c.query('SELECT safeer.public_book($1,$2,$3,$4,$5,$6,$7,$8) AS row',[tripId,labels,randomUUID(),reference(),access,request,mobile,JSON.stringify(people)])).rows[0].row,false);
+  const row=await this.db.transaction(async c=>(await c.query('SELECT safeer.public_book($1,$2,$3,$4,$5,$6,$7,$8,$9::integer,$10::integer) AS row',[tripId,labels,randomUUID(),reference(),access,request,mobile,JSON.stringify(people),from,to])).rows[0].row,false);
   return this.presentation(row.reference,access,null);
  }
  async booking(code:string,key:unknown){

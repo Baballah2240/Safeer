@@ -120,6 +120,7 @@ body:has(#driver-app){background:radial-gradient(ellipse at 95% 0,rgba(185,83,15
 
 #driver-app .driver-manual-entry summary{color:var(--driver-accent-ink)}
 #driver-app .driver-validation-title{color:var(--driver-accent-ink)!important}
+#driver-app .driver-journey{display:block;margin-top:2px;font-size:12px;color:var(--driver-muted,#5b6560)}
 #driver-app .legal-links a{color:var(--driver-accent-ink)}
 #driver-app .auth-note svg{color:var(--driver-accent-ink)}
 #driver-app :is(button,input,textarea,select,a):focus-visible{outline-color:var(--driver-accent-ink)}

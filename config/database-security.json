@@ -272,6 +272,14 @@
         "UPDATE"
       ]
     },
+    "route_fares": {
+      "rls": true,
+      "privileges": [
+        "SELECT",
+        "INSERT",
+        "DELETE"
+      ]
+    },
     "route_stops": {
       "rls": true,
       "privileges": [
@@ -505,6 +513,10 @@
     "safeer.public_company_brand(text)",
     "safeer.public_company_logo(text)",
     "safeer.invoice_issue(uuid,date,text)",
-    "safeer.invoice_settle(uuid,uuid,text,text)"
+    "safeer.invoice_settle(uuid,uuid,text,text)",
+    "safeer.public_book(uuid,text[],uuid,text,text,text,text,jsonb,integer,integer)",
+    "safeer.counter_sale(uuid,uuid,uuid,text[],uuid,text,text,text,text,jsonb,text,text,text,integer,integer)",
+    "safeer.public_trip(uuid,integer,integer)",
+    "safeer.counter_trip(uuid,uuid,integer,integer)"
   ]
 }

@@ -8407,7 +8407,7 @@
     "/api/v1/public/trips": {
       "get": {
         "summary": "Search public trips, up to 100",
-        "description": "Anonymous read-only projection of listed, approved companies and published future trips. No session is used.",
+        "description": "Anonymous read-only projection of listed, approved companies and published future trips. No session is used. D89: from/to match any stop of a trip (the destination after the origin); each result carries fromIndex, toIndex, partial and that journey's price and times.",
         "security": [],
         "parameters": [
           {
@@ -8650,7 +8650,7 @@
     "/api/v1/public/trips/{id}": {
       "get": {
         "summary": "One published trip with its seat map",
-        "description": "Anonymous. No session is used; writes require the page origin and JSON. Seats report only whether they are free.",
+        "description": "Anonymous. No session is used; writes require the page origin and JSON. Seats report only whether they are free. D89: from/to select a journey between stops; the price, times, seat availability and the priced journeys (fares) follow it. 404 when that journey has no price.",
         "security": [],
         "parameters": [
           {
@@ -8660,6 +8660,28 @@
             "schema": {
               "type": "string",
               "format": "uuid"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "description": "Boarding stop index (default: first stop).",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 29
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "description": "Drop-off stop index (default: last stop).",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 29
             }
           }
         ],
@@ -8695,7 +8717,7 @@
     "/api/v1/public/holds": {
       "post": {
         "summary": "Hold 1-10 seats with their travelers, all or none",
-        "description": "Anonymous. No session is used; writes require the page origin and JSON. Limited to 120 seats per client address per 15 minutes. Repeating a key with the same seats returns the original hold. D64: returns exact booked schedule snapshots; valid paid device-key tickets include existing QR credential geometry.",
+        "description": "Anonymous. No session is used; writes require the page origin and JSON. Limited to 120 seats per client address per 15 minutes. Repeating a key with the same seats returns the original hold. D64: returns exact booked schedule snapshots; valid paid device-key tickets include existing QR credential geometry. D89: fromIndex/toIndex book a journey between stops at its listed price (SEGMENT_NOT_PRICED, INVALID_SEGMENT); omit both for the whole trip.",
         "security": [],
         "requestBody": {
           "required": true,
@@ -8760,6 +8782,22 @@
                         }
                       }
                     }
+                  },
+                  "fromIndex": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 29
+                  },
+                  "toIndex": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 29
                   }
                 }
               }
@@ -9546,6 +9584,28 @@
               "type": "string",
               "format": "uuid"
             }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "description": "Boarding stop index.",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 29
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "description": "Drop-off stop index.",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 29
+            }
           }
         ],
         "responses": {
@@ -10044,7 +10104,7 @@
     "/api/v1/companies/{id}/counter/sales": {
       "post": {
         "summary": "Walk-in sale: seats, payment and tickets together",
-        "description": "Requires an open session. All of it commits, or none of it does.",
+        "description": "Requires an open session. All of it commits, or none of it does. D89: fromIndex/toIndex book a journey between stops at its listed price (SEGMENT_NOT_PRICED, INVALID_SEGMENT); omit both for the whole trip.",
         "security": [
           {
             "cookieSession": []
@@ -10112,6 +10172,22 @@
                     "type": "string",
                     "format": "uuid",
                     "description": "Repeating a key with the same request returns the original result."
+                  },
+                  "fromIndex": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 29
+                  },
+                  "toIndex": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 29
                   }
                 }
               }
@@ -14309,6 +14385,257 @@
                 "schema": {
                   "type": "string",
                   "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in required."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not available."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/routes/{rid}/fares": {
+      "get": {
+        "summary": "Read the price list between stops",
+        "description": "company.routes.read. Stops in order and the price of each journey that is sold. The whole route always uses each trip's own fare.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "rid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "stops",
+                        "fares",
+                        "canManage"
+                      ],
+                      "properties": {
+                        "stops": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "index": {
+                                "type": "integer"
+                              },
+                              "cityNameEn": {
+                                "type": "string"
+                              },
+                              "cityNameAr": {
+                                "type": "string"
+                              },
+                              "stationNameEn": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "stationNameAr": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              }
+                            }
+                          }
+                        },
+                        "fares": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "from",
+                              "to",
+                              "fareMinor"
+                            ],
+                            "properties": {
+                              "from": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 28
+                              },
+                              "to": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 29
+                              },
+                              "fareMinor": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 100000000
+                              }
+                            }
+                          }
+                        },
+                        "canManage": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in required."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not available."
+          }
+        }
+      },
+      "put": {
+        "summary": "Replace the price list between stops",
+        "description": "Route manager; CSRF and the current password. Replaces every price (from < to, both within the route). A journey without a price is not sold (SEGMENT_NOT_PRICED). Changing a route's stops clears its price list; prices apply only to trips whose stops still match the route. Errors: INVALID_FARES.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "rid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "fares",
+                  "currentPassword"
+                ],
+                "properties": {
+                  "fares": {
+                    "type": "array",
+                    "maxItems": 435,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "from",
+                        "to",
+                        "fareMinor"
+                      ],
+                      "properties": {
+                        "from": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 28
+                        },
+                        "to": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 29
+                        },
+                        "fareMinor": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 100000000
+                        }
+                      }
+                    }
+                  },
+                  "currentPassword": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Saved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "count": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }

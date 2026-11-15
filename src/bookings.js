@@ -5,7 +5,8 @@ export const openBookingNext=id=>{nextBooking=id;};
 const statusLabel={held:'Held',expired:'Expired',released:'Released',confirmed:'Paid',refunded:'Refunded'},eventLabel={held:'Seats held',expired:'Hold ended',released:'Seats released',changed:'Details corrected',erased:'Personal details erased',paid:'Paid',refunded:'Refunded'},actorLabel={passenger:'by the passenger',staff:'by staff',trip_canceled:'when the trip was canceled',system:'automatically'};
 const bagStatus={registered:'Registered',tagged:'Tagged',loaded:'Loaded',in_transit:'In transit',unloaded:'Unloaded',collected:'Collected',lost:'Lost',exception_reported:'Problem reported'};
 const money=(row,language)=>new Intl.NumberFormat(language==='ar'?'ar-SD-u-nu-latn':'en-GB',{style:'currency',currency:row.currency,maximumFractionDigits:2}).format(row.amountMinor/100);
-const route=(row,language)=>language==='ar'?row.routeNameAr:row.routeNameEn;
+// D89: a booking for part of the route names the passenger's own stops (printed tickets and receipts included).
+const route=(row,language)=>{const name=language==='ar'?row.routeNameAr:row.routeNameEn;return row.partial?name+' · '+(language==='ar'?row.fromNameAr+' ← '+row.toNameAr:row.fromNameEn+' → '+row.toNameEn):name;};
 export function bookingsView(data,{t}){
  return `<section class="staff-panel"><header class="staff-section-head"><div><h2>${t('Bookings')}</h2><p>${t('Find a booking by reference, mobile number or traveler name. Viewing bookings is recorded in the company audit.')}</p></div></header><form id="booking-search" class="booking-search"><label>${t('Search')}<input type="search" name="q" maxlength="100"></label><button type="submit" class="staff-primary">${t('Search')}</button></form><div id="booking-results" aria-live="polite"><p role="status">${t('Loading bookings…')}</p></div></section>`;
 }

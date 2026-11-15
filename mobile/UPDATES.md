@@ -1,5 +1,9 @@
 # Safeer mobile status
 
+## Stop-to-stop journeys (server and website) - D89, 2026-11-15
+
+No app was built. The published apps keep working: the passenger app still books whole trips, and its booking details now show the passenger's own stops when a booking was made for part of a route on the website or at the counter. The driver app checks tickets through the server, so passengers boarding at later stops can be scanned after departure. Showing each passenger's boarding and drop-off stop in the driver app's passenger list, and booking part of a route in the passenger app, need a new app build.
+
 ## Flutter apps published - Safeer Passenger 0.19.0 / 19000, Safeer Driver 0.19.0 / 19000, 2026-11-13
 
 D78: the Flutter apps replace the WebView apps. They keep the app IDs (sd.safeer.booking for Safeer Passenger, sd.safeer.driver for Safeer Driver) and the upload key with a higher versionCode, so installing the new APK over the old app is an Android update. Built from the D74/D77 code with the version raised and smaller release packaging (ARM only, compressed native libraries). Files for GitHub release v0.19.0:

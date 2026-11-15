@@ -1,5 +1,9 @@
 # Current state - read this first
 
+## Stop-to-stop journeys - D89, 2026-11-15
+
+Passengers can book from any stop to a later stop. Each company sets prices between stops in Routes > Prices between stops (the whole route uses the trip fare; a journey without a price is not sold). Seats freed at a middle stop are sold again. The counter, tickets, the driver list and Operations show each passenger's stops ([D89](DECISIONS.md)). Live hosting needs migrations 0023-0025. The Android driver app already checks tickets through the server; showing each passenger's stops in it needs a new app build.
+
 ## Monthly invoices - D87, 2026-11-15
 
 In Plan & contract the Safeer owner issues one invoice per company for each finished month: the monthly fee plus the commission on that month's net collections (ticket and parcel payments minus refunds, in the contract currency, UTC). It needs an accepted contract. Company managers receive it in Notifications and download it in English or Arabic; the owner marks it paid with a reference or voids it with a reason ([D87](DECISIONS.md)). Live hosting needs migrations 0023 and 0024.

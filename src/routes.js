@@ -14,7 +14,7 @@ export function bindCities(root,data,ctx){
 }
 export function routesView(data,ctx){
  const {t,e,language}=ctx,items=data.routeCatalog?.items||[],name=id=>{const c=data.cities.find(c=>c.id===id);return c?e(language==='ar'?c.nameAr:c.nameEn):e(id);};
- return `<section class="staff-panel"><header class="staff-section-head"><div><h2>${t('Routes & stops')}</h2><p>${t('Plan your company routes before adding buses and trips.')}</p></div>${data.routeCatalog?.canManage?`<button type="button" data-route-create class="staff-primary">${t('Create route')}</button>`:''}</header><label>${t('Search')}<input type="search" id="staff-search" placeholder="${e(t('Search routes'))}"></label><div class="staff-grid route-catalog">${items.map(r=>`<article class="staff-record" data-search="${e(r.code+' '+r.nameEn+' '+r.nameAr)}"><span class="staff-badge">${t(r.active?'Active':'Inactive')}</span><h3>${e(language==='ar'?r.nameAr:r.nameEn)}</h3><p><bdi>${e(r.code)}</bdi></p><p class="route-endpoints">${name(r.originCityId)} <span aria-hidden="true"> / </span> ${name(r.destinationCityId)}</p><p>${t('Stops')}: ${r.stopCount} · ${t('Version')}: ${r.version}</p><div class="staff-actions"><button type="button" data-route-view="${r.id}">${t('View stops')}</button>${data.routeCatalog?.canManage?`<button type="button" data-route-edit="${r.id}">${t('Edit route')}</button>`:''}</div></article>`).join('')||`<p>${t('No routes yet. Add cities and station locations, then create a route.')}</p>`}</div><p class="staff-muted">${t('Active routes use active cities and stations. Retire a route before deactivating its resources.')}</p></section>`;
+ return `<section class="staff-panel"><header class="staff-section-head"><div><h2>${t('Routes & stops')}</h2><p>${t('Plan your company routes before adding buses and trips.')}</p></div>${data.routeCatalog?.canManage?`<button type="button" data-route-create class="staff-primary">${t('Create route')}</button>`:''}</header><label>${t('Search')}<input type="search" id="staff-search" placeholder="${e(t('Search routes'))}"></label><div class="staff-grid route-catalog">${items.map(r=>`<article class="staff-record" data-search="${e(r.code+' '+r.nameEn+' '+r.nameAr)}"><span class="staff-badge">${t(r.active?'Active':'Inactive')}</span><h3>${e(language==='ar'?r.nameAr:r.nameEn)}</h3><p><bdi>${e(r.code)}</bdi></p><p class="route-endpoints">${name(r.originCityId)} <span aria-hidden="true"> / </span> ${name(r.destinationCityId)}</p><p>${t('Stops')}: ${r.stopCount} · ${t('Version')}: ${r.version}</p><div class="staff-actions"><button type="button" data-route-view="${r.id}">${t('View stops')}</button>${r.stopCount>2?`<button type="button" data-route-fares="${r.id}">${t('Prices between stops')}</button>`:''}${data.routeCatalog?.canManage?`<button type="button" data-route-edit="${r.id}">${t('Edit route')}</button>`:''}</div></article>`).join('')||`<p>${t('No routes yet. Add cities and station locations, then create a route.')}</p>`}</div><p class="staff-muted">${t('Active routes use active cities and stations. Retire a route before deactivating its resources.')}</p></section>`;
 }
 export function bindRoutes(root,data,ctx){
  const {api,openForm,input,currentPassword,dialog,t,e,language}=ctx,cid=data.company.id,path='companies/'+cid+'/routes';
@@ -49,6 +49,24 @@ export function bindRoutes(root,data,ctx){
   }catch(error){if(button.isConnected){dialog.innerHTML=`<p role="alert">${e(t(error.message))}</p><button type="button" data-route-close>${t('Close')}</button>`;dialog.querySelector('[data-route-close]').onclick=()=>dialog.close();dialog.showModal();}}
   finally{if(button.isConnected)button.disabled=false;}
  };
+ // D89: the price list for journeys between stops. The whole route uses each trip's own fare; an empty price is not sold.
+ const amount=minor=>{const v=BigInt(minor);return `${v/100n}.${String(v%100n).padStart(2,'0')}`;};
+ const toMinor=value=>{const s=String(value||'').replace(/[,\s]/g,'');if(!s)return null;if(!/^\d{1,6}(\.\d{1,2})?$/.test(s))throw Error('INVALID_FARES');const [w,c='']=s.split('.');return Number(w)*100+Number((c+'00').slice(0,2));};
+ const fares=async button=>{
+  button.disabled=true;
+  try{
+   const id=button.dataset.routeFares,list=await api(path+'/'+id+'/fares');if(!button.isConnected)return;
+   const stop=s=>e(language==='ar'?s.cityNameAr:s.cityNameEn)+(s.stationNameEn?' · '+e(language==='ar'?s.stationNameAr:s.stationNameEn):''),last=list.stops.length-1;
+   const price=(i,j)=>list.fares.find(x=>x.from===i&&x.to===j);
+   const pairs=[];for(let i=0;i<last;i++)for(let j=i+1;j<=last;j++)if(!(i===0&&j===last))pairs.push([i,j]);
+   const rows=pairs.map(([i,j])=>{const p=price(i,j);return `<tr><th scope="row">${stop(list.stops[i])}</th><td>${stop(list.stops[j])}</td><td>${list.canManage?`<input name="fare-${i}-${j}" inputmode="decimal" dir="ltr" maxlength="10" pattern="[0-9][0-9,]*(\\.[0-9]{1,2})?" value="${p?e(amount(p.fareMinor)):''}" aria-label="${e(t('Price'))}">`:`<bdi>${p?e(amount(p.fareMinor)):t('Not sold')}</bdi>`}</td></tr>`;}).join('');
+   const html=`<p>${t('Set a price for each journey passengers can book between two stops, in the trip currency. Leave a price empty to not sell that journey. The whole route always uses the fare set on each trip.')}</p><div class="staff-table-wrap route-fares"><table class="staff-table"><thead><tr><th scope="col">${t('From')}</th><th scope="col">${t('To')}</th><th scope="col">${t('Price')}</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+   if(!list.canManage){dialog.innerHTML=`<header class="staff-section-head"><h2>${t('Prices between stops')}</h2><button type="button" data-route-close>${t('Close')}</button></header>${html}`;dialog.querySelector('[data-route-close]').onclick=()=>dialog.close();dialog.showModal();return;}
+   openForm('Prices between stops',html+currentPassword(),f=>{const out=[];for(const [i,j] of pairs){const v=toMinor(f.get(`fare-${i}-${j}`));if(v!==null)out.push({from:i,to:j,fareMinor:v});}return api(path+'/'+id+'/fares','PUT',{fares:out,currentPassword:f.get('currentPassword')});},{submit:'Save prices'});
+  }catch(error){if(button.isConnected){dialog.innerHTML=`<p role="alert">${e(t(error.message))}</p><button type="button" data-route-close>${t('Close')}</button>`;dialog.querySelector('[data-route-close]').onclick=()=>dialog.close();dialog.showModal();}}
+  finally{if(button.isConnected)button.disabled=false;}
+ };
+ root.querySelectorAll('[data-route-fares]').forEach(b=>b.onclick=()=>void fares(b));
  root.querySelectorAll('[data-route-view]').forEach(b=>b.onclick=()=>void open(b,false));
  root.querySelectorAll('[data-route-edit]').forEach(b=>b.onclick=()=>void open(b,true));
 }

@@ -3,7 +3,7 @@ import {randomBytes,randomUUID} from 'node:crypto';
 import type {PoolClient} from 'pg';
 import {Database} from './database.js';
 import {IdentityService} from './identity.service.js';
-import {body,digest,text,uuid,fail} from './security.js';
+import {body,digest,text,uuid,fail,stopIndex} from './security.js';
 import {mobileNumber,saleTravelers,seatList} from './reservation.service.js';
 import {ticketQr} from './ticket-qr.js';
 
@@ -25,7 +25,7 @@ export class TicketingService {
   return action(c,p.id);
  },false);}
  overview(token:string,cid:string){return this.staff(token,cid,async c=>(await c.query('SELECT safeer.counter_overview($1) AS row',[cid])).rows[0].row);}
- trip(token:string,cid:string,tid:string){uuid(tid);return this.staff(token,cid,async c=>{const row=(await c.query('SELECT safeer.counter_trip($1,$2) AS row',[cid,tid])).rows[0].row;if(!row)fail('NOT_FOUND',404);return row;});}
+ trip(token:string,cid:string,tid:string,from?:unknown,to?:unknown){uuid(tid);const f=stopIndex(from),l=stopIndex(to);return this.staff(token,cid,async c=>{const row=(await c.query('SELECT safeer.counter_trip($1,$2,$3::integer,$4::integer) AS row',[cid,tid,f,l])).rows[0].row;if(!row)fail('NOT_FOUND',404);return row;});}
  // D72: departures on one company-local day, for walk-in sales beyond the overview's next 100.
  trips(token:string,cid:string,day:unknown){
   const valid=typeof day==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(day)&&!Number.isNaN(Date.parse(day+'T00:00:00Z'))&&new Date(day+'T00:00:00Z').toISOString().slice(0,10)===day;
@@ -60,9 +60,9 @@ export class TicketingService {
   return this.staff(token,cid,async(c,actor)=>{const row=(await c.query('SELECT safeer.counter_pay($1,$2,$3,$4,$5,$6,$7,$8) AS row',[cid,bid,actor,kind,reference,key,request,late])).rows[0].row;if(!row)fail('NOT_FOUND',404);return row;});
  }
  sale(token:string,cid:string,input:unknown){
-  const data=body(input,['tripId','seats','mobile','travelers','method','reference','key']),tripId=uuid(data.tripId),labels=seatList(data.seats),mobile=mobileNumber(data.mobile),people=saleTravelers(data.travelers,labels),kind=method(data.method),reference=methodReference(kind,data.reference),access=keyHash('sale',cid,data.key),key=keyHash('payment',cid,data.key);
-  const request=digest(`safeer-sale-request-v1:${data.key}:`+JSON.stringify([tripId,[...labels].sort(),mobile,people,kind,reference]));
-  return this.staff(token,cid,async(c,actor)=>(await c.query('SELECT safeer.counter_sale($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13) AS row',[cid,actor,tripId,labels,randomUUID(),bookingReference(),access,request,mobile,JSON.stringify(people),kind,reference,key])).rows[0].row);
+  const data=body(input,['tripId','seats','mobile','travelers','method','reference','key','fromIndex','toIndex']),from=stopIndex(data.fromIndex),to=stopIndex(data.toIndex),tripId=uuid(data.tripId),labels=seatList(data.seats),mobile=mobileNumber(data.mobile),people=saleTravelers(data.travelers,labels),kind=method(data.method),reference=methodReference(kind,data.reference),access=keyHash('sale',cid,data.key),key=keyHash('payment',cid,data.key);
+  const request=digest(`safeer-sale-request-v1:${data.key}:`+JSON.stringify([tripId,[...labels].sort(),mobile,people,kind,reference,...(from===null&&to===null?[]:[[from,to]])]));
+  return this.staff(token,cid,async(c,actor)=>(await c.query('SELECT safeer.counter_sale($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14::integer,$15::integer) AS row',[cid,actor,tripId,labels,randomUUID(),bookingReference(),access,request,mobile,JSON.stringify(people),kind,reference,key,from,to])).rows[0].row);
  }
  async refund(token:string,cid:string,bid:string,input:unknown){
   uuid(bid);const data=body(input,['reason','reference','key','currentPassword']),reason=text(data.reason,1,300),reference=optional(data.reference,100),key=keyHash('refund',cid,data.key);

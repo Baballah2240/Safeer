@@ -19,6 +19,11 @@ arabic['Only bookings saved on this device are listed. Times are published by th
 Object.assign(arabic,{"Some trips are unavailable":"بعض الرحلات غير متاحة الآن","Your saved links are still here. Refresh or use your booking reference below.":"لا تزال روابط حجوزاتك محفوظة. حدّث الصفحة أو استخدم مرجع الحجز أدناه."});
 arabic['Book without an account. Keep your reference to find a booking on another device.']="احجز دون حساب. احتفظ بمرجع الحجز للعثور عليه من جهاز آخر.";
 Object.assign(arabic,accountArabic);
+Object.assign(arabic,{'Your journey on this bus':'رحلتك في هذه الحافلة','Board at':'الصعود من','Get off at':'النزول في','This journey has no price yet. Choose other stops.':'لا يوجد سعر لهذه الرحلة بعد. اختر محطات أخرى.','Part of the route':'جزء من المسار'});
+// D89: the passenger's own stops on a trip page (?from=&to= are stop indexes; missing means the whole trip).
+const stopParam=name=>{const v=new URLSearchParams(location.search).get(name);return /^\d{1,2}$/.test(v||'')?Number(v):null;};
+let journey={from:stopParam('from'),to:stopParam('to')};
+const journeyQuery=()=>journey.from!==null&&journey.to!==null?`?from=${journey.from}&to=${journey.to}`:'';
 const t=key=>language==='ar'?(arabic[key]||key):key,e=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pick=(row,key)=>language==='ar'?row[key+'Ar']:row[key+'En'],locale=()=>language==='ar'?'ar-SD-u-nu-latn':'en-GB';
 // Arabic counts change their wording with the number, so each phrase is chosen by plural category.
@@ -52,7 +57,7 @@ function profilePage(){return `<section class="passenger-profile"><header class=
 const mark=name=>`<span class="market-mark" aria-hidden="true">${e((name.trim()[0]||'').toUpperCase())}</span>`;
 const tripEnd=(time,city,note='')=>`<div class="market-end"><strong><bdi>${e(time)}</bdi></strong><span>${e(city)}</span>${note?`<small>${e(note)}</small>`:''}</div>`;
 function tripCard(row,showCompany=true){
- return `<article class="market-trip" data-trip="${e(row.id)}"><div class="market-trip-main"><h3 class="market-sr">${e(pick(row,'fromName'))} ${t('to')} ${e(pick(row,'toName'))}</h3><p class="market-trip-head"><strong>${e(day(row.date))}</strong>${showCompany?`<a href="${e(link('/company/'+row.companySlug))}">${e(pick(row,'companyName'))}</a>`:''}</p><div class="market-times">${tripEnd(row.time,pick(row,'fromName'))}<span class="market-line">${e(length(row.durationMinutes))}</span>${tripEnd(row.arrivalTime,pick(row,'toName'),row.arrivalDate!==row.date?`${t('Arrives')} ${day(row.arrivalDate)}`:'')}</div>${(()=>{const first=row.stops?.[0],last=row.stops?.at(-1),up=first&&first.stationNameEn?pick(first,'stationName'):'',down=last&&last.stationNameEn?pick(last,'stationName'):'';return up||down?`<p class="market-points">${up?`<span class="market-point market-point-pickup"><span aria-hidden="true"></span>${t('Pickup')}: <bdi>${e(up)}</bdi></span>`:''}${down?`<span class="market-point market-point-dropoff"><span aria-hidden="true"></span>${t('Drop-off')}: <bdi>${e(down)}</bdi></span>`:''}</p>`:'';})()}<p>${e(pick(row,'busType'))} · ${count(row.seatsLeft,'seatsLeft')}</p><details><summary>${t('Stops')} (${row.stops.length})</summary><ol>${row.stops.map(s=>`<li>${e(pick(s,'cityName'))}${s.stationNameEn?` · ${e(pick(s,'stationName'))}`:''}${s.offsetMinutes?` <small>+${e(length(s.offsetMinutes))}</small>`:''}</li>`).join('')}</ol></details></div><div class="market-price"><strong><bdi>${e(money(row))}</bdi></strong>${row.seatsLeft>0?`<a class="primary market-book" href="${e(link('/trip/'+row.id))}">${t('Select seats')}</a>`:`<span class="market-badge">${t('Full')}</span>`}</div></article>`;
+ return `<article class="market-trip" data-trip="${e(row.id)}"><div class="market-trip-main"><h3 class="market-sr">${e(pick(row,'fromName'))} ${t('to')} ${e(pick(row,'toName'))}</h3><p class="market-trip-head"><strong>${e(day(row.date))}</strong>${showCompany?`<a href="${e(link('/company/'+row.companySlug))}">${e(pick(row,'companyName'))}</a>`:''}</p><div class="market-times">${tripEnd(row.time,pick(row,'fromName'))}<span class="market-line">${e(length(row.durationMinutes))}</span>${tripEnd(row.arrivalTime,pick(row,'toName'),row.arrivalDate!==row.date?`${t('Arrives')} ${day(row.arrivalDate)}`:'')}</div>${(()=>{const first=row.stops?.[row.fromIndex??0],last=row.stops?.[row.toIndex??row.stops.length-1],up=first&&first.stationNameEn?pick(first,'stationName'):'',down=last&&last.stationNameEn?pick(last,'stationName'):'';return up||down?`<p class="market-points">${up?`<span class="market-point market-point-pickup"><span aria-hidden="true"></span>${t('Pickup')}: <bdi>${e(up)}</bdi></span>`:''}${down?`<span class="market-point market-point-dropoff"><span aria-hidden="true"></span>${t('Drop-off')}: <bdi>${e(down)}</bdi></span>`:''}</p>`:'';})()}<p>${e(pick(row,'busType'))} · ${count(row.seatsLeft,'seatsLeft')}</p><details><summary>${t('Stops')} (${row.stops.length})</summary><ol>${row.partial?`<p class="market-badge market-partial">${t('Part of the route')}</p>`:''}${row.stops.map(s=>`<li${row.partial&&(s.index<row.fromIndex||s.index>row.toIndex)?' class="market-stop-off"':''}>${e(pick(s,'cityName'))}${s.stationNameEn?` · ${e(pick(s,'stationName'))}`:''}${s.offsetMinutes?` <small>+${e(length(s.offsetMinutes))}</small>`:''}</li>`).join('')}</ol></details></div><div class="market-price"><strong><bdi>${e(money(row))}</bdi></strong>${row.seatsLeft>0?`<a class="primary market-book" href="${e(link('/trip/'+row.id+(row.partial?`?from=${row.fromIndex}&to=${row.toIndex}`:'')))}">${t('Select seats')}</a>`:`<span class="market-badge">${t('Full')}</span>`}</div></article>`;
 }
 const sorted=()=>[...trips].sort(sort==='price'?(a,b)=>a.fareMinor-b.fareMinor:sort==='length'?(a,b)=>a.durationMinutes-b.durationMinutes:()=>0);
 // D65 booking-first homepage icons.
@@ -86,7 +91,25 @@ function companyPage(){
 // Seats are placed from their stored row and column. The map keeps the bus's real left and right in both languages.
 function tripPage(){
  const row=seatTrip;
- return `<section class="market-band"><div class="market-wrap"><a href="${e(link('/marketplace'))}">${language==='ar'?'→':'←'} ${t('Find a bus trip')}</a><div class="market-company"><div><h1>${e(pick(row,'fromName'))} ${t('to')} ${e(pick(row,'toName'))}</h1><p><bdi>${e(day(row.date))} · ${e(row.time)}</bdi> · <a href="${e(link('/company/'+row.companySlug))}">${e(pick(row,'companyName'))}</a></p></div></div></div></section><div class="market-wrap market-body market-booking"><section class="market-card market-map"><h2>${t('Choose your seats')}</h2><ul class="market-legend"><li><i></i>${t('Available')}</li><li><i class="selected"></i>${t('Selected')}</li><li><i class="taken"></i>${t('Taken')}</li></ul><p class="market-front">${t('Front of the bus')}</p><div class="market-seats" id="market-seats" dir="ltr" role="group" aria-label="${e(t('Choose your seats'))}">${row.seats.map(s=>`<button type="button" class="market-seat" id="market-seat-${s.row}-${s.column}" data-seat="${e(s.label)}" data-row="${s.row}" data-column="${s.column}" aria-label="${e(t('Seat')+' '+s.label)}">${e(s.label)}</button>`).join('')}</div></section><aside class="market-aside">${myHold?`<p class="market-note">${t('You already hold seats on this trip:')} <a dir="ltr" href="${e(link('/hold/'+myHold))}">${e(myHold)}</a></p>`:''}<section class="market-card" id="market-summary"></section><p class="market-note">${t('No account is needed.')}</p></aside></div>`;
+ return `<section class="market-band"><div class="market-wrap"><a href="${e(link('/marketplace'))}">${language==='ar'?'→':'←'} ${t('Find a bus trip')}</a><div class="market-company"><div><h1>${e(pick(row,'fromName'))} ${t('to')} ${e(pick(row,'toName'))}</h1><p><bdi>${e(day(row.date))} · ${e(row.time)}</bdi> · <a href="${e(link('/company/'+row.companySlug))}">${e(pick(row,'companyName'))}</a></p></div></div></div></section><div class="market-wrap market-body market-booking">${journeyPicker(row)}<section class="market-card market-map"><h2>${t('Choose your seats')}</h2><ul class="market-legend"><li><i></i>${t('Available')}</li><li><i class="selected"></i>${t('Selected')}</li><li><i class="taken"></i>${t('Taken')}</li></ul><p class="market-front">${t('Front of the bus')}</p><div class="market-seats" id="market-seats" dir="ltr" role="group" aria-label="${e(t('Choose your seats'))}">${row.seats.map(s=>`<button type="button" class="market-seat" id="market-seat-${s.row}-${s.column}" data-seat="${e(s.label)}" data-row="${s.row}" data-column="${s.column}" aria-label="${e(t('Seat')+' '+s.label)}">${e(s.label)}</button>`).join('')}</div></section><aside class="market-aside">${myHold?`<p class="market-note">${t('You already hold seats on this trip:')} <a dir="ltr" href="${e(link('/hold/'+myHold))}">${e(myHold)}</a></p>`:''}<section class="market-card" id="market-summary"></section><p class="market-note">${t('No account is needed.')}</p></aside></div>`;
+}
+function journeyPicker(row){
+ if(!row.stops||row.stops.length<3)return '';
+ const priced=(f,l)=>(row.fares||[]).some(x=>x.from===f&&x.to===l),name=s=>e(pick(s,'cityName'))+(s.stationNameEn?' · '+e(pick(s,'stationName')):'');
+ const froms=row.stops.slice(0,-1).filter(s=>row.stops.some(x=>x.index>s.index&&priced(s.index,x.index)));
+ const tos=row.stops.filter(s=>s.index>row.fromIndex&&priced(row.fromIndex,s.index));
+ return `<form class="market-card market-journey" id="market-journey"><h2>${t('Your journey on this bus')}</h2><div class="market-journey-fields"><label>${t('Board at')}<select name="from">${froms.map(s=>`<option value="${s.index}" ${s.index===row.fromIndex?'selected':''}>${name(s)}</option>`).join('')}</select></label><label>${t('Get off at')}<select name="to">${tos.map(s=>`<option value="${s.index}" ${s.index===row.toIndex?'selected':''}>${name(s)}</option>`).join('')}</select></label></div></form>`;
+}
+async function changeJourney(from,to){
+ const row=seatTrip;if(!row)return;
+ // Keep a valid, priced pair: a new boarding stop picks its first priced drop-off.
+ const priced=(f,l)=>(row.fares||[]).some(x=>x.from===f&&x.to===l);
+ if(to<0||!priced(from,to))to=row.stops.find(s=>s.index>from&&priced(from,s.index))?.index??null;
+ if(to===null)return;
+ journey={from,to};selected=[];holdKey=null;holdError='';summaryHtml='';
+ const url=new URL(location.href);url.searchParams.set('from',String(from));url.searchParams.set('to',String(to));history.replaceState(null,'',url);
+ try{seatTrip=await get('trips/'+tripId+journeyQuery());}catch(error){if(error.status===404){failure='This journey has no price yet. Choose other stops.';seatTrip=null;}}
+ render();
 }
 function paintSeats(){
  const box=root.querySelector('#market-seats');if(!box||!seatTrip)return;
@@ -113,7 +136,7 @@ function paintSeats(){
 async function refreshSeats(){
  try{
   const before=seatTrip?.seats.map(s=>s.label+'@'+s.row+'-'+s.column).join();
-  seatTrip=await get('trips/'+tripId);
+  seatTrip=await get('trips/'+tripId+journeyQuery());
   // While a hold's outcome is unknown, its seats may read as taken because of that very hold. Only the server's reply can settle it.
   if(!unresolved){
    const gone=selected.filter(label=>!seatTrip.seats.find(s=>s.label===label)?.available);
@@ -129,7 +152,7 @@ async function placeHold(){
  // The key is saved first, so even a reload can find a hold whose reply never arrived. Names and numbers are not saved.
  keys.pending({key:holdKey,tripId});
  try{
-  const data=await post('holds',{tripId,seats:selected,key:holdKey,mobile:contactMobile,travelers:selected.map(seat=>({seat,name:names[seat]||'',luggage:bags[seat]||null}))});
+  const data=await post('holds',{tripId,...(journey.from!==null&&journey.to!==null?{fromIndex:journey.from,toIndex:journey.to}:{}),seats:selected,key:holdKey,mobile:contactMobile,travelers:selected.map(seat=>({seat,name:names[seat]||'',luggage:bags[seat]||null}))});
   openBooking(data,holdKey);
  }catch(error){
   holdError=error.status===413?bookingTooLarge:error.code==='SEATS_UNAVAILABLE'?'Some of your seats were just taken. Please choose again.':error.code==='RATE_LIMITED'?'Too many attempts. Please wait a few minutes and try again.':error.code==='TRIP_NOT_BOOKABLE'?'This trip can no longer be held.':error.code==='INVALID_MOBILE'||error.code==='INVALID_PASSENGERS'?'Check the names and mobile number.':'We could not reach the service. Try again.';
@@ -196,6 +219,7 @@ function render(){
  if(focused)document.getElementById(focused)?.focus();
 }
 function bind(){
+ const picker=root.querySelector('#market-journey');if(picker)picker.onchange=event=>{const f=Number(picker.elements.from.value),l=Number(picker.elements.to.value);void changeJourney(f,event.target.name==='from'?-1:l);};
  bindSideDrawer(root,'market-menu','market-menu-toggle','market-menu-close');
  bindAccount(root,{t,render,keys});
  root.querySelector('[data-passenger-language]')?.addEventListener('click',()=>root.querySelector('#market-language').click());
@@ -227,7 +251,7 @@ function bind(){
  });
  root.querySelectorAll('[data-popular-from]').forEach(card=>card.addEventListener('click',()=>{const f=root.querySelector('#market-search');if(!f)return;f.elements.from.value=card.dataset.popularFrom;f.elements.to.value=card.dataset.popularTo;f.elements.from.dispatchEvent(new Event('change',{bubbles:true}));f.requestSubmit();}));
  const form=root.querySelector('#market-search');if(form){
-  const capture=()=>{const v=Object.fromEntries(new FormData(form));searchDraft={from:v.from,to:v.to,date:v.date};passengerCount=Math.min(10,Math.max(1,Number(v.passengers)||1));root.querySelectorAll('.market-book[href]').forEach(anchor=>{const u=new URL(anchor.href);if(u.pathname.startsWith('/trip/'))anchor.href=link(u.pathname);});};
+  const capture=()=>{const v=Object.fromEntries(new FormData(form));searchDraft={from:v.from,to:v.to,date:v.date};passengerCount=Math.min(10,Math.max(1,Number(v.passengers)||1));root.querySelectorAll('.market-book[href]').forEach(anchor=>{const u=new URL(anchor.href);if(u.pathname.startsWith('/trip/'))anchor.href=link(u.pathname+u.search.replace(/[?&](lang|passengers)=[^&]*/g,'').replace(/^&/,'?'));});};
   form.addEventListener('input',capture);form.addEventListener('change',capture);
   form.onsubmit=event=>{event.preventDefault();capture();query={...searchDraft};void search();};
  }
@@ -255,7 +279,7 @@ try{
   else showBooking(await get('holds/'+holdRef,{'X-Booking-Key':bookingKey}),bookingKey);
  }
  else if(tripId){
-  seatTrip=await get('trips/'+tripId);
+  seatTrip=await get('trips/'+tripId+journeyQuery());
   // Reopening the page shows a hold this browser already has, and finishes an attempt whose reply was lost.
   const reference=keys.trip(tripId),saved=reference&&keys.get(reference);
   if(saved)try{if((await get('holds/'+reference,{'X-Booking-Key':saved})).status==='held')myHold=reference;}catch{/* It is only a convenience link. */}

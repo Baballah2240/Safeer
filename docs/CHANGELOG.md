@@ -1,5 +1,9 @@
 # Changelog
 
+## Stop-to-stop journeys with a price list - D89, 2026-11-15
+
+Migration 0025 adds route_fares and makes booking, search, the station counter, tickets, the driver manifest and operations aware of the passenger's own stops. Routes > Prices between stops sets one price per pair of stops; the whole route keeps each trip's fare and an unpriced journey is not sold. Search matches any stop (every stop city is offered); the trip page has Board at / Get off at; holds and counter sales accept fromIndex/toIndex; a seat freed at a middle stop is sold again and overlapping journeys never share a seat (existing range exclusion). Tickets, bookings and the passenger itinerary show the passenger's stops and boarding time; drivers see where each passenger boards and gets off and can keep boarding later-stop passengers after departure until arrival; Operations shows the load on each stretch. New endpoints: GET/PUT companies/:id/routes/:rid/fares. OpenAPI: 105 paths / 121 operations. Tests: tests/stop-to-stop.integration.mjs and tests/stop-to-stop.browser.mjs.
+
 ## Back button on the privacy and account deletion pages - D88, 2026-11-15
 
 Both pages have Back at the top and bottom. It returns to the Safeer page the reader came from (checked with the Navigation API, because the site sends no referrer) and goes to the home page when the page was opened directly. tests/legal-back.browser.mjs covers both cases in English and Arabic.

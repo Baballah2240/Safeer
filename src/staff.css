@@ -114,3 +114,6 @@ html body .staff-shell.has-company-brand .staff-primary:hover:not(:disabled),htm
 @media(max-width:560px){html body .billing-summary{grid-template-columns:1fr}}
 .billing-summary bdi,.billing-table bdi{white-space:nowrap}
 .billing-invoices [data-invoice-issue]{white-space:nowrap}
+/* D89: route price list */
+.station-journey{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;align-items:end;margin:12px 0}.station-journey-price{margin:0}
+.route-fares{max-height:min(55dvh,520px);overflow-y:auto;overflow-x:hidden}html body .route-fares .staff-table{min-width:0;width:100%;table-layout:fixed}html body .route-fares input{width:100%;min-width:0;box-sizing:border-box}

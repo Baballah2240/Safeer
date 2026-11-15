@@ -1,5 +1,9 @@
 # Implemented API contracts
 
+## D89 stop-to-stop journeys
+
+OpenAPI 0.16.0 now has 105 paths / 121 operations. GET/PUT companies/{id}/routes/{rid}/fares read and replace the price list (INVALID_FARES). GET public/trips/{id} and GET companies/{id}/counter/trips/{tid} accept from/to stop indexes; POST public/holds and POST companies/{id}/counter/sales accept fromIndex/toIndex (SEGMENT_NOT_PRICED, INVALID_SEGMENT, both 409/400 as listed). Search results, bookings, staff booking rows, the driver manifest and ticket checks carry fromIndex, toIndex and the stop names; operations trip details carry legs (occupied seats per stretch).
+
 ## D87 invoices
 
 OpenAPI 0.16.0 now has 104 paths / 119 operations: POST companies/{id}/invoices (month YYYY-MM), POST companies/{id}/invoices/{iid}/paid (reference) and /void (reason), GET companies/{id}/invoices/{iid}/pdf (lang=en|ar), and the CompanyInvoice schema; GET companies/{id}/billing returns up to 36 invoices. Writes need a Super Administrator, CSRF and the current password. Errors: INVALID_PERIOD (400), INVOICE_PERIOD_OPEN, INVOICE_NO_CONTRACT, INVOICE_EXISTS, INVOICE_CLOSED (409). Public company logos now use Cache-Control: public, no-cache.

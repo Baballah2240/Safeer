@@ -3,7 +3,7 @@ import {randomUUID} from 'node:crypto';
 import type {PoolClient} from 'pg';
 import {Database} from './database.js';
 import {IdentityService,type Principal} from './identity.service.js';
-import {body,text,uuid,version,fail} from './security.js';
+import {body,text,uuid,version,fail,stopIndex} from './security.js';
 
 const code=(value:unknown)=>{const result=text(value,1,40).toUpperCase();if(!/^[A-Z0-9_-]+$/.test(result))fail('INVALID_INPUT');return result;};
 const enabled=(value:unknown)=>{if(typeof value!=='boolean')fail('INVALID_INPUT');return value;};
@@ -46,6 +46,33 @@ export class RouteService {
   const stops=(await c.query('SELECT stop_index AS "stopIndex",city_id AS "cityId",station_id AS "stationId" FROM safeer.route_stops WHERE company_id=$1 AND route_id=$2 ORDER BY stop_index',[cid,id])).rows;
   await this.access(c,cid);return {route,stops};
  });}
+ // D89: the price list for journeys between stops (the whole route keeps each trip's own fare).
+ async fares(token:string,cid:string,id:string){uuid(cid);uuid(id);return this.run(token,async c=>{
+  await this.access(c,cid);if(!(await c.query('SELECT 1 FROM safeer.routes WHERE company_id=$1 AND id=$2',[cid,id])).rowCount)fail('NOT_FOUND',404);
+  const stops=(await c.query('SELECT s.stop_index AS "index",ci.name_en AS "cityNameEn",ci.name_ar AS "cityNameAr",st.name_en AS "stationNameEn",st.name_ar AS "stationNameAr" FROM safeer.route_stops s JOIN safeer.cities ci ON ci.id=s.city_id LEFT JOIN safeer.stations st ON st.company_id=s.company_id AND st.id=s.station_id WHERE s.company_id=$1 AND s.route_id=$2 ORDER BY s.stop_index',[cid,id])).rows;
+  const fares=(await c.query('SELECT from_index AS "from",to_index AS "to",fare_minor AS "fareMinor" FROM safeer.route_fares WHERE company_id=$1 AND route_id=$2 ORDER BY from_index,to_index',[cid,id])).rows;
+  const canManage=Boolean((await c.query('SELECT safeer.route_manage($1) AS ok',[cid])).rows[0].ok);
+  return {stops,fares,canManage};
+ });}
+ async saveFares(token:string,cid:string,id:string,input:unknown){
+  uuid(cid);uuid(id);const data=body(input,['fares','currentPassword']);
+  if(!Array.isArray(data.fares)||data.fares.length>435)fail('INVALID_FARES');
+  const fares=data.fares.map(value=>{const x=body(value,['from','to','fareMinor']),from=stopIndex(x.from),to=stopIndex(x.to),fare=x.fareMinor;
+   if(from===null||to===null||from>=to||typeof fare!=='number'||!Number.isSafeInteger(fare)||fare<1||fare>100000000)fail('INVALID_FARES');return {from,to,fare};});
+  if(new Set(fares.map(f=>f.from+':'+f.to)).size!==fares.length)fail('INVALID_FARES');
+  await this.identity.reauthenticate(token,data.currentPassword);
+  return this.run(token,async(c,p)=>{
+   await this.access(c,cid,true);
+   const count=(await c.query('SELECT count(*)::int AS n FROM safeer.route_stops WHERE company_id=$1 AND route_id=$2',[cid,id])).rows[0].n as number;
+   if(!count)fail('NOT_FOUND',404);if(fares.some(f=>f.to>count-1))fail('INVALID_FARES');
+   // Lock the route so two saves of the same price list cannot interleave.
+   await c.query('SELECT 1 FROM safeer.routes WHERE company_id=$1 AND id=$2 FOR UPDATE',[cid,id]);
+   await c.query('DELETE FROM safeer.route_fares WHERE company_id=$1 AND route_id=$2',[cid,id]);
+   for(const f of fares)await c.query('INSERT INTO safeer.route_fares(company_id,route_id,from_index,to_index,fare_minor) VALUES($1,$2,$3,$4,$5)',[cid,id,f.from,f.to,f.fare]);
+   await c.query('INSERT INTO safeer.company_audit(id,company_id,actor_id,action,target_id) VALUES($1,$2,$3,$4,$5)',[randomUUID(),cid,p.id,'route.fares_saved',id]);
+   return {id,count:fares.length};
+  },true);
+ }
  async save(token:string,cid:string,id:string|undefined,input:unknown){
   uuid(cid);if(id)uuid(id);const data=body(input,['code','nameEn','nameAr','active','stops','currentPassword',...(id?['version']:[])]);
   const routeCode=code(data.code),nameEn=text(data.nameEn),nameAr=text(data.nameAr),active=enabled(data.active),v=id?version(data.version):1;
@@ -58,7 +85,10 @@ export class RouteService {
    // A stop's station must be in that stop's city; report it clearly instead of failing on the foreign key.
    for(const stop of stops)if(stop.stationId&&!(await c.query('SELECT 1 FROM safeer.stations WHERE company_id=$1 AND id=$2 AND city_id=$3',[cid,stop.stationId,stop.cityId])).rowCount)fail('ROUTE_STATION_CITY');
    const target=id||randomUUID(),values=[routeCode,nameEn,nameAr,stops[0].cityId,stops.at(-1)!.cityId,active,cid,target];
-   if(id){const result=await c.query('UPDATE safeer.routes SET code=$1,name_en=$2,name_ar=$3,origin_city_id=$4,destination_city_id=$5,active=$6,version=version+1 WHERE company_id=$7 AND id=$8 AND version=$9 RETURNING id',[...values,v]);if(!result.rowCount)fail('STALE_VERSION',409);await c.query('DELETE FROM safeer.route_stops WHERE company_id=$1 AND route_id=$2',[cid,id]);}
+   if(id){const result=await c.query('UPDATE safeer.routes SET code=$1,name_en=$2,name_ar=$3,origin_city_id=$4,destination_city_id=$5,active=$6,version=version+1 WHERE company_id=$7 AND id=$8 AND version=$9 RETURNING id',[...values,v]);if(!result.rowCount)fail('STALE_VERSION',409);
+    const old=(await c.query('SELECT city_id AS "cityId",station_id AS "stationId" FROM safeer.route_stops WHERE company_id=$1 AND route_id=$2 ORDER BY stop_index',[cid,id])).rows as Stop[];
+    if(JSON.stringify(old)!==JSON.stringify(stops))await c.query('DELETE FROM safeer.route_fares WHERE company_id=$1 AND route_id=$2',[cid,id]);
+    await c.query('DELETE FROM safeer.route_stops WHERE company_id=$1 AND route_id=$2',[cid,id]);}
    else await c.query('INSERT INTO safeer.routes(code,name_en,name_ar,origin_city_id,destination_city_id,active,company_id,id) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',values);
    for(const [index,stop] of stops.entries())await c.query('INSERT INTO safeer.route_stops(company_id,route_id,stop_index,city_id,station_id) VALUES($1,$2,$3,$4,$5)',[cid,target,index,stop.cityId,stop.stationId]);
    await c.query('SET CONSTRAINTS ALL IMMEDIATE');

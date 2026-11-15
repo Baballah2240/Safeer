@@ -4,6 +4,8 @@
 .market-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 12px;padding:12px clamp(16px,4vw,40px);border-bottom:1px solid var(--border);background:var(--paper)}.market-bar>div{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 .market-brand{display:inline-flex;align-items:center;gap:10px;font-weight:700;color:inherit;text-decoration:none}.market-bar .market-link{display:inline-flex;align-items:center;justify-content:center;font-weight:600;text-decoration:none}
 .market-main{max-width:none;margin:0;padding:0}.market-wrap{width:100%;max-width:1120px;margin-inline:auto;padding-inline:clamp(16px,4vw,40px)}.market-body{display:grid;gap:36px;padding-block:28px 56px}
+.market-journey-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}.market-journey-fields label{display:grid;gap:6px;font-weight:600}.market-journey{grid-column:1/-1}
+.market-stop-off{opacity:.55}.market-partial{display:inline-block;margin:0 0 8px}
 .market-main a{color:var(--accent);text-underline-offset:2px}.market-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
 .market-card{min-width:0;padding:clamp(16px,2.4vw,24px);border:1px solid var(--border);border-radius:14px;background:var(--material-paper);box-shadow:var(--shadow-panel)}
 /* The navy band carries the page title on both themes, so its text colors are fixed. */

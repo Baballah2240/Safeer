@@ -33,6 +33,8 @@ export function list(value: unknown,validate: (value:unknown)=>string): string[]
   if(!Array.isArray(value)||value.length>30)fail('INVALID_INPUT');
   const result=value.map(validate);if(new Set(result).size!==result.length)fail('INVALID_INPUT');return result;
 }
+// D89: a stop index on a trip (0-29); missing means the trip's first or last stop.
+export const stopIndex=(value:unknown):number|null=>{if(value===undefined||value===null||value==='')return null;const n=typeof value==='string'&&/^\d{1,2}$/.test(value)?Number(value):value;if(typeof n!=='number'||!Number.isSafeInteger(n)||n<0||n>29)fail('INVALID_SEGMENT');return n;};
 export const digest=(value:string)=>createHash('sha256').update(value).digest('hex');
 export const secret=()=>randomBytes(32).toString('base64url');
 export const csrf=(token:string)=>createHmac('sha256',token).update('safeer-csrf-v1').digest('hex');
