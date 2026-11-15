@@ -94,7 +94,7 @@ export function bindCompanies(root,data,ctx){
   if(companyState.section==='luggage')bindLuggage(root,data,ctx);
   if(companyState.section==='shipments')bindShipments(root,data,ctx);
   if(companyState.section==='finance')bindFinance(root,data,ctx);
-  if(companyState.section==='station'||companyState.section==='sessions')bindStation(root,data,{...ctx,mode:companyState.section,goToBooking:id=>{openBookingNext(id);companyState.section='bookings';render();}});
+  if(companyState.section==='station'||companyState.section==='sessions')bindStation(root,data,{...ctx,mode:companyState.section,editStation:id=>resourceForm('stations',data.stations.find(r=>r.id===id)),goToBooking:id=>{openBookingNext(id);companyState.section='bookings';render();}});
   if(companyState.section==='public')bindPublicPage(root,data,ctx);
   if(companyState.section==='billing')bindBilling(root,data,ctx);
   if(companyState.section==='branding')bindBranding(root,data,ctx);

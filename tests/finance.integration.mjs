@@ -4,6 +4,8 @@ import {randomUUID} from 'node:crypto';
 import {identityFixture} from './support/identity-db.mjs';
 import {ok,setup,paid,staff} from './support/boarding-fixture.mjs';
 import {financeVolume} from './support/finance-volume.mjs';
+// D93: a bank transfer carries a photo of the transfer (a 1x1 PNG here).
+const PROOF='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
 const range=()=>{const today=new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Khartoum'}).format(new Date());return {from:today,to:today};};
 const report=(client,base,over={})=>client.request(base+'/finance?'+new URLSearchParams({...range(),...over}));
 const fixture=fn=>identityFixture(async f=>{const s=await setup(f,'finance-demo'),tid=await s.trip();await fn(f,{...s,tid});});
@@ -44,7 +46,7 @@ test('finance readers cannot change money or close cash sessions and support gra
 }));
 test('noncash methods never change drawer totals, filters keep session totals whole and currencies never combine',()=>fixture(async(f,s)=>{
  ok(await f.admin.request(s.base+'/payment-settings','PUT',{bankTransfer:true,mobileWallet:true,version:0,currentPassword:f.password}),200);
- const response=await f.admin.request(s.base+'/counter/sales','POST',{tripId:s.tid,seats:['1'],mobile:'0912345678',travelers:[{seat:'1',name:'Fictional transfer'}],method:'bank_transfer',reference:'FICT-TRANSFER',key:randomUUID()});ok(response);
+ const response=await f.admin.request(s.base+'/counter/sales','POST',{tripId:s.tid,seats:['1'],mobile:'0912345678',travelers:[{seat:'1',name:'Fictional transfer'}],method:'bank_transfer',proof:PROOF,reference:'FICT-TRANSFER',key:randomUUID()});ok(response);
  await paid(f,s,s.tid,['2']);const all=ok(await report(f.admin,s.base),200),cash=ok(await report(f.admin,s.base,{method:'bank_transfer'}),200);
  assert.equal(all.movementCount,2);assert.equal(cash.movementCount,1);assert.equal(cash.totals[0].salesMinor,'150000');assert.equal(cash.sessions[0].cashInMinor,'150000');assert.equal(cash.sessions[0].expectedMinor,'250000');
  // Currency settings are unchanged; simulate legacy multi-currency history in the isolated fixture.

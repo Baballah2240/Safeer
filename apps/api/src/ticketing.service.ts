@@ -8,6 +8,15 @@ import {mobileNumber,saleTravelers,seatList} from './reservation.service.js';
 import {ticketQr} from './ticket-qr.js';
 
 const minor=(value:unknown,max:number)=>{if(!Number.isSafeInteger(value)||Number(value)<0||Number(value)>max)fail('INVALID_INPUT');return Number(value);};
+// D93: a bank transfer needs a photo of the transfer, sent as a data URL (JPEG, PNG or WebP, at most 384 KB).
+const proofTypes:Record<string,(b:Buffer)=>boolean>={'image/png':b=>b.subarray(0,8).equals(Buffer.from([0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a])),'image/jpeg':b=>b[0]===0xff&&b[1]===0xd8&&b[2]===0xff,'image/webp':b=>b.subarray(0,4).toString('latin1')==='RIFF'&&b.subarray(8,12).toString('latin1')==='WEBP'};
+const paymentProof=(kind:string,value:unknown)=>{
+ if(kind!=='bank_transfer'){if(value!==undefined&&value!==null)fail('INVALID_INPUT');return null;}
+ if(typeof value!=='string'||!value)fail('PROOF_REQUIRED');
+ const match=/^data:(image\/(?:png|jpeg|webp));base64,([A-Za-z0-9+/]+={0,2})$/.exec(value as string);if(!match)fail('INVALID_PROOF');
+ const data=Buffer.from(match![2],'base64');if(!data.length||data.length>393216)fail('PROOF_TOO_LARGE');if(!proofTypes[match![1]](data))fail('INVALID_PROOF');return {type:match![1],data};
+};
+const attachProof=async(c:PoolClient,cid:string,bid:string,actor:string,proof:{type:string;data:Buffer}|null)=>{if(proof)await c.query('SELECT safeer.payment_proof_attach($1,$2,$3,$4,$5)',[cid,bid,actor,proof.type,proof.data]);};
 const optional=(value:unknown,max:number)=>value===undefined||value===null||value===''?null:text(value,1,max);
 const method=(value:unknown)=>{if(value!=='cash'&&value!=='bank_transfer'&&value!=='mobile_wallet')fail('INVALID_INPUT');return value;};
 // A transfer or wallet payment is only as good as its reference. Cash has none.
@@ -55,14 +64,16 @@ export class TicketingService {
   return this.staff(token,cid,async(c,actor)=>{const row=(await c.query('SELECT safeer.close_session($1,$2,$3,$4,$5) AS row',[cid,actor,sid,counted,note])).rows[0].row;if(!row)fail('NOT_FOUND',404);return row;});
  }
  pay(token:string,cid:string,bid:string,input:unknown){
-  uuid(bid);const data=body(input,['method','reference','key','lateReason']),kind=method(data.method),reference=methodReference(kind,data.reference),late=optional(data.lateReason,300),key=keyHash('payment',cid,data.key);
+  uuid(bid);const data=body(input,['method','reference','key','lateReason','proof']),kind=method(data.method),reference=methodReference(kind,data.reference),proof=paymentProof(kind,data.proof),late=optional(data.lateReason,300),key=keyHash('payment',cid,data.key);
   const request=digest(`safeer-payment-request-v1:${data.key}:`+JSON.stringify([bid,kind,reference]));
-  return this.staff(token,cid,async(c,actor)=>{const row=(await c.query('SELECT safeer.counter_pay($1,$2,$3,$4,$5,$6,$7,$8) AS row',[cid,bid,actor,kind,reference,key,request,late])).rows[0].row;if(!row)fail('NOT_FOUND',404);return row;});
+  return this.staff(token,cid,async(c,actor)=>{const row=(await c.query('SELECT safeer.counter_pay($1,$2,$3,$4,$5,$6,$7,$8) AS row',[cid,bid,actor,kind,reference,key,request,late])).rows[0].row;if(!row)fail('NOT_FOUND',404);await attachProof(c,cid,bid,actor,proof);return row;});
  }
+ async proof(token:string,cid:string,bid:string){uuid(bid);return this.staff(token,cid,async c=>{const row=(await c.query('SELECT * FROM safeer.payment_proof($1,$2)',[cid,bid])).rows[0];if(!row)fail('NOT_FOUND',404);return {type:row.content_type as string,data:row.data as Buffer};});}
  sale(token:string,cid:string,input:unknown){
-  const data=body(input,['tripId','seats','mobile','travelers','method','reference','key','fromIndex','toIndex']),from=stopIndex(data.fromIndex),to=stopIndex(data.toIndex),tripId=uuid(data.tripId),labels=seatList(data.seats),mobile=mobileNumber(data.mobile),people=saleTravelers(data.travelers,labels),kind=method(data.method),reference=methodReference(kind,data.reference),access=keyHash('sale',cid,data.key),key=keyHash('payment',cid,data.key);
+  const data=body(input,['tripId','seats','mobile','travelers','method','reference','key','fromIndex','toIndex','proof']),proofInput=data.proof,from=stopIndex(data.fromIndex),to=stopIndex(data.toIndex),tripId=uuid(data.tripId),labels=seatList(data.seats),mobile=mobileNumber(data.mobile),people=saleTravelers(data.travelers,labels),kind=method(data.method),reference=methodReference(kind,data.reference),access=keyHash('sale',cid,data.key),key=keyHash('payment',cid,data.key);
+  const proof=paymentProof(kind,proofInput);
   const request=digest(`safeer-sale-request-v1:${data.key}:`+JSON.stringify([tripId,[...labels].sort(),mobile,people,kind,reference,...(from===null&&to===null?[]:[[from,to]])]));
-  return this.staff(token,cid,async(c,actor)=>(await c.query('SELECT safeer.counter_sale($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14::integer,$15::integer) AS row',[cid,actor,tripId,labels,randomUUID(),bookingReference(),access,request,mobile,JSON.stringify(people),kind,reference,key,from,to])).rows[0].row);
+  return this.staff(token,cid,async(c,actor)=>{const made=(await c.query('SELECT safeer.counter_sale($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14::integer,$15::integer) AS row',[cid,actor,tripId,labels,randomUUID(),bookingReference(),access,request,mobile,JSON.stringify(people),kind,reference,key,from,to])).rows[0].row as {id:string};await attachProof(c,cid,made.id,actor,proof);return made;});
  }
  async refund(token:string,cid:string,bid:string,input:unknown){
   uuid(bid);const data=body(input,['reason','reference','key','currentPassword']),reason=text(data.reason,1,300),reference=optional(data.reference,100),key=keyHash('refund',cid,data.key);

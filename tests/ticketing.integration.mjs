@@ -2,6 +2,8 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {randomBytes,randomUUID} from 'node:crypto';
 import {identityFixture} from './support/identity-db.mjs';
+// D93: a bank transfer carries a photo of the transfer (a 1x1 PNG here).
+const PROOF='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
 
 const ok=(r,status=201)=>{assert.equal(r.status,status,r.raw);return r.data;};
 const future=(days=10)=>new Date(Date.now()+days*86400000).toISOString().slice(0,10);
@@ -48,12 +50,12 @@ test('a payment confirms the seats and issues tickets and a receipt, all at once
  assert.equal(ok(await f.client().request(`public/holds/${a.reference}/release`,'POST',{key})).status,'confirmed');assert.equal(await seatsLeft(f,id),10);
  // Non-cash and bad payments.
  const b=ok(await book(f,id,['3'])),bb=await bookingId(f,b.reference);
- assert.equal((await pay(f,s,bb,{method:'bank_transfer',reference:'TX-1'})).error.code,'METHOD_DISABLED','Only cash until the company enables others.');
+ assert.equal((await pay(f,s,bb,{method:'bank_transfer',proof:PROOF,reference:'TX-1'})).error.code,'METHOD_DISABLED','Only cash until the company enables others.');
  for(const over of [{method:'bitcoin'},{amountMinor:1},{key:'nope'}])assert.equal((await pay(f,s,bb,over)).status,400,JSON.stringify(over));
  ok(await f.admin.request(s.base+'/payment-settings','PUT',{bankTransfer:true,mobileWallet:false,version:0,...s.pw}),200);
  assert.equal((await pay(f,s,bb,{method:'bank_transfer'})).error.code,'REFERENCE_REQUIRED');assert.equal((await pay(f,s,bb,{method:'mobile_wallet',reference:'W-1'})).error.code,'METHOD_DISABLED');
  const before=[await count(f,'payments'),await count(f,'tickets'),await count(f,'receipts')];assert.deepEqual(before,[1,2,1],'Refused payments create nothing.');
- ok(await pay(f,s,bb,{method:'bank_transfer',reference:'TX-1'}));
+ ok(await pay(f,s,bb,{method:'bank_transfer',proof:PROOF,reference:'TX-1'}));
  assert.equal((await pay(f,s,bb)).error.code,'ALREADY_PAID');assert.equal((await pay(f,s,randomUUID())).status,404);
  const totals=ok(await f.admin.request(s.base+'/counter'),200).session.totals;assert.equal(totals.cashIn,300000);assert.equal(totals.otherIn,150000,'Transfers do not count as cash.');
  assert.equal(await count(f,'company_audit')>0,true);
@@ -65,7 +67,7 @@ test('repeating a payment or refund key records money once, even at the same mom
  const s=await setup(f),id=await s.trip(),a=ok(await book(f,id,['1'])),bid=await bookingId(f,a.reference);ok(await open(f,s));
  const key=randomUUID(),both=await Promise.all(Array.from({length:8},()=>pay(f,s,bid,{key})));
  assert.ok(both.every(r=>r.status===201),both.map(r=>r.status).join());assert.deepEqual([await count(f,'payments'),await count(f,'tickets'),await count(f,'receipts')],[1,1,1]);
- assert.equal((await pay(f,s,bid,{key,method:'bank_transfer',reference:'X'})).error.code,'IDEMPOTENCY_CONFLICT','A key cannot be reused for a different payment.');
+ assert.equal((await pay(f,s,bid,{key,method:'bank_transfer',proof:PROOF,reference:'X'})).error.code,'IDEMPOTENCY_CONFLICT','A key cannot be reused for a different payment.');
  const racers=await Promise.all(Array.from({length:6},()=>pay(f,s,bid)));assert.ok(racers.every(r=>r.status===409));assert.equal(await count(f,'payments'),1,'Different keys cannot pay twice.');
  assert.equal(ok(await f.admin.request(s.base+'/counter'),200).session.totals.cashIn,150000);
  const refundKey=randomUUID(),twice=await Promise.all(Array.from({length:2},()=>refund(f,s,bid,{key:refundKey})));assert.ok(twice.every(r=>r.status===201),twice.map(r=>r.raw).join());assert.equal(await count(f,'refunds'),1);
@@ -150,7 +152,7 @@ test('sessions tie money to a person and counter, and closing keeps any differen
 test('a walk-in sale holds and pays together, or leaves nothing behind',async()=>identityFixture(async f=>{
  const s=await setup(f),id=await s.trip(),sale=(over={})=>f.admin.request(s.base+'/counter/sales','POST',{tripId:id,seats:['1','2'],mobile:'0912345678',travelers:[{seat:'1',name:'Fictional Walker'},{seat:'2',name:'Fictional Child'}],method:'cash',key:randomUUID(),...over});
  assert.equal((await sale()).error.code,'NO_OPEN_SESSION');assert.equal(await count(f,'bookings'),0);ok(await open(f,s));
- assert.equal((await sale({method:'bank_transfer',reference:'X'})).error.code,'METHOD_DISABLED');assert.equal(await count(f,'bookings'),0,'A refused payment takes no seats.');assert.equal(await seatsLeft(f,id),12);
+ assert.equal((await sale({method:'bank_transfer',proof:PROOF,reference:'X'})).error.code,'METHOD_DISABLED');assert.equal(await count(f,'bookings'),0,'A refused payment takes no seats.');assert.equal(await seatsLeft(f,id),12);
  const key=randomUUID(),made=ok(await sale({key}));assert.match(made.reference,/^SF-/);assert.equal(ok(await sale({key})).reference,made.reference,'A retry returns the same sale.');assert.equal(await count(f,'bookings'),1);assert.equal(await count(f,'payments'),1);
  assert.equal((await sale({key,mobile:'0999999999'})).error.code,'IDEMPOTENCY_CONFLICT');
  const row=ok(await view(f,s,made.id),200);assert.equal(row.status,'confirmed');assert.equal(row.travelers[0].name,'Fictional Walker');assert.equal(row.tickets.length,2);assert.equal(await seatsLeft(f,id),10);
@@ -216,4 +218,29 @@ test('review findings: station staff search only, finished trips stay closed, an
  await assert.rejects(f.migration.query("UPDATE safeer.cash_sessions SET counted_minor=1 WHERE id=$1",[closed.id]),e=>e.code==='42501');
  // Nobody can act as someone else by naming them.
  await assert.rejects(f.api.db.pool.query('SELECT safeer.close_session($1,gen_random_uuid(),gen_random_uuid(),0::bigint,NULL)',[s.cid]),e=>e.code==='42501');
+}));
+
+test('D93: a bank transfer needs a photo of the transfer, saved with the payment and shown to staff',async()=>identityFixture(async f=>{
+ const s=await setup(f,'proof-demo'),id=await s.trip();ok(await open(f,s));
+ ok(await f.admin.request(s.base+'/payment-settings','PUT',{bankTransfer:true,mobileWallet:true,version:0,...s.pw}),200);
+ const a=ok(await book(f,id,['1'])),bid=await bookingId(f,a.reference);
+ assert.equal((await pay(f,s,bid,{method:'bank_transfer',reference:'TX-9'})).error.code,'PROOF_REQUIRED');
+ for(const proof of ['data:image/gif;base64,R0lGODlhAQABAAAAACw=','data:image/png;base64,'+Buffer.from('not a png').toString('base64'),'https://example.invalid/x.png'])assert.equal((await pay(f,s,bid,{method:'bank_transfer',reference:'TX-9',proof})).error.code,'INVALID_PROOF',proof.slice(0,30));
+ const big='data:image/jpeg;base64,'+Buffer.concat([Buffer.from([0xff,0xd8,0xff]),Buffer.alloc(393300)]).toString('base64');
+ assert.equal((await pay(f,s,bid,{method:'bank_transfer',reference:'TX-9',proof:big})).error.code,'PROOF_TOO_LARGE');
+ assert.equal((await pay(f,s,bid,{method:'cash',proof:PROOF})).status,400,'Only a bank transfer carries a proof.');
+ assert.equal((await pay(f,s,bid,{method:'mobile_wallet',reference:'W-9'})).status,201,'A wallet payment needs no photo.');
+ const b=ok(await book(f,id,['2'])),bb=await bookingId(f,b.reference),key=randomUUID();
+ ok(await pay(f,s,bb,{key,method:'bank_transfer',reference:'TX-10',proof:PROOF}));
+ ok(await pay(f,s,bb,{key,method:'bank_transfer',reference:'TX-10',proof:PROOF}),201);
+ assert.equal(await count(f,'payment_proofs'),1,'A repeated request keeps one image.');
+ const image=await f.admin.request(`${s.base}/bookings/${bb}/payment-proof`);assert.equal(image.status,200);
+ assert.equal(await f.admin.request(`${s.base}/bookings/${bid}/payment-proof`).then(r=>r.status),404,'The wallet payment has no photo.');
+ // A walk-in sale by bank transfer saves the photo in the same transaction.
+ const sale=over=>f.admin.request(s.base+'/counter/sales','POST',{tripId:id,seats:['3'],mobile:'0912345678',travelers:[{seat:'3',name:'Fictional Walk-in'}],method:'bank_transfer',reference:'TX-11',key:randomUUID(),...over});
+ assert.equal((await sale({})).error.code,'PROOF_REQUIRED');assert.equal(await seatsLeft(f,id),10,'A refused sale takes no seat.');
+ const made=ok(await sale({proof:PROOF}));assert.equal(await count(f,'payment_proofs'),2);
+ assert.equal(await f.admin.request(`${s.base}/bookings/${made.id}/payment-proof`).then(r=>r.status),200);
+ // Someone without booking or counter access cannot see it.
+ const other=await staff(f,s,['company.fleet.read']);assert.equal((await other.c.request(`${s.base}/bookings/${bb}/payment-proof`)).status,403);
 }));

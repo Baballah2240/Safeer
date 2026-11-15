@@ -1,5 +1,6 @@
 {
   "defaultBodyBytes": 8192,
   "bookingBodyBytes": 65536,
-  "brandingBodyBytes": 196608
+  "brandingBodyBytes": 196608,
+  "paymentBodyBytes": 589824
 }

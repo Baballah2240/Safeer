@@ -1,5 +1,9 @@
 # Changelog
 
+## Sessions is the working counter, bank transfer proof photos, Station shows station details - D93, 2026-11-16
+
+Migration 0027 adds safeer.payment_proofs with safeer.payment_proof_attach and safeer.payment_proof. A bank transfer (booking payment or walk-in sale) must carry a photo of the transfer (proof: JPEG, PNG or WebP data URL, at most 384 KB; PROOF_REQUIRED, INVALID_PROOF, PROOF_TOO_LARGE); the image is saved in the same transaction as the payment and served to staff at GET companies/:id/bookings/:bid/payment-proof. The staff app takes a photo (camera) or uploads an image, shrinks it on the device and previews it; the booking shows View proof of transfer. Payment requests may be up to 576 KB, and the staff page allows data: and blob: images for the preview. Sessions now holds your session, a booking finder (pay, change or print), the walk-in sale, the session list and payment methods; Station shows the stations (with Edit) and their counters.
+
 ## Station Sessions, staff landing screen and staff Back button - D92, 2026-11-16
 
 The company menu has a Sessions entry (under Station) showing only your session and the session list, and /staff?tab=companies&company=<id>&section=sessions opens it directly. Staff without platform access open straight into their company after signing in, and ticketing staff (no trip access) start on Sessions. Every staff screen (tab, company, section) is now a history entry, so the top-bar Back button and the phone back gesture return to the previous screen. Stale browser tests updated: 0.20.0 version codes, and boarding staying open after departure (D89).

@@ -137,7 +137,7 @@ test('hosted proxy: company setup, guest booking, counter payment, luggage, driv
  assert.ok(ok(await omar.api('public/holds/lookup','POST',{reference:amnaHold.reference,mobile:'0912345678'})).tickets.every(t=>!t.qr));
  // A walk-in buys at the counter by bank transfer; it needs a transfer reference.
  fail(await C.api(base+'/counter/sales','POST',{tripId,seats:['7'],mobile:'0934567890',travelers:[{seat:'7',name:'Fictional Walk-in'}],method:'bank_transfer',key:randomUUID()}),400,'REFERENCE_REQUIRED');
- const sale=ok(await C.api(base+'/counter/sales','POST',{tripId,seats:['7'],mobile:'0934567890',travelers:[{seat:'7',name:'Fictional Walk-in'}],method:'bank_transfer',reference:'BT-WF-0001',key:randomUUID()}));
+ const sale=ok(await C.api(base+'/counter/sales','POST',{tripId,seats:['7'],mobile:'0934567890',travelers:[{seat:'7',name:'Fictional Walk-in'}],method:'bank_transfer',reference:'BT-WF-0001',proof:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',key:randomUUID()}));
  assert.equal(ok(await C.api(`${base}/bookings/${sale.id}`),200).status,'confirmed',JSON.stringify(sale));
  const totals=ok(await C.api(base+'/counter'),200).session.totals;assert.equal(totals.cashIn,500000);assert.equal(totals.otherIn,250000);
 

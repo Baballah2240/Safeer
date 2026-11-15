@@ -226,6 +226,10 @@
       "rls": true,
       "privileges": []
     },
+    "payment_proofs": {
+      "rls": true,
+      "privileges": []
+    },
     "payments": {
       "rls": true,
       "privileges": []
@@ -518,6 +522,8 @@
     "safeer.counter_sale(uuid,uuid,uuid,text[],uuid,text,text,text,text,jsonb,text,text,text,integer,integer)",
     "safeer.public_trip(uuid,integer,integer)",
     "safeer.counter_trip(uuid,uuid,integer,integer)",
-    "safeer.trip_hold_minutes(safeer.trips)"
+    "safeer.trip_hold_minutes(safeer.trips)",
+    "safeer.payment_proof_attach(uuid,uuid,uuid,text,bytea)",
+    "safeer.payment_proof(uuid,uuid)"
   ]
 }

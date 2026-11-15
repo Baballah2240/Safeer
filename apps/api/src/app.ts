@@ -23,7 +23,7 @@ import {BillingService} from './billing.service.js';
 import {IdentityError,sessionToken,validCsrf,csrf,fail} from './security.js';
 import {PassengerService,passengerToken,cookieValue,googleConfig} from './passenger.service.js';
 
-const bodyLimits=JSON.parse(readFileSync(new URL('../../config/http-limits.json',import.meta.url),'utf8')) as {defaultBodyBytes:number;bookingBodyBytes:number;brandingBodyBytes:number};
+const bodyLimits=JSON.parse(readFileSync(new URL('../../config/http-limits.json',import.meta.url),'utf8')) as {defaultBodyBytes:number;bookingBodyBytes:number;brandingBodyBytes:number;paymentBodyBytes:number};
 const version=JSON.parse(readFileSync(new URL('../../package.json',import.meta.url),'utf8')).version;
 // Hosted HTTPS deployments add Secure; loopback development cannot use it over http.
 let secure='',webBase='',hostedWeb=false;
@@ -226,6 +226,7 @@ class TicketingController {
  @Post('counter/sessions/:sid/close') close(@Req() req:Request,@Param('id') id:string,@Param('sid') sid:string,@Body() data:unknown){return this.ticketing.closeSession(token(req),id,sid,data).then(reply);}
  @Post('counter/sales') sale(@Req() req:Request,@Param('id') id:string,@Body() data:unknown){return this.ticketing.sale(token(req),id,data).then(reply);}
  @Post('bookings/:bid/pay') pay(@Req() req:Request,@Param('id') id:string,@Param('bid') bid:string,@Body() data:unknown){return this.ticketing.pay(token(req),id,bid,data).then(reply);}
+ @Get('bookings/:bid/payment-proof') async proof(@Req() req:Request,@Param('id') id:string,@Param('bid') bid:string,@Res() res:Response){const r=await this.ticketing.proof(token(req),id,bid);file(res,r.type,r.data);}
  @Post('bookings/:bid/refund') refund(@Req() req:Request,@Param('id') id:string,@Param('bid') bid:string,@Body() data:unknown){return this.ticketing.refund(token(req),id,bid,data).then(reply);}
  @Post('bookings/:bid/print') print(@Req() req:Request,@Param('id') id:string,@Param('bid') bid:string,@Body() data:unknown){return this.ticketing.print(token(req),id,bid,data).then(reply);}
 }
@@ -246,6 +247,8 @@ class TripSeatController {
 // Files: a contract downloads (never cached); a staff logo is private to the signed-in session; a public logo may be cached briefly.
 const file=(res:Response,type:string,data:Buffer,{name,cache='private, no-store'}:{name?:string;cache?:string}={})=>{res.setHeader('Content-Type',type);res.setHeader('Cache-Control',cache);res.setHeader('X-Content-Type-Options','nosniff');if(name)res.setHeader('Content-Disposition',`attachment; filename="${name}"`);res.end(data);};
 const brandingPath=/^\/api\/v1\/companies\/[^/]+\/branding$/;
+// D93: a payment may carry a proof image.
+const paymentPath=/^\/api\/v1\/companies\/[^/]+\/(?:counter\/sales|bookings\/[^/]+\/pay)$/;
 @Controller('api/v1/companies/:id')
 class BillingController {
  constructor(private readonly billing:BillingService){}
@@ -332,8 +335,8 @@ export async function createIdentityApi({port=4321,webOrigin='http://127.0.0.1:4
     }
     next();
   });
-  const standardJson=json({limit:bodyLimits.defaultBodyBytes,strict:true}),bookingJson=json({limit:bodyLimits.bookingBodyBytes,strict:true}),brandingJson=json({limit:bodyLimits.brandingBodyBytes,strict:true});
-  app.use((req:Request,res:Response,next:()=>void)=>(req.method==='POST'&&req.path==='/api/v1/public/holds'?bookingJson:req.method==='PUT'&&brandingPath.test(req.path)?brandingJson:standardJson)(req,res,next));
+  const paymentJson=json({limit:bodyLimits.paymentBodyBytes,strict:true}),standardJson=json({limit:bodyLimits.defaultBodyBytes,strict:true}),bookingJson=json({limit:bodyLimits.bookingBodyBytes,strict:true}),brandingJson=json({limit:bodyLimits.brandingBodyBytes,strict:true});
+  app.use((req:Request,res:Response,next:()=>void)=>(req.method==='POST'&&req.path==='/api/v1/public/holds'?bookingJson:req.method==='PUT'&&brandingPath.test(req.path)?brandingJson:req.method==='POST'&&paymentPath.test(req.path)?paymentJson:standardJson)(req,res,next));
   try{await app.listen(port,'127.0.0.1');}catch(error){await app.close();throw error;}
   const address=app.getHttpServer().address();
   return {app,origin:`http://127.0.0.1:${address.port}`,identity:app.get(IdentityService),db:app.get(Database),close:()=>app.close()};

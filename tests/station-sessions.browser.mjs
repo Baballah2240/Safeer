@@ -38,9 +38,14 @@ try{await identityFixture(async f=>{
  assert.equal(await evaluate('document.querySelectorAll("[data-app-back]").length'),0,'No Back on the first screen.');
  await shot('cashier-sessions');
 
+ // D93: with a session open, Sessions is the working counter: find a booking to pay or change.
+ await fill('#session-open [name=opening]','500');await evaluate('document.querySelector("#session-open").requestSubmit()');await until('Boolean(document.querySelector("#station-lookup-form"))');
+ await fill('#station-lookup-form [name=q]','SF-NOTHING2');await evaluate('document.querySelector("#station-lookup-form").requestSubmit()');await until('document.querySelector("#station-lookup").textContent.includes("No bookings found.")');
+ await shot('cashier-sessions-open');
  // Station, then Back returns to Sessions; Back is hidden again there.
  await evaluate('document.querySelector("[data-company-section=station]").click()');
  await until('Boolean(document.querySelector("[data-company-section=station][aria-current=page]"))&&Boolean(document.querySelector("[data-app-back]"))');
+ await until('document.querySelector("#station-info")?.textContent.includes("Fictional North Office")');assert.equal(await evaluate('Boolean(document.querySelector("#station-session,#station-lookup"))'),false,'Station shows only station information.');
  await shot('cashier-station-back');
  await evaluate('document.querySelector("[data-app-back]").click()');
  await until('new URL(location.href).searchParams.get("section")==="sessions"&&Boolean(document.querySelector("[data-company-section=sessions][aria-current=page]"))');

@@ -26,7 +26,7 @@ try{await identityFixture(async f=>{
  const passengerKey=crypto.randomUUID(),hold=need(await f.client().request('public/holds','POST',{tripId:id,seats:['1','2'],key:passengerKey,mobile:'0912345678',travelers:[{seat:'1',name:'Fictional Amna'},{seat:'2',name:'<b>Fictional</b> Child'}]}));
  await send('Emulation.setDeviceMetricsOverride',{width:1366,height:900,deviceScaleFactor:1,mobile:false});
  await send('Page.navigate',{url:web.origin+'/staff'});await until('Boolean(document.querySelector("#staff-login"))');await fill('[name=login]','owner@safeer.local');await fill('[name=password]',f.password);await evaluate('document.querySelector("#staff-login").requestSubmit()');await until('Boolean(document.querySelector("[data-tab=companies]"))');
- await click('[data-tab=companies]');await until(`Boolean(document.querySelector('[data-company-open="${cid}"]'))`);await click(`[data-company-open="${cid}"]`);await until('Boolean(document.querySelector("[data-company-section=station]"))');await click('[data-company-section=station]');
+ await click('[data-tab=companies]');await until(`Boolean(document.querySelector('[data-company-open="${cid}"]'))`);await click(`[data-company-open="${cid}"]`);await until('Boolean(document.querySelector("[data-company-section=station]"))');await click('[data-company-section=sessions]');
  const pick=r=>need(r);
  need(await f.admin.request(base+'/counters','POST',{stationId:(await f.admin.request('companies/'+cid)).data.stations[0].id,code:'C1',name:'Counter 1',...pw}));
  const counter=need(await f.admin.request(base+'/counter')).counters[0].id;need(await f.admin.request(base+'/counter/sessions','POST',{counterId:counter,openingMinor:0}));

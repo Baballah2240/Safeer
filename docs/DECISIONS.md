@@ -1,5 +1,12 @@
 # Decisions
 
+## 2026-11-16 - Counter work in Sessions and proof of bank transfers
+
+D93: The owner asked for the counter to open directly in Sessions (sell, change and take payment there), a photo or upload as proof for every bank transfer, and Station to show only station information that can be edited.
+1. Sessions holds everything a cashier does; Station holds the stations and their counters.
+2. A bank transfer is refused without a proof image. The image is stored in the database (bytea, at most 384 KB after the device shrinks it) in the same transaction as the payment, so there is never a transfer without its proof. Mobile wallet payments need only their reference, as before.
+3. Only staff who may read bookings or work the counter can open a proof.
+
 ## 2026-11-15 - Trip times in hours and seat holds
 
 D90: The owner asked to enter each trip's expected time in hours and the booking (seat hold before payment) time in hours, at most 3 hours.
