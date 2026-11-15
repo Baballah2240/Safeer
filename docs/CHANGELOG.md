@@ -1,5 +1,9 @@
 # Changelog
 
+## Review fixes for D82-D85 - D86, 2026-11-15
+
+Arabic contract PDFs compress each embedded font once per process instead of on every download, and measuring text no longer adds unused glyphs to the font tables. A word wider than its column (a long email or address) is split instead of running past the page margin. The Needs attention card on the operations overview is a link only when something needs attention.
+
 ## Operations overview linked to the workspace - D85, 2026-11-15
 
 The overview summary cards no longer touch the departures board. Each card leads somewhere: Departures today opens Trips, Passengers booked opens Bookings, Boarded and Needs attention jump to their list. A whole departure row opens its details, which end with Manage in Trips (or Assign a driver) and Open Bookings. Missing vehicles or drivers show an Assign button, and canceled departures are dimmed. Links appear only for staff who can open the target. tests/operations.browser.mjs covers spacing and navigation.

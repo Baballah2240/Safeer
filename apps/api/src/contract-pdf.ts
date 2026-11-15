@@ -29,7 +29,9 @@ class Layout {
  need(h:number){if(this.y-h<72)this.page();}
  text(s:string,x:number,y:number,size:number,bold=false,color='0.11 0.13 0.12'){this.ops.push(place(this.face,s,x,y,size,bold,color));}
  rule(y:number){this.ops.push(`0.85 0.83 0.79 RG 0.6 w 56 ${y} m 539 ${y} l S`);}
- private wrap(s:string,size:number,bold:boolean,max:number){const words=this.face.clean(s).split(/\s+/).filter(Boolean),lines:string[]=[];let line='';
+ // A word wider than the column (a long email or address) is split so it never runs past the margin.
+ private wrap(s:string,size:number,bold:boolean,max:number){const lines:string[]=[];let line='';
+  const words=this.face.clean(s).split(/\s+/).filter(Boolean).flatMap(w=>{if(this.face.measure(w,size,bold)<=max)return [w];const parts:string[]=[];let part='';for(const ch of w){if(part&&this.face.measure(part+ch,size,bold)>max){parts.push(part);part='';}part+=ch;}return [...parts,part];});
   for(const w of words){const next=line?line+' '+w:w;if(line&&this.face.measure(next,size,bold)>max){lines.push(line);line=w;}else line=next;}lines.push(line);return lines;}
  para(s:string,{size=10.5,bold=false,indent=0,gap=4}={}){
   for(const l of this.wrap(s,size,bold,483-indent).filter(Boolean)){this.need(size+this.face.lead);this.y-=size+this.face.lead;this.text(l,56+indent,this.y,size,bold);}this.y-=gap;

@@ -6,7 +6,7 @@ import {deflateSync} from 'node:zlib';
 // maps, orders each line right to left (keeping Latin words and numbers left to right), and embeds the fonts as
 // Type0/Identity-H with a ToUnicode map so the text can be searched and copied. Short vowel marks are left out
 // because the font's mark positioning is not applied.
-type Font={data:Buffer;unitsPerEm:number;ascent:number;descent:number;bbox:number[];cmap:Map<number,number>;adv:number[]};
+type Font={data:Buffer;packed?:Buffer;unitsPerEm:number;ascent:number;descent:number;bbox:number[];cmap:Map<number,number>;adv:number[]};
 
 function parse(data:Buffer):Font{
  const tables:Record<string,number>={};for(let i=0,n=data.readUInt16BE(4);i<n;i++){const o=12+i*16;tables[data.toString('latin1',o,o+4)]=data.readUInt32BE(o+8);}
@@ -61,8 +61,8 @@ function shapeWord(word:string,f:Font):Glyph[]{
 // A run of text in a right-to-left paragraph, ready to draw left to right.
 export class ArabicFace {
  private used=[new Map<number,string>(),new Map<number,string>()];
- measure(s:string,size:number,bold:boolean){const f=font(bold);return this.visual(s,bold).reduce((w,g)=>w+f.adv[g.gid],0)*size/f.unitsPerEm;}
- private visual(s:string,bold:boolean):Glyph[]{
+ measure(s:string,size:number,bold:boolean){const f=font(bold);return this.visual(s,bold,false).reduce((w,g)=>w+f.adv[g.gid],0)*size/f.unitsPerEm;}
+ private visual(s:string,bold:boolean,record=true):Glyph[]{
   const f=font(bold),words=s.split(/\s+/).filter(Boolean),space:Glyph={gid:f.cmap.get(0x20)??0,text:' '};
   // Words with Latin letters or digits read left to right; punctuation on its own follows the paragraph. Group neighbouring left-to-right words so "SDG 25,000.00" keeps its order, then lay the groups out right to left.
   const runs:{rtl:boolean;words:string[]}[]=[];
@@ -73,7 +73,7 @@ export class ArabicFace {
    if(run.rtl)out.push(...shapeWord([...run.words[0]].map(ch=>mirror[ch]??ch).join(''),f).reverse());
    else run.words.forEach((w,k)=>{if(k)out.push(space);out.push(...shapeWord(w,f));});
   });
-  for(const g of out)this.used[bold?1:0].set(g.gid,g.text);
+  if(record)for(const g of out)this.used[bold?1:0].set(g.gid,g.text);
   return out;
  }
  draw(s:string,x:number,y:number,size:number,bold:boolean,color:string){
@@ -85,7 +85,7 @@ export class ArabicFace {
   const out:string[]=[];
   [false,true].forEach((bold,k)=>{
    const f=font(bold),n=first+k*5,used=[...this.used[k].entries()].sort((a,b)=>a[0]-b[0]),scale=1000/f.unitsPerEm,name=bold?'NotoSansArabic-Bold':'NotoSansArabic-Regular';
-   const widths=used.map(([g])=>`${g} [${Math.round(f.adv[g]*scale)}]`).join(' '),file=deflateSync(f.data);
+   const widths=used.map(([g])=>`${g} [${Math.round(f.adv[g]*scale)}]`).join(' '),file=(f.packed??=deflateSync(f.data));
    const utf16=(s:string)=>Buffer.from(s,'utf16le').swap16().toString('hex');
    const cmap=['/CIDInit /ProcSet findresource begin','12 dict begin','begincmap','/CIDSystemInfo << /Registry (Adobe) /Ordering (UCS) /Supplement 0 >> def','/CMapName /Adobe-Identity-UCS def','/CMapType 2 def','1 begincodespacerange','<0000> <FFFF>','endcodespacerange'];
    for(let i=0;i<used.length;i+=100){const part=used.slice(i,i+100);cmap.push(`${part.length} beginbfchar`,...part.map(([g,t])=>`<${g.toString(16).padStart(4,'0')}> <${utf16(t)}>`),'endbfchar');}
