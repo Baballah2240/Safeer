@@ -1,5 +1,14 @@
 # Safeer mobile status
 
+## Part-route booking and driver stops - Safeer Passenger 0.20.0 / 20000, Safeer Driver 0.20.0 / 20000, 2026-11-15
+
+D89/D90 in the apps. Safeer Passenger books a journey between middle stops at that journey's own price (it sends the stops with the seat map and the hold), marks such results "Part of the route" and shows the passenger's own pickup point. Before this version a part-route search result booked in the app would have booked the whole trip. Safeer Driver shows where each passenger boards and gets off in the passenger list and on each scan. Both apps show the trip's own seat hold time (1-3 hours) from the server.
+- Safeer-Booking-0.20.0.apk, 18,055,772 bytes, SHA-256 2db522c91a3dba7967faf8d0ecb9b3cc203b2200f531f86c98fd2526fd08829f
+- Safeer-Driver-0.20.0.apk, 23,043,318 bytes, SHA-256 ba442c9237032200c790c06fa65bcc3c087a3c01fc40c9d473a7a7230fa589c8
+- Both signed with the upload certificate SHA-256 a19fb6c1832196283aa3cf342ac4c2aa78b56d736702f8bccca1d8fcf8df7205 (same as 0.19.0, so they install as updates).
+
+Checked before release: flutter analyze (no issues) and the unit and widget tests of safeer_core, Safeer Passenger and Safeer Driver; the Flutter live-API tests against a disposable local server; aapt2 badging (package, version) and apksigner (certificate). Not installed on a phone (none connected).
+
 ## Stop-to-stop journeys (server and website) - D89, 2026-11-15
 
 No app was built. The published apps keep working: the passenger app still books whole trips, and its booking details now show the passenger's own stops when a booking was made for part of a route on the website or at the counter. The driver app checks tickets through the server, so passengers boarding at later stops can be scanned after departure. Showing each passenger's boarding and drop-off stop in the driver app's passenger list, and booking part of a route in the passenger app, need a new app build.
