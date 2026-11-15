@@ -1,5 +1,13 @@
 # Decisions
 
+## 2026-11-15 - Monthly invoices
+
+D87: The D82 contract promised a monthly invoice with the fee and commission; the owner asked to add it and to close the D86 review gaps.
+1. Amounts come from the database: safeer.invoice_issue (Super Administrator only) uses the newest accepted contract that has started by the end of the month, sums payments plus shipment payments minus refunds in the contract currency over the UTC calendar month (the platform dashboard's definition), and charges commission = round half up(max(net,0) x bps / 10000) plus the full monthly fee. Payments in other currencies are not commissioned. Only finished months can be invoiced; one live invoice per company and month (partial unique index); due 14 days after issue; overdue is derived, not stored.
+2. Invoices are fixed snapshots. The runtime role has SELECT only; safeer.invoice_settle records paid (reference) or void (reason) once. A voided month can be issued again with a new number; a paid invoice cannot be voided.
+3. invoice.issued and invoice.paid notify the same people as contracts (company profile managers of an approved company, and Super Administrators).
+4. Review gaps: English PDFs draw non-Latin text with the embedded Noto Sans Arabic font (embedded only when used); punctuation around Latin words and numbers is split off so it follows Arabic direction; the public logo is served with Cache-Control no-cache; the privacy notice states that contracts and invoices are kept as business and tax records. The font stays in the mobile app folder (one copy), as recorded in D83. The contract and invoice wording still needs a lawyer's review, and paying an invoice is recorded by hand (no online payment).
+
 ## 2026-11-15 - Arabic contracts
 
 D83: The owner asked for the contract PDF in Arabic and for the D82 endpoints in the API reference.

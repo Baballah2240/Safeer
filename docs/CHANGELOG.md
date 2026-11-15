@@ -1,5 +1,9 @@
 # Changelog
 
+## Monthly invoices and review fixes - D87, 2026-11-15
+
+Migration 0024 adds company_invoices with safeer.invoice_issue and safeer.invoice_settle (the runtime role can only read the table). New endpoints: POST companies/:id/invoices, POST companies/:id/invoices/:iid/paid and /void, GET companies/:id/invoices/:iid/pdf (lang=en|ar); GET companies/:id/billing also returns invoices. Plan & contract gains an Invoices section with the outstanding balance; invoice.issued and invoice.paid reach Notifications with Download PDF. Review fixes: English PDFs print Arabic names and addresses with the embedded font instead of "?" (the Arabic font is embedded only when used); brackets and full stops around numbers and Latin words follow Arabic direction; the public logo is revalidated on every view; plan figures stack on phones; the privacy notice says contracts and invoices are kept as business records. OpenAPI 0.16.0: 104 paths / 119 operations. tests/invoices.integration.mjs covers issuing, amounts, access, voiding, reissuing and payment.
+
 ## Review fixes for D82-D85 - D86, 2026-11-15
 
 Arabic contract PDFs compress each embedded font once per process instead of on every download, and measuring text no longer adds unused glyphs to the font tables. A word wider than its column (a long email or address) is split instead of running past the page margin. The Needs attention card on the operations overview is a link only when something needs attention.

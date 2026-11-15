@@ -5,6 +5,11 @@ import {Database} from './database.js';
 import {IdentityService,type Principal} from './identity.service.js';
 import {body,text,uuid,version,fail} from './security.js';
 import {contractPdf} from './contract-pdf.js';
+import {invoicePdf} from './invoice-pdf.js';
+
+// D87: monthly invoices. The database computes the amounts (safeer.invoice_issue); the API lists, settles and prints them.
+const invoiceView=`i.id,i.number,to_char(i.period_month,'YYYY-MM') AS "month",i.currency,i.fee_minor::text AS "feeMinor",i.commission_bps AS "commissionBps",i.payments_minor::text AS "paymentsMinor",i.refunds_minor::text AS "refundsMinor",i.commission_minor::text AS "commissionMinor",i.total_minor::text AS "totalMinor",to_char(i.due_on,'YYYY-MM-DD') AS "dueOn",i.issued_at AS "issuedAt",i.paid_at AS "paidAt",i.paid_reference AS "paidReference",i.voided_at AS "voidedAt",i.void_reason AS "voidReason",CASE WHEN i.voided_at IS NOT NULL THEN 'void' WHEN i.paid_at IS NOT NULL THEN 'paid' WHEN i.due_on<(statement_timestamp() AT TIME ZONE 'UTC')::date THEN 'overdue' ELSE 'issued' END AS status`;
+const language=(value:unknown)=>value===undefined||value==='en'?'en' as const:value==='ar'?'ar' as const:fail('INVALID_LANGUAGE');
 
 // D82: a Super Administrator sets each company's plan (monthly fee + commission); saving it issues a numbered
 // contract that the company's profile managers and the Safeer owner receive as a PDF in their notifications.
@@ -35,7 +40,8 @@ export class BillingService {
   await this.company(c,cid);if(!p.superAdministrator&&!await this.can(c,cid,'company.profile.manage'))fail('FORBIDDEN',403);
   const plan=(await c.query(`SELECT monthly_fee_minor::text AS "monthlyFeeMinor",commission_bps AS "commissionBps",currency,to_char(starts_on,'YYYY-MM-DD') AS "startsOn",notes,version,updated_at AS "updatedAt" FROM safeer.company_billing_plans WHERE company_id=$1`,[cid])).rows[0]||null;
   const contracts=(await c.query(`SELECT ${contractView} FROM safeer.company_contracts WHERE company_id=$1 ORDER BY issued_at DESC,id LIMIT 50`,[cid])).rows;
-  return {plan,contracts,canEdit:p.superAdministrator,canAccept:!p.superAdministrator&&await this.can(c,cid,'company.profile.manage')&&await this.member(c,cid,p)};
+  const invoices=(await c.query(`SELECT ${invoiceView} FROM safeer.company_invoices i WHERE i.company_id=$1 ORDER BY i.period_month DESC,i.issued_at DESC LIMIT 36`,[cid])).rows;
+  return {plan,contracts,invoices,canEdit:p.superAdministrator,canAccept:!p.superAdministrator&&await this.can(c,cid,'company.profile.manage')&&await this.member(c,cid,p)};
  });}
  async saveBilling(token:string,cid:string,input:unknown){
   uuid(cid);const data=body(input,['monthlyFeeMinor','commissionBps','currency','startsOn','notes','version','currentPassword']);
@@ -70,12 +76,43 @@ export class BillingService {
   },true);
  }
  // The Safeer owner gets the "Safeer copy" and the company the "Company copy"; the terms are identical.
- async pdf(token:string,cid:string,id:string,language:unknown){uuid(cid);uuid(id);const lang=language===undefined||language==='en'?'en':language==='ar'?'ar':fail('INVALID_LANGUAGE');return this.run(token,async(c,p)=>{
+ async pdf(token:string,cid:string,id:string,lang_:unknown){uuid(cid);uuid(id);const lang=language(lang_);return this.run(token,async(c,p)=>{
   await this.company(c,cid);
   const row=(await c.query(`SELECT number,company_name_en,company_name_ar,contact_email,phone,address,monthly_fee_minor::text AS fee,commission_bps,currency,to_char(starts_on,'YYYY-MM-DD') AS starts_on,notes,issued_at,issued_by_name,accepted_at,accepted_by_name,superseded_at FROM safeer.company_contracts WHERE company_id=$1 AND id=$2`,[cid,id])).rows[0];
   if(!row)fail('NOT_FOUND',404);
   const iso=(v:Date|null)=>v?new Date(v).toISOString():null;
   return {name:`Safeer-contract-${row.number}${lang==='ar'?'-ar':''}.pdf`,data:contractPdf({number:row.number,copy:p.superAdministrator?'safeer':'company',lang,companyNameEn:row.company_name_en,companyNameAr:row.company_name_ar,contactEmail:row.contact_email,phone:row.phone,address:row.address,monthlyFeeMinor:row.fee,commissionBps:row.commission_bps,currency:row.currency,startsOn:row.starts_on,notes:row.notes,issuedAt:iso(row.issued_at)!,issuedByName:row.issued_by_name,acceptedAt:iso(row.accepted_at),acceptedByName:row.accepted_by_name,supersededAt:iso(row.superseded_at)})};
+ });}
+
+ // D87: the Super Administrator issues one invoice per finished month; a voided month can be issued again.
+ async issueInvoice(token:string,cid:string,input:unknown){
+  uuid(cid);const data=body(input,['month','currentPassword']);const month=text(data.month,7,7);
+  if(!/^\d{4}-(0[1-9]|1[0-2])$/.test(month)||month<'2020-01')fail('INVALID_PERIOD');
+  await this.identity.reauthenticate(token,data.currentPassword);
+  return this.run(token,async(c,p)=>{
+   if(!p.superAdministrator)fail('FORBIDDEN',403);await this.company(c,cid);
+   const id=(await c.query('SELECT safeer.invoice_issue($1,$2::date,$3) AS id',[cid,month+'-01',p.displayName])).rows[0].id as string;
+   return (await c.query(`SELECT ${invoiceView} FROM safeer.company_invoices i WHERE i.id=$1`,[id])).rows[0];
+  },true);
+ }
+ async settleInvoice(token:string,cid:string,iid:string,action:'paid'|'void',input:unknown){
+  uuid(cid);uuid(iid);const field=action==='paid'?'reference':'reason',data=body(input,[field,'currentPassword']);
+  const note=text(data[field],1,action==='paid'?100:300);if(/[\u0000-\u001f\u007f]/.test(note))fail('INVALID_INPUT');
+  await this.identity.reauthenticate(token,data.currentPassword);
+  return this.run(token,async(c,p)=>{
+   if(!p.superAdministrator)fail('FORBIDDEN',403);await this.company(c,cid);
+   await c.query('SELECT safeer.invoice_settle($1,$2,$3,$4)',[cid,iid,action,note]);
+   return (await c.query(`SELECT ${invoiceView} FROM safeer.company_invoices i WHERE i.id=$1`,[iid])).rows[0];
+  },true);
+ }
+ async invoicePdf(token:string,cid:string,iid:string,lang:unknown){uuid(cid);uuid(iid);const l=language(lang);return this.run(token,async c=>{
+  await this.company(c,cid);
+  const row=(await c.query(`SELECT ${invoiceView},k.number AS "contractNumber",k.company_name_en,k.company_name_ar,k.contact_email,k.address FROM safeer.company_invoices i JOIN safeer.company_contracts k ON k.id=i.contract_id WHERE i.company_id=$1 AND i.id=$2`,[cid,iid])).rows[0];
+  if(!row)fail('NOT_FOUND',404);
+  const iso=(v:Date|null)=>v?new Date(v).toISOString():null;
+  return {name:`Safeer-invoice-${row.number}${l==='ar'?'-ar':''}.pdf`,data:invoicePdf({number:row.number,lang:l,contractNumber:row.contractNumber,companyNameEn:row.company_name_en,companyNameAr:row.company_name_ar,contactEmail:row.contact_email,address:row.address,
+   periodMonth:row.month+'-01',currency:row.currency,feeMinor:row.feeMinor,commissionBps:row.commissionBps,paymentsMinor:row.paymentsMinor,refundsMinor:row.refundsMinor,commissionMinor:row.commissionMinor,totalMinor:row.totalMinor,
+   dueOn:row.dueOn,issuedAt:iso(row.issuedAt)!,paidAt:iso(row.paidAt),paidReference:row.paidReference,voidedAt:iso(row.voidedAt),voidReason:row.voidReason})};
  });}
 
  async saveBranding(token:string,cid:string,input:unknown){

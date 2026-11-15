@@ -19,10 +19,13 @@ export const percent=(bps:number)=>(bps/100).toFixed(2).replace(/\.?0+$/,'')+'%'
 // for left to right; a right-to-left face mirrors each piece across the page (the margins are symmetric).
 type Face={rtl:boolean;lead:number;measure(s:string,size:number,bold:boolean):number;draw(s:string,x:number,y:number,size:number,bold:boolean,color:string):string;clean(s:string):string};
 const helvetica:Face={rtl:false,lead:4,measure,clean:latin,draw:(s,x,y,size,bold,color)=>`BT ${color} rg /${bold?'F2':'F1'} ${size} Tf ${x.toFixed(1)} ${y.toFixed(1)} Td (${esc(s)}) Tj ET`};
+// D87: English documents draw any non-Latin piece (an Arabic address or name) with the embedded font instead of "?".
+const nonLatin=(s:string)=>/[^\x20-\x7e]/.test(s);
+const latinFace=(a:ArabicFace):Face=>({...helvetica,clean:s=>s.replace(/[\u0000-\u001f]/g,' '),measure:(s,size,bold)=>nonLatin(s)?a.measure(s,size,bold):measure(s,size,bold),draw:(s,x,y,size,bold,color)=>nonLatin(s)?a.draw(s,x,y,size,bold,color):helvetica.draw(s,x,y,size,bold,color)});
 const arabicFace=(a:ArabicFace):Face=>({rtl:true,lead:8,measure:(s,size,bold)=>a.measure(s,size,bold),clean:s=>s.replace(/[\u0000-\u001f]/g,' '),draw:(s,x,y,size,bold,color)=>a.draw(s,x,y,size,bold,color)});
 const place=(f:Face,s:string,x:number,y:number,size:number,bold:boolean,color:string)=>f.draw(s,f.rtl?595-x-f.measure(s,size,bold):x,y,size,bold,color);
 
-class Layout {
+export class Layout {
  pages:string[]=[];private ops:string[]=[];y=0;
  constructor(readonly face:Face,private readonly header:(page:number)=>string[]){this.page();}
  page(){if(this.ops.length)this.pages.push(this.ops.join('\n'));this.ops=[...this.header(this.pages.length+1)];this.y=this.pages.length?760:700;}
@@ -77,15 +80,8 @@ const words={
 };
 
 export function contractPdf(c:ContractTerms):Buffer{
- const w=words[c.lang],day=dayIn(c.lang),copy=w.copy[c.copy],arabic=c.lang==='ar'?new ArabicFace():null,face=arabic?arabicFace(arabic):helvetica;
- const at=(s:string,x:number,y:number,size:number,bold:boolean,color:string)=>place(face,s,x,y,size,bold,color);
- const right=(s:string,size:number,bold:boolean)=>539-face.measure(s,size,bold);
- const header=(n:number)=>n===1?[
-  '0.07 0.23 0.18 rg 0 762 595 80 re f',
-  at(w.brand,56,806,22,true,'1 1 1'),at(w.tagline,56,788,10,false,'0.85 0.93 0.89'),
-  at(copy,right(copy,10,true),806,10,true,'1 1 1'),at(c.number,right(c.number,10,false),788,10,false,'0.85 0.93 0.89'),
- ]:[at(w.running(c.number,copy),56,806,9,false,'0.36 0.38 0.37'),'0.85 0.83 0.79 RG 0.6 w 56 796 m 539 796 l S'];
- const L=new Layout(face,header);
+ const w=words[c.lang],copy=w.copy[c.copy];
+ const {arabic,face,layout:L,day}=document(c.lang,{brand:w.brand,tagline:w.tagline,label:copy,number:c.number,running:w.running(c.number,copy)});
  L.y=730;L.text(w.title,56,L.y,20,true);L.y-=20+face.lead;
  L.text(w.issued(day(c.issuedAt),c.number),56,L.y,10.5,false,'0.36 0.38 0.37');L.y-=12;
  if(c.supersededAt){L.y-=6;L.para(w.superseded(day(c.supersededAt)),{bold:true});}
@@ -108,14 +104,31 @@ export function contractPdf(c:ContractTerms):Buffer{
  if(c.acceptedAt){L.text(c.acceptedByName||'',310,top-34-gap,11,true);L.text(w.acceptedOn(day(c.acceptedAt)),310,top-50-gap*2,10);}
  else{L.text(w.notYet,310,top-34-gap,11,true);L.text(w.howAccept,310,top-50-gap*2,10);}
  L.y=top-64-gap*2;L.para(w.record,{size:9});
- const pages=L.finish();
- // Objects: 1 catalog, 2 pages, 3-4 Helvetica, 5 info, then one page and one content stream per page, then the
- // Arabic fonts (five objects each) when used.
- const objects:string[]=[];const kids=pages.map((_,i)=>`${6+i*2} 0 R`).join(' '),fontsAt=6+pages.length*2;
+ return serialize(L.finish(),arabic,c.lang,`Safeer service agreement ${c.number}`);
+}
+
+// D87: the shared page frame (green band on page 1, running header after) used by contracts and invoices.
+export function document(lang:'en'|'ar',band:{brand:string;tagline:string;label:string;number:string;running:string}){
+ const arabic=new ArabicFace(),face=lang==='ar'?arabicFace(arabic):latinFace(arabic);
+ const at=(s:string,x:number,y:number,size:number,bold:boolean,color:string)=>place(face,s,x,y,size,bold,color);
+ const right=(s:string,size:number,bold:boolean)=>539-face.measure(s,size,bold);
+ const header=(n:number)=>n===1?[
+  '0.07 0.23 0.18 rg 0 762 595 80 re f',
+  at(band.brand,56,806,22,true,'1 1 1'),at(band.tagline,56,788,10,false,'0.85 0.93 0.89'),
+  at(band.label,right(band.label,10,true),806,10,true,'1 1 1'),at(band.number,right(band.number,10,false),788,10,false,'0.85 0.93 0.89'),
+ ]:[at(band.running,56,806,9,false,'0.36 0.38 0.37'),'0.85 0.83 0.79 RG 0.6 w 56 796 m 539 796 l S'];
+ return {arabic,face,layout:new Layout(face,header),day:dayIn(lang)};
+}
+
+// Objects: 1 catalog, 2 pages, 3-4 Helvetica, 5 info, then one page and one content stream per page, then the
+// Arabic fonts (five objects each) when used.
+export function serialize(pages:string[],face:ArabicFace,lang:'en'|'ar',title:string):Buffer{
+ // The Arabic fonts (about 190 KB) are embedded only when some text used them.
+ const arabic=face.inUse()?face:null,objects:string[]=[];const kids=pages.map((_,i)=>`${6+i*2} 0 R`).join(' '),fontsAt=6+pages.length*2;
  const fontRefs=`/F1 3 0 R /F2 4 0 R${arabic?` /F3 ${fontsAt} 0 R /F4 ${fontsAt+5} 0 R`:''}`;
- objects.push(`<< /Type /Catalog /Pages 2 0 R /Lang (${c.lang}) >>`,`<< /Type /Pages /Kids [${kids}] /Count ${pages.length} >>`,
+ objects.push(`<< /Type /Catalog /Pages 2 0 R /Lang (${lang}) >>`,`<< /Type /Pages /Kids [${kids}] /Count ${pages.length} >>`,
   '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>','<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>',
-  `<< /Title (Safeer service agreement ${esc(c.number)}) /Producer (Safeer) >>`);
+  `<< /Title (${esc(title)}) /Producer (Safeer) >>`);
  pages.forEach((stream,i)=>{
   objects.push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << ${fontRefs} >> >> /Contents ${7+i*2} 0 R >>`);
   objects.push(`<< /Length ${Buffer.byteLength(stream,'latin1')} >>\nstream\n${stream}\nendstream`);

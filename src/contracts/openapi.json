@@ -13394,7 +13394,8 @@
                         "plan",
                         "contracts",
                         "canEdit",
-                        "canAccept"
+                        "canAccept",
+                        "invoices"
                       ],
                       "properties": {
                         "plan": {
@@ -13418,6 +13419,13 @@
                         },
                         "canAccept": {
                           "type": "boolean"
+                        },
+                        "invoices": {
+                          "type": "array",
+                          "maxItems": 36,
+                          "items": {
+                            "$ref": "#/components/schemas/CompanyInvoice"
+                          }
                         }
                       }
                     }
@@ -13947,7 +13955,7 @@
     "/api/v1/public/companies/{slug}/logo": {
       "get": {
         "summary": "Read a listed company logo",
-        "description": "Public, cached for 5 minutes. 404 unless the company is approved, listed and has a logo.",
+        "description": "Public; browsers revalidate on every view (no-cache), so an unlisted company logo disappears at once. 404 unless the company is approved, listed and has a logo.",
         "parameters": [
           {
             "name": "slug",
@@ -13981,6 +13989,338 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Not available."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/invoices": {
+      "post": {
+        "summary": "Issue a monthly invoice",
+        "description": "Super Administrator only; CSRF and the current password. month (YYYY-MM) must have ended (UTC) and be covered by an accepted contract. Errors: INVALID_PERIOD, INVOICE_PERIOD_OPEN, INVOICE_NO_CONTRACT, INVOICE_EXISTS (one live invoice per month). Notifies the company profile managers.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "month",
+                  "currentPassword"
+                ],
+                "properties": {
+                  "month": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-(0[1-9]|1[0-2])$"
+                  },
+                  "currentPassword": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Issued.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/CompanyInvoice"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in required."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not available."
+          },
+          "409": {
+            "description": "See description."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/invoices/{iid}/paid": {
+      "post": {
+        "summary": "Mark an invoice paid",
+        "description": "Super Administrator only; CSRF and the current password. Errors: INVOICE_CLOSED. Notifies the company.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "iid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "reference",
+                  "currentPassword"
+                ],
+                "properties": {
+                  "reference": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "currentPassword": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Recorded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/CompanyInvoice"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in required."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not available."
+          },
+          "409": {
+            "description": "INVOICE_CLOSED."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/invoices/{iid}/void": {
+      "post": {
+        "summary": "Void an invoice",
+        "description": "Super Administrator only; CSRF and the current password. A void invoice stays on record and its month can be issued again. Paid invoices cannot be voided (INVOICE_CLOSED).",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "iid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "reason",
+                  "currentPassword"
+                ],
+                "properties": {
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 300
+                  },
+                  "currentPassword": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Voided.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/CompanyInvoice"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in required."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not available."
+          },
+          "409": {
+            "description": "INVOICE_CLOSED."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/invoices/{iid}/pdf": {
+      "get": {
+        "summary": "Download an invoice as PDF",
+        "description": "Super Administrator or company.profile.manage. lang=en|ar (default en).",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "iid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "lang",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "en",
+                "ar"
+              ],
+              "default": "en"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The PDF, as an attachment.",
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in required."
+          },
+          "403": {
+            "description": "Not permitted."
           },
           "404": {
             "description": "Not available."
@@ -16417,6 +16757,116 @@
               "null"
             ],
             "description": "Changes when the logo changes; use it to refresh a cached logo."
+          }
+        }
+      },
+      "CompanyInvoice": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "number",
+          "month",
+          "currency",
+          "feeMinor",
+          "commissionBps",
+          "paymentsMinor",
+          "refundsMinor",
+          "commissionMinor",
+          "totalMinor",
+          "dueOn",
+          "issuedAt",
+          "paidAt",
+          "paidReference",
+          "voidedAt",
+          "voidReason",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "number": {
+            "type": "string",
+            "pattern": "^INV-\\d{4}-\\d{5}$"
+          },
+          "month": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}$"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "feeMinor": {
+            "type": "string",
+            "pattern": "^\\d+$"
+          },
+          "commissionBps": {
+            "type": "integer"
+          },
+          "paymentsMinor": {
+            "type": "string",
+            "pattern": "^\\d+$",
+            "description": "Ticket and parcel payments in the contract currency during the month (UTC)."
+          },
+          "refundsMinor": {
+            "type": "string",
+            "pattern": "^\\d+$",
+            "description": "Ticket refunds in the same period."
+          },
+          "commissionMinor": {
+            "type": "string",
+            "pattern": "^\\d+$",
+            "description": "round half up of max(payments - refunds, 0) x commissionBps / 10000."
+          },
+          "totalMinor": {
+            "type": "string",
+            "pattern": "^\\d+$",
+            "description": "feeMinor + commissionMinor."
+          },
+          "dueOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "issuedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "paidAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "paidReference": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "voidedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "voidReason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "issued",
+              "overdue",
+              "paid",
+              "void"
+            ]
           }
         }
       }

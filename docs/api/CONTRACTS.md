@@ -1,5 +1,9 @@
 # Implemented API contracts
 
+## D87 invoices
+
+OpenAPI 0.16.0 now has 104 paths / 119 operations: POST companies/{id}/invoices (month YYYY-MM), POST companies/{id}/invoices/{iid}/paid (reference) and /void (reason), GET companies/{id}/invoices/{iid}/pdf (lang=en|ar), and the CompanyInvoice schema; GET companies/{id}/billing returns up to 36 invoices. Writes need a Super Administrator, CSRF and the current password. Errors: INVALID_PERIOD (400), INVOICE_PERIOD_OPEN, INVOICE_NO_CONTRACT, INVOICE_EXISTS, INVOICE_CLOSED (409). Public company logos now use Cache-Control: public, no-cache.
+
 ## D83 billing, contract and brand endpoints
 
 OpenAPI 0.16.0 now has 100 paths / 115 operations, adding the D82 endpoints: GET/PUT companies/{id}/billing, POST companies/{id}/contracts/{cid}/accept, GET companies/{id}/contracts/{cid}/pdf (lang=en|ar), PUT companies/{id}/branding, GET companies/{id}/branding/logo, GET public/companies/{slug}/brand and /logo, with the BillingPlan, CompanyContract and PublicBrand schemas. CompanyWorkspace gains branding (null until saved) and capabilities.billing.

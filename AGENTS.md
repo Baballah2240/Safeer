@@ -1,5 +1,7 @@
 # Safeer
 
+- D87 (2026-11-15): monthly invoices (migration 0024, safeer.invoice_issue/invoice_settle, invoice-pdf.ts). Never compute invoice amounts in the API or browser; the database function is the single source. The runtime role must stay read-only on company_invoices. PDFs share contract-pdf.ts (document/serialize); English PDFs fall back to the Arabic font for non-Latin text.
+
 - D83 (2026-11-15): contract PDFs take lang=en|ar; Arabic uses apps/api/src/pdf-arabic.ts with the Noto Sans Arabic fonts in mobile/flutter/packages/safeer_core/assets/fonts (keep them and that folder deployed). Keep Arabic contract text free of short vowel marks and number its sections with words. Add new endpoints to src/contracts/openapi.json and update the path count in tests/server.test.mjs.
 
 - D82 (2026-11-15): plans, contracts and brands (migration 0023, billing.service.ts, contract-pdf.ts, src/billing.js). Only a Super Administrator writes plans; contracts are fixed snapshots that a company member (never the Super Administrator) accepts once; contract PDFs are English (standard fonts) or Arabic (D83). Brand colors must keep white text readable (LOW_CONTRAST); apply colors with style.setProperty, never inline style attributes (CSP). New front-end files must be added to config/assets.mjs.

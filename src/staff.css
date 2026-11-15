@@ -88,7 +88,10 @@ html:not([data-theme=light]) body .company-approval-copy span{color:#e9d6ac}
 .billing-empty,.billing-notes{margin:0;color:var(--muted)}.billing-notes{margin-top:14px}
 .billing-accept{margin:0 0 18px}.billing-accept .staff-actions{flex-wrap:wrap}
 .billing-status.is-ok{border-color:#1f7a4d66;color:#1f7a4d}.billing-status.is-wait{border-color:#e9a82b99;color:#8a5a00}.billing-status.is-old{color:var(--muted)}
-html:not([data-theme=light]) .billing-status.is-ok{color:#7fd4a2}html:not([data-theme=light]) .billing-status.is-wait{color:#ffd27a}
+html[data-theme=dark] .billing-status.is-ok{color:#7fd4a2}html[data-theme=dark] .billing-status.is-wait{color:#ffd27a}
+/* D87: invoices */
+.billing-status.is-late{border-color:#c2410c80;color:#b42318}html[data-theme=dark] .billing-status.is-late{color:#ff9b8a}
+.billing-owed{margin:0 0 14px;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 .billing-by{display:block;margin-top:4px}.billing-row-actions{gap:8px;flex-wrap:wrap}.billing-row-actions .staff-link,.billing-row-actions button{min-height:36px;padding:6px 12px}
 .billing-form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px}
 .billing-form-grid input[type=color]{width:100%;min-height:44px;padding:4px;border:1px solid var(--border);border-radius:9px;background:var(--paper);cursor:pointer}
@@ -107,3 +110,7 @@ html:not([data-theme=light]) .billing-status.is-ok{color:#7fd4a2}html:not([data-
 html body .staff-shell.has-company-brand .staff-primary:where(:not(.seat,.market-seat,.trip-seat)),html[data-app-surface] body .staff-shell.has-company-brand .staff-primary:where(:not(.seat,.market-seat,.trip-seat)){background:var(--accent);border-color:transparent;box-shadow:0 7px 18px #0000001f;color:#fff}
 html body .staff-shell.has-company-brand .staff-primary:hover:not(:disabled),html[data-app-surface] body .staff-shell.has-company-brand .staff-primary:hover:not(:disabled){background:var(--accent);filter:brightness(1.12)}
 .billing-panel .staff-section-head>.staff-primary,.brand-panel .staff-section-head>.staff-primary{flex:none;white-space:nowrap}
+/* D87 review: on phones the plan figures stack so amounts and dates never break mid-number. */
+@media(max-width:560px){html body .billing-summary{grid-template-columns:1fr}}
+.billing-summary bdi,.billing-table bdi{white-space:nowrap}
+.billing-invoices [data-invoice-issue]{white-space:nowrap}

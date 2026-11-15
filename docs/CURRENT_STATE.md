@@ -1,5 +1,9 @@
 # Current state - read this first
 
+## Monthly invoices - D87, 2026-11-15
+
+In Plan & contract the Safeer owner issues one invoice per company for each finished month: the monthly fee plus the commission on that month's net collections (ticket and parcel payments minus refunds, in the contract currency, UTC). It needs an accepted contract. Company managers receive it in Notifications and download it in English or Arabic; the owner marks it paid with a reference or voids it with a reason ([D87](DECISIONS.md)). Live hosting needs migrations 0023 and 0024.
+
 ## Arabic contracts - D83, 2026-11-15
 
 Contract PDFs now come in Arabic too: Download PDF gives the Arabic agreement when Safeer is in Arabic and the English one otherwise; the terms are the same. The API reference (src/contracts/openapi.json) lists the plan, contract and brand endpoints ([D83](DECISIONS.md)). The contract wording is a starting template that still needs a lawyer's review before real use.

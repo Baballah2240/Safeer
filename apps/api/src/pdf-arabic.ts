@@ -61,9 +61,10 @@ function shapeWord(word:string,f:Font):Glyph[]{
 // A run of text in a right-to-left paragraph, ready to draw left to right.
 export class ArabicFace {
  private used=[new Map<number,string>(),new Map<number,string>()];
+ inUse(){return this.used.some(m=>m.size>0);}
  measure(s:string,size:number,bold:boolean){const f=font(bold);return this.visual(s,bold,false).reduce((w,g)=>w+f.adv[g.gid],0)*size/f.unitsPerEm;}
  private visual(s:string,bold:boolean,record=true):Glyph[]{
-  const f=font(bold),words=s.split(/\s+/).filter(Boolean),space:Glyph={gid:f.cmap.get(0x20)??0,text:' '};
+  const f=font(bold),words=s.split(/\s+/).filter(Boolean).flatMap(w=>{if(isArabic(w)||!/[A-Za-z0-9]/.test(w))return [w];const m=/^([.,،؛:;!?()[\]"«»]*)(.*?)([.,،؛:;!?()[\]"«»]*)$/u.exec(w)!;return [...m[1],m[2],...m[3]].filter(Boolean);}),space:Glyph={gid:f.cmap.get(0x20)??0,text:' '};
   // Words with Latin letters or digits read left to right; punctuation on its own follows the paragraph. Group neighbouring left-to-right words so "SDG 25,000.00" keeps its order, then lay the groups out right to left.
   const runs:{rtl:boolean;words:string[]}[]=[];
   for(const w of words){const rtl=isArabic(w)||!/[A-Za-z0-9]/.test(w),last=runs.at(-1);if(last&&!last.rtl&&!rtl)last.words.push(w);else runs.push({rtl,words:[w]});}

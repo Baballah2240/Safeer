@@ -97,6 +97,12 @@
         "UPDATE"
       ]
     },
+    "company_invoices": {
+      "rls": true,
+      "privileges": [
+        "SELECT"
+      ]
+    },
     "company_payment_settings": {
       "rls": true,
       "privileges": []
@@ -497,6 +503,8 @@
     "safeer.passenger_trips(text)",
     "safeer.passenger_delete_account(text)",
     "safeer.public_company_brand(text)",
-    "safeer.public_company_logo(text)"
+    "safeer.public_company_logo(text)",
+    "safeer.invoice_issue(uuid,date,text)",
+    "safeer.invoice_settle(uuid,uuid,text,text)"
   ]
 }

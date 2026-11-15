@@ -35,10 +35,27 @@ try{await identityFixture(async f=>{
  const pdfHref=await evaluate('document.querySelector(".billing-table a[download]").getAttribute("href")');assert.match(pdfHref,/^\/api\/v1\/companies\/[0-9a-f-]+\/contracts\/[0-9a-f-]+\/pdf\?lang=en$/);
  assert.equal(await evaluate(`fetch(${JSON.stringify(pdfHref)}).then(r=>r.headers.get('content-type'))`),'application/pdf');
  assert.equal(await evaluate('document.querySelectorAll("[data-contract-accept]").length'),0,'The Safeer owner cannot accept the contract it issued.');
+ // D87: invoices start once the company accepts the contract.
+ assert.ok(await evaluate('document.querySelector(".billing-invoices").textContent.includes("Invoices start once a contract is accepted.")'));
+ assert.equal(await evaluate('document.querySelectorAll("[data-invoice-issue]").length'),0);
+ // Stand in for the company manager's acceptance, then issue last month's invoice from the form.
+ await f.migration.query('ALTER TABLE safeer.company_contracts DISABLE TRIGGER contract_guard');
+ await f.migration.query(`UPDATE safeer.company_contracts SET accepted_at=now(),accepted_by=issued_by,accepted_by_name='Fictional Manager',starts_on='2020-01-01'`);
+ await f.migration.query('ALTER TABLE safeer.company_contracts ENABLE TRIGGER contract_guard');
+ await click('#staff-refresh, [data-tab=companies]');await until('Boolean(document.querySelector("[data-company-open]"))').catch(()=>{});
+ if(await evaluate('Boolean(document.querySelector("[data-company-open]"))'))await click('[data-company-open]');
+ await until('Boolean(document.querySelector("[data-company-section=billing]"))');await click('[data-company-section=billing]');await until('Boolean(document.querySelector("[data-invoice-issue]"))');
+ await click('[data-invoice-issue]');await until('document.querySelector("#staff-dialog").open');await submit();
+ await until('document.querySelectorAll(".billing-invoices tbody tr").length===1');
+ assert.ok(await evaluate('document.querySelector(".billing-invoices tbody").textContent.includes("Awaiting payment")'));
+ assert.match(await evaluate('document.querySelector(".billing-invoices a[download]").getAttribute("href")'),/\/invoices\/[0-9a-f-]+\/pdf\?lang=en$/);
+ await evaluate('document.querySelector(".billing-invoices").scrollIntoView({block:"start"})');await new Promise(r=>setTimeout(r,900));
+ writeFileSync(join(shots,'invoices-en.png'),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
  writeFileSync(join(shots,'billing-en.png'),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
  // The contract arrives in Notifications with a download link.
  await click('[data-tab=notifications]');await until('Boolean(document.querySelector(".notification-item a[download]"))');
- assert.equal(await evaluate('document.querySelector(".notification-item a[download]").getAttribute("href")'),pdfHref);
+ assert.ok(await evaluate(`[...document.querySelectorAll(".notification-item a[download]")].some(a=>a.getAttribute("href")===${JSON.stringify(pdfHref)})`),'The contract notification links to its PDF.');
+ assert.ok(await evaluate('[...document.querySelectorAll(".notification-item a[download]")].some(a=>/\\/invoices\\/[0-9a-f-]+\\/pdf/.test(a.getAttribute("href")))'),'The invoice notification links to its PDF.');
  // Brand & theme: colors and a logo, used by the workspace.
  await click('[data-tab=companies]');await until('Boolean(document.querySelector("[data-company-section=branding]"))');await click('[data-company-section=branding]');await until('Boolean(document.querySelector("[data-brand-edit]"))');
  await click('[data-brand-edit]');await until('document.querySelector("#staff-dialog").open');
