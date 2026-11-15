@@ -1,5 +1,9 @@
 # Changelog
 
+## Back button on inner screens - D91, 2026-11-16
+
+The booking, tracking and driver web apps show a Back button in the top bar on inner screens (company page, trip, ticket, search results, tracking, driver scan and passenger list). It returns to the previous Safeer screen, or to the booking home (driver: dashboard) when the screen was opened directly. The main booking screen and the bottom-tab screens keep only the menu. tests/app-back.browser.mjs covers it.
+
 ## Trip times in hours, seat holds of 1-3 hours, apps 0.20.0 - D90, 2026-11-15
 
 Migration 0026 adds trips.hold_minutes (60, 120 or 180) and safeer.trip_hold_minutes; every hold now lasts at most 3 hours (company defaults above 180 minutes are lowered to 180 and the company form allows at most 180). Schedule trips and Edit trip take stop times in hours (quarter hours) with the last stop labelled Expected trip time, and a Seat hold before payment of 1, 2 or 3 hours (holdHours, INVALID_HOLD_HOURS); the trip list shows the expected trip time and the seat hold. The Flutter apps 0.20.0 book part-route journeys at their own price (passenger) and show each passenger's boarding and drop-off stop (driver).

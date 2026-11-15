@@ -1,3 +1,4 @@
+import './app-back.js';
 import {shimmer} from './loading.js';
 import {bottomNavigation,journeyCard,journeyTimeline,boardingDetails,isPastBooking,icon as passengerIcon} from './passenger-ui.js';
 import {account,accountArabic,loadAccount,linkBooking,accountSection,bindAccount,prefill} from './passenger-account.js';

@@ -1,3 +1,4 @@
+import './app-back.js';
 import {shimmer} from './loading.js';
 import {DriverCamera} from './driver-camera.js';
 import {driverIcon as icon,boardingSummary,filterPassengers,activeTrip,nextStop,passengerRows} from './driver-dashboard.js';

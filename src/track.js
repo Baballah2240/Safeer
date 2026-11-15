@@ -1,3 +1,4 @@
+import './app-back.js';
 import {shimmer} from './loading.js';
 // D59 public shipment tracking by the random code on the receipt. Shows status and offices only.
 import {themeButton,drawerIcon,bindSideDrawer} from './theme.js';
