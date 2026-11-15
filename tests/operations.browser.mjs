@@ -48,6 +48,13 @@ try{await identityFixture(async f=>{
  assert.equal(await kpi('Boarded'),'1','A duplicate or wrong-trip scan leaves the count unchanged.');
  assert.match(await evaluate('document.querySelector(".ops-progress-label").textContent'),/1\s*of\s*4/);
  await shot('overview-desktop-after');
+ // D85: the summary cards sit apart from the boards and lead into the rest of the workspace; the whole row opens a trip.
+ assert.ok(await evaluate('document.querySelector(".ops-layout").getBoundingClientRect().top-document.querySelector(".ops-kpis").getBoundingClientRect().bottom>=12'),'Cards and boards do not touch.');
+ assert.equal(await evaluate('document.querySelectorAll(".ops-panel-actions [data-ops-go]").length'),2,'Trip details link to Trips and Bookings.');
+ await click('[data-ops-close]');await until('!document.querySelector(".ops-panel")');
+ await evaluate(`document.querySelector('[data-ops-row="${s.trips.soon}"] td:nth-child(2)').click()`);await until('Boolean(document.querySelector(".ops-panel"))');
+ await click('.ops-kpi-link[data-ops-go=trips]');await until('document.querySelector(".staff-sidebar [data-company-section][aria-current=page]")?.textContent==="Trips"');
+ await click('[data-company-section=operations]');await until('Boolean(document.querySelector(".ops-kpi-link"))');
 
  for(const [lang,width,height] of [['en',390,844],['ar',390,844],['ar',1440,960],['en',320,740]]){
   await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width<700});await open(lang);

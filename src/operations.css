@@ -21,6 +21,24 @@
 
  /* Overview */
  .ops{display:grid;gap:18px}
+ /* D85: space between the summary cards and the boards; cards and rows are links. */
+ #ops-body{display:grid;gap:18px}
+ button.ops-kpi-link{position:relative;width:100%;font:inherit;color:inherit;text-align:start;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}
+ button.ops-kpi-link:hover{transform:translateY(-2px);border-color:var(--accent)}
+ button.ops-kpi-link:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+ .ops-kpi-go{margin-inline-start:auto;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;color:var(--muted);opacity:.7}
+ .ops-kpi-go svg{width:18px;height:18px}
+ html[dir=rtl] .ops-kpi-go svg{transform:scaleX(-1)}
+ button.ops-kpi-link:hover .ops-kpi-go{color:var(--accent);opacity:1}
+ html body .ops-table tr.ops-row{cursor:pointer}
+ html body .ops-table tr.ops-row:hover{background:var(--accent-wash)}
+ html body .ops-table tr.ops-row-muted td{color:var(--muted)}
+ html body .ops-table tr.ops-row-muted .ops-route{text-decoration:line-through;text-decoration-color:#0004}
+ html body button.ops-assign{min-height:0;padding:5px 14px;border-radius:999px;border:1px dashed var(--accent);background:transparent;box-shadow:none;color:var(--accent);font-weight:600;font-size:.85rem;cursor:pointer}
+ html body button.ops-assign:hover{background:var(--accent-wash)}
+ .ops-panel-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;padding-top:16px;border-top:1px solid var(--border)}
+ .ops-panel-actions button{display:inline-flex;align-items:center;gap:8px}
+ .ops-panel-actions svg{width:18px;height:18px}
  .ops-company{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 -6px;color:var(--muted);font-weight:600}
  .ops-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
  .ops-head h1{margin:0;font-size:clamp(1.5rem,3vw,2.1rem);letter-spacing:-.01em}

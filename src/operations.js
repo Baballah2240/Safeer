@@ -8,7 +8,7 @@ const icons={
  clock:'M12 7v5l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0',people:'M16 19v-1a4 4 0 0 0-8 0v1M12 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6M20 19v-1a3 3 0 0 0-2-2.8M17 5.2a3 3 0 0 1 0 5.6M4 19v-1a3 3 0 0 1 2-2.8M7 5.2a3 3 0 0 0 0 5.6',
  check:'m5 12 4 4 10-10',flag:'M5 21V4h11l-2 4 2 4H5',alert:'M12 9v4M12 17h.01M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0',
  x:'M6 6l12 12M18 6 6 18',pencil:'M4 20h4L19 9l-4-4L4 16zM14 6l4 4',bus:'M5 17V6a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v11M5 13h14M7 17v3M17 17v3M8 7h8',
- seat:'M7 4v9h9l2 7M7 13l-2 7M16 13V8',plus:'M12 5v14M5 12h14',close:'M6 6l12 12M18 6 6 18',refresh:'M20 7V3l-4 4M20 7a8 8 0 1 0 0 10',
+ seat:'M7 4v9h9l2 7M7 13l-2 7M16 13V8',chevron:'m9 6 6 6-6 6',ticket:'M4 8a2 2 0 0 0 0 4v4h16v-4a2 2 0 0 0 0-4V4H4zM13 4v12',plus:'M12 5v14M5 12h14',close:'M6 6l12 12M18 6 6 18',refresh:'M20 7V3l-4 4M20 7a8 8 0 1 0 0 10',
 };
 const svg=name=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${icons[name]}"/></svg>`;
 let state={company:null,trip:null,timer:null};
@@ -32,10 +32,15 @@ export function bindOperations(root,data,ctx){
  const badge=status=>{const [label,icon,tone]=statusInfo[status]||statusInfo.scheduled;return `<span class="ops-status ops-${tone}">${svg(icon)}<span>${t(label)}</span></span>`;};
  const ratio=(a,b)=>b?`<bdi>${a} / ${b}</bdi>`:`<bdi>${a}</bdi>`;
  let view=null,detail=null,failed='';
+ // D85: the overview links into the rest of the workspace: KPIs open Trips/Bookings or jump to the list, rows open the trip.
+ const cap=data.capabilities,kpiTargets=[cap.tripsRead?'trips':'',cap.bookingsRead?'bookings':'','#ops-table-title','#ops-attention-title'],
+  kpiHints={trips:'Open Trips',bookings:'Open Bookings','#ops-table-title':"Show today's departures",'#ops-attention-title':'Show what needs attention'};
+ const assign=r=>cap.tripsManage&&r.status!=='canceled'?`<button type="button" class="ops-assign" data-ops-go="trips">${t('Assign')}</button>`:'—';
 
  const kpis=s=>[['Departures today',s.departures,'bus','selected'],['Passengers booked',s.booked,'people','primary'],['Boarded',s.boarded,'seat','ok'],['Needs attention',s.attention,'alert',s.attention?'urgent':'neutral']]
-  .map(([label,value,icon,tone])=>`<article class="ops-kpi ops-kpi-${tone}"><span class="ops-kpi-icon">${svg(icon)}</span><div><span>${t(label)}</span><strong><bdi>${e(value)}</bdi></strong></div></article>`).join('');
- const table=rows=>rows.length?`<div class="staff-table-wrap ops-table-wrap" tabindex="0" role="region" aria-label="${t('Today\'s departures')}"><table class="staff-table ops-table"><thead><tr>${['Time','Route','Vehicle','Driver','Booked','Boarded','Status'].map(h=>`<th scope="col">${t(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr class="${state.trip===r.id?'ops-row-selected':''}"><td><button type="button" class="ops-row-open" data-ops-trip="${e(r.id)}" aria-pressed="${state.trip===r.id}" aria-label="${e(t('Open trip details'))} ${e(time(r.departureAt,r.timezone))}"><strong><bdi>${e(time(r.departureAt,r.timezone))}</bdi></strong></button></td><td>${route(r)}</td><td>${r.busCode?`<bdi>${e(r.busCode)}</bdi>`:'—'}</td><td>${driver(r)}</td><td>${ratio(r.booked,r.seatCount)}</td><td>${ratio(r.boarded,r.booked)}</td><td>${badge(r.status)}</td></tr>`).join('')}</tbody></table></div>`
+  .map(([label,value,icon,tone],i)=>{const go=kpiTargets[i],inner=`<span class="ops-kpi-icon">${svg(icon)}</span><div><span>${t(label)}</span><strong><bdi>${e(value)}</bdi></strong></div>`;
+   return go?`<button type="button" class="ops-kpi ops-kpi-${tone} ops-kpi-link" data-ops-go="${go}" title="${e(t(kpiHints[go]))}">${inner}<span class="ops-kpi-go">${svg('chevron')}</span></button>`:`<article class="ops-kpi ops-kpi-${tone}">${inner}</article>`;}).join('');
+ const table=rows=>rows.length?`<div class="staff-table-wrap ops-table-wrap" tabindex="0" role="region" aria-label="${t('Today\'s departures')}"><table class="staff-table ops-table"><thead><tr>${['Time','Route','Vehicle','Driver','Booked','Boarded','Status'].map(h=>`<th scope="col">${t(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr class="ops-row ${state.trip===r.id?'ops-row-selected':''} ${r.status==='canceled'?'ops-row-muted':''}" data-ops-row="${e(r.id)}"><td><button type="button" class="ops-row-open" data-ops-trip="${e(r.id)}" aria-pressed="${state.trip===r.id}" aria-label="${e(t('Open trip details'))} ${e(time(r.departureAt,r.timezone))}"><strong><bdi>${e(time(r.departureAt,r.timezone))}</bdi></strong></button></td><td>${route(r)}</td><td>${r.busCode?`<bdi>${e(r.busCode)}</bdi>`:assign(r)}</td><td>${r.driverEn?driver(r):assign(r)}</td><td>${ratio(r.booked,r.seatCount)}</td><td>${ratio(r.boarded,r.booked)}</td><td>${badge(r.status)}</td></tr>`).join('')}</tbody></table></div>`
   :`<div class="ops-empty"><span class="ops-kpi-icon">${svg('bus')}</span><p>${t('No departures today.')}</p>${data.capabilities.tripsManage?`<button type="button" class="staff-primary" data-ops-empty-create>${t('Create trip')}</button>`:''}</div>`;
  const attention=items=>items.length?`<section class="ops-attention" aria-labelledby="ops-attention-title"><h2 id="ops-attention-title">${t('Needs attention')} <bdi>(${items.length})</bdi></h2><ul>${items.map(a=>`<li>${badge(a.kind)}<button type="button" class="ops-attention-trip" data-ops-trip="${e(a.id)}"><strong><bdi>${e(time(a.departureAt,a.timezone))}</bdi></strong> ${route(a)}</button><small>${a.kind==='delayed'?(a.minutesLate?`${t('Departure was due')} <bdi>${e(a.minutesLate)}</bdi> ${t('minutes ago')}`:t('A delay was reported')):t('Assign a driver to this trip')}</small></li>`).join('')}</ul></section>`:'';
  const panel=()=>{
@@ -48,7 +53,8 @@ export function bindOperations(root,data,ctx){
    <div class="ops-progress"><div class="ops-progress-label"><strong>${t('Boarding progress')}</strong><span><bdi>${e(d.boarded)}</bdi> ${t('of')} <bdi>${e(booked)}</bdi></span></div><div class="ops-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${booked}" aria-valuenow="${d.boarded}" aria-label="${t('Boarding progress')}"><span data-pct="${pct}"></span></div></div>
    ${d.canSeePassengers?`<h3>${t('Recent ticket scans')} <bdi>(${d.recentScans.length})</bdi></h3>${d.recentScans.length?`<table class="staff-table ops-mini"><thead><tr><th scope="col">${t('Time')}</th><th scope="col">${t('Ticket')}</th><th scope="col">${t('Passenger')}</th></tr></thead><tbody>${d.recentScans.map(s=>`<tr><td><bdi>${e(time(s.at,d.timezone))}</bdi></td><td><bdi>${e(s.ticket)}</bdi></td><td>${s.name?e(s.name):`<span class="staff-muted">${t('Name erased')}</span>`}</td></tr>`).join('')}</tbody></table>`:`<p class="staff-muted">${t('No tickets scanned yet.')}</p>`}
    <h3>${t('Passengers')} <bdi>(${d.passengers.length})</bdi></h3>${d.passengers.length?`<ul class="ops-passengers">${d.passengers.map(p=>`<li><span class="ops-seat"><bdi>${e(p.seat)}</bdi></span><span>${p.name?e(p.name):`<span class="staff-muted">${t('Name erased')}</span>`}<small><bdi>${e(p.ticket)}</bdi></small></span>${p.boardedAt?`<span class="ops-status ops-ok">${svg('check')}<span>${t('Boarded')}</span></span>`:`<span class="ops-status ops-neutral">${svg('clock')}<span>${t('Waiting')}</span></span>`}</li>`).join('')}</ul>`:`<p class="staff-muted">${t('No paid tickets on this trip yet.')}</p>`}`
-   :`<p class="staff-muted">${t('Passenger names need booking access.')}</p>`}</aside>`;
+   :`<p class="staff-muted">${t('Passenger names need booking access.')}</p>`}
+   <div class="ops-panel-actions">${cap.tripsRead?`<button type="button" class="staff-primary" data-ops-go="trips">${svg('bus')}<span>${t(d.status==='unassigned'&&cap.tripsManage?'Assign a driver':'Manage in Trips')}</span></button>`:''}${cap.bookingsRead?`<button type="button" class="secondary" data-ops-go="bookings">${svg('ticket')}<span>${t('Open Bookings')}</span></button>`:''}</div></aside>`;
  };
  const paint=()=>{
   if(!body.isConnected){clearInterval(state.timer);return;}
@@ -62,6 +68,9 @@ export function bindOperations(root,data,ctx){
   body.querySelectorAll('[data-ops-trip]').forEach(b=>b.onclick=()=>{state.trip=b.dataset.opsTrip===state.trip&&b.classList.contains('ops-row-open')?null:b.dataset.opsTrip;detail=null;paint();if(state.trip)void loadTrip(true);});
   body.querySelector('[data-ops-close]')?.addEventListener('click',()=>{const id=state.trip;state.trip=null;detail=null;paint();body.querySelector(`[data-ops-trip="${CSS.escape(id)}"]`)?.focus();});
   body.querySelector('[data-ops-empty-create]')?.addEventListener('click',create);
+  body.querySelectorAll('[data-ops-go]').forEach(b=>b.onclick=event=>{event.stopPropagation();const go=b.dataset.opsGo;if(go.startsWith('#')){const target=body.querySelector(go);target?.scrollIntoView({behavior:'smooth',block:'start'});target?.setAttribute('tabindex','-1');target?.focus({preventScroll:true});}else ctx.openSection?.(go);});
+  // The whole row opens the trip, not only the time.
+  body.querySelectorAll('[data-ops-row]').forEach(row=>row.onclick=event=>{if(event.target.closest('button,a'))return;row.querySelector('.ops-row-open')?.click();});
  };
  const load=async()=>{
   try{view=await api(base);failed='';}catch(error){failed=error.message||'REQUEST_FAILED';}

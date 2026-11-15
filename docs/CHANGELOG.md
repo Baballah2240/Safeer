@@ -1,5 +1,9 @@
 # Changelog
 
+## Operations overview linked to the workspace - D85, 2026-11-15
+
+The overview summary cards no longer touch the departures board. Each card leads somewhere: Departures today opens Trips, Passengers booked opens Bookings, Boarded and Needs attention jump to their list. A whole departure row opens its details, which end with Manage in Trips (or Assign a driver) and Open Bookings. Missing vehicles or drivers show an Assign button, and canceled departures are dimmed. Links appear only for staff who can open the target. tests/operations.browser.mjs covers spacing and navigation.
+
 ## Page stays still behind open cards - D84, 2026-11-15
 
 While any card or menu (modal dialog) is open, the page behind it no longer scrolls, and scrolling inside the card stops at its edges instead of moving the page (src/theme.css, screen only so printing is unaffected). tests/billing.browser.mjs checks the lock and its release.
