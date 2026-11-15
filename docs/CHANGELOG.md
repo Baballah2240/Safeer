@@ -1,5 +1,9 @@
 # Changelog
 
+## Page stays still behind open cards - D84, 2026-11-15
+
+While any card or menu (modal dialog) is open, the page behind it no longer scrolls, and scrolling inside the card stops at its edges instead of moving the page (src/theme.css, screen only so printing is unaffected). tests/billing.browser.mjs checks the lock and its release.
+
 ## Arabic contracts and API reference - D83, 2026-11-15
 
 GET companies/:id/contracts/:cid/pdf accepts lang=en|ar (default en; other values 400 INVALID_LANGUAGE). The Arabic agreement is laid out right to left with the company's Arabic name, using the Noto Sans Arabic fonts the mobile app already ships (apps/api/src/pdf-arabic.ts: letter joining, line ordering, embedded Type0 fonts with a ToUnicode map). Download PDF links in Plan & contract and Notifications follow the page language. OpenAPI 0.16.0 now lists the D82 billing, contract, branding and public brand endpoints: 100 paths / 115 operations. No database change.

@@ -26,7 +26,10 @@ try{await identityFixture(async f=>{
  await click('[data-company-section=billing]');await until('Boolean(document.querySelector("[data-billing-edit]"))');
  assert.ok(await evaluate('document.querySelector(".billing-empty").textContent.includes("No plan yet")'));
  await click('[data-billing-edit]');await until('document.querySelector("#staff-dialog").open');
+ // D84: the page behind an open card does not scroll.
+ assert.equal(await evaluate('getComputedStyle(document.documentElement).overflowY'),'hidden','The page is locked while a card is open.');
  await fill('#staff-dialog [name=fee]','25,000.50');await fill('#staff-dialog [name=commission]','3.5');await fill('#staff-dialog [name=startsOn]','2026-12-01');await submit();
+ assert.notEqual(await evaluate('getComputedStyle(document.documentElement).overflowY'),'hidden','The page scrolls again once the card closes.');
  await until('document.querySelectorAll(".billing-table tbody tr").length===1');
  assert.ok(await evaluate('document.querySelector(".billing-summary").textContent.includes("25,000.50")&&document.querySelector(".billing-summary").textContent.includes("3.5%")'));
  const pdfHref=await evaluate('document.querySelector(".billing-table a[download]").getAttribute("href")');assert.match(pdfHref,/^\/api\/v1\/companies\/[0-9a-f-]+\/contracts\/[0-9a-f-]+\/pdf\?lang=en$/);

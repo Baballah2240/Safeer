@@ -595,3 +595,7 @@ html[dir=rtl] body .shimmer-block::after{animation-direction:reverse}
 @media(max-width:400px){html body .safeer-shimmer{padding-inline:12px}html body .shimmer-card{padding:20px}}
 @media(prefers-reduced-motion:reduce){html body .shimmer-block::after{animation:none;transform:none;opacity:.35}}
 @media print{html body .safeer-shimmer{display:none}}
+
+/* D84: while a card (modal dialog) is open, the page behind it stays still; scrolling inside the card never moves the page. Screen only, so printed tickets and reports still flow across pages. */
+@media screen{html:has(dialog:modal){overflow:hidden;overscroll-behavior:none}}
+dialog:modal{overscroll-behavior:contain}
