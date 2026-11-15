@@ -1,6 +1,8 @@
 # Safeer
 
-- D82 (2026-11-15): plans, contracts and brands (migration 0023, billing.service.ts, contract-pdf.ts, src/billing.js). Only a Super Administrator writes plans; contracts are fixed snapshots that a company member (never the Super Administrator) accepts once; contract PDFs are English-only (standard fonts). Brand colors must keep white text readable (LOW_CONTRAST); apply colors with style.setProperty, never inline style attributes (CSP). New front-end files must be added to config/assets.mjs.
+- D83 (2026-11-15): contract PDFs take lang=en|ar; Arabic uses apps/api/src/pdf-arabic.ts with the Noto Sans Arabic fonts in mobile/flutter/packages/safeer_core/assets/fonts (keep them and that folder deployed). Keep Arabic contract text free of short vowel marks and number its sections with words. Add new endpoints to src/contracts/openapi.json and update the path count in tests/server.test.mjs.
+
+- D82 (2026-11-15): plans, contracts and brands (migration 0023, billing.service.ts, contract-pdf.ts, src/billing.js). Only a Super Administrator writes plans; contracts are fixed snapshots that a company member (never the Super Administrator) accepts once; contract PDFs are English (standard fonts) or Arabic (D83). Brand colors must keep white text readable (LOW_CONTRAST); apply colors with style.setProperty, never inline style attributes (CSP). New front-end files must be added to config/assets.mjs.
 
 - D81 (2026-11-13): only a Super Administrator approves companies; company pages show an approval notice until then. Format Arabic dates, times and money with 'ar-SD-u-nu-latn' (Latin digits), never plain 'ar-SD'. Staff tables (class staff-table) become labelled cards on phones automatically (theme.js labelTables); keep a thead with one th per column. Confirmations are bottom toasts (.staff-toast), errors stay inline.
 

@@ -70,12 +70,12 @@ export class BillingService {
   },true);
  }
  // The Safeer owner gets the "Safeer copy" and the company the "Company copy"; the terms are identical.
- async pdf(token:string,cid:string,id:string){uuid(cid);uuid(id);return this.run(token,async(c,p)=>{
+ async pdf(token:string,cid:string,id:string,language:unknown){uuid(cid);uuid(id);const lang=language===undefined||language==='en'?'en':language==='ar'?'ar':fail('INVALID_LANGUAGE');return this.run(token,async(c,p)=>{
   await this.company(c,cid);
-  const row=(await c.query(`SELECT number,company_name_en,contact_email,phone,address,monthly_fee_minor::text AS fee,commission_bps,currency,to_char(starts_on,'YYYY-MM-DD') AS starts_on,notes,issued_at,issued_by_name,accepted_at,accepted_by_name,superseded_at FROM safeer.company_contracts WHERE company_id=$1 AND id=$2`,[cid,id])).rows[0];
+  const row=(await c.query(`SELECT number,company_name_en,company_name_ar,contact_email,phone,address,monthly_fee_minor::text AS fee,commission_bps,currency,to_char(starts_on,'YYYY-MM-DD') AS starts_on,notes,issued_at,issued_by_name,accepted_at,accepted_by_name,superseded_at FROM safeer.company_contracts WHERE company_id=$1 AND id=$2`,[cid,id])).rows[0];
   if(!row)fail('NOT_FOUND',404);
   const iso=(v:Date|null)=>v?new Date(v).toISOString():null;
-  return {name:`Safeer-contract-${row.number}.pdf`,data:contractPdf({number:row.number,copy:p.superAdministrator?'safeer':'company',companyNameEn:row.company_name_en,contactEmail:row.contact_email,phone:row.phone,address:row.address,monthlyFeeMinor:row.fee,commissionBps:row.commission_bps,currency:row.currency,startsOn:row.starts_on,notes:row.notes,issuedAt:iso(row.issued_at)!,issuedByName:row.issued_by_name,acceptedAt:iso(row.accepted_at),acceptedByName:row.accepted_by_name,supersededAt:iso(row.superseded_at)})};
+  return {name:`Safeer-contract-${row.number}${lang==='ar'?'-ar':''}.pdf`,data:contractPdf({number:row.number,copy:p.superAdministrator?'safeer':'company',lang,companyNameEn:row.company_name_en,companyNameAr:row.company_name_ar,contactEmail:row.contact_email,phone:row.phone,address:row.address,monthlyFeeMinor:row.fee,commissionBps:row.commission_bps,currency:row.currency,startsOn:row.starts_on,notes:row.notes,issuedAt:iso(row.issued_at)!,issuedByName:row.issued_by_name,acceptedAt:iso(row.accepted_at),acceptedByName:row.accepted_by_name,supersededAt:iso(row.superseded_at)})};
  });}
 
  async saveBranding(token:string,cid:string,input:unknown){

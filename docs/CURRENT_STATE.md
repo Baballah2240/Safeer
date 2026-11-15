@@ -1,5 +1,9 @@
 # Current state - read this first
 
+## Arabic contracts - D83, 2026-11-15
+
+Contract PDFs now come in Arabic too: Download PDF gives the Arabic agreement when Safeer is in Arabic and the English one otherwise; the terms are the same. The API reference (src/contracts/openapi.json) lists the plan, contract and brand endpoints ([D83](DECISIONS.md)). The contract wording is a starting template that still needs a lawyer's review before real use.
+
 ## Company plans, contracts and brands - D82, 2026-11-15
 
 The Safeer owner sets each company's monthly fee and commission in Company workspace > Plan & contract; saving issues a numbered contract PDF to the owner's and the company managers' Notifications, and a company manager accepts it there. Each company sets its colors and logo in Brand & theme; its workspace and public page use them ([D82](DECISIONS.md)).

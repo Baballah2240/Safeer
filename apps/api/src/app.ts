@@ -250,7 +250,7 @@ class BillingController {
  @Get('billing') read(@Req() req:Request,@Param('id') id:string){return this.billing.billing(token(req),id).then(reply);}
  @Put('billing') save(@Req() req:Request,@Param('id') id:string,@Body() data:unknown){return this.billing.saveBilling(token(req),id,data).then(reply);}
  @Post('contracts/:cid/accept') accept(@Req() req:Request,@Param('id') id:string,@Param('cid') cid:string,@Body() data:unknown){return this.billing.accept(token(req),id,cid,data).then(reply);}
- @Get('contracts/:cid/pdf') async pdf(@Req() req:Request,@Param('id') id:string,@Param('cid') cid:string,@Res() res:Response){const r=await this.billing.pdf(token(req),id,cid);file(res,'application/pdf',r.data,{name:r.name});}
+ @Get('contracts/:cid/pdf') async pdf(@Req() req:Request,@Param('id') id:string,@Param('cid') cid:string,@Query('lang') lang:unknown,@Res() res:Response){const r=await this.billing.pdf(token(req),id,cid,lang);file(res,'application/pdf',r.data,{name:r.name});}
  @Put('branding') brand(@Req() req:Request,@Param('id') id:string,@Body() data:unknown){return this.billing.saveBranding(token(req),id,data).then(reply);}
  @Get('branding/logo') async logo(@Req() req:Request,@Param('id') id:string,@Res() res:Response){const r=await this.billing.logo(token(req),id);file(res,r.type,r.data);}
 }

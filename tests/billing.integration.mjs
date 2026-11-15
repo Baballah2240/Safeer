@@ -28,6 +28,10 @@ test('a plan issues a numbered contract to both notification centers, and a comp
   const inbox=ok(await who.request('notifications'),200),n=inbox.items.find(x=>x.code==='contract.issued');assert.ok(n,'Both parties receive the contract notification.');assert.equal(n.sourceId,first.id);
   const pdf=await who.request(`${s.base}/contracts/${first.id}/pdf`);assert.equal(pdf.status,200);assert.equal(pdf.headers.get('content-type'),'application/pdf');assert.match(pdf.headers.get('content-disposition'),/attachment; filename="Safeer-contract-SAF-/);
   assert.ok(pdf.raw.startsWith('%PDF-1.4'));assert.ok(pdf.raw.includes(copy));assert.ok(pdf.raw.includes('SDG 25,000.00'));assert.ok(pdf.raw.includes('3.5%'));
+  // D83: the Arabic copy embeds the Arabic font and maps its glyphs back to Arabic text for search and copy.
+  const ar=await who.request(`${s.base}/contracts/${first.id}/pdf?lang=ar`);assert.equal(ar.status,200);assert.match(ar.headers.get('content-disposition'),/-ar\.pdf"/);
+  for(const part of ['/FontFile2','/Identity-H','/ToUnicode','/Lang (ar)','<0641>','<0646>'])assert.ok(ar.raw.includes(part),part);
+  assert.equal((await who.request(`${s.base}/contracts/${first.id}/pdf?lang=fr`)).status,400);
  }
  assert.ok(!ok(await s.staff.c.request('notifications'),200).items.some(x=>x.code.startsWith('contract.')),'Other staff do not receive contracts.');
  assert.equal((await s.staff.c.request(`${s.base}/contracts/${first.id}/pdf`)).status,404,'Other staff cannot download a contract.');

@@ -13355,6 +13355,638 @@
           }
         ]
       }
+    },
+    "/api/v1/companies/{id}/billing": {
+      "get": {
+        "summary": "Read the company plan and contracts",
+        "description": "Super Administrator, or company.profile.manage. Lists up to 50 contracts, newest first. canAccept is true for an active company member with profile management who is not a Super Administrator.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "plan",
+                        "contracts",
+                        "canEdit",
+                        "canAccept"
+                      ],
+                      "properties": {
+                        "plan": {
+                          "oneOf": [
+                            {
+                              "$ref": "#/components/schemas/BillingPlan"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "contracts": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/CompanyContract"
+                          }
+                        },
+                        "canEdit": {
+                          "type": "boolean"
+                        },
+                        "canAccept": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in required."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not available."
+          }
+        }
+      },
+      "put": {
+        "summary": "Set the company plan and issue a contract",
+        "description": "Super Administrator only. Requires CSRF, the current password, and the expected version once a plan exists. Issues a new numbered contract, replaces the previous one, and notifies the Super Administrators and the company profile managers.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "monthlyFeeMinor",
+                  "commissionBps",
+                  "currency",
+                  "startsOn",
+                  "currentPassword"
+                ],
+                "properties": {
+                  "monthlyFeeMinor": {
+                    "type": "string",
+                    "pattern": "^\\d{1,12}$"
+                  },
+                  "commissionBps": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5000
+                  },
+                  "currency": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z]{3}$"
+                  },
+                  "startsOn": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "notes": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 500
+                  },
+                  "version": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0
+                  },
+                  "currentPassword": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Contract issued.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "id",
+                        "number"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "number": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in required."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not available."
+          },
+          "409": {
+            "description": "Stale version."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/contracts/{cid}/accept": {
+      "post": {
+        "summary": "Accept a contract for the company",
+        "description": "An active company member with company.profile.manage who is not a Super Administrator. Requires CSRF and the current password. A contract is accepted once; a replaced contract cannot be accepted.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "cid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "currentPassword"
+                ],
+                "properties": {
+                  "currentPassword": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Accepted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "id",
+                        "accepted"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "accepted": {
+                          "type": "boolean",
+                          "const": true
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in required."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not available."
+          },
+          "409": {
+            "description": "CONTRACT_ACCEPTED or CONTRACT_SUPERSEDED."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/contracts/{cid}/pdf": {
+      "get": {
+        "summary": "Download a contract as PDF",
+        "description": "Super Administrator (Safeer copy) or company.profile.manage (Company copy). lang=ar gives the Arabic agreement laid out right to left with the Arabic company name; the default is English. Other values return 400 INVALID_LANGUAGE.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "cid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "lang",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "en",
+                "ar"
+              ],
+              "default": "en"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The PDF, as an attachment.",
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in required."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not available."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/branding": {
+      "put": {
+        "summary": "Save the company colors and logo",
+        "description": "Requires company.profile.manage, CSRF, the current password and the expected version once saved. Colors must keep white text readable (4.5:1, else LOW_CONTRAST). The logo is a PNG, JPEG or WebP data URL up to 96 KB (INVALID_LOGO, LOGO_TOO_LARGE); omit it to keep the current logo, or send removeLogo.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "currentPassword"
+                ],
+                "properties": {
+                  "primaryColor": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "pattern": "^#[0-9a-fA-F]{6}$"
+                  },
+                  "secondaryColor": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "pattern": "^#[0-9a-fA-F]{6}$"
+                  },
+                  "logo": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "pattern": "^data:image/(png|jpeg|webp);base64,"
+                  },
+                  "removeLogo": {
+                    "type": "boolean"
+                  },
+                  "version": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0
+                  },
+                  "currentPassword": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Saved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "version"
+                      ],
+                      "properties": {
+                        "version": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in required."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not available."
+          },
+          "409": {
+            "description": "Stale version."
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}/branding/logo": {
+      "get": {
+        "summary": "Read the company logo",
+        "description": "Any company member who can open the workspace.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The logo image.",
+            "content": {
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "image/jpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "image/webp": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in required."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not available."
+          }
+        }
+      }
+    },
+    "/api/v1/public/companies/{slug}/brand": {
+      "get": {
+        "summary": "Read a listed company brand",
+        "description": "Public. Null unless the company is approved and listed.",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/PublicBrand"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/public/companies/{slug}/logo": {
+      "get": {
+        "summary": "Read a listed company logo",
+        "description": "Public, cached for 5 minutes. 404 unless the company is approved, listed and has a logo.",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The logo image.",
+            "content": {
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "image/jpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "image/webp": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not available."
+          }
+        }
+      }
     }
   },
   "components": {
@@ -14264,6 +14896,10 @@
               },
               "routesManage": {
                 "type": "boolean"
+              },
+              "billing": {
+                "type": "boolean",
+                "description": "Can open Plan & contract."
               }
             },
             "required": [
@@ -14323,6 +14959,46 @@
                 "active"
               ]
             }
+          },
+          "branding": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": false,
+            "required": [
+              "primaryColor",
+              "secondaryColor",
+              "logoVersion",
+              "version"
+            ],
+            "properties": {
+              "primaryColor": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^#[0-9a-f]{6}$"
+              },
+              "secondaryColor": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^#[0-9a-f]{6}$"
+              },
+              "logoVersion": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "version": {
+                "type": "integer",
+                "description": "0 before the first save."
+              }
+            },
+            "description": "Null until the company saves its brand."
           }
         },
         "required": [
@@ -15586,6 +16262,161 @@
             "items": {
               "$ref": "#/components/schemas/PassengerTicket"
             }
+          }
+        }
+      },
+      "BillingPlan": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "monthlyFeeMinor",
+          "commissionBps",
+          "currency",
+          "startsOn",
+          "notes",
+          "version",
+          "updatedAt"
+        ],
+        "properties": {
+          "monthlyFeeMinor": {
+            "type": "string",
+            "pattern": "^\\d+$",
+            "description": "Minor units (1/100), as a string."
+          },
+          "commissionBps": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5000,
+            "description": "Basis points: 350 is 3.5%."
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "startsOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "version": {
+            "type": "integer"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CompanyContract": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "number",
+          "planVersion",
+          "monthlyFeeMinor",
+          "commissionBps",
+          "currency",
+          "startsOn",
+          "notes",
+          "issuedAt",
+          "issuedByName",
+          "acceptedAt",
+          "acceptedByName",
+          "supersededAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "number": {
+            "type": "string",
+            "pattern": "^SAF-\\d{4}-\\d{5}$"
+          },
+          "planVersion": {
+            "type": "integer"
+          },
+          "monthlyFeeMinor": {
+            "type": "string"
+          },
+          "commissionBps": {
+            "type": "integer"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "startsOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "issuedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "issuedByName": {
+            "type": "string"
+          },
+          "acceptedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "acceptedByName": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "supersededAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        }
+      },
+      "PublicBrand": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "additionalProperties": false,
+        "required": [
+          "primaryColor",
+          "secondaryColor",
+          "logoVersion"
+        ],
+        "properties": {
+          "primaryColor": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^#[0-9a-fA-F]{6}$"
+          },
+          "secondaryColor": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^#[0-9a-fA-F]{6}$"
+          },
+          "logoVersion": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Changes when the logo changes; use it to refresh a cached logo."
           }
         }
       }

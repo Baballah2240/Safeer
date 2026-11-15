@@ -1,5 +1,9 @@
 # Implemented API contracts
 
+## D83 billing, contract and brand endpoints
+
+OpenAPI 0.16.0 now has 100 paths / 115 operations, adding the D82 endpoints: GET/PUT companies/{id}/billing, POST companies/{id}/contracts/{cid}/accept, GET companies/{id}/contracts/{cid}/pdf (lang=en|ar), PUT companies/{id}/branding, GET companies/{id}/branding/logo, GET public/companies/{slug}/brand and /logo, with the BillingPlan, CompanyContract and PublicBrand schemas. CompanyWorkspace gains branding (null until saved) and capabilities.billing.
+
 ## Section 15 health contract
 
 OpenAPI 0.16.0 retains 93 paths / 107 operations. Health adds maintenance.holds and maintenance.retention, each with state disabled/starting/running/ok/failed and nullable lastSuccessAt. The static prototype reports disabled; a real job failure remains visible even when database connectivity succeeds. Database-unavailable health returns safe 503 DATABASE_UNAVAILABLE without SQL/credentials. No business authorization or monetary response changes.

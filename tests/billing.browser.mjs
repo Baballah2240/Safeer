@@ -29,7 +29,7 @@ try{await identityFixture(async f=>{
  await fill('#staff-dialog [name=fee]','25,000.50');await fill('#staff-dialog [name=commission]','3.5');await fill('#staff-dialog [name=startsOn]','2026-12-01');await submit();
  await until('document.querySelectorAll(".billing-table tbody tr").length===1');
  assert.ok(await evaluate('document.querySelector(".billing-summary").textContent.includes("25,000.50")&&document.querySelector(".billing-summary").textContent.includes("3.5%")'));
- const pdfHref=await evaluate('document.querySelector(".billing-table a[download]").getAttribute("href")');assert.match(pdfHref,/^\/api\/v1\/companies\/[0-9a-f-]+\/contracts\/[0-9a-f-]+\/pdf$/);
+ const pdfHref=await evaluate('document.querySelector(".billing-table a[download]").getAttribute("href")');assert.match(pdfHref,/^\/api\/v1\/companies\/[0-9a-f-]+\/contracts\/[0-9a-f-]+\/pdf\?lang=en$/);
  assert.equal(await evaluate(`fetch(${JSON.stringify(pdfHref)}).then(r=>r.headers.get('content-type'))`),'application/pdf');
  assert.equal(await evaluate('document.querySelectorAll("[data-contract-accept]").length'),0,'The Safeer owner cannot accept the contract it issued.');
  writeFileSync(join(shots,'billing-en.png'),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
@@ -52,6 +52,7 @@ try{await identityFixture(async f=>{
   await click(`[data-company-section=${section}]`);
   await until(section==='billing'?'Boolean(document.querySelector(".billing-panel"))':'Boolean(document.querySelector(".brand-panel"))');
   await new Promise(r=>setTimeout(r,700));
+  if(section==='billing')assert.ok(await evaluate(`document.querySelector(".billing-table a[download]").getAttribute("href").endsWith("?lang=${lang}")`),'The contract PDF follows the page language.');
   assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth+2'),`${section}/${lang}/${width} overflow`);assert.deepEqual(await evaluate('__errors'),[]);
   writeFileSync(join(shots,`${section}-${lang}-${width}.png`),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));layouts++;
  }

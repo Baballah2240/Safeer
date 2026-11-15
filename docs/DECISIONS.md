@@ -1,5 +1,12 @@
 # Decisions
 
+## 2026-11-15 - Arabic contracts
+
+D83: The owner asked for the contract PDF in Arabic and for the D82 endpoints in the API reference.
+1. Language: the PDF endpoint takes lang=en|ar; the staff screens ask for the page language. Both versions carry the same terms and say that the other language exists. The Arabic one names the company by its stored Arabic name (company_contracts.company_name_ar, already snapshotted by D82), so no migration is needed.
+2. Rendering without a library: apps/api/src/pdf-arabic.ts reads mobile/flutter/packages/safeer_core/assets/fonts/NotoSansArabic-400/700.ttf (SIL OFL, already in the repository; resolved from dist/api, so deployments must keep the mobile folder), maps Arabic letters to Unicode presentation forms (including lam-alef), orders each line right to left while keeping words with Latin letters or digits left to right, and embeds the fonts (Type0, Identity-H, compressed, about 190 KB per PDF) with a ToUnicode map so text can be searched and copied. Short vowel marks are dropped because the font's mark positioning is not applied; Arabic sections are numbered with words (أولا، ثانيا) to avoid mixed-direction numbers.
+3. The contract wording is a starting template written by the developer, not legal advice; it must be reviewed by a lawyer before it is used with real companies.
+
 ## 2026-11-15 - Company plans, contracts and brands
 
 D82: The owner sells Safeer to bus companies and asked for (1) a billing plan per company that produces a contract sent as PDF to the company and to the owner, delivered through an in-app notification center rather than email, and (2) each company's own theme colors and logo.
