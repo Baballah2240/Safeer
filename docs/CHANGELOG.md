@@ -1,5 +1,9 @@
 # Changelog
 
+## Company plans, contracts and brands - D82, 2026-11-15
+
+Migration 0023 adds company_billing_plans, company_contracts and company_branding. New endpoints: GET/PUT companies/:id/billing, POST companies/:id/contracts/:cid/accept, GET companies/:id/contracts/:cid/pdf, PUT companies/:id/branding, GET companies/:id/branding/logo, GET public/companies/:slug/brand and /logo. Company settings gain Plan & contract and Brand & theme; notifications for contracts carry Download PDF; the public company page shows the company's logo and header color. tests/billing.integration.mjs and tests/billing.browser.mjs cover them. src/contracts/openapi.json does not list the new endpoints yet.
+
 ## Staff layouts - D81, 2026-11-13
 
 Company pages show an approval notice while a company is not approved (with Edit company for Super Administrators); Arabic staff, driver and tracking screens use Latin digits; staff tables become labelled cards on phones and the departures table has balanced columns; attention items stack on phones; "Saved." is a bottom toast that never sits under the menu button. tests/operations.browser.mjs and tests/trips.browser.mjs check these.

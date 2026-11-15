@@ -19,10 +19,11 @@ import {OperationsService} from './operations.service.js';
 import {BoardingService} from './boarding.service.js';
 import {FinanceService} from './finance.service.js';
 import {PlatformService} from './platform.service.js';
+import {BillingService} from './billing.service.js';
 import {IdentityError,sessionToken,validCsrf,csrf,fail} from './security.js';
 import {PassengerService,passengerToken,cookieValue,googleConfig} from './passenger.service.js';
 
-const bodyLimits=JSON.parse(readFileSync(new URL('../../config/http-limits.json',import.meta.url),'utf8')) as {defaultBodyBytes:number;bookingBodyBytes:number};
+const bodyLimits=JSON.parse(readFileSync(new URL('../../config/http-limits.json',import.meta.url),'utf8')) as {defaultBodyBytes:number;bookingBodyBytes:number;brandingBodyBytes:number};
 const version=JSON.parse(readFileSync(new URL('../../package.json',import.meta.url),'utf8')).version;
 // Hosted HTTPS deployments add Secure; loopback development cannot use it over http.
 let secure='',webBase='',hostedWeb=false;
@@ -41,7 +42,7 @@ class Errors implements ExceptionFilter {
     const type=(error as {type?:string})?.type;
     if(type==='entity.parse.failed'||type==='entity.too.large'){res.status(type==='entity.too.large'?413:400).json({error:{code:'INVALID_REQUEST',message:'Send valid JSON within the limit for this endpoint.'}});return;}
     if(code==='23505'){const constraint=(error as {constraint?:string}).constraint||'';const loginConflict=constraint==='users_normalized_login_key';res.status(409).json({error:{code:loginConflict?'DUPLICATE_LOGIN':'DUPLICATE_RECORD',message:loginConflict?'That login is already in use.':'This code, slug or membership is already in use.'}});return;}
-    if(code==='P0001'&&['INVALID_REPORT','CONTENTS_NOT_DECLARED','INVALID_DESTINATION','INVALID_ITEMS','PRICE_MISSING','SHIPMENT_STATE','SHIPMENT_NOT_DEPARTED','SHIPMENT_EXCEPTION_OPEN','SHIPMENT_EXCEPTION_CLOSED','RECEIVER_NOT_VERIFIED','TAG_REQUIRED','EXPORT_LIMIT','TICKET_INVALID','TICKET_WRONG_TRIP','BOARDING_CLOSED','JOURNEY_STATE','LAST_COMPANY_ADMIN','COMPANY_LIMIT','CATALOG_LIMIT','RESOURCE_IN_USE','STATION_CITY_IN_USE','INVALID_ROUTE_STOPS','INACTIVE_ROUTE_RESOURCE','LAYOUT_IN_USE','INACTIVE_LAYOUT','INVALID_SEAT_LAYOUT','IMMUTABLE_REVISION','TRIP_NOT_DRAFT','TRIP_FINISHED','LUGGAGE_HELD','LUGGAGE_STATE','LUGGAGE_NOT_DEPARTED','LUGGAGE_EXCEPTION_OPEN','TICKET_REQUIRED','TAG_UNKNOWN','TAG_REPLACED','TAG_REASON_REQUIRED','REASON_REQUIRED','COLLECTION_NOT_VERIFIED','TRIP_NOT_READY','INVALID_TRIP_STOPS','ASSIGNMENT_CONFLICT','INACTIVE_ASSIGNMENT','TRIP_RESOURCE_IN_USE','TRIP_NOT_BOOKABLE','INVALID_SEATS','SEATS_UNAVAILABLE','SEATS_HELD','IDEMPOTENCY_CONFLICT','HOLD_CLOSED','INVALID_PASSENGERS','STALE_VERSION','NO_OPEN_SESSION','SESSION_OPEN','SESSION_CLOSED','COUNTER_INACTIVE','COUNTER_BUSY','NOTE_REQUIRED','ALREADY_PAID','HOLD_ENDED','LATE_REASON_REQUIRED','METHOD_DISABLED','CURRENCY_MISMATCH','ALREADY_REFUNDED','NOT_PAID','REFUND_CLOSED','REFERENCE_REQUIRED'].includes((error as Error).message)){res.status(409).json({error:{code:(error as Error).message,message:'The change conflicts with a protected resource, route rule or local capacity.'}});return;}
+    if(code==='P0001'&&['INVALID_REPORT','CONTENTS_NOT_DECLARED','INVALID_DESTINATION','INVALID_ITEMS','PRICE_MISSING','SHIPMENT_STATE','SHIPMENT_NOT_DEPARTED','SHIPMENT_EXCEPTION_OPEN','SHIPMENT_EXCEPTION_CLOSED','RECEIVER_NOT_VERIFIED','TAG_REQUIRED','EXPORT_LIMIT','TICKET_INVALID','TICKET_WRONG_TRIP','BOARDING_CLOSED','JOURNEY_STATE','LAST_COMPANY_ADMIN','COMPANY_LIMIT','CATALOG_LIMIT','RESOURCE_IN_USE','STATION_CITY_IN_USE','INVALID_ROUTE_STOPS','INACTIVE_ROUTE_RESOURCE','LAYOUT_IN_USE','INACTIVE_LAYOUT','INVALID_SEAT_LAYOUT','IMMUTABLE_REVISION','TRIP_NOT_DRAFT','TRIP_FINISHED','LUGGAGE_HELD','LUGGAGE_STATE','LUGGAGE_NOT_DEPARTED','LUGGAGE_EXCEPTION_OPEN','TICKET_REQUIRED','TAG_UNKNOWN','TAG_REPLACED','TAG_REASON_REQUIRED','REASON_REQUIRED','COLLECTION_NOT_VERIFIED','TRIP_NOT_READY','CONTRACT_ACCEPTED','CONTRACT_SUPERSEDED','INVALID_TRIP_STOPS','ASSIGNMENT_CONFLICT','INACTIVE_ASSIGNMENT','TRIP_RESOURCE_IN_USE','TRIP_NOT_BOOKABLE','INVALID_SEATS','SEATS_UNAVAILABLE','SEATS_HELD','IDEMPOTENCY_CONFLICT','HOLD_CLOSED','INVALID_PASSENGERS','STALE_VERSION','NO_OPEN_SESSION','SESSION_OPEN','SESSION_CLOSED','COUNTER_INACTIVE','COUNTER_BUSY','NOTE_REQUIRED','ALREADY_PAID','HOLD_ENDED','LATE_REASON_REQUIRED','METHOD_DISABLED','CURRENCY_MISMATCH','ALREADY_REFUNDED','NOT_PAID','REFUND_CLOSED','REFERENCE_REQUIRED'].includes((error as Error).message)){res.status(409).json({error:{code:(error as Error).message,message:'The change conflicts with a protected resource, route rule or local capacity.'}});return;}
     if(code==='23P01'){res.status(409).json({error:{code:'SEATS_UNAVAILABLE',message:'Those seats have just been taken.'}});return;}
     if(['55P03','57014'].includes(code||'')){res.setHeader('Retry-After','5');res.status(503).json({error:{code:'BUSY',message:'Please try again in a moment.'}});return;}
     if(['23503','23514','42501'].includes(code||'')){res.status(code==='42501'?403:400).json({error:{code:code==='42501'?'FORBIDDEN':'INVALID_RESOURCE_SCOPE',message:'The resource does not belong to an allowed company or scope.'}});return;}
@@ -239,6 +240,26 @@ class TripSeatController {
  @Get('seats') seats(@Req() req:Request,@Param('id') id:string,@Param('rid') rid:string){return this.reservations.seats(token(req),id,rid).then(reply);}
  @Post('holds/:hid/release') release(@Req() req:Request,@Param('id') id:string,@Param('rid') rid:string,@Param('hid') hid:string,@Body() data:unknown){return this.reservations.staffRelease(token(req),id,rid,hid,data).then(reply);}
 }
+// D82: plan, contracts (PDF) and brand for one company; the public brand of a listed company.
+// Files: a contract downloads (never cached); a staff logo is private to the signed-in session; a public logo may be cached briefly.
+const file=(res:Response,type:string,data:Buffer,{name,cache='private, no-store'}:{name?:string;cache?:string}={})=>{res.setHeader('Content-Type',type);res.setHeader('Cache-Control',cache);res.setHeader('X-Content-Type-Options','nosniff');if(name)res.setHeader('Content-Disposition',`attachment; filename="${name}"`);res.end(data);};
+const brandingPath=/^\/api\/v1\/companies\/[^/]+\/branding$/;
+@Controller('api/v1/companies/:id')
+class BillingController {
+ constructor(private readonly billing:BillingService){}
+ @Get('billing') read(@Req() req:Request,@Param('id') id:string){return this.billing.billing(token(req),id).then(reply);}
+ @Put('billing') save(@Req() req:Request,@Param('id') id:string,@Body() data:unknown){return this.billing.saveBilling(token(req),id,data).then(reply);}
+ @Post('contracts/:cid/accept') accept(@Req() req:Request,@Param('id') id:string,@Param('cid') cid:string,@Body() data:unknown){return this.billing.accept(token(req),id,cid,data).then(reply);}
+ @Get('contracts/:cid/pdf') async pdf(@Req() req:Request,@Param('id') id:string,@Param('cid') cid:string,@Res() res:Response){const r=await this.billing.pdf(token(req),id,cid);file(res,'application/pdf',r.data,{name:r.name});}
+ @Put('branding') brand(@Req() req:Request,@Param('id') id:string,@Body() data:unknown){return this.billing.saveBranding(token(req),id,data).then(reply);}
+ @Get('branding/logo') async logo(@Req() req:Request,@Param('id') id:string,@Res() res:Response){const r=await this.billing.logo(token(req),id);file(res,r.type,r.data);}
+}
+@Controller('api/v1/public/companies/:slug')
+class PublicBrandController {
+ constructor(private readonly billing:BillingService){}
+ @Get('brand') brand(@Param('slug') slug:string){return this.billing.publicBrand(slug).then(reply);}
+ @Get('logo') async logo(@Param('slug') slug:string,@Res() res:Response){const r=await this.billing.publicLogo(slug);file(res,r.type,r.data,{cache:'public, max-age=300'});}
+}
 @Controller('api/v1/companies/:id/public-profile')
 class PublicProfileController {
  constructor(private readonly market:PublicService){}
@@ -272,7 +293,7 @@ class PlatformController {
  @Get('notifications') notifications(@Req() req:Request,@Query('before') before:string|undefined){return this.platform.notifications(token(req),before).then(reply);}
  @Post('notifications/:event/read') read(@Req() req:Request,@Param('event') id:string,@Body() data:unknown){return this.platform.read(token(req),id,data).then(reply);}
 }
-@Module({controllers:[PassengerController,PlatformController,FinanceController,IdentityController,CompanyController,LuggageController,ShipmentController,ShipmentTrackingController,OperationsController,TicketingController,BookingController,RouteController,FleetController,TripSeatController,TripController,ReservationController,PublicController,PublicProfileController,BoardingController],providers:[PassengerService,Database,ShipmentService,OperationsService,IdentityService,CompanyService,RouteService,FleetService,TripService,PublicService,ReservationService,TicketingService,LuggageService,BoardingService,FinanceService,PlatformService]})
+@Module({controllers:[BillingController,PublicBrandController,PassengerController,PlatformController,FinanceController,IdentityController,CompanyController,LuggageController,ShipmentController,ShipmentTrackingController,OperationsController,TicketingController,BookingController,RouteController,FleetController,TripSeatController,TripController,ReservationController,PublicController,PublicProfileController,BoardingController],providers:[BillingService,PassengerService,Database,ShipmentService,OperationsService,IdentityService,CompanyService,RouteService,FleetService,TripService,PublicService,ReservationService,TicketingService,LuggageService,BoardingService,FinanceService,PlatformService]})
 export class IdentityModule {}
 
 export async function createIdentityApi({port=4321,webOrigin='http://127.0.0.1:4320'}:{port?:number;webOrigin?:string}={}){
@@ -305,8 +326,8 @@ export async function createIdentityApi({port=4321,webOrigin='http://127.0.0.1:4
     }
     next();
   });
-  const standardJson=json({limit:bodyLimits.defaultBodyBytes,strict:true}),bookingJson=json({limit:bodyLimits.bookingBodyBytes,strict:true});
-  app.use((req:Request,res:Response,next:()=>void)=>(req.method==='POST'&&req.path==='/api/v1/public/holds'?bookingJson:standardJson)(req,res,next));
+  const standardJson=json({limit:bodyLimits.defaultBodyBytes,strict:true}),bookingJson=json({limit:bodyLimits.bookingBodyBytes,strict:true}),brandingJson=json({limit:bodyLimits.brandingBodyBytes,strict:true});
+  app.use((req:Request,res:Response,next:()=>void)=>(req.method==='POST'&&req.path==='/api/v1/public/holds'?bookingJson:req.method==='PUT'&&brandingPath.test(req.path)?brandingJson:standardJson)(req,res,next));
   try{await app.listen(port,'127.0.0.1');}catch(error){await app.close();throw error;}
   const address=app.getHttpServer().address();
   return {app,origin:`http://127.0.0.1:${address.port}`,identity:app.get(IdentityService),db:app.get(Database),close:()=>app.close()};

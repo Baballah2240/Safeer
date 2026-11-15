@@ -82,3 +82,28 @@ html:not([data-theme=light]) body .company-approval-copy span{color:#e9d6ac}
  table.staff-table.has-labels tbody td>*{justify-self:start;text-align:start}
  table.staff-table.has-labels tbody td[colspan]{grid-column:1/-1}
 }
+
+/* D82: Plan & contract, Brand & theme, and the company logo in the workspace menu. */
+.billing-summary strong{display:grid;gap:2px}.billing-summary small{font-size:12px;font-weight:500;color:var(--muted)}
+.billing-empty,.billing-notes{margin:0;color:var(--muted)}.billing-notes{margin-top:14px}
+.billing-accept{margin:0 0 18px}.billing-accept .staff-actions{flex-wrap:wrap}
+.billing-status.is-ok{border-color:#1f7a4d66;color:#1f7a4d}.billing-status.is-wait{border-color:#e9a82b99;color:#8a5a00}.billing-status.is-old{color:var(--muted)}
+html:not([data-theme=light]) .billing-status.is-ok{color:#7fd4a2}html:not([data-theme=light]) .billing-status.is-wait{color:#ffd27a}
+.billing-by{display:block;margin-top:4px}.billing-row-actions{gap:8px;flex-wrap:wrap}.billing-row-actions .staff-link,.billing-row-actions button{min-height:36px;padding:6px 12px}
+.billing-form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px}
+.billing-form-grid input[type=color]{width:100%;min-height:44px;padding:4px;border:1px solid var(--border);border-radius:9px;background:var(--paper);cursor:pointer}
+.notification-contract{margin:6px 0 0}
+.company-side-name.has-logo{display:flex;align-items:center;gap:10px}.company-side-name img{flex:none;width:28px;height:28px;border-radius:8px;object-fit:contain;background:#fff;border:1px solid var(--border)}
+.brand-layout{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:24px;align-items:start}
+.brand-preview{overflow:hidden;border:1px solid var(--border);border-radius:16px;background:var(--paper)}
+.brand-preview-band{display:flex;align-items:center;gap:12px;padding:16px;background:var(--preview-band,#123a2d);color:#fff}
+.brand-preview-band img,.brand-preview-mark{flex:none;width:48px;height:48px;border-radius:12px;object-fit:contain;background:#fff}
+.brand-preview-mark{display:grid;place-items:center;color:var(--preview-band,#123a2d);font-size:20px;font-weight:700}
+.brand-preview-body{display:grid;gap:8px;padding:16px}.brand-preview-line{height:9px;border-radius:9px;background:var(--border)}.brand-preview-line.short{width:60%}
+.brand-preview-button{justify-self:start;margin-top:6px;padding:9px 16px;border-radius:9px;background:var(--preview-main,#1f5d49);color:#fff;font-size:13px;font-weight:600}
+.brand-swatch{display:inline-block;width:18px;height:18px;margin-inline-end:8px;border-radius:6px;border:1px solid #0000002e;vertical-align:-4px}
+@media (max-width:720px){.brand-layout{grid-template-columns:minmax(0,1fr)}}
+/* A company's main color replaces Safeer orange on its main buttons. */
+html body .staff-shell.has-company-brand .staff-primary:where(:not(.seat,.market-seat,.trip-seat)),html[data-app-surface] body .staff-shell.has-company-brand .staff-primary:where(:not(.seat,.market-seat,.trip-seat)){background:var(--accent);border-color:transparent;box-shadow:0 7px 18px #0000001f;color:#fff}
+html body .staff-shell.has-company-brand .staff-primary:hover:not(:disabled),html[data-app-surface] body .staff-shell.has-company-brand .staff-primary:hover:not(:disabled){background:var(--accent);filter:brightness(1.12)}
+.billing-panel .staff-section-head>.staff-primary,.brand-panel .staff-section-head>.staff-primary{flex:none;white-space:nowrap}

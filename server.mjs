@@ -12,6 +12,8 @@ const bodyLimits = JSON.parse(readFileSync(new URL('./config/http-limits.json', 
 const {version} = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
 // Connection options apply only to one hop. Each HTTP server owns its socket
 // lifetime/framing; forwarding these fields can contradict its own close limit.
+// D82: a company logo upload (PUT companies/:id/branding) may carry up to 96 KB of image data.
+const brandingPath=/^\/api\/v1\/companies\/[^/]+\/branding$/;
 const forwardedHeaders=headers=>{
   const excluded=new Set(['connection','keep-alive','proxy-connection','proxy-authenticate','proxy-authorization','te','trailer','transfer-encoding','upgrade',...String(headers.connection||'').split(',').map(x=>x.trim().toLowerCase())]);
   return Object.fromEntries(Object.entries(headers).filter(([name])=>!excluded.has(name.toLowerCase())));
@@ -57,7 +59,7 @@ export async function startServer({port = 4320, built = false, identityApiUrl, p
       let target;
       try{target=new URL(apiUrl);if(target.protocol!=='http:'||target.hostname!=='127.0.0.1'||target.username||target.password||target.pathname!=='/'||target.search||target.hash)throw Error();}
       catch{response.writeHead(503,{'Content-Type':'application/json'});response.end(JSON.stringify({error:{code:'IDENTITY_UNAVAILABLE',message:'Review the local identity API configuration.'}}));return;}
-      const bodyLimit=request.method==='POST'&&path==='/api/v1/public/holds'?bodyLimits.bookingBodyBytes:bodyLimits.defaultBodyBytes;
+      const bodyLimit=request.method==='POST'&&path==='/api/v1/public/holds'?bodyLimits.bookingBodyBytes:request.method==='PUT'&&brandingPath.test(path)?bodyLimits.brandingBodyBytes:bodyLimits.defaultBodyBytes;
       if(Number(request.headers['content-length']||0)>bodyLimit){response.writeHead(413);response.end('Request too large');return;}
       const upstream=upstreamRequest({hostname:target.hostname,port:target.port,method:request.method,path:request.url,headers:{...forwardedHeaders(request.headers),host:target.host,'x-safeer-client':hosted?edgeClient(request.headers):request.socket.remoteAddress}},incoming=>{
         response.writeHead(incoming.statusCode,forwardedHeaders(incoming.headers));incoming.pipe(response);

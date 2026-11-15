@@ -39,6 +39,7 @@ export const publicAssets = {
   '/src/marketplace.js': ['src/marketplace.js', 'text/javascript'],
   '/src/marketplace.css': ['src/marketplace.css', 'text/css'],
   '/src/public-page.js': ['src/public-page.js', 'text/javascript'],
+  '/src/billing.js': ['src/billing.js', 'text/javascript'],
   '/src/trips.js': ['src/trips.js', 'text/javascript'],
   '/src/platform.js': ['src/platform.js', 'text/javascript'],
   '/src/finance.js': ['src/finance.js', 'text/javascript'],

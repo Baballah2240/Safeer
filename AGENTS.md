@@ -1,5 +1,7 @@
 # Safeer
 
+- D82 (2026-11-15): plans, contracts and brands (migration 0023, billing.service.ts, contract-pdf.ts, src/billing.js). Only a Super Administrator writes plans; contracts are fixed snapshots that a company member (never the Super Administrator) accepts once; contract PDFs are English-only (standard fonts). Brand colors must keep white text readable (LOW_CONTRAST); apply colors with style.setProperty, never inline style attributes (CSP). New front-end files must be added to config/assets.mjs.
+
 - D81 (2026-11-13): only a Super Administrator approves companies; company pages show an approval notice until then. Format Arabic dates, times and money with 'ar-SD-u-nu-latn' (Latin digits), never plain 'ar-SD'. Staff tables (class staff-table) become labelled cards on phones automatically (theme.js labelTables); keep a thead with one th per column. Confirmations are bottom toasts (.staff-toast), errors stay inline.
 
 - D79 (2026-11-13): the booking home is search-first: 64px header, one-layer hero with a clear photo (no text over it), the 24px heading and the search card all on the first screen; from 1024px the passenger Book/Trips/Profile navigation is a top-right pill (booking and tracking), on phones a bottom bar that must never cover the search. Keep tests/booking-hero.browser.mjs passing (npm run test:booking-hero:browser) for header, hero, search or navigation changes.

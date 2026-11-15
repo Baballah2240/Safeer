@@ -1,5 +1,14 @@
 # Decisions
 
+## 2026-11-15 - Company plans, contracts and brands
+
+D82: The owner sells Safeer to bus companies and asked for (1) a billing plan per company that produces a contract sent as PDF to the company and to the owner, delivered through an in-app notification center rather than email, and (2) each company's own theme colors and logo.
+1. Plan: a Super Administrator sets a monthly fee plus a commission (basis points, 0 to 50%) on paid bookings and parcels, a currency, a start date and optional extra terms, in Company workspace > Plan & contract (migration 0023, table company_billing_plans; only company_super() writes it). Profile managers of the company can read it; other staff cannot.
+2. Contract: every saved plan issues an unchangeable, numbered contract (SAF-YYYY-NNNNN from a database sequence) that snapshots the terms and the company's details, and marks the previous contract replaced. Database triggers keep the terms fixed, let only a company member with company.profile.manage accept it, once, and never the Super Administrator who issued it.
+3. Delivery: the contract.issued and contract.accepted events go to the existing notification center of the Safeer owner and of the company's profile managers (visible like other company events once the company is approved), each with Download PDF. The PDF is generated on the server without a library (apps/api/src/contract-pdf.ts, A4, standard Helvetica): in English with the company's English name, labelled "Safeer copy" or "Company copy" by who downloads it, and showing who accepted it and when. Arabic text needs an embedded Arabic font and is not in the PDF yet. Email delivery is not built.
+4. Brand: a profile manager sets a main color, a header color (both must keep white text at 4.5:1 contrast) and a PNG, JPEG or WebP logo up to 96 KB (checked by file signature; SVG is refused). The workspace uses the main color for buttons and links and shows the logo in the menu; the public company page shows the logo and header color once the company is approved and listed (public_company_brand, public_company_logo). Colors are applied with the style API because the content security policy forbids inline style attributes. PUT companies/:id/branding accepts up to 192 KB of JSON (config/http-limits.json brandingBodyBytes); every other endpoint keeps 8 KB.
+The contract text is a starting template; have it reviewed by a lawyer before relying on it.
+
 ## 2026-11-13 - Staff layouts: approval notice, Latin digits, phone cards, toasts
 
 D81: The owner asked to improve the operations overview and all similar staff layouts, and to say who approves a company.

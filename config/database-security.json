@@ -73,6 +73,30 @@
         "INSERT"
       ]
     },
+    "company_billing_plans": {
+      "rls": true,
+      "privileges": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ]
+    },
+    "company_branding": {
+      "rls": true,
+      "privileges": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ]
+    },
+    "company_contracts": {
+      "rls": true,
+      "privileges": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ]
+    },
     "company_payment_settings": {
       "rls": true,
       "privileges": []
@@ -471,6 +495,8 @@
     "safeer.passenger_link_booking(text,text,text)",
     "safeer.passenger_unlink_booking(text,text)",
     "safeer.passenger_trips(text)",
-    "safeer.passenger_delete_account(text)"
+    "safeer.passenger_delete_account(text)",
+    "safeer.public_company_brand(text)",
+    "safeer.public_company_logo(text)"
   ]
 }

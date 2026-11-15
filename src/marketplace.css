@@ -52,3 +52,8 @@
 /* D75: privacy links at the end of the booking home page and the no-JavaScript description. */
 .market-legal{padding-block:4px 0}
 .market-noscript{padding-block:24px;display:grid;gap:8px}
+
+/* D82: a company's own logo and header color on its public page. */
+.market-company-logo{flex:none;width:64px;height:64px;border-radius:16px;object-fit:contain;background:#fff;border:1px solid var(--border)}
+html body .market-band.market-band-brand,html[data-app-surface] body .market-band.market-band-brand{background:var(--company-band);border-color:transparent}
+html body .market-band.market-band-brand :is(h1,p,a,.market-company),html[data-app-surface] body .market-band.market-band-brand :is(h1,p,a,.market-company){color:#fff}

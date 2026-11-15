@@ -1,5 +1,9 @@
 # Current state - read this first
 
+## Company plans, contracts and brands - D82, 2026-11-15
+
+The Safeer owner sets each company's monthly fee and commission in Company workspace > Plan & contract; saving issues a numbered contract PDF to the owner's and the company managers' Notifications, and a company manager accepts it there. Each company sets its colors and logo in Brand & theme; its workspace and public page use them ([D82](DECISIONS.md)).
+
 ## Staff layouts - D81, 2026-11-13
 
 A company that is not approved shows a notice on every company page: only a Super Administrator (the Safeer owner) approves it, from Edit company > Approval status. Staff screens use Latin digits in Arabic, phone tables are cards, and "Saved." is a bottom toast ([D81](DECISIONS.md)).

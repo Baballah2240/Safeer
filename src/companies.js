@@ -8,6 +8,7 @@ import {luggageView,bindLuggage,resetLuggage} from './luggage.js';
 import {shipmentsView,bindShipments,resetShipments} from './shipments.js';
 import {operationsView,bindOperations,resetOperations} from './operations.js';
 import {stationView,bindStation,resetStation} from './station.js';
+import {billingView,bindBilling,brandingView,bindBranding,applyBrand,companyLogoUrl} from './billing.js';
 export const companyState={id:'',section:'operations',tripFrom:''};
 export function resetCompanies(){resetFinance();companyState.id='';companyState.section='operations';companyState.tripFrom='';openBookingNext(null);resetLuggage();resetShipments();resetOperations();resetStation();}
 export async function loadCompanies(api){
@@ -21,6 +22,7 @@ export async function loadCompanies(api){
   if(workspace.capabilities.driversRead)workspace.driverCatalog=await api('companies/'+companyState.id+'/drivers');
   if(workspace.capabilities.tripsRead)workspace.tripCatalog=await api('companies/'+companyState.id+'/trips'+(companyState.tripFrom?'?from='+encodeURIComponent(companyState.tripFrom):''));
   if(workspace.capabilities.profile)workspace.publicProfile=await api('companies/'+companyState.id+'/public-profile');
+  if(workspace.capabilities.billing)workspace.billing=await api('companies/'+companyState.id+'/billing');
   return {...workspace,selectionCount:list.items.length,canCreate:list.canCreate};
 }
 
@@ -53,6 +55,8 @@ export function companyView(data,{t,e,language}){
   if(companyState.section==='finance')content=financeView(data,{t,e,language});
   if(companyState.section==='station')content=stationView(data,{t,e,language});
   if(companyState.section==='public')content=publicPageView(data,{t,e,language});
+  if(companyState.section==='billing')content=billingView(data,{t,e,language});
+  if(companyState.section==='branding')content=brandingView(data,{t,e,language});
   if(companyState.section==='members')content=`<section class="staff-panel"><header class="staff-section-head"><div><h2>${t('Company staff')}</h2><p>${t('Membership changes affect this company only.')}</p></div>${cap.memberCreate?button('data-member-create class="staff-primary"','Add staff member'):''}</header><div class="staff-grid staff-user-grid">${data.members.map(m=>`<article class="staff-record"><strong>${e(m.displayName)}</strong>${m.jobTitle?`<p class="staff-muted">${e(m.jobTitle)}</p>`:''}<p><bdi>${e(m.login)}</bdi>${m.phone?` · <bdi>${e(m.phone)}</bdi>`:''}</p>${badge(m.active&&m.accountActive?'Active':'Inactive')}<div class="staff-permissions">${m.assignments.map(a=>`<span class="staff-badge">${assignment(a)}</span>`).join('')}</div>${m.assignments.map(a=>data.roles.find(r=>r.id===a.roleId)).filter(r=>r?.personal).map(r=>`<p class="staff-muted" data-custom-summary>${r.permissions.map(p=>e(t(p))).join(' · ')}</p>`).join('')}<div class="staff-actions">${m.canEdit&&cap.memberCreate?button(`data-member-edit="${m.id}"`,'Edit membership'):''}</div></article>`).join('')||`<p>${t('No records to show.')}</p>`}</div></section>`;
   if(companyState.section==='roles')content=`<section class="staff-panel"><header class="staff-section-head"><div><h2>${t('Company roles')}</h2><p>${t('These roles belong to this company. Scope stays fixed after creation.')}</p></div>${cap.roleManage?button('data-company-role-create','Create role'):''}</header><div class="staff-grid">${data.roles.filter(r=>!r.personal).map(r=>`<article class="staff-record"><strong>${e(t(r.displayName))}</strong><p>${t('Scope')}: ${t(r.scope)}</p>${badge(r.active?'Active':'Inactive')}<div class="staff-permissions">${r.permissions.map(p=>badge(p)).join('')||t('No permissions assigned')}</div><div class="staff-actions">${cap.roleManage?button(`data-company-role-edit="${r.id}"`,'Edit role'):''}</div></article>`).join('')}</div></section>`;
   if(companyState.section==='support')content=`<section class="staff-panel"><header class="staff-section-head"><div><h2>${t('Support access')}</h2><p>${t('Read-only access with a recorded reason, expiry and revocation. No financial access.')}</p></div>${cap.supportManage?button('data-support-create','Grant support access'):''}</header><div class="staff-grid">${data.grants.map(g=>`<article class="staff-record"><strong><bdi>${e(g.login)}</bdi></strong><p>${e(g.reason)}</p>${badge(g.revokedAt?'Revoked':g.active?'Active':'Expired')}<p>${t('Expires')}: ${e(when(g.expiresAt))}</p><div class="staff-permissions">${g.permissions.map(badge).join('')}</div><div class="staff-actions">${cap.supportManage&&g.active?button(`data-support-revoke="${g.id}"`,'Revoke access'):''}</div></article>`).join('')||`<p>${t('No support grants.')}</p>`}</div></section>`;
@@ -75,6 +79,7 @@ export function bindCompanies(root,data,ctx){
   };
   root.querySelector('[data-company-create]')?.addEventListener('click',()=>profileForm());
   root.querySelectorAll('[data-company-edit]').forEach(node=>node.addEventListener('click',()=>profileForm(data.company)));
+  applyBrand(root,data);
   if(!data.company)return;
   const cid=data.company.id,cap=data.capabilities,path='companies/'+cid;
   if(companyState.section==='routes')bindRoutes(root,data,ctx);
@@ -88,6 +93,8 @@ export function bindCompanies(root,data,ctx){
   if(companyState.section==='finance')bindFinance(root,data,ctx);
   if(companyState.section==='station')bindStation(root,data,{...ctx,goToBooking:id=>{openBookingNext(id);companyState.section='bookings';render();}});
   if(companyState.section==='public')bindPublicPage(root,data,ctx);
+  if(companyState.section==='billing')bindBilling(root,data,ctx);
+  if(companyState.section==='branding')bindBranding(root,data,ctx);
   const resourceForm=(kind,row)=>{
     const branches=data.branches.filter(b=>b.active&&(cap.managedBranches.includes(b.id)||row?.branchId===b.id));
     openForm(row?'Edit':kind==='branches'?'Add branch':'Add station',names(row)+input('code','Code','text',`maxlength="40" pattern="[A-Za-z0-9_-]+" value="${e(row?.code||'')}"`)+(kind==='stations'?(row?`<input name="branchId" type="hidden" value="${e(row.branchId)}"><p>${t('Branch')}: ${e(data.branches.find(b=>b.id===row.branchId)?.nameEn||'')}</p>`:select('branchId','Branch',[['',t('Choose branch')],...branches.map(b=>[b.id,b.nameEn+' / '+b.nameAr])],''))+optional('address','Address',row?.address||'')+select('cityId','City',[['',t('Not assigned')],...(data.cities||[]).filter(c=>c.active||c.id===row?.cityId).map(c=>[c.id,c.nameEn+' / '+c.nameAr])],row?.cityId||'',false):'')+(cap.branchCreate?enabled(row):'')+currentPassword(),f=>api(path+'/'+kind+(row?'/'+row.id:''),row?'PATCH':'POST',{...Object.fromEntries(f),...(kind==='stations'?{cityId:f.get('cityId')||null}:{}),active:cap.branchCreate?f.has('active'):row?.active!==false,...(row?{version:row.version}:{})}));
@@ -151,16 +158,17 @@ export function companySections(cap){
     ['bookings','Bookings',cap.bookingsRead,'main','ticket'],['drivers','Drivers',cap.driversRead,'main','person'],['fleet','Vehicles',cap.fleetRead,'main','bus'],
     ['finance','Reports',cap.financeRead,'main','chart'],
     ['station','Station',cap.stationScreen,'operations','counter'],['luggage','Luggage',cap.luggage||cap.luggageResolve,'operations','bag'],['shipments','Shipments',cap.shipments||cap.shipmentsResolve||cap.shipmentPrices,'operations','box'],
-    ['overview','Company profile',true,'settings','building'],['resources','Branches & stations',true,'settings','pin'],['public','Public page',cap.profile,'settings','globe'],
+    ['overview','Company profile',true,'settings','building'],['resources','Branches & stations',true,'settings','pin'],['public','Public page',cap.profile,'settings','globe'],['branding','Brand & theme',cap.profile,'settings','palette'],['billing','Plan & contract',cap.billing,'settings','doc'],
     ['members','Company staff',cap.membersRead,'settings','people'],['roles','Company roles',cap.rolesRead,'settings','shield'],['support','Support access',cap.supportRead,'settings','key'],['audit','Company audit',cap.auditRead,'settings','list'],
   ].filter(r=>r[2]);
 }
-const sideIcons={grid:'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',calendar:'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4',pin:'M12 21s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12zM12 11a2 2 0 1 0 0-4 2 2 0 0 0 0 4',ticket:'M4 6h16v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4zM14 6v12',person:'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8M4 21a8 8 0 0 1 16 0',bus:'M5 17V6a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v11M5 13h14M7 17v3M17 17v3',chart:'M5 20V10M12 20V4M19 20v-7',counter:'M3 10h18M5 10v10h14V10M8 6h8l2 4H6z',bag:'M6 8h12l-1 12H7zM9 8V6a3 3 0 0 1 6 0v2',box:'M3 7l9-4 9 4v10l-9 4-9-4zM3 7l9 4 9-4M12 11v10',building:'M4 21V5l8-3 8 3v16M9 9h1M14 9h1M9 13h1M14 13h1M10 21v-4h4v4',globe:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18',people:'M16 19v-1a4 4 0 0 0-8 0v1M12 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6',shield:'M12 3l8 3v6c0 5-3.4 8.4-8 9-4.6-.6-8-4-8-9V6z',key:'M15 7a4 4 0 1 1-3.5 6L5 19.5V22H2v-3l6.5-6.5A4 4 0 0 1 15 7',list:'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01',back:'m15 6-6 6 6 6'};
+const sideIcons={palette:'M12 3a9 9 0 1 0 0 18c1.1 0 1.5-.8 1.5-1.5 0-.9-.7-1.3-.7-2.1 0-.8.7-1.4 1.6-1.4H17a4 4 0 0 0 4-4c0-5-4-9-9-9zM7.5 11.5h.01M10 7.5h.01M15 7.5h.01',doc:'M7 3h7l5 5v13H7zM14 3v5h5M10 13h6M10 17h6',grid:'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',calendar:'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4',pin:'M12 21s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12zM12 11a2 2 0 1 0 0-4 2 2 0 0 0 0 4',ticket:'M4 6h16v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4zM14 6v12',person:'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8M4 21a8 8 0 0 1 16 0',bus:'M5 17V6a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v11M5 13h14M7 17v3M17 17v3',chart:'M5 20V10M12 20V4M19 20v-7',counter:'M3 10h18M5 10v10h14V10M8 6h8l2 4H6z',bag:'M6 8h12l-1 12H7zM9 8V6a3 3 0 0 1 6 0v2',box:'M3 7l9-4 9 4v10l-9 4-9-4zM3 7l9 4 9-4M12 11v10',building:'M4 21V5l8-3 8 3v16M9 9h1M14 9h1M9 13h1M14 13h1M10 21v-4h4v4',globe:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18',people:'M16 19v-1a4 4 0 0 0-8 0v1M12 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6',shield:'M12 3l8 3v6c0 5-3.4 8.4-8 9-4.6-.6-8-4-8-9V6z',key:'M15 7a4 4 0 1 1-3.5 6L5 19.5V22H2v-3l6.5-6.5A4 4 0 0 1 15 7',list:'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01',back:'m15 6-6 6 6 6'};
 const sideIcon=name=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${sideIcons[name]}"/></svg>`;
 export function companySidebar(data,{t,e,language}){
   if(!data?.company)return '';
   const sections=companySections(data.capabilities),current=sections.some(([id])=>id===companyState.section)?companyState.section:sections[0][0];
   const item=([id,label,,,icon])=>`<button type="button" data-company-section="${id}" ${current===id?'aria-current="page"':''}>${sideIcon(icon)}<span>${t(label)}</span></button>`;
   const group=(key,label)=>{const rows=sections.filter(r=>r[3]===key);return rows.length?`${label?`<p class="staff-sidebar-label">${t(label)}</p>`:''}<nav class="staff-nav company-side-nav" aria-label="${t(label||'Company workspace')}">${rows.map(item).join('')}</nav>`:'';};
-  return `<p class="company-side-name">${e(language==='ar'?data.company.nameAr:data.company.nameEn)}</p>${group('main','')}${group('operations','Operations')}${group('settings','Settings')}${data.selectionCount>1||data.canCreate?`<button type="button" class="company-side-back" data-company-back>${sideIcon('back')}<span>${t('All companies')}</span></button>`:''}`;
+  const logo=companyLogoUrl(data.company.id,data.branding);
+  return `<p class="company-side-name${logo?' has-logo':''}">${logo?`<img src="${logo}" alt="" width="28" height="28">`:''}<span>${e(language==='ar'?data.company.nameAr:data.company.nameEn)}</span></p>${group('main','')}${group('operations','Operations')}${group('settings','Settings')}${data.selectionCount>1||data.canCreate?`<button type="button" class="company-side-back" data-company-back>${sideIcon('back')}<span>${t('All companies')}</span></button>`:''}`;
 }
