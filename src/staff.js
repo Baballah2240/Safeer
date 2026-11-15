@@ -1,3 +1,4 @@
+import './app-back.js';
 import {shimmer} from './loading.js';
 import {loginFormState} from './login-form.js';
 import {citiesView,bindCities} from './routes.js';
@@ -10,9 +11,16 @@ const root=document.querySelector('#staff-app'),dialog=document.querySelector('#
 const e=value=>String(value??'').replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));
 let language=new URL(location.href).searchParams.get('lang')==='ar'?'ar':'en',me=null,tab=new URL(location.href).searchParams.get('tab')==='notifications'?'notifications':'profile',data=null,loading=false,message='',bad=false,csrfToken='',cursor=null;
 let refreshVersion=0,authEpoch=0;
+// D92: each screen (tab, company, section) is a history entry, so Back and the phone's back gesture return to the previous screen.
+const startUrl=new URL(location.href);let firstOpen=!startUrl.searchParams.has('tab'),historyReady=false;
+if(['companies','cities','users','roles','sessions','audit','platform','notifications','profile'].includes(startUrl.searchParams.get('tab')))tab=startUrl.searchParams.get('tab');
+if(tab==='companies'){companyState.id=startUrl.searchParams.get('company')||'';if(startUrl.searchParams.get('section'))companyState.section=startUrl.searchParams.get('section');}
+function screenUrl(){const url=new URL(location.href);for(const k of ['tab','company','section'])url.searchParams.delete(k);if(tab!=='profile')url.searchParams.set('tab',tab);if(tab==='companies'&&companyState.id){url.searchParams.set('company',companyState.id);url.searchParams.set('section',companyState.section);}return url;}
+function syncHistory(){if(!me||loading)return;const url=screenUrl();if(url.href===location.href)return;const depth=history.state?.staffDepth||0;if(historyReady)history.pushState({staffDepth:depth+1},'',url);else history.replaceState({staffDepth:0},'',url);historyReady=true;}
+addEventListener('popstate',()=>{const url=new URL(location.href),next=url.searchParams.get('tab')||'profile',company=url.searchParams.get('company')||'',section=url.searchParams.get('section');if(!me)return;const sameData=next===tab&&(next!=='companies'||company===companyState.id);tab=next;cursor=null;message='';if(next==='companies'){if(company!==companyState.id){resetCompanies();companyState.id=company;}if(section)companyState.section=section;}if(sameData)render();else void refresh();});
 const signIn=loginFormState();
 const t=key=>staffText(key,language),can=code=>me?.permissions.includes(code),date=value=>new Intl.DateTimeFormat(language==='ar'?'ar-SD-u-nu-latn':'en-GB',{dateStyle:'medium',timeStyle:'short',timeZone:'Africa/Khartoum'}).format(new Date(value));
-function clearSession(){authEpoch++;refreshVersion++;me=null;csrfToken='';data=null;tab='profile';cursor=null;loading=false;dialog.close();dialog.replaceChildren();resetCompanies();resetPlatform();}
+function clearSession(){historyReady=false;authEpoch++;refreshVersion++;me=null;csrfToken='';data=null;tab='profile';cursor=null;loading=false;dialog.close();dialog.replaceChildren();resetCompanies();resetPlatform();}
 const tabs=()=>[['profile','Your profile',true],['platform','Platform overview',me?.superAdministrator],['notifications','Notifications',!me?.mustChangePassword],['companies','Companies',true],['cities','Cities & destinations',true],['users','Users',can('identity.users.read')],['roles','Roles & permissions',can('identity.roles.read')],['sessions','Active sessions',!me?.mustChangePassword],['audit','Audit history',can('identity.audit.read')]].filter(row=>row[2]&&(!me?.mustChangePassword||row[0]==='profile'));
 async function api(path,method='GET',body){
   if(method==='POST'&&['auth/login','auth/password','auth/logout'].includes(path))authEpoch++;
@@ -44,6 +52,7 @@ function roles(){return `<section class="staff-panel"><header class="staff-secti
 function sessions(){return `<section class="staff-panel"><h2>${t('Active sessions')}</h2><div class="staff-grid">${data.items.map(s=>`<article class="staff-record">${s.current?badge('Current session'):''}<p>${t('Signed in')}: ${e(date(s.createdAt))}</p><p>${t('Last active')}: ${e(date(s.lastSeenAt))}</p><p>${t('Expires')}: ${e(date(s.expiresAt))}</p><button data-revoke="${s.id}">${t('Revoke session')}</button></article>`).join('')}</div></section>`;}
 function audit(){return `<section class="staff-panel"><h2>${t('Audit history')}</h2><p>${t('Latest 100 identity events. Credentials are never logged.')}</p><div class="staff-table-wrap" tabindex="0" role="region" aria-label="${t('Audit history')}"><table class="staff-table"><thead><tr>${['Event','Actor ID','Target ID','Last active'].map(k=>`<th scope="col">${t(k)}</th>`).join('')}</tr></thead><tbody>${data.items.map(r=>`<tr><td>${e(r.action)}</td><td><bdi>${e(r.actorId||'—')}</bdi></td><td><bdi>${e(r.targetId||'—')}</bdi></td><td>${e(date(r.occurredAt))}</td></tr>`).join('')}</tbody></table></div></section>`;}
 function render(){
+  queueMicrotask(syncHistory);
   if(me)signIn.clear();else signIn.capture(root.querySelector('#staff-login'));
   document.documentElement.lang=language;document.documentElement.dir=language==='ar'?'rtl':'ltr';
   const companyNav=me&&tab==='companies'&&data?.company&&!loading?companySidebar(data,{t,e,language}):'';
@@ -63,6 +72,8 @@ async function refresh(){
   try{
     const principal=await api('auth/me');if(sequence!==refreshVersion)return;me=principal;
     if(me.mustChangePassword||!tabs().some(([id])=>id===tab))tab='profile';
+    // D92: someone without platform access (for example station staff) opens straight into their company.
+    if(firstOpen&&!me.mustChangePassword){firstOpen=false;if(tab==='profile'&&!me.superAdministrator&&!me.permissions.some(p=>p.startsWith('identity.')))tab='companies';}
     const loaded=tab==='platform'?await loadPlatform(api):tab==='notifications'?await api('notifications'+(cursor?'?before='+encodeURIComponent(cursor):'')):tab==='companies'?await loadCompanies(api):tab==='cities'?await api('cities'):tab==='users'?await api('identity/users'+(cursor?'?after='+encodeURIComponent(cursor):'')):tab==='roles'?await api('identity/roles'):tab==='sessions'?await api('auth/sessions'):tab==='audit'?await api('identity/audit'):null;
     if(sequence!==refreshVersion)return;
     if(tab==='users'&&loaded&&can('identity.roles.read')){const roles=await api('identity/roles');loaded.roleNames=Object.fromEntries(roles.items.map(role=>[role.id,role.displayName]));}
@@ -98,7 +109,7 @@ function bind(){
   if(tab==='cities'&&data&&!loading&&me)bindCities(root,data,{api,openForm,input,currentPassword,t,e,language});
   const filter=()=>{const query=(root.querySelector('#staff-search')?.value||'').trim().toLocaleLowerCase(language),scope=root.querySelector('#staff-scope')?.value||'all';const rows=[...root.querySelectorAll('[data-search]')];for(const row of rows)row.hidden=!(row.dataset.search.toLocaleLowerCase(language).includes(query)&&(scope==='all'||row.dataset.scope===scope));const count=root.querySelector('.staff-result-count');if(count)count.textContent=rows.filter(row=>!row.hidden).length+' / '+rows.length+' '+t('shown');};
   root.querySelector('#staff-search')?.addEventListener('input',filter);root.querySelector('#staff-scope')?.addEventListener('change',filter);filter();
-  root.querySelector('#staff-language').onclick=()=>{language=language==='en'?'ar':'en';const url=new URL(location.href);url.searchParams.set('lang',language);history.replaceState(null,'',url);render();};
+  root.querySelector('#staff-language').onclick=()=>{language=language==='en'?'ar':'en';const url=new URL(location.href);url.searchParams.set('lang',language);history.replaceState(history.state,'',url);render();};
   const loginForm=root.querySelector('#staff-login');if(loginForm)loginForm.onsubmit=async event=>{event.preventDefault();const values=signIn.begin(loginForm);if(!values)return;try{await api('auth/login','POST',values);tab='profile';cursor=null;message='';bad=false;await refresh();}catch(error){message=error.message;bad=true;}finally{signIn.finish(root.querySelector('#staff-login'),!me);render();if(!me)root.querySelector('#staff-login [name=password]')?.focus();}};
   root.querySelector('#staff-logout')?.addEventListener('click',async()=>{try{await api('auth/logout','POST',{});clearSession();message='';render();}catch(error){message=error.message;bad=true;render();}});
   root.querySelector('#staff-refresh')?.addEventListener('click',()=>{message='';void refresh();});

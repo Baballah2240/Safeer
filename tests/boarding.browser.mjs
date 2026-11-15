@@ -38,8 +38,10 @@ try{await identityFixture(async f=>{
  }
  if(await evaluate('document.documentElement.lang')!=='en')await click('[data-lang]');
  await s.time('-1 minute');await click('[data-event=departed]');await until('Boolean(document.querySelector("[data-event=arrived]"))');
- assert.equal(await evaluate('Boolean(document.querySelector("#driver-scan"))'),false);
+ // D89: boarding stays open after departure (passengers join at middle stops) and closes on arrival.
+ assert.equal(await evaluate('Boolean(document.querySelector("#driver-scan"))'),true);
  await click('[data-event=arrived]');await until('document.querySelectorAll("[data-event]").length===0');
+ assert.equal(await evaluate('Boolean(document.querySelector("#driver-scan"))'),false);
  // Disabling a membership removes stale passenger information on the next request.
  await f.migration.query('UPDATE safeer.company_users SET active=false WHERE id=$1',[s.member]);await click('[data-refresh]');await until('document.querySelectorAll("[data-trip]").length===0');
  assert.equal(await evaluate('Boolean(document.querySelector(".driver-detail"))'),false);assert.deepEqual(await evaluate('window.__errors'),[]);

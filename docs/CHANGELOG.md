@@ -1,5 +1,9 @@
 # Changelog
 
+## Station Sessions, staff landing screen and staff Back button - D92, 2026-11-16
+
+The company menu has a Sessions entry (under Station) showing only your session and the session list, and /staff?tab=companies&company=<id>&section=sessions opens it directly. Staff without platform access open straight into their company after signing in, and ticketing staff (no trip access) start on Sessions. Every staff screen (tab, company, section) is now a history entry, so the top-bar Back button and the phone back gesture return to the previous screen. Stale browser tests updated: 0.20.0 version codes, and boarding staying open after departure (D89).
+
 ## Back button on inner screens - D91, 2026-11-16
 
 The booking, tracking and driver web apps show a Back button in the top bar on inner screens (company page, trip, ticket, search results, tracking, driver scan and passenger list). It returns to the previous Safeer screen, or to the booking home (driver: dashboard) when the screen was opened directly. The main booking screen and the bottom-tab screens keep only the menu. tests/app-back.browser.mjs covers it.

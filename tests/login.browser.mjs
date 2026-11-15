@@ -75,7 +75,7 @@ try{
   await fill(form+' [name=password]','Successful fictional password');
   await evaluate(`window.__mode='success';document.querySelector('${form}').requestSubmit()`);
   await until('window.__loginCalls===3');await evaluate('window.__releaseLogin()');
-  await until(`Boolean(document.querySelector('${page==='staff'?'#change-password':'#driver-trips'}'))`);
+  await until(`Boolean(document.querySelector('${page==='staff'?'#change-password,[data-tab=companies][aria-current=page]':'#driver-trips'}'))`);
   assert.equal(await evaluate(`Boolean(document.querySelector('${form}'))`),false);
   assert.deepEqual(await evaluate('window.__errors'),[]);
  }

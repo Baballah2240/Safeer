@@ -9,6 +9,7 @@ export function stationView(data,{t}){
  return `<div class="company-sections" id="station-root"><p role="status">${t('Loading station…')}</p></div>`;
 }
 export function bindStation(root,data,ctx){
+ const sessionsOnly=ctx.mode==='sessions';
  const {api,openForm,input,currentPassword,t,e,language,refresh,goToBooking}=ctx,base='companies/'+data.company.id,box=root.querySelector('#station-root'),when=(value,zone=data.company.timezone)=>new Intl.DateTimeFormat('en-GB',{dateStyle:'short',timeStyle:'short',timeZone:zone}).format(new Date(value)),name=row=>language==='ar'?row.stationNameAr:row.stationNameEn;
  const money=(minor,currency='SDG')=>moneyText(minor,currency,language);
  let info=null,trip=null,seats=[],names={},bags={},mobile='',saleMethod='cash',saleReference='',saleKey=null,saleError='',selling=false,unresolved=pendingSale?.company===data.company.id?pendingSale.request:null;
@@ -52,7 +53,7 @@ export function bindStation(root,data,ctx){
  };
  const paint=()=>{
   if(!box.isConnected)return;
-  box.innerHTML=(saleWarning?`<p class="staff-alert bad" role="alert">${t('A sale may have gone through before you were signed out. Search Bookings by the customer\'s mobile number before selling again.')} <button type="button" id="sale-warning-ok">${t('Understood')}</button></p>`:'')+sessionPanel()+salePanel()+sessionsPanel()+counterPanel()+settingsPanel();
+  box.innerHTML=(saleWarning?`<p class="staff-alert bad" role="alert">${t('A sale may have gone through before you were signed out. Search Bookings by the customer\'s mobile number before selling again.')} <button type="button" id="sale-warning-ok">${t('Understood')}</button></p>`:'')+sessionPanel()+(sessionsOnly?sessionsPanel():salePanel()+sessionsPanel()+counterPanel()+settingsPanel());
   const grid=box.querySelector('.station-seats');if(grid){grid.style.setProperty('--trip-columns',trip.columns);grid.querySelectorAll('[data-sale-seat]').forEach(b=>{b.style.gridRow=b.dataset.row;b.style.gridColumn=b.dataset.column;b.onclick=()=>{const label=b.dataset.saleSeat;seats=seats.includes(label)?seats.filter(x=>x!==label):seats.length<10?[...seats,label]:seats;saleKey=null;saleError='';paint();};});}
   box.querySelector('#session-open')?.addEventListener('submit',async event=>{event.preventDefault();const f=new FormData(event.target);try{await api(base+'/counter/sessions','POST',{counterId:f.get('counter'),openingMinor:toMinor(f.get('opening'))});await load();}catch(error){if(error.message==='SESSION_OPEN'){await load();return;}event.target.insertAdjacentHTML('afterend',`<p class="staff-alert bad" role="alert">${e(t(error.message))}</p>`);}});
   box.querySelectorAll('[data-session-close]').forEach(b=>b.onclick=()=>closeForm(b.dataset.sessionClose===info.session?.id?info.session:info.sessions.find(s=>s.id===b.dataset.sessionClose)));

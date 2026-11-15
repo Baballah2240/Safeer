@@ -7,10 +7,12 @@ function inner(){
  if(surface==='booking')return /^\/(trip|hold|company)\//.test(path)||(url.searchParams.has('from')&&!view);
  if(surface==='driver')return ['scan','passengers'].includes(view);
  if(surface==='tracking')return true;
+ if(surface==='staff')return (history.state?.staffDepth||0)>0;
  return false;
 }
 function fallback(){
  const url=here(),lang=url.searchParams.get('lang')==='ar'?'?lang=ar':'';
+ if(surface==='staff')return '/staff'+lang;
  if(surface==='driver'){url.searchParams.delete('view');return url.pathname+url.search;}
  return '/marketplace'+lang;
 }

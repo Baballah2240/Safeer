@@ -23,6 +23,9 @@ export async function loadCompanies(api){
   if(workspace.capabilities.tripsRead)workspace.tripCatalog=await api('companies/'+companyState.id+'/trips'+(companyState.tripFrom?'?from='+encodeURIComponent(companyState.tripFrom):''));
   if(workspace.capabilities.profile)workspace.publicProfile=await api('companies/'+companyState.id+'/public-profile');
   if(workspace.capabilities.billing)workspace.billing=await api('companies/'+companyState.id+'/billing');
+  // D92: settle the section before the menu is drawn; station staff (no trip access) start on Sessions.
+  const cap=workspace.capabilities,sections=companySections(cap);
+  if(!sections.some(([id])=>id===companyState.section))companyState.section=cap.stationScreen&&!cap.operations?'sessions':sections[0][0];
   return {...workspace,selectionCount:list.items.length,canCreate:list.canCreate};
 }
 
@@ -34,7 +37,7 @@ export function companyView(data,{t,e,language}){
   const c=data.company,cap=data.capabilities;
   const when=value=>new Intl.DateTimeFormat(language==='ar'?'ar-SD-u-nu-latn':'en-GB',{dateStyle:'medium',timeStyle:'short',timeZone:c.timezone}).format(new Date(value));
   const sections=companySections(cap);
-  if(!sections.some(([id])=>id===companyState.section))companyState.section=sections[0][0];
+  if(!sections.some(([id])=>id===companyState.section))companyState.section=cap.stationScreen&&!cap.operations?'sessions':sections[0][0];
   // D81: until a Super Administrator approves the company its trips cannot be published or booked; say so on every page.
   const approvalTitle={pending:'This company is waiting for approval. Its trips cannot be published until it is approved.',suspended:'This company is suspended. Its trips cannot be published or booked.',archived:'This company is archived. Its trips cannot be published or booked.'}[c.status];
   const approval=approvalTitle?`<aside class="staff-alert company-approval" role="note"><span class="company-approval-copy"><strong>${t(approvalTitle)}</strong><span>${t(cap.superAdministrator?'You have full platform access: open Edit company and set Approval status to Approved.':'Only a Super Administrator (the Safeer owner, with full platform access) can approve a company. Ask them to approve it.')}</span></span>${cap.superAdministrator&&cap.profile?button('data-company-edit class="staff-primary"','Edit company'):''}</aside>`:'';
@@ -53,7 +56,7 @@ export function companyView(data,{t,e,language}){
   if(companyState.section==='luggage')content=luggageView(data,{t,e,language});
   if(companyState.section==='shipments')content=shipmentsView(data,{t,e,language});
   if(companyState.section==='finance')content=financeView(data,{t,e,language});
-  if(companyState.section==='station')content=stationView(data,{t,e,language});
+  if(companyState.section==='station'||companyState.section==='sessions')content=stationView(data,{t,e,language});
   if(companyState.section==='public')content=publicPageView(data,{t,e,language});
   if(companyState.section==='billing')content=billingView(data,{t,e,language});
   if(companyState.section==='branding')content=brandingView(data,{t,e,language});
@@ -91,7 +94,7 @@ export function bindCompanies(root,data,ctx){
   if(companyState.section==='luggage')bindLuggage(root,data,ctx);
   if(companyState.section==='shipments')bindShipments(root,data,ctx);
   if(companyState.section==='finance')bindFinance(root,data,ctx);
-  if(companyState.section==='station')bindStation(root,data,{...ctx,goToBooking:id=>{openBookingNext(id);companyState.section='bookings';render();}});
+  if(companyState.section==='station'||companyState.section==='sessions')bindStation(root,data,{...ctx,mode:companyState.section,goToBooking:id=>{openBookingNext(id);companyState.section='bookings';render();}});
   if(companyState.section==='public')bindPublicPage(root,data,ctx);
   if(companyState.section==='billing')bindBilling(root,data,ctx);
   if(companyState.section==='branding')bindBranding(root,data,ctx);
@@ -157,12 +160,12 @@ export function companySections(cap){
     ['operations','Overview',cap.operations,'main','grid'],['trips','Trips',cap.tripsRead,'main','calendar'],['routes','Routes',cap.routesRead,'main','pin'],
     ['bookings','Bookings',cap.bookingsRead,'main','ticket'],['drivers','Drivers',cap.driversRead,'main','person'],['fleet','Vehicles',cap.fleetRead,'main','bus'],
     ['finance','Reports',cap.financeRead,'main','chart'],
-    ['station','Station',cap.stationScreen,'operations','counter'],['luggage','Luggage',cap.luggage||cap.luggageResolve,'operations','bag'],['shipments','Shipments',cap.shipments||cap.shipmentsResolve||cap.shipmentPrices,'operations','box'],
+    ['sessions','Sessions',cap.stationScreen,'operations','clock'],['station','Station',cap.stationScreen,'operations','counter'],['luggage','Luggage',cap.luggage||cap.luggageResolve,'operations','bag'],['shipments','Shipments',cap.shipments||cap.shipmentsResolve||cap.shipmentPrices,'operations','box'],
     ['overview','Company profile',true,'settings','building'],['resources','Branches & stations',true,'settings','pin'],['public','Public page',cap.profile,'settings','globe'],['branding','Brand & theme',cap.profile,'settings','palette'],['billing','Plan & contract',cap.billing,'settings','doc'],
     ['members','Company staff',cap.membersRead,'settings','people'],['roles','Company roles',cap.rolesRead,'settings','shield'],['support','Support access',cap.supportRead,'settings','key'],['audit','Company audit',cap.auditRead,'settings','list'],
   ].filter(r=>r[2]);
 }
-const sideIcons={palette:'M12 3a9 9 0 1 0 0 18c1.1 0 1.5-.8 1.5-1.5 0-.9-.7-1.3-.7-2.1 0-.8.7-1.4 1.6-1.4H17a4 4 0 0 0 4-4c0-5-4-9-9-9zM7.5 11.5h.01M10 7.5h.01M15 7.5h.01',doc:'M7 3h7l5 5v13H7zM14 3v5h5M10 13h6M10 17h6',grid:'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',calendar:'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4',pin:'M12 21s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12zM12 11a2 2 0 1 0 0-4 2 2 0 0 0 0 4',ticket:'M4 6h16v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4zM14 6v12',person:'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8M4 21a8 8 0 0 1 16 0',bus:'M5 17V6a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v11M5 13h14M7 17v3M17 17v3',chart:'M5 20V10M12 20V4M19 20v-7',counter:'M3 10h18M5 10v10h14V10M8 6h8l2 4H6z',bag:'M6 8h12l-1 12H7zM9 8V6a3 3 0 0 1 6 0v2',box:'M3 7l9-4 9 4v10l-9 4-9-4zM3 7l9 4 9-4M12 11v10',building:'M4 21V5l8-3 8 3v16M9 9h1M14 9h1M9 13h1M14 13h1M10 21v-4h4v4',globe:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18',people:'M16 19v-1a4 4 0 0 0-8 0v1M12 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6',shield:'M12 3l8 3v6c0 5-3.4 8.4-8 9-4.6-.6-8-4-8-9V6z',key:'M15 7a4 4 0 1 1-3.5 6L5 19.5V22H2v-3l6.5-6.5A4 4 0 0 1 15 7',list:'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01',back:'m15 6-6 6 6 6'};
+const sideIcons={clock:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2',palette:'M12 3a9 9 0 1 0 0 18c1.1 0 1.5-.8 1.5-1.5 0-.9-.7-1.3-.7-2.1 0-.8.7-1.4 1.6-1.4H17a4 4 0 0 0 4-4c0-5-4-9-9-9zM7.5 11.5h.01M10 7.5h.01M15 7.5h.01',doc:'M7 3h7l5 5v13H7zM14 3v5h5M10 13h6M10 17h6',grid:'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',calendar:'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4',pin:'M12 21s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12zM12 11a2 2 0 1 0 0-4 2 2 0 0 0 0 4',ticket:'M4 6h16v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4zM14 6v12',person:'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8M4 21a8 8 0 0 1 16 0',bus:'M5 17V6a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v11M5 13h14M7 17v3M17 17v3',chart:'M5 20V10M12 20V4M19 20v-7',counter:'M3 10h18M5 10v10h14V10M8 6h8l2 4H6z',bag:'M6 8h12l-1 12H7zM9 8V6a3 3 0 0 1 6 0v2',box:'M3 7l9-4 9 4v10l-9 4-9-4zM3 7l9 4 9-4M12 11v10',building:'M4 21V5l8-3 8 3v16M9 9h1M14 9h1M9 13h1M14 13h1M10 21v-4h4v4',globe:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18',people:'M16 19v-1a4 4 0 0 0-8 0v1M12 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6',shield:'M12 3l8 3v6c0 5-3.4 8.4-8 9-4.6-.6-8-4-8-9V6z',key:'M15 7a4 4 0 1 1-3.5 6L5 19.5V22H2v-3l6.5-6.5A4 4 0 0 1 15 7',list:'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01',back:'m15 6-6 6 6 6'};
 const sideIcon=name=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${sideIcons[name]}"/></svg>`;
 export function companySidebar(data,{t,e,language}){
   if(!data?.company)return '';
