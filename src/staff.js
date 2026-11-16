@@ -21,7 +21,7 @@ function syncHistory(){if(!me||loading)return;const url=screenUrl();if(url.href=
 addEventListener('popstate',()=>{const url=new URL(location.href),next=url.searchParams.get('tab')||'profile',company=url.searchParams.get('company')||'',section=url.searchParams.get('section');if(!me)return;const sameData=next===tab&&(next!=='companies'||company===companyState.id);tab=next;cursor=null;message='';if(next==='companies'){if(company!==companyState.id){resetCompanies();companyState.id=company;}if(section)companyState.section=section;}if(sameData)render();else void refresh();});
 const signIn=loginFormState();
 const t=key=>staffText(key,language),can=code=>me?.permissions.includes(code),date=value=>new Intl.DateTimeFormat(language==='ar'?'ar-SD-u-nu-latn':'en-GB',{dateStyle:'medium',timeStyle:'short',timeZone:'Africa/Khartoum'}).format(new Date(value));
-const alerts=createStaffAlerts({api:(...a)=>api(...a),t:key=>t(key),e,language:()=>language,openInbox:()=>{tab='notifications';cursor=null;void refresh();}});
+const alerts=createStaffAlerts({api:(...a)=>api(...a),t:key=>t(key),e,language:()=>language,openInbox:()=>{tab='notifications';cursor=null;void refresh();},dialogOpen:()=>dialog.open});
 function clearSession(){alerts.stop();historyReady=false;authEpoch++;refreshVersion++;me=null;csrfToken='';data=null;tab='profile';cursor=null;loading=false;dialog.close();dialog.replaceChildren();resetCompanies();resetPlatform();}
 const tabs=()=>[['profile','Your profile',true],['platform','Platform overview',me?.superAdministrator],['notifications','Notifications',!me?.mustChangePassword],['companies','Companies',true],['cities','Cities & destinations',true],['users','Users',can('identity.users.read')],['roles','Roles & permissions',can('identity.roles.read')],['sessions','Active sessions',!me?.mustChangePassword],['audit','Audit history',can('identity.audit.read')]].filter(row=>row[2]&&(!me?.mustChangePassword||row[0]==='profile'));
 async function api(path,method='GET',body){
@@ -84,7 +84,7 @@ async function refresh(){
     if(tab==='users'&&loaded&&me.superAdministrator&&can('identity.users.manage'))loaded.companies=(await api('companies')).items;
     if(sequence===refreshVersion)data=loaded;
   }catch(error){if(sequence===refreshVersion){message=error.message;bad=true;data=null;}}
-  finally{if(sequence===refreshVersion){loading=false;render();}}
+  finally{if(sequence===refreshVersion){loading=false;render();if(me&&!me.mustChangePassword)void alerts.poll();}}
 }
 // D79: a dialog can name its action (Publish trip instead of Save) and keep it disabled until the record is ready.
 function openForm(title,html,action,{submit='Save',disabled=false}={}){

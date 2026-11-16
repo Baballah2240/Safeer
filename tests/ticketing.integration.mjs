@@ -247,7 +247,7 @@ test('D93: a bank transfer needs a photo of the transfer, saved with the payment
  const other=await staff(f,s,['company.fleet.read']);assert.equal((await other.c.request(`${s.base}/bookings/${bb}/payment-proof`)).status,403);
  // D98: each transfer with a photo reaches finance readers as an alert; others do not see it.
  const finance=await staff(f,s,['company.finance.read']),mine=ok(await finance.c.request('notifications/unread'),200);
- assert.equal(mine.latest?.code,'payment.proof');assert.equal(ok(await finance.c.request('notifications'),200).items.filter(n=>n.code==='payment.proof').length,2);
+ assert.equal(mine.latest?.code,'payment.proof');assert.notEqual(ok(await f.admin.request('notifications/unread'),200).latest?.code,'payment.proof','No card for your own action.');assert.ok(mine.latest.detail.some(x=>x.label==='Transfer reference'&&x.text==='TX-11'),JSON.stringify(mine.latest.detail));assert.ok(!JSON.stringify(mine.latest.detail).includes('Fictional Walk-in'),'No passenger names on the card.');assert.equal(ok(await finance.c.request('notifications'),200).items.filter(n=>n.code==='payment.proof').length,2);
  assert.equal(ok(await other.c.request('notifications'),200).items.some(n=>n.code==='payment.proof'),false);
  const marked=ok(await finance.c.request('notifications/read-all','POST',{}));assert.ok(marked.marked>=2);
  const after=ok(await finance.c.request('notifications/unread'),200);assert.equal(after.unreadCount,0);assert.equal(after.latest,null);

@@ -1,5 +1,9 @@
 # Changelog
 
+## Notification card with full details and iOS-style count - D99, 2026-11-17
+
+Migration 0029 adds safeer.notification_detail (business facts only: references, amounts, routes, times and staff notes; no passenger names or phone numbers; only for events the person may see) and returns it with the newest unread event. A notification that arrives while the staff page is open now opens a card in the middle of the screen with its full details, a blurred backdrop and a spring animation, with Open notifications, Mark read and Close; it waits while a form is open, and nobody gets a card for their own action (notification_events.actor_id records who caused the event; it still counts as unread). The unread count is a red circle outside the bell (iOS style) that pops when it changes, and it is rechecked after every screen load as well as every 30 seconds. Notifications explains every event type. Web only: push to phones is not set up yet (see workflows/NOTIFICATIONS.md).
+
 ## Staff notification bell, live pop-up and three new alerts - D98, 2026-11-16
 
 Migration 0028 adds the events payment.proof (bank transfer with proof photo, for finance readers of that station), shipment.exception (for shipment resolvers) and booking.refunded (for finance readers of that station), recorded by triggers in the same transaction, plus safeer.notifications_unread() and safeer.notifications_read_all(). New endpoints GET notifications/unread and POST notifications/read-all. The staff workspace has a bell beside the menu button with the unread count (src/staff-alerts.js); it checks every 30 seconds while the page is visible and at once on return, and an event that arrives while the page is open shows a 10-second pop-up with View. Notifications has Mark all as read. Plan for passenger alerts (app push and SMS): [notifications](workflows/NOTIFICATIONS.md). Staff web only; no new APK. Tests: ticketing and shipments integration, ticketing browser.

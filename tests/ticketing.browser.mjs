@@ -50,10 +50,11 @@ await fill('[data-pay-method]','cash');await submit();
  // Refund in full, which frees the seats.
  await until('Boolean(document.querySelector("[data-booking-refund]"))');await click('[data-booking-refund]');await fill('#staff-dialog [name=reason]','Fictional change of plans');await fill('#staff-dialog [name=currentPassword]',f.password);await submit();await until('Boolean(document.querySelector("[data-print=refund]"))');assert.equal(await evaluate('Boolean(document.querySelector("[data-print=tickets]"))'),false,'Refunded bookings print no tickets.');assert.equal(need(await f.client().request('public/trips/'+id)).seatsLeft,16);
  await click('[data-print=refund]');await until('document.querySelector(".print-sheet")?.textContent.includes("RFD-00000001")');await click('[data-sheet-back]');await until('Boolean(document.querySelector("[data-booking-close]"))');await click('[data-booking-close]');
- // D98: the refund arrives as a live pop-up and on the bell beside the menu button.
- await evaluate('document.dispatchEvent(new Event("visibilitychange"))');await until('Boolean(document.querySelector("#staff-alert-pop"))&&document.querySelector("#staff-alert-pop").textContent.includes("Booking refunded")');
- assert.ok(Number(await evaluate('document.querySelector("#staff-bell [data-bell-count]").textContent'))>=1);
- await click('#staff-alert-pop [data-pop-open]');await until('Boolean(document.querySelector("[data-inbox-read-all]"))');await click('[data-inbox-read-all]');await until('document.querySelector("#staff-bell [data-bell-count]")?.hidden===true');
+ // D98/D99: an event from someone else opens the card; here the refund is treated as another person's.
+ await f.migration.query("UPDATE safeer.notification_events SET actor_id=NULL WHERE code='booking.refunded'");
+ await evaluate('document.dispatchEvent(new Event("visibilitychange"))');await until('document.querySelector("#staff-alert-card")?.open&&document.querySelector("#staff-alert-card").textContent.includes("Booking refunded")&&document.querySelector("#staff-alert-card").textContent.includes("RFD-00000001")');
+await new Promise(r=>setTimeout(r,700));await shot('notification-card'); assert.ok(Number(await evaluate('document.querySelector("#staff-bell [data-bell-count]").textContent'))>=1);
+ await click('#staff-alert-card [data-card-open]');await until('Boolean(document.querySelector("[data-inbox-read-all]"))');await click('[data-inbox-read-all]');await until('document.querySelector("#staff-bell [data-bell-count]")?.hidden===true');
  await evaluate('history.back()');await until('Boolean(document.querySelector("[data-company-section=sessions]"))');
  // A walk-in sale, including a seat lost to someone else part way through.
  await until('!document.querySelector("#staff-dialog").open');await click('[data-company-section=sessions]');await until('Boolean(document.querySelector("#sale-trip"))');

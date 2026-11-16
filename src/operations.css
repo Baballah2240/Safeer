@@ -255,18 +255,35 @@ html[data-app-surface=staff] body .company-side-group.is-settings{margin-top:12p
 html[data-app-surface=staff] body .company-settings-button{display:inline-flex;align-items:center;gap:8px}
 html[data-app-surface=staff] body .company-settings-button svg{width:18px;height:18px}
 @media(prefers-reduced-motion:reduce){html[data-app-surface=staff] body .company-side-toggle svg:last-child{transition:none}}
-/* D98: notification button beside the menu button, unread count, and the live pop-up. Staff workspace only. */
-html[data-app-surface=staff] body .app-masthead>.app-bell{position:fixed;inset-block-start:calc(28px + var(--safe-top,0px));inset-inline-start:68px;z-index:55;width:44px;height:44px;min-width:44px;min-height:44px;padding:0;margin:0;display:grid;place-items:center;border-radius:999px;color:var(--ink)}
-html[data-app-surface=staff] body .app-bell svg{width:20px;height:20px}
-html[data-app-surface=staff] body .app-bell-count{position:absolute;top:-4px;inset-inline-end:-6px;min-width:20px;height:20px;padding:0 5px;border-radius:999px;display:grid;place-items:center;background:#c2453b;color:#fff;font-size:.68rem;font-weight:800;line-height:1;box-shadow:0 0 0 2px var(--paper,#fff)}
+/* D98/D99: notification button beside the menu button, iOS-style unread count, and the notification card. Staff workspace only. */
+html[data-app-surface=staff] body .app-masthead>.app-bell{position:fixed;inset-block-start:calc(28px + var(--safe-top,0px));inset-inline-start:68px;z-index:55;width:44px;height:44px;min-width:44px;min-height:44px;padding:0;margin:0;display:grid;place-items:center;border-radius:999px;color:var(--ink);overflow:visible}
+html[data-app-surface=staff] body .app-bell svg{width:21px;height:21px}
+html[data-app-surface=staff] body .app-bell-count{position:absolute;top:-7px;inset-inline-end:-7px;width:22px;height:22px;padding:0;border-radius:50%;display:grid;place-items:center;background:#ff3b30;color:#fff;font:700 12px/1 -apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',Inter,Arial,sans-serif;font-variant-numeric:tabular-nums;letter-spacing:-.02em;border:2px solid var(--page,#fff);box-shadow:0 2px 6px #ff3b3059;pointer-events:none}
+html[data-app-surface=staff] body .app-bell-count.is-wide{width:auto;min-width:22px;padding:0 6px;border-radius:999px}
 html[data-app-surface=staff] body .app-bell-count[hidden]{display:none}
+html[data-app-surface=staff] body .app-bell-count.is-bumped{animation:bell-count-pop .45s cubic-bezier(.34,1.56,.64,1)}
 html[data-app-surface=staff] body .app-bell:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-html[data-app-surface=staff] body .staff-alert-pop{position:fixed;z-index:80;inset-block-start:calc(84px + var(--safe-top,0px));inset-inline-start:16px;width:min(380px,calc(100vw - 32px));display:flex;align-items:center;gap:12px;padding:12px 12px 12px 14px;border-radius:18px;background:var(--surface,var(--paper));border:1px solid var(--glass-rim,var(--border));box-shadow:0 18px 50px #0003;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);animation:staff-pop-in .22s ease-out}
-html[data-app-surface=staff] body .staff-alert-pop>div{flex:1;min-width:0;display:grid;gap:2px}
-html[data-app-surface=staff] body .staff-alert-pop strong{font-size:.92rem;color:var(--ink)}
-html[data-app-surface=staff] body .staff-alert-pop small{font-size:.8rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-html[data-app-surface=staff] body .staff-alert-pop-icon{width:38px;height:38px;flex:none;display:grid;place-items:center;border-radius:12px;background:var(--accent-wash);color:var(--accent)}
-html[data-app-surface=staff] body .staff-alert-pop button{min-height:36px;padding:6px 12px;font-size:.8rem}
-html[data-app-surface=staff] body .staff-alert-pop [data-pop-close]{width:36px;padding:0;font-size:1.1rem}
-@keyframes staff-pop-in{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
-@media(prefers-reduced-motion:reduce){html[data-app-surface=staff] body .staff-alert-pop{animation:none}}
+@keyframes bell-count-pop{0%{transform:scale(.4)}60%{transform:scale(1.18)}100%{transform:scale(1)}}
+html[data-app-surface=staff] body dialog.staff-alert-card{position:fixed;inset:0;margin:auto;padding:0;width:min(440px,calc(100vw - 32px));max-height:calc(100dvh - 48px);border:0;border-radius:28px;background:transparent;overflow:visible;color:var(--ink)}
+html[data-app-surface=staff] body dialog.staff-alert-card::backdrop{background:#0b0f0d66;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);animation:alert-fade .25s ease-out}
+html[data-app-surface=staff] body .staff-alert-card-body{max-height:calc(100dvh - 48px);overflow:auto;padding:24px;border-radius:28px;background:var(--surface,var(--paper));border:1px solid var(--glass-rim,var(--border));box-shadow:0 30px 80px #0006,inset 0 1px 0 #ffffff40;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);animation:alert-spring .5s cubic-bezier(.2,1.25,.35,1) both}
+html[data-app-surface=staff] body dialog.staff-alert-card.is-leaving .staff-alert-card-body{animation:alert-out .18s ease-in both}
+html[data-app-surface=staff] body dialog.staff-alert-card.is-leaving::backdrop{opacity:0;transition:opacity .18s}
+html[data-app-surface=staff] body .staff-alert-card-body>header{display:flex;align-items:center;justify-content:flex-start;gap:14px;margin-bottom:12px;text-align:start}
+html[data-app-surface=staff] body .staff-alert-card-body>header>div{flex:1;min-width:0}
+html[data-app-surface=staff] body .staff-alert-card-icon{width:48px;height:48px;flex:none;display:grid;place-items:center;border-radius:16px;background:var(--accent-wash);color:var(--accent)}
+html[data-app-surface=staff] body .staff-alert-card-kicker{margin:0;font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+html[data-app-surface=staff] body .staff-alert-card h2{margin:2px 0 0;font-size:1.25rem;line-height:1.3;color:var(--ink)}
+html[data-app-surface=staff] body .staff-alert-card-text{margin:0 0 14px;color:var(--ink);line-height:1.6;font-size:.95rem}
+html[data-app-surface=staff] body .staff-alert-card-facts{display:grid;gap:0;margin:0 0 14px;border:1px solid var(--border);border-radius:16px;overflow:hidden}
+html[data-app-surface=staff] body .staff-alert-card-facts>div{display:flex;justify-content:space-between;gap:16px;padding:10px 14px;border-top:1px solid var(--border)}
+html[data-app-surface=staff] body .staff-alert-card-facts>div:first-child{border-top:0}
+html[data-app-surface=staff] body .staff-alert-card-facts dt{color:var(--muted);font-size:.82rem}
+html[data-app-surface=staff] body .staff-alert-card-facts dd{margin:0;font-weight:650;font-size:.88rem;text-align:end;overflow-wrap:anywhere}
+html[data-app-surface=staff] body .staff-alert-card-more{margin:0 0 14px;font-size:.82rem;color:var(--muted)}
+html[data-app-surface=staff] body .staff-alert-card-body>footer{display:flex;gap:8px;flex-wrap:wrap}
+html[data-app-surface=staff] body .staff-alert-card-body>footer button{flex:1 1 auto;min-height:44px}
+@keyframes alert-spring{0%{opacity:0;transform:translateY(24px) scale(.86)}60%{opacity:1}100%{opacity:1;transform:none}}
+@keyframes alert-out{to{opacity:0;transform:scale(.94)}}
+@keyframes alert-fade{from{opacity:0}}
+@media(prefers-reduced-motion:reduce){html[data-app-surface=staff] body .staff-alert-card-body,html[data-app-surface=staff] body .app-bell-count.is-bumped,html[data-app-surface=staff] body dialog.staff-alert-card::backdrop{animation:none}}
