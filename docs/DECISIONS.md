@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-11-17 - Notifications panel and detail privacy
+
+D100: The owner asked for Notifications as a panel, not a full page. Notification details keep to the D14 rule that the feed points to records without copying private contents: no amounts or free-text notes; staff open the record for those. Notifications cannot be deleted: they are shared, audited events; Mark read hides them from Unread.
+
 ## 2026-11-16 - Staff alerts
 
 D98: The owner asked for an unread badge as a button beside the sidebar button, a live pop-up for staff, the missing staff events, and a plan for passenger alerts (trip canceled, parcel arrived) by SMS or app push. The browser asks for a light unread count every 30 seconds instead of keeping a live connection, so it works through the current hosting without new infrastructure. A trip near departure without a driver is not an event yet because it needs a scheduled check.

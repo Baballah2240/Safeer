@@ -1,5 +1,9 @@
 # Changelog
 
+## Notifications panel - D100, 2026-11-17
+
+Notifications are no longer a page. The bell (and Open notifications on the card) opens a panel over the current screen: unread count or You're all caught up, Mark all read, close, search, filters All / Unread / Money / Operations / Company, an updates count with Refresh, cards with category, time, title, meaning, company and read state, Details, Mark read and PDF downloads for contracts and invoices, Older notifications, and full screen on phones. Migration 0030 returns each event's details and read time in the list, and restores the D14 privacy rule for details: references, problem types, routes and times only, no amounts and no free-text notes (D99 had shown amounts and notes). Old ?tab=notifications links open the panel. Staff web only; no new APK.
+
 ## Notification card with full details and iOS-style count - D99, 2026-11-17
 
 Migration 0029 adds safeer.notification_detail (business facts only: references, amounts, routes, times and staff notes; no passenger names or phone numbers; only for events the person may see) and returns it with the newest unread event. A notification that arrives while the staff page is open now opens a card in the middle of the screen with its full details, a blurred backdrop and a spring animation, with Open notifications, Mark read and Close; it waits while a form is open, and nobody gets a card for their own action (notification_events.actor_id records who caused the event; it still counts as unread). The unread count is a red circle outside the bell (iOS style) that pops when it changes, and it is rechecked after every screen load as well as every 30 seconds. Notifications explains every event type. Web only: push to phones is not set up yet (see workflows/NOTIFICATIONS.md).

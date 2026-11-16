@@ -53,9 +53,10 @@ try{await identityFixture(async f=>{
  writeFileSync(join(shots,'invoices-en.png'),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
  writeFileSync(join(shots,'billing-en.png'),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
  // The contract arrives in Notifications with a download link.
- await click('[data-tab=notifications]');await until('Boolean(document.querySelector(".notification-item a[download]"))');
+ await click('#staff-bell');await until('Boolean(document.querySelector(".notification-item a[download]"))');
  assert.ok(await evaluate(`[...document.querySelectorAll(".notification-item a[download]")].some(a=>a.getAttribute("href")===${JSON.stringify(pdfHref)})`),'The contract notification links to its PDF.');
  assert.ok(await evaluate('[...document.querySelectorAll(".notification-item a[download]")].some(a=>/\\/invoices\\/[0-9a-f-]+\\/pdf/.test(a.getAttribute("href")))'),'The invoice notification links to its PDF.');
+ await click('[data-notify-close]');await until('!document.querySelector("#staff-notifications")');
  // Brand & theme: colors and a logo, used by the workspace.
  await click('[data-tab=companies]');await until('Boolean(document.querySelector("[data-company-section=branding]"))');await click('[data-company-section=branding]');await until('Boolean(document.querySelector("[data-brand-edit]"))');
  await click('[data-brand-edit]');await until('document.querySelector("#staff-dialog").open');
@@ -80,7 +81,7 @@ try{await identityFixture(async f=>{
  await send('Emulation.setDeviceMetricsOverride',{width:1366,height:900,deviceScaleFactor:1,mobile:false});
  await send('Page.navigate',{url:web.origin+'/company/brand-browser?lang=en'});await until('Boolean(document.querySelector(".market-company-logo"))');
  assert.equal(await evaluate('getComputedStyle(document.querySelector(".market-band-brand")).backgroundColor'),'rgb(34, 49, 63)');
- assert.ok(await evaluate('document.querySelector(".market-company-logo").complete&&document.querySelector(".market-company-logo").naturalWidth===1'));
+ await until('document.querySelector(".market-company-logo").complete&&document.querySelector(".market-company-logo").naturalWidth===1');
  writeFileSync(join(shots,'public-company.png'),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
  assert.deepEqual(await evaluate('__errors'),[]);ok({status:200},200);
  writeFileSync(join(shots,'result.json'),JSON.stringify({passed:true,built,layouts}));

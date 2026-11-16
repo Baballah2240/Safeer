@@ -54,8 +54,8 @@ await fill('[data-pay-method]','cash');await submit();
  await f.migration.query("UPDATE safeer.notification_events SET actor_id=NULL WHERE code='booking.refunded'");
  await evaluate('document.dispatchEvent(new Event("visibilitychange"))');await until('document.querySelector("#staff-alert-card")?.open&&document.querySelector("#staff-alert-card").textContent.includes("Booking refunded")&&document.querySelector("#staff-alert-card").textContent.includes("RFD-00000001")');
 await new Promise(r=>setTimeout(r,700));await shot('notification-card'); assert.ok(Number(await evaluate('document.querySelector("#staff-bell [data-bell-count]").textContent'))>=1);
- await click('#staff-alert-card [data-card-open]');await until('Boolean(document.querySelector("[data-inbox-read-all]"))');await click('[data-inbox-read-all]');await until('document.querySelector("#staff-bell [data-bell-count]")?.hidden===true');
- await evaluate('history.back()');await until('Boolean(document.querySelector("[data-company-section=sessions]"))');
+ await click('#staff-alert-card [data-card-open]');await until('Boolean(document.querySelector("#staff-notifications [data-inbox-read-all]:not([disabled])"))');await click('[data-inbox-read-all]');await until('document.querySelector("#staff-bell [data-bell-count]")?.hidden===true');
+ await click('[data-notify-close]');await until('!document.querySelector("#staff-notifications")');
  // A walk-in sale, including a seat lost to someone else part way through.
  await until('!document.querySelector("#staff-dialog").open');await click('[data-company-section=sessions]');await until('Boolean(document.querySelector("#sale-trip"))');
  // D72: a travel date lists that day's departures; clearing it returns to the next departures.

@@ -287,3 +287,57 @@ html[data-app-surface=staff] body .staff-alert-card-body>footer button{flex:1 1 
 @keyframes alert-out{to{opacity:0;transform:scale(.94)}}
 @keyframes alert-fade{from{opacity:0}}
 @media(prefers-reduced-motion:reduce){html[data-app-surface=staff] body .staff-alert-card-body,html[data-app-surface=staff] body .app-bell-count.is-bumped,html[data-app-surface=staff] body dialog.staff-alert-card::backdrop{animation:none}}
+/* D100: Notifications panel over the current screen. Staff workspace only. */
+html[data-app-surface=staff] body dialog.staff-notify{position:fixed;inset:0;margin:auto;padding:0;width:min(640px,calc(100vw - 24px));height:min(860px,calc(100dvh - 32px));max-height:none;border:0;background:transparent;overflow:visible;color:var(--ink)}
+html[data-app-surface=staff] body dialog.staff-notify::backdrop{background:#0b0f0d73;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:alert-fade .25s ease-out}
+html[data-app-surface=staff] body .notify-panel{height:100%;display:flex;flex-direction:column;border-radius:30px;background:var(--surface,var(--paper));border:1px solid var(--glass-rim,var(--border));box-shadow:0 30px 90px #0007,inset 0 1px 0 #ffffff33;backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);overflow:hidden;animation:alert-spring .5s cubic-bezier(.2,1.25,.35,1) both}
+html[data-app-surface=staff] body dialog.staff-notify.is-leaving .notify-panel{animation:alert-out .18s ease-in both}
+html[data-app-surface=staff] body dialog.staff-notify.is-leaving::backdrop{opacity:0;transition:opacity .18s}
+html[data-app-surface=staff] body .notify-head{display:flex;align-items:flex-start;gap:10px;padding:26px 26px 14px}
+html[data-app-surface=staff] body .notify-head>div{flex:1;min-width:0}
+html[data-app-surface=staff] body .notify-head h2{margin:0;font-size:1.6rem;line-height:1.25;color:var(--ink)}
+html[data-app-surface=staff] body .notify-head p{margin:6px 0 0;color:var(--muted);font-size:.9rem}
+html[data-app-surface=staff] body .notify-head button{min-height:44px;font-size:.82rem;white-space:nowrap}
+html[data-app-surface=staff] body .notify-head .notify-close{width:44px;padding:0;font-size:1.3rem;font-weight:700}
+html[data-app-surface=staff] body .notify-search{position:relative;display:block!important;margin:0 24px 12px}
+html[data-app-surface=staff] body .notify-search svg{position:absolute;inset-inline-start:16px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+html[data-app-surface=staff] body .notify-search input{min-height:48px;padding-inline-start:46px;border-radius:16px}
+html[data-app-surface=staff] body .notify-filters{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:0 24px 10px}
+html[data-app-surface=staff] body .notify-filters button{min-height:42px;padding:6px 4px;border-radius:14px;font-size:.84rem;font-weight:700}
+html[data-app-surface=staff] body .notify-filters button[aria-pressed=true]{background:var(--ops-selected,var(--accent));color:#fff;border-color:transparent}
+html[data-app-surface=staff] body .notify-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 24px 12px;border-bottom:1px solid var(--border);font-size:.85rem;color:var(--muted)}
+html[data-app-surface=staff] body .notify-bar button{min-height:38px;font-size:.8rem}
+html[data-app-surface=staff] body .notify-list{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:16px 20px;display:grid;align-content:start;gap:12px}
+html[data-app-surface=staff] body .notification-item{padding:16px 18px;border-radius:20px;border:1px solid var(--border);background:var(--glass-tile,var(--paper));display:grid;gap:8px}
+html[data-app-surface=staff] body .notification-item.notification-unread{border-color:color-mix(in srgb,var(--accent) 45%,var(--border));box-shadow:inset 3px 0 0 var(--accent)}
+html[dir=rtl][data-app-surface=staff] body .notification-item.notification-unread{box-shadow:inset -3px 0 0 var(--accent)}
+html[data-app-surface=staff] body .notification-item>header{display:flex;align-items:center;justify-content:space-between;gap:10px}
+html[data-app-surface=staff] body .notify-kicker{font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+html[data-app-surface=staff] body .notify-money{color:#2e9b62}
+html[data-app-surface=staff] body .notify-operations{color:#3a6fd8}
+html[data-app-surface=staff] body .notification-item time{font-size:.75rem;color:var(--muted)}
+html[data-app-surface=staff] body .notify-title{margin:0;padding:10px 12px;border-radius:14px;border:1px solid var(--border);background:var(--surface,var(--paper));font-size:.98rem;line-height:1.4;color:var(--ink)}
+html[data-app-surface=staff] body .notify-text{margin:0;font-size:.86rem;line-height:1.6;color:var(--ink)}
+html[data-app-surface=staff] body .notify-meta{margin:0;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:.78rem;color:var(--muted)}
+html[data-app-surface=staff] body .notify-state b{color:var(--accent)}
+html[data-app-surface=staff] body .notify-facts{margin:0;border:1px solid var(--border);border-radius:14px;overflow:hidden}
+html[data-app-surface=staff] body .notify-facts>div{display:flex;justify-content:space-between;gap:14px;padding:8px 12px;border-top:1px solid var(--border);font-size:.82rem}
+html[data-app-surface=staff] body .notify-facts>div:first-child{border-top:0}
+html[data-app-surface=staff] body .notify-facts dt{color:var(--muted)}
+html[data-app-surface=staff] body .notify-facts dd{margin:0;font-weight:650;text-align:end;overflow-wrap:anywhere}
+html[data-app-surface=staff] body .notify-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+html[data-app-surface=staff] body .notify-actions :is(button,a){min-height:38px;font-size:.8rem}
+html[data-app-surface=staff] body .notify-more{justify-self:center;min-height:42px}
+html[data-app-surface=staff] body .notify-empty{text-align:center;color:var(--muted);padding:30px 0}
+html[data-app-surface=staff] body .notify-foot{padding:12px 20px;border-top:1px solid var(--border);text-align:center;font-size:.78rem;color:var(--muted)}
+@media(max-width:560px){
+ html[data-app-surface=staff] body dialog.staff-notify{inset:0;margin:0;width:100%;max-width:none;height:100dvh}
+ html[data-app-surface=staff] body .notify-panel{border-radius:0}
+ html[data-app-surface=staff] body .notify-head{padding:calc(18px + var(--safe-top,0px)) 16px 12px;flex-wrap:wrap}
+ html[data-app-surface=staff] body .notify-search,html[data-app-surface=staff] body .notify-filters{margin-inline:16px}
+ html[data-app-surface=staff] body .notify-filters{display:flex;overflow-x:auto;scrollbar-width:none}
+ html[data-app-surface=staff] body .notify-filters button{flex:none;padding-inline:14px}
+ html[data-app-surface=staff] body .notify-bar{padding-inline:16px}
+ html[data-app-surface=staff] body .notify-list{padding:12px}
+}
+@media(prefers-reduced-motion:reduce){html[data-app-surface=staff] body .notify-panel{animation:none}}

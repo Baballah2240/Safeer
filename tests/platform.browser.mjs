@@ -22,7 +22,8 @@ try{await identityFixture(async f=>{
  assert.equal(await evaluate('document.querySelectorAll(".staff-panel img[src=x]").length'),0);
  let layouts=0;
  for(const tab of ['platform','notifications']){
-  await click('[data-tab='+tab+']');await until(tab==='platform'?'Boolean(document.querySelector("[data-platform-settings]"))':'document.querySelectorAll(".notification-item").length===3');
+  // D100: Notifications open as a panel from the bell.
+  await click(tab==='platform'?'[data-tab=platform]':'#staff-bell');await until(tab==='platform'?'Boolean(document.querySelector("[data-platform-settings]"))':'document.querySelectorAll(".notification-item").length===3');
   for(const theme of ['dark','light'])for(const lang of ['en','ar'])for(const [width,height] of [[1920,1080],[1366,768],[390,844],[320,740]]){
    await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width<700});
    if(await evaluate('document.documentElement.dataset.theme')!==theme)await click('[data-theme-toggle]');
@@ -35,6 +36,8 @@ try{await identityFixture(async f=>{
   }
  }
  await click('[data-notification-read]');await until('document.querySelectorAll("[data-notification-read]").length===2');
+ await click('[data-notify-filter=unread]');await until('document.querySelectorAll(".notification-item").length===2');
+ await click('[data-notify-close]');await until('!document.querySelector("#staff-notifications")');
  await click('[data-tab=platform]');await until('Boolean(document.querySelector("[data-platform-company]"))');await click('[data-platform-company]');await until('Boolean(document.querySelector("[data-company-section=overview]"))');assert.equal(await evaluate('document.querySelector("[data-tab=companies]").getAttribute("aria-current")'),'page');
  await click('[data-tab=platform]');await until('Boolean(document.querySelector("#platform-filters"))');await fill('#platform-filters [name=from]','2026-01-01');await fill('#platform-filters [name=to]','2026-11-03');await evaluate('document.querySelector("#platform-filters").requestSubmit()');await until('Boolean(document.querySelector(".staff-alert.bad"))');assert.equal(await evaluate('document.querySelectorAll(".platform-money").length'),0);assert.equal(await evaluate('Boolean(document.querySelector("#platform-filters"))'),true);
  // Public notice renders as text in either language and never executes supplied HTML.
@@ -61,6 +64,6 @@ try{await identityFixture(async f=>{
  }
  await send('Emulation.setEmulatedMedia',{media:'print',features:[]});assert.equal(await evaluate('getComputedStyle(document.querySelector(".market-service-notice")).display'),'none');
  await send('Emulation.setEmulatedMedia',{media:'screen',features:[]});
- await send('Page.navigate',{url:web.origin+'/staff'});await until('Boolean(document.querySelector("#staff-logout"))');await click('#staff-logout');await signIn(ok(await employee.c.request('auth/me'),200).login,employee.pass);assert.equal(await evaluate('document.querySelectorAll("[data-tab=platform]").length'),0);await click('[data-tab=notifications]');await until('Boolean(document.querySelector("[data-inbox-first]"))');assert.equal(await evaluate('document.querySelectorAll(".notification-item").length'),0);
+ await send('Page.navigate',{url:web.origin+'/staff'});await until('Boolean(document.querySelector("#staff-logout"))');await click('#staff-logout');await signIn(ok(await employee.c.request('auth/me'),200).login,employee.pass);assert.equal(await evaluate('document.querySelectorAll("[data-tab=platform]").length'),0);await click('#staff-bell');await until('Boolean(document.querySelector("#staff-notifications .notify-empty"))');assert.equal(await evaluate('document.querySelectorAll(".notification-item").length'),0);
  assert.deepEqual(await evaluate('__errors'),[]);writeFileSync(join(shots,'result.json'),JSON.stringify({passed:true,built,layouts,noticeLayouts,workflow:'Live platform collections, password-confirmed bilingual notice, safe public rendering, notification receipt, company navigation, invalid-filter stale-data clearing and restricted employee inbox'},null,2));console.log(`Section 14 ${built?'built':'source'} browser workflow and ${layouts} staff layouts and ${noticeLayouts} public notice layouts passed.`);
 },{webOrigin:web.origin});}finally{await browser?.close();await web.close();}

@@ -3,8 +3,8 @@
 ## Staff (in place, D98)
 
 - The bell beside the menu button shows the number of unread events. It checks the server every 30 seconds while the page is open and visible, and at once when you return to the tab.
-- An event that arrives while the page is open also shows a pop-up for 10 seconds with **View** (opens Notifications) and **×**.
-- Notifications lists events from the last 90 days. **Mark read** marks one event; **Mark all as read** marks everything you can see.
+- An event from someone else that arrives while the page is open shows a card in the middle of the screen with its details (references, problem type, route and time; never amounts, notes or passenger details).
+- The bell opens the Notifications panel: search, filters (All, Unread, Money, Operations, Company), Details, **Mark read**, **Mark all read** and Older notifications, for events from the last 90 days.
 - Each person sees only events their access in that company allows:
 
 | Event | Who sees it |
