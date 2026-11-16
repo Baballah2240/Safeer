@@ -28,7 +28,13 @@ try{await identityFixture(async f=>{
  await send('Page.navigate',{url:web.origin+'/staff'});await until('Boolean(document.querySelector("#staff-login"))');await fill('[name=login]','owner@safeer.local');await fill('[name=password]',f.password);await evaluate('document.querySelector("#staff-login").requestSubmit()');await until('Boolean(document.querySelector("[data-tab=companies]"))');
  await open();
  assert.equal(await evaluate('document.querySelector(".staff-sidebar [data-company-section][aria-current=page]").textContent'),'Overview','Overview opens first and is selected in the sidebar.');
- assert.deepEqual(await evaluate('[...document.querySelectorAll(".staff-sidebar .company-side-nav")[0].querySelectorAll("button")].map(b=>b.textContent)'),['Overview','Trips','Routes','Bookings','Drivers','Vehicles','Reports']);
+ // D95: Overview first, then dropdown groups; Settings starts closed.
+ assert.deepEqual(await evaluate('[...document.querySelectorAll(".staff-sidebar .company-side-nav")].map(n=>[...n.querySelectorAll("button")].map(b=>b.textContent))'),[['Overview'],['Trips','Routes','Drivers','Vehicles'],['Bookings','Reports'],['Sessions','Station','Luggage','Shipments'],['Company profile','Branches & stations','Public page','Brand & theme','Plan & contract','Company staff','Company roles','Support access','Company audit']]);
+ assert.equal(await evaluate('document.querySelector(".staff-sidebar #side-group-settings").hidden'),true);
+ await click('.staff-sidebar [data-side-toggle=planning]');assert.equal(await evaluate('document.querySelector(".staff-sidebar #side-group-planning").hidden'),true);
+ await click('.staff-sidebar [data-side-toggle=planning]');assert.equal(await evaluate('document.querySelector(".staff-sidebar [data-side-toggle=planning]").getAttribute("aria-expanded")'),'true');
+ await click('[data-company-settings]');await until('document.querySelector(".staff-sidebar [data-company-section=overview][aria-current=page]")&&!document.querySelector(".staff-sidebar #side-group-settings").hidden');
+ await click('.staff-sidebar [data-company-section=operations]');await until('Boolean(document.querySelector(".ops-kpi strong"))');
  assert.equal(await kpi('Departures today'),'3');assert.equal(await kpi('Passengers booked'),'6');assert.equal(await kpi('Boarded'),'0');assert.equal(await kpi('Needs attention'),'1');
  assert.equal(await evaluate('document.querySelectorAll(".ops-table tbody tr").length'),3);
  assert.ok(await evaluate('document.querySelector(".ops-attention").textContent.includes("Driver unassigned")'),'Unassigned trips are surfaced.');

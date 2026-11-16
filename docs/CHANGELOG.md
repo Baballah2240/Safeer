@@ -1,5 +1,9 @@
 # Changelog
 
+## Company sidebar in dropdown groups and a Settings button - D95, 2026-11-16
+
+Staff workspace only; no migration, no new APK. The company sidebar shows Overview, then dropdown groups Planning (Trips, Routes, Drivers, Vehicles), Sales (Bookings, Reports), Operations (Sessions, Station, Luggage, Shipments) and Settings (company profile to audit). Each group has a count and opens or closes; the group holding the open screen is always open, Settings starts closed, and the choice is remembered per company on this device. As before, each person sees only the sections their access in that company allows, and a group with none is left out. The company header has a Settings button that opens the first settings screen the person may use. Tests: tests/operations.browser.mjs.
+
 ## Staff list pages for Shipments and Bookings - D94, 2026-11-16
 
 Staff workspace only (the booking site and the Booking/Driver apps are unchanged; no migration, no new APK). New src/list-page.js gives Shipments and Bookings one list layout: a page header with icon, subtitle and actions (New shipment, Price list), the existing search form, date presets by creation date in the company time zone (All, Today, 7D, 30D, 90D), a status filter, Filter this list, removable filter chips with a result count, a data table with a coloured status strip and an Options column, and pages of 20 rows. Under 900 px the table becomes stacked cards. Presets, status and Filter this list narrow only the rows already loaded (Shipments still loads the latest 50; Bookings the server search result). Every existing action, element id and permission is unchanged. Styles are in operations.css, Arabic text in staff-i18n.js. Tests: tests/list-page.test.mjs and new filter steps in tests/shipments.browser.mjs.

@@ -239,3 +239,19 @@ html body .list-empty{padding:22px 4px}
  html body .list-page>#booking-results,html body .list-page>#shipment-results{padding:0 16px 16px}
 }
 @media(forced-colors:active){html body .list-ranges button[aria-pressed=true]{outline:2px solid Highlight}}
+/* D95: company sidebar groups with dropdowns, and the Settings button in the company header. */
+html[data-app-surface=staff] body .company-side-group{display:grid;gap:4px;margin-top:6px}
+html[data-app-surface=staff] body .staff-sidebar button.company-side-toggle{display:flex;align-items:center;gap:10px;width:100%;min-height:40px;padding:8px 14px;border:0;border-radius:12px;background:transparent;box-shadow:none;color:var(--muted);font-size:.74rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;text-align:start}
+html[data-app-surface=staff] body .staff-sidebar button.company-side-toggle:hover{background:#123a2d0d;color:var(--ink)}
+html[data-app-surface=staff] body .staff-sidebar button.company-side-toggle:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
+html[data-app-surface=staff] body .company-side-toggle svg{width:17px;height:17px;flex:none}
+html[data-app-surface=staff] body .company-side-toggle>span{flex:1}
+html[data-app-surface=staff] body .company-side-toggle svg:last-child{transition:transform .18s ease}
+html[data-app-surface=staff] body .company-side-toggle[aria-expanded=false] svg:last-child{transform:rotate(-90deg)}
+html[dir=rtl][data-app-surface=staff] body .company-side-toggle[aria-expanded=false] svg:last-child{transform:rotate(90deg)}
+html[data-app-surface=staff] body .company-side-count{min-width:22px;height:20px;padding:0 6px;border-radius:999px;display:inline-grid;place-items:center;background:var(--accent-wash);color:var(--accent);font-size:.7rem;letter-spacing:0}
+html[data-app-surface=staff] body .company-side-group>.company-side-nav{padding-inline-start:10px;border-inline-start:1px solid var(--border);margin-inline-start:22px}
+html[data-app-surface=staff] body .company-side-group.is-settings{margin-top:12px;padding-top:10px;border-top:1px solid var(--border)}
+html[data-app-surface=staff] body .company-settings-button{display:inline-flex;align-items:center;gap:8px}
+html[data-app-surface=staff] body .company-settings-button svg{width:18px;height:18px}
+@media(prefers-reduced-motion:reduce){html[data-app-surface=staff] body .company-side-toggle svg:last-child{transition:none}}

@@ -179,3 +179,5 @@ Object.assign(ar,{'Proof of transfer':'إثبات التحويل','Required for 
 Object.assign(errors,{PROOF_REQUIRED:'Add a photo of the bank transfer.',INVALID_PROOF:'Use a JPEG, PNG or WebP image.',PROOF_TOO_LARGE:'The image is too large. Take a closer photo or upload a screenshot.'});
 // D94: staff list pages.
 Object.assign(ar,{'All':'الكل','Today':'اليوم','7D':'٧ أيام','30D':'٣٠ يومًا','90D':'٩٠ يومًا','Last 7 days':'آخر ٧ أيام','Last 30 days':'آخر ٣٠ يومًا','Last 90 days':'آخر ٩٠ يومًا','Any status':'أي حالة','Filter this list':'تصفية هذه القائمة','Filter this list…':'تصفية هذه القائمة…','Filter':'تصفية','Remove filter':'إزالة عامل التصفية','No rows match these filters.':'لا توجد نتائج تطابق عوامل التصفية.','Pages':'الصفحات','of':'من','Previous page':'الصفحة السابقة','Last page':'الصفحة الأخيرة','Created':'الإنشاء','Shipment':'الشحنة','Route':'المسار','Sender and receiver':'المرسل والمستلم','Items and payment':'القطع والدفع','Options':'الخيارات','Booking':'الحجز','Trip':'الرحلة','Passenger':'المسافر','Seats and amount':'المقاعد والمبلغ'});
+// D95: company sidebar groups.
+Object.assign(ar,{'Planning':'التخطيط','Sales':'المبيعات'});

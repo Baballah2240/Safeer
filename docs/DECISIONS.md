@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-11-16 - Company sidebar groups
+
+D95: The owner asked for the sidebar in sections with dropdowns, a Settings button in the company, and each company's sidebar limited to the person's access there. Sections are still filtered by the person's permissions in the open company (no new permission rules); grouping and open/closed state are display only.
+
 ## 2026-11-16 - Staff list pages
 
 D94: The owner asked for an admin list layout (page header, filter bar, filter chips, data table, pagination) in the staff workspace only, not the booking side and not the mobile apps. It is applied to Shipments and Bookings with client-side filtering of the loaded rows; server-side date and status filters and Luggage are not part of this change.
