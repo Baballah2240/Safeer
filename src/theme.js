@@ -220,7 +220,7 @@ const downloadIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" s
 const appWords=(language,flavor)=>language==='ar'
   ?{name:flavor==='driver'?'تطبيق سفير السائق':'تطبيق سفير المسافر',update:'يتوفر تحديث جديد',updateLink:'تنزيل التحديث',get:'احصل على التطبيق',getLink:'تنزيل',download:'تنزيل تطبيق أندرويد',version:'الإصدار'}
   :{name:flavor==='driver'?'Safeer Driver app':'Safeer Passenger app',update:'A new version is available',updateLink:'Download update',get:'Get the app',getLink:'Download',download:'Download Android app',version:'Version'};
-export const releaseFor=flavor=>releases.apps[flavor]||null;
+const releaseFor=flavor=>releases.apps[flavor]||null;
 export const appOutdated=(flavor=installed?.[2])=>{const file=releaseFor(flavor);return Boolean(installed&&installed[2]===flavor&&file&&Number(installed[1])<file.versionCode);};
 export const appVersionLabel=(flavor=installed?.[2])=>{const file=releaseFor(flavor)||releases;return file?'v'+file.versionName:'';};
 export function appBanner(language,flavor){

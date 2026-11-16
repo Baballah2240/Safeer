@@ -3,7 +3,7 @@
 // contract that the company's managers and the Safeer owner receive as a PDF in their notifications.
 import {formatMinor} from './finance-format.mjs';
 
-export const SAFEER_PRIMARY='#1f5d49',SAFEER_HEADER='#123a2d';
+const SAFEER_PRIMARY='#1f5d49',SAFEER_HEADER='#123a2d';
 const percent=bps=>(Number(bps)/100).toFixed(2).replace(/\.?0+$/,'')+'%';
 // "25,000.50" -> "2500050" without floating point, so large fees stay exact.
 function toMinor(value){
@@ -12,7 +12,7 @@ function toMinor(value){
 }
 const fromMinor=minor=>{const v=BigInt(minor||0);return `${v/100n}.${String(v%100n).padStart(2,'0')}`;};
 // D83: the PDF follows the reader's language (Arabic is laid out right to left with the Arabic company name).
-export const contractPdfUrl=(companyId,id,language)=>`/api/v1/companies/${encodeURIComponent(companyId)}/contracts/${encodeURIComponent(id)}/pdf?lang=${language==='ar'?'ar':'en'}`;
+const contractPdfUrl=(companyId,id,language)=>`/api/v1/companies/${encodeURIComponent(companyId)}/contracts/${encodeURIComponent(id)}/pdf?lang=${language==='ar'?'ar':'en'}`;
 export const companyLogoUrl=(companyId,branding)=>branding?.logoVersion?`/api/v1/companies/${encodeURIComponent(companyId)}/branding/logo?v=${encodeURIComponent(branding.logoVersion)}`:'';
 
 export function billingView(data,{t,e,language}){
@@ -30,7 +30,7 @@ export function billingView(data,{t,e,language}){
 }
 
 // D87: monthly invoices (fee + commission on the month's net collections), issued by the Safeer owner.
-export const invoicePdfUrl=(companyId,id,language)=>`/api/v1/companies/${encodeURIComponent(companyId)}/invoices/${encodeURIComponent(id)}/pdf?lang=${language==='ar'?'ar':'en'}`;
+const invoicePdfUrl=(companyId,id,language)=>`/api/v1/companies/${encodeURIComponent(companyId)}/invoices/${encodeURIComponent(id)}/pdf?lang=${language==='ar'?'ar':'en'}`;
 const invoiceTone={issued:'is-wait',overdue:'is-late',paid:'is-ok',void:'is-old'},invoiceLabel={issued:'Awaiting payment',overdue:'Overdue',paid:'Paid',void:'Void'};
 function invoicesView(b,c,{t,e,language,money,day}){
   const month=m=>new Intl.DateTimeFormat(language==='ar'?'ar-SD-u-nu-latn':'en-GB',{month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(m+'-01T00:00:00Z'));

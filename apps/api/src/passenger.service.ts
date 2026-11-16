@@ -13,7 +13,7 @@ const stateKey=randomBytes(32);
 const usedStates=new Map<string,number>();
 const sign=(value:string)=>createHmac('sha256',stateKey).update('safeer-google-state-v1:'+value).digest('base64url');
 const returnPath=(value:unknown)=>typeof value==='string'&&/^\/(booking|marketplace(\?view=profile)?|hold\/SF-[2-9A-HJ-NP-Z]{8}|trip\/[0-9a-f-]{36})$/.test(value)?value:'/booking';
-export const passengerHash=(token:string)=>digest('safeer-passenger-v1:'+token);
+const passengerHash=(token:string)=>digest('safeer-passenger-v1:'+token);
 export function cookieValue(header:unknown,name:string){
  if(typeof header!=='string')return null;
  const parts=header.split(';').map(x=>x.trim()).filter(x=>x.startsWith(name+'='));
@@ -39,7 +39,7 @@ async function googleKeys(url:string,refresh=false){
  keyCache={url,until:Date.now()+Math.min(age,86400)*1000,keys};return keys;
 }
 // Verifies signature (RS256 against Google's published keys), issuer, audience, expiry, nonce and verified email.
-export async function verifyIdToken(idToken:string,g:Google,nonce:string){
+async function verifyIdToken(idToken:string,g:Google,nonce:string){
  const parts=idToken.split('.');if(parts.length!==3)fail('GOOGLE_TOKEN_INVALID',401);
  let header:{alg?:string;kid?:string},claims:Record<string,unknown>;
  try{header=JSON.parse(Buffer.from(parts[0],'base64url').toString());claims=JSON.parse(Buffer.from(parts[1],'base64url').toString());}catch{fail('GOOGLE_TOKEN_INVALID',401);}

@@ -1,5 +1,9 @@
 # Changelog
 
+## Code and security review, cleanup - D97, 2026-11-16
+
+Review: npm audit (0 vulnerabilities), TypeScript with noUnusedLocals/noUnusedParameters on the API and on the web and tool JavaScript, SQL built from strings (only fixed column lists and a hard-coded table name), HTML escaping of stored text, public API routes, the Google sign-in return address (fixed list, state, nonce, PKCE), origin and CSRF checks on every change request, and the payment proof image route (owner-checked, nosniff, no-store). No security fault was found. Removed: the retired WebView app source (mobile/android) and its scripts mobile/build.mjs, usb.mjs and release.mjs (still in Git history), tests/mobile-shell.test.mjs that only tested that app, unused imports in marketplace.js, scripts/local.mjs and mobile/upload-key.mjs, two duplicate Arabic strings, and export from twelve functions used only in their own file. mobile/install.mjs installs the saved Flutter apps only. Results: 161/161 integration, all browser, 28/28 unit tests and the documentation check pass.
+
 ## One scrollbar style everywhere - D96, 2026-11-16
 
 Every web page (typography.css; home.css for the home page) uses the same scrollbar: thin, rounded, no arrow buttons, a soft thumb that darkens on hover, light and dark colours, and the system colour in forced-colours mode. Chromium and Safari use ::-webkit-scrollbar; Firefox uses scrollbar-width and scrollbar-color. The staff sidebar now uses the shared colour instead of near-invisible white. CSS only; no migration, no new APK.

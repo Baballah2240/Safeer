@@ -1,6 +1,6 @@
 // Creates the private Google Play upload key once, outside Git: %USERPROFILE%/.android/safeer-upload.{jks,properties}.
 // Back both files up privately. Losing them means asking Google to reset the upload key.
-import {existsSync,readdirSync,readFileSync,writeFileSync,mkdirSync} from 'node:fs';
+import {existsSync,readdirSync,writeFileSync,mkdirSync} from 'node:fs';
 import {join} from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {randomBytes} from 'node:crypto';

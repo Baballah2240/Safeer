@@ -2,14 +2,14 @@
 // active-filter chips, a data table that becomes stacked cards on narrow screens, and pages of 20 rows.
 // Presets, status and "Filter this list" narrow only the rows already loaded from the server.
 const glyph={box:'M3 7l9-4 9 4v10l-9 4-9-4zM3 7l9 4 9-4M12 11v10',ticket:'M4 6h16v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4zM14 6v12',search:'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14M21 21l-4.3-4.3',close:'m6 6 12 12M18 6 6 18',first:'M6 5v14M18 6l-7 6 7 6',prev:'m15 6-6 6 6 6',next:'m9 6 6 6-6 6',last:'M18 5v14M6 6l7 6-7 6',refresh:'M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7'};
-export const listIcon=name=>`<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${glyph[name]||glyph.box}"/></svg>`;
+const listIcon=name=>`<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${glyph[name]||glyph.box}"/></svg>`;
 
 export function listHeader({t,e},{icon,title,subtitle,actions=''}){
  return `<header class="list-head"><span class="list-head-icon">${listIcon(icon)}</span><div class="list-head-text"><h2>${e(t(title))}</h2><p>${e(t(subtitle))}</p></div>${actions?`<div class="list-head-actions">${actions}</div>`:''}</header>`;
 }
 
 const day=86400000;
-export const listRanges=[['all','All','All'],['today','Today','Today'],['7','7D','Last 7 days'],['30','30D','Last 30 days'],['90','90D','Last 90 days']];
+const listRanges=[['all','All','All'],['today','Today','Today'],['7','7D','Last 7 days'],['30','30D','Last 30 days'],['90','90D','Last 90 days']];
 // Days are counted in the company's time zone, so "Today" matches the office calendar.
 const dayKey=(value,zone)=>new Intl.DateTimeFormat('en-CA',{timeZone:zone,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(value));
 export function inRange(value,range,zone,now=Date.now()){

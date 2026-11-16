@@ -1,6 +1,6 @@
 import {existsSync,mkdirSync,readFileSync,writeFileSync,unlinkSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
-import {resolve,join} from 'node:path';
+import {join} from 'node:path';
 import {execFileSync,spawnSync} from 'node:child_process';
 import {randomBytes,randomUUID} from 'node:crypto';
 import {createServer} from 'node:net';

@@ -13,8 +13,5 @@ dist/
 *.pfx
 *.pem
 *.key
-mobile/android/.gradle/
-mobile/android/**/build/
-mobile/android/local.properties
-mobile/android/*.jks
-mobile/android/*.keystore
+mobile/**/*.jks
+mobile/**/*.keystore

@@ -16,7 +16,7 @@ const code=(value:unknown)=>{const s=text(value,1,40).toUpperCase();if(!/^[A-Z0-
 // numeric offset such as "+03:00" in POSIX form (west of UTC), the opposite of JavaScript, which would move
 // every departure by hours; an unknown name would fail every later trip write.
 const zonePattern=/^(UTC|[A-Za-z]+(?:\/[A-Za-z0-9_+-]+){1,2})$/;
-export async function knownZone(c:PoolClient,timezone:string){if(!(await c.query('SELECT 1 FROM pg_catalog.pg_timezone_names WHERE name=$1',[timezone])).rowCount)fail('INVALID_TIMEZONE');}
+async function knownZone(c:PoolClient,timezone:string){if(!(await c.query('SELECT 1 FROM pg_catalog.pg_timezone_names WHERE name=$1',[timezone])).rowCount)fail('INVALID_TIMEZONE');}
 function settings(data:Record<string,unknown>){
  const holdMinutes=data.holdMinutes;if(typeof holdMinutes!=='number'||!Number.isSafeInteger(holdMinutes)||holdMinutes<5||holdMinutes>180)fail('INVALID_INPUT');
  const timezone=text(data.timezone,1,80);if(!zonePattern.test(timezone))fail('INVALID_TIMEZONE');try{new Intl.DateTimeFormat('en',{timeZone:timezone});}catch{fail('INVALID_TIMEZONE');}

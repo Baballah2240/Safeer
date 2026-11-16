@@ -2,15 +2,12 @@ import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
-// USB is only the install cable. Website apps then use the internet; the
-// development channel also needs the local server and adb reverse tunnel.
-const saved=JSON.parse(readFileSync(new URL('./releases/latest.json',import.meta.url),'utf8'));
-if(saved.channel==='debug-usb-local')await import('./usb.mjs');
+// USB is only the install cable. The apps then use the internet.
 const adb=(...a)=>execFileSync('adb',a,{encoding:'utf8',windowsHide:true});
 const serial=adb('devices','-l').split(/\r?\n/).filter(s=>/^\S+\s+device\s/.test(s)&&!s.startsWith('emulator-')&&!s.split(/\s/)[0].includes(':'));
 if(serial.length!==1)throw Error('Connect exactly one authorized USB Android phone, enable USB debugging and accept its prompt.');
 const device=serial[0].split(/\s/)[0],release=new URL('./releases/',import.meta.url),manifest=JSON.parse(readFileSync(new URL('latest.json',release),'utf8'));
-if(!['website','debug-usb-local'].includes(manifest.channel)||manifest.apps.length!==2)throw Error('Save the two app builds first.');
+if(manifest.channel!=='website'||manifest.apps.length!==2)throw Error('Save the two app builds first.');
 const expected=new Set(['sd.safeer.driver','sd.safeer.booking']);
 const apps=manifest.apps.map(app=>{
  if(!expected.delete(app.applicationId)||!/^Safeer-(Driver|Booking)-[a-zA-Z0-9.-]+\.apk$/.test(app.filename))throw Error('Unexpected app package.');

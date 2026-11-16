@@ -26,9 +26,9 @@ Needs Flutter and the Android SDK ([flutter/README.md](flutter/README.md)), a JD
 
 Each app's version is the `version: X.Y.Z+code` line in its pubspec.yaml, repeated as the label in its lib/src/app.dart that Settings shows (mobile:save refuses a mismatch); raise the code above the last published release of that app, and give the two apps different version names when only one of them changes (the release tag is `v<versionName>`). Commit the regenerated `src/app-release.js`, push, create the GitHub release with the saved files, then run `npm run check:live`. Google Play bundles: [PLAY_STORE.md](PLAY_STORE.md).
 
-## The retired WebView apps (android/)
+## The retired WebView apps
 
-Kept for reference only. They opened the website full screen (/marketplace for Booking, /driver for Driver) and added `SafeerApp/<versionCode> (<flavor>)` to their user agent, which is how the website now recognises them. Their build scripts (mobile/build.mjs, usb.mjs, release.mjs) are no longer wired to npm.
+Their source (mobile/android with mobile/build.mjs, usb.mjs and release.mjs) was removed in D97; it remains in Git history before that commit. They opened the website full screen (/marketplace for Booking, /driver for Driver) and added `SafeerApp/<versionCode> (<flavor>)` to their user agent, which is how the website now recognises them.
 
 ### How the shell behaved
 

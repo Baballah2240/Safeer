@@ -5,7 +5,7 @@ export function proofField({t,e},proof,{id='proof',hidden=false}={}){
  return `<div class="payment-proof" data-proof="${e(id)}" ${hidden?'hidden':''}><p class="payment-proof-title"><strong>${t('Proof of transfer')}</strong> <small class="staff-muted">${t('Required for bank transfers. Take a photo of the transfer or upload a screenshot.')}</small></p>${proof?`<figure class="payment-proof-preview"><img src="${proof}" alt="${t('Proof of transfer')}"><figcaption><button type="button" data-proof-remove>${t('Remove')}</button></figcaption></figure>`:`<div class="payment-proof-actions"><label class="staff-link payment-proof-pick"><input type="file" accept="image/*" capture="environment" data-proof-input class="payment-proof-file">${t('Take photo')}</label><label class="staff-link payment-proof-pick"><input type="file" accept="image/jpeg,image/png,image/webp" data-proof-input class="payment-proof-file">${t('Upload image')}</label></div>`}<p class="staff-alert bad" data-proof-error aria-live="assertive" hidden></p></div>`;
 }
 const load=file=>new Promise((resolve,reject)=>{const url=URL.createObjectURL(file),img=new Image();img.onload=()=>{URL.revokeObjectURL(url);resolve(img);};img.onerror=()=>{URL.revokeObjectURL(url);reject(Error('INVALID_PROOF'));};img.src=url;});
-export async function readProof(file){
+async function readProof(file){
  if(!file||!/^image\//.test(file.type))throw Error('INVALID_PROOF');
  const img=await load(file);
  for(const [side,quality] of [[1600,.82],[1280,.75],[1024,.7],[800,.65]]){
