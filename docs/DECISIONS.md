@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-11-16 - Staff list pages
+
+D94: The owner asked for an admin list layout (page header, filter bar, filter chips, data table, pagination) in the staff workspace only, not the booking side and not the mobile apps. It is applied to Shipments and Bookings with client-side filtering of the loaded rows; server-side date and status filters and Luggage are not part of this change.
+
 ## 2026-11-16 - Counter work in Sessions and proof of bank transfers
 
 D93: The owner asked for the counter to open directly in Sessions (sell, change and take payment there), a photo or upload as proof for every bank transfer, and Station to show only station information that can be edited.

@@ -1,7 +1,8 @@
 import {proofField,bindProof} from './payment-proof.js';
 // Company bookings: passenger details stay behind this section's own request, so opening a company workspace reads none of them.
 import {methodLabel,methodOptions,moneyText} from './station.js';
-let nextBooking=null;
+import {listHeader,paintList,listState} from './list-page.js';
+let nextBooking=null,bookingList={company:null,state:listState()};
 export const openBookingNext=id=>{nextBooking=id;};
 const statusLabel={held:'Held',expired:'Expired',released:'Released',confirmed:'Paid',refunded:'Refunded'},eventLabel={held:'Seats held',expired:'Hold ended',released:'Seats released',changed:'Details corrected',erased:'Personal details erased',paid:'Paid',refunded:'Refunded'},actorLabel={passenger:'by the passenger',staff:'by staff',trip_canceled:'when the trip was canceled',system:'automatically'};
 const bagStatus={registered:'Registered',tagged:'Tagged',loaded:'Loaded',in_transit:'In transit',unloaded:'Unloaded',collected:'Collected',lost:'Lost',exception_reported:'Problem reported'};
@@ -9,7 +10,7 @@ const money=(row,language)=>new Intl.NumberFormat(language==='ar'?'ar-SD-u-nu-la
 // D89: a booking for part of the route names the passenger's own stops (printed tickets and receipts included).
 const route=(row,language)=>{const name=language==='ar'?row.routeNameAr:row.routeNameEn;return row.partial?name+' · '+(language==='ar'?row.fromNameAr+' ← '+row.toNameAr:row.fromNameEn+' → '+row.toNameEn):name;};
 export function bookingsView(data,{t}){
- return `<section class="staff-panel"><header class="staff-section-head"><div><h2>${t('Bookings')}</h2><p>${t('Find a booking by reference, mobile number or traveler name. Viewing bookings is recorded in the company audit.')}</p></div></header><form id="booking-search" class="booking-search"><label>${t('Search')}<input type="search" name="q" maxlength="100"></label><button type="submit" class="staff-primary">${t('Search')}</button></form><div id="booking-results" aria-live="polite"><p role="status">${t('Loading bookings…')}</p></div></section>`;
+ return `<section class="staff-panel list-page">${listHeader({t,e:v=>v},{icon:'ticket',title:'Bookings',subtitle:'Find a booking by reference, mobile number or traveler name. Viewing bookings is recorded in the company audit.'})}<form id="booking-search" class="booking-search list-search"><label>${t('Search')}<input type="search" name="q" maxlength="100"></label><button type="submit" class="staff-primary">${t('Search')}</button></form><div id="booking-results" aria-live="polite"><p role="status">${t('Loading bookings…')}</p></div></section>`;
 }
 export function bindBookings(root,data,ctx){
  const {api,openForm,input,currentPassword,dialog,t,e,language}=ctx,path='companies/'+data.company.id+'/bookings',box=root.querySelector('#booking-results'),when=(row,value)=>new Intl.DateTimeFormat('en-GB',{dateStyle:'short',timeStyle:'short',timeZone:row.timezone}).format(new Date(value));
@@ -25,8 +26,20 @@ export function bindBookings(root,data,ctx){
  const search=async q=>{
   try{
    const result=await api(path+(q?'?q='+encodeURIComponent(q):''));if(!box.isConnected)return;
-   box.innerHTML=result.searchOnly&&!q?`<p>${t('Enter a booking reference or full mobile number to find a booking.')}</p>`:result.items.length?`<div class="staff-grid">${result.items.map(row=>`<article class="staff-record"><span class="staff-badge">${t(statusLabel[row.status])}</span><h3><bdi>${e(row.reference)}</bdi></h3><p>${e(route(row,language))} · <bdi>${e(row.date)} ${e(row.time)}</bdi></p><p>${!row.hasDetails?t('No passenger details recorded'):row.detailsErased?t('Personal details erased'):`${e(row.travelers[0]?.name||'')} · <bdi>${e(row.mobile||'')}</bdi>`}</p><p>${t('Seats')}: <bdi>${e(row.seats.join(', '))}</bdi> · <bdi>${e(money(row,language))}</bdi></p><div class="staff-actions"><button type="button" data-booking-open="${e(row.id)}">${t('View booking')}</button></div></article>`).join('')}</div>`:`<p>${t(q?'No bookings match your search.':'No bookings yet.')}</p>`;
-   box.querySelectorAll('[data-booking-open]').forEach(button=>button.onclick=()=>void open(button,button.dataset.bookingOpen));
+   if(bookingList.company!==data.company.id)bookingList={company:data.company.id,state:listState()};
+   if(result.searchOnly&&!q){box.innerHTML=`<p>${t('Enter a booking reference or full mobile number to find a booking.')}</p>`;return;}
+   const person=row=>!row.hasDetails?t('No passenger details recorded'):row.detailsErased?t('Personal details erased'):`${e(row.travelers[0]?.name||'')}${row.travelers.length>1?` <small class="staff-muted">+${row.travelers.length-1}</small>`:''}<span class="list-sub"><bdi dir="ltr">${e(row.mobile||'')}</bdi></span>`;
+   paintList(box,result.items,{t,e,title:'Bookings',zone:data.company.timezone,empty:q?'No bookings match your search.':'No bookings yet.',statuses:Object.entries(statusLabel),
+    columns:[{key:'booking',label:'Booking'},{key:'trip',label:'Trip'},{key:'passenger',label:'Passenger'},{key:'seats',label:'Seats and amount'},{key:'status',label:'Status'},{key:'actions',label:'Options'}],
+    row:row=>({id:row.id,cls:'booking-row',status:row.status,date:row.createdAt,text:[row.reference,route(row,language),row.date,row.hasDetails&&!row.detailsErased?row.travelers.map(p=>p.name).join(' ')+' '+(row.mobile||''):''].join(' '),
+     cells:{booking:`<strong class="list-key"><bdi>${e(row.reference)}</bdi></strong>${row.createdAt?`<span class="list-sub"><bdi>${e(when(row,row.createdAt))}</bdi></span>`:''}`,
+      trip:`<span>${e(route(row,language))}</span><span class="list-sub"><bdi>${e(row.date)} ${e(row.time)}</bdi></span>`,
+      passenger:person(row),
+      seats:`<span><bdi>${e(row.seats.join(', '))}</bdi></span><strong class="list-sub"><bdi>${e(money(row,language))}</bdi></strong>`,
+      status:`<div class="list-status-cell status-${e(row.status)}"><span class="staff-badge">${t(statusLabel[row.status])}</span></div>`,
+      actions:`<div class="staff-actions list-actions"><button type="button" data-booking-open="${e(row.id)}">${t('View booking')}</button></div>`}})},
+    bookingList.state,()=>box.querySelectorAll('[data-booking-open]').forEach(button=>button.onclick=()=>void open(button,button.dataset.bookingOpen)));
+   return;
   }catch(error){if(box.isConnected)box.innerHTML=failure(error);}
  };
  const open=async(button,id)=>{

@@ -163,3 +163,79 @@
  .ops-attention small{grid-column:1}
  html body .ops-attention-trip{flex-wrap:wrap;row-gap:2px}
 }
+/* D94: staff list pages (Shipments, Bookings): page header, filter bar, chips, data table, pages. Staff workspace only. */
+html body .list-page{padding:0;overflow:hidden}
+html body .list-head{display:flex;align-items:center;gap:14px;padding:20px 22px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+html body .list-head-icon{width:46px;height:46px;flex:none;display:grid;place-items:center;border-radius:14px;background:var(--accent-wash);color:var(--accent)}
+html body .list-head-icon svg{width:22px;height:22px}
+html body .list-head-text{flex:1 1 240px;min-width:0}
+html body .list-head-text h2{margin:0;font-size:1.25rem}
+html body .list-head-text p{margin:4px 0 0;font-size:.85rem}
+html body .list-head-actions{display:flex;gap:8px;flex-wrap:wrap}
+html body .list-head-actions button{white-space:nowrap}
+html body .list-page>form.list-search{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap;padding:16px 22px;border-bottom:1px solid var(--border);margin:0}
+html body .list-page>form.list-search label{flex:1 1 260px}
+html body .list-page>#shipment-notice:not(:empty){padding:12px 22px 0}
+html body .list-page>#booking-results,html body .list-page>#shipment-results{padding:0 22px 18px}
+html body .list-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:16px 0 4px}
+html body .list-ranges{display:inline-flex;padding:4px;border-radius:12px;background:var(--accent-wash);gap:2px}
+html body .list-ranges button{min-height:34px;padding:6px 12px;border:0;border-radius:9px;background:transparent;box-shadow:none;font-size:.8rem;font-weight:700;color:var(--muted)}
+html body .list-ranges button[aria-pressed=true]{background:var(--surface,var(--paper));color:var(--accent);box-shadow:0 1px 4px #0001}
+html body .list-status{width:min(200px,100%)}
+html body .list-status select{min-height:42px}
+html body .list-filter{position:relative;flex:1 1 200px;display:block!important;margin-inline-start:auto;max-width:320px}
+html body .list-filter svg{position:absolute;inset-inline-start:12px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+html body .list-filter input{padding-inline-start:38px;min-height:42px}
+html body .list-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+html body .list-summary{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px 0}
+html body .list-summary h3{margin:0;font-size:1.05rem;display:flex;align-items:center;gap:8px}
+html body .list-count{display:inline-grid;place-items:center;min-width:26px;height:26px;padding:0 7px;border-radius:999px;background:var(--accent-wash);color:var(--accent);font-size:.78rem}
+html body button.list-chip{display:inline-flex;align-items:center;gap:6px;min-height:30px;padding:4px 10px;border-radius:999px;font-size:.78rem;font-weight:600;background:var(--accent-wash);border:1px solid transparent;box-shadow:none;color:var(--ink)}
+html body button.list-chip svg{width:13px;height:13px}
+html body .list-table-wrap{border:1px solid var(--border);border-radius:16px;overflow:auto}
+html body .list-table{width:100%;border-collapse:collapse;font-size:.88rem}
+html body .list-table th{text-align:start;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:12px 14px;white-space:nowrap;background:var(--accent-wash)}
+html body .list-table td{padding:14px;border-top:1px solid var(--border);vertical-align:top;overflow-wrap:anywhere}
+html body .list-table td>span,html body .list-table td>strong{display:block}
+html body .list-table tbody tr:hover td{background:color-mix(in srgb,var(--accent-wash) 55%,transparent)}
+html body .list-key{font-size:.95rem;letter-spacing:.01em}
+html body .list-table td.list-col-shipment,html body .list-table td.list-col-booking{white-space:nowrap;overflow-wrap:normal}
+html body .list-sub{display:block;margin-top:3px;font-size:.8rem;color:var(--muted);font-weight:500}
+html body strong.list-sub{color:var(--ink);font-weight:700}
+html body .list-sub.bad{color:#b3423a}
+html body .list-route{display:flex!important;align-items:center;gap:6px;flex-wrap:wrap}
+html body .list-arrow{color:var(--muted);display:inline-block}
+html[dir=rtl] body .list-arrow{transform:scaleX(-1)}
+html body .list-person{display:block}
+html body .list-person small{display:inline-block;min-width:58px;color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em}
+html body .list-status-cell{border-inline-start:3px solid var(--list-tone,var(--accent));padding-inline-start:10px}
+html body .list-status-cell .staff-badge{margin:0;font-weight:700}
+html body .list-status-cell details{margin-top:6px;font-size:.8rem}
+html body .status-delivered,html body .status-confirmed{--list-tone:#2e9b62}
+html body .status-arrived,html body .status-in_transit,html body .status-loaded{--list-tone:#3a6fd8}
+html body .status-held,html body .status-received{--list-tone:#c98a1b}
+html body .status-exception_reported,html body .status-lost,html body .status-expired{--list-tone:#c2453b}
+html body .status-returned,html body .status-released,html body .status-refunded{--list-tone:#8a8f98}
+html body .list-row-problem td{background:#c2453b0d}
+html body .list-actions{padding-top:0;margin:0;justify-content:flex-end;gap:6px}
+html body .list-actions button{min-height:34px;padding:6px 10px;font-size:.78rem}
+html body .list-col-actions{width:1%;min-width:180px}
+html body .list-pages{display:flex;align-items:center;justify-content:flex-end;gap:4px;padding-top:14px;font-size:.85rem;color:var(--muted)}
+html body .list-pages span{margin-inline-end:10px}
+html body .list-pages button{min-height:36px;width:38px;padding:0;display:grid;place-items:center}
+html[dir=rtl] body .list-pages button svg{transform:scaleX(-1)}
+html body .list-empty{padding:22px 4px}
+@media(max-width:900px){
+ html body .list-table-wrap{border:0;overflow:visible}
+ html body .list-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+ html body .list-table,html body .list-table tbody,html body .list-table tr,html body .list-table td{display:block;width:auto}
+ html body .list-table tr{border:1px solid var(--border);border-radius:16px;margin-bottom:12px;padding:6px 0;background:var(--surface,var(--paper))}
+ html body .list-table td{border:0;padding:8px 14px}
+ html body .list-table td:not(.list-col-actions):not(:first-child)::before{content:attr(data-label);display:block;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+ html body .list-col-actions{min-width:0}
+ html body .list-actions{justify-content:flex-start}
+ html body .list-filter{max-width:none;margin:0}
+ html body .list-head,html body .list-page>form.list-search{padding:16px}
+ html body .list-page>#booking-results,html body .list-page>#shipment-results{padding:0 16px 16px}
+}
+@media(forced-colors:active){html body .list-ranges button[aria-pressed=true]{outline:2px solid Highlight}}

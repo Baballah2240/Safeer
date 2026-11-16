@@ -67,6 +67,12 @@ try{await identityFixture(async f=>{
  await until('document.querySelector(".staff-dialog-error").textContent.includes("does not match")');
  await fill('[name=receiverName]','fictional receiver');await submit();await until('!document.querySelector("#staff-dialog").open');
  await until('document.querySelector(".shipment-record .staff-badge")?.textContent==="Delivered"');await shot('delivered-desktop');
+ // D94: the list filters narrow the loaded rows and show a removable chip.
+ await evaluate('(()=>{const s=document.querySelector("[data-list-status]");s.value="received";s.dispatchEvent(new Event("change"));})()');
+ await until('!document.querySelector(".shipment-record")&&Boolean(document.querySelector(".list-empty"))&&Boolean(document.querySelector("[data-list-clear=status]"))');
+ await click('[data-list-clear=status]');await until('Boolean(document.querySelector(".shipment-record"))&&!document.querySelector("[data-list-clear]")');
+ await click('[data-list-range=today]');await until('Boolean(document.querySelector(".shipment-record"))&&document.querySelector("[data-list-range=today]").getAttribute("aria-pressed")==="true"');
+ await click('[data-list-range=all]');
 
  // Public tracking: status and offices only.
  const code=(await f.migration.query('SELECT tracking_code FROM safeer.shipments WHERE company_id=$1',[cid])).rows[0].tracking_code;

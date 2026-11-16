@@ -1,6 +1,7 @@
 // D59 shipments at the office: price list, new shipment with payment, tag, journey steps,
 // hand-over to the recorded receiver, returns and problems. Rules live on the server.
 import {moneyText} from './station.js';
+import {listHeader,paintList,listState} from './list-page.js';
 
 const statusLabel={received:'Received',loaded:'Loaded',in_transit:'In transit',arrived:'Arrived',delivered:'Delivered',returned:'Returned to sender',lost:'Lost',exception_reported:'Problem reported'};
 const categoryLabel={envelope:'Envelope',small:'Small parcel',large:'Large parcel',other:'Other item'};
@@ -10,12 +11,12 @@ const methodLabel={cash:'Cash',bank_transfer:'Bank transfer',mobile_wallet:'Mobi
 const nextStep={received:['loaded','Mark loaded'],loaded:['in_transit','Mark in transit'],in_transit:['arrived','Mark arrived']};
 const kilos=grams=>(grams/1000).toLocaleString('en-GB',{maximumFractionDigits:3});
 const shipmentPattern=/^(SHP|SPT|RCP)-[0-9]{8}$|^SH-[2-9A-HJ-NP-Z]{8}$/;
-let remembered={company:null,query:null};
-export const resetShipments=()=>{remembered={company:null,query:null};};
+let remembered={company:null,query:null,list:listState()};
+export const resetShipments=()=>{remembered={company:null,query:null,list:listState()};};
 
 export function shipmentsView(data,{t}){
  const cap=data.capabilities;
- return `<section class="staff-panel shipments-panel"><header class="staff-section-head"><div><h2>${t('Shipments')}</h2><p>${t('Parcels sent without a traveler. The sender pays at drop-off; the receiver collects with their phone number and name.')}</p></div><div class="staff-actions">${cap.shipments?`<button type="button" class="staff-primary" id="shipment-new">${t('New shipment')}</button>`:''}${cap.shipmentPrices?`<button type="button" id="shipment-prices">${t('Price list')}</button>`:''}</div></header><form id="shipment-search" class="booking-search"><label>${t('Scan or search')}<input type="search" name="q" maxlength="40" dir="ltr" autocomplete="off" placeholder="SHP-00000001"></label><button type="submit" class="staff-primary">${t('Search')}</button><button type="button" id="shipment-refresh">${t('Refresh')}</button></form><div id="shipment-notice"></div><div id="shipment-results" aria-live="polite"><p role="status">${t('Loading shipments…')}</p></div></section>`;
+ return `<section class="staff-panel shipments-panel list-page">${listHeader({t,e:v=>v},{icon:'box',title:'Shipments',subtitle:'Parcels sent without a traveler. The sender pays at drop-off; the receiver collects with their phone number and name.',actions:`${cap.shipmentPrices?`<button type="button" id="shipment-prices">${t('Price list')}</button>`:''}${cap.shipments?`<button type="button" class="staff-primary" id="shipment-new">${t('New shipment')}</button>`:''}`})}<form id="shipment-search" class="booking-search list-search"><label>${t('Scan or search')}<input type="search" name="q" maxlength="40" dir="ltr" autocomplete="off" placeholder="SHP-00000001"></label><button type="submit" class="staff-primary">${t('Search')}</button><button type="button" id="shipment-refresh">${t('Refresh')}</button></form><div id="shipment-notice"></div><div id="shipment-results" aria-live="polite"><p role="status">${t('Loading shipments…')}</p></div></section>`;
 }
 
 export function bindShipments(root,data,ctx){
@@ -25,8 +26,8 @@ export function bindShipments(root,data,ctx){
  const when=(row,value)=>new Intl.DateTimeFormat(language==='ar'?'ar-SD-u-nu-latn':'en-GB',{dateStyle:'medium',timeStyle:'short',timeZone:row.timezone||data.company.timezone}).format(new Date(value));
  const money=(minor,currency)=>moneyText(minor,currency||'SDG',language);
  const noNames=`<p class="staff-muted">${t('Do not include names or numbers.')}</p>`;
- if(remembered.company!==cid)remembered={company:cid,query:null};
- let current={query:remembered.query,token:null},options=null,latest=0,notice='';
+ if(remembered.company!==cid)remembered={company:cid,query:null,list:listState()};
+ let current={query:remembered.query,token:null},options=null,latest=0,notice='',lastItems=[];
  const loadOptions=async()=>{options=await api(base+'/options');return options;};
 
  const card=row=>{
@@ -41,15 +42,15 @@ export function bindShipments(root,data,ctx){
    cap.shipmentsResolve&&open&&`<button type="button" data-resolve="${e(row.id)}">${t('Resolve problem')}</button>`,
    row.payment&&`<button type="button" data-receipt="${e(row.id)}">${t('Print receipt')}</button>`,
   ].filter(Boolean).join('');
-  const people=row.detailsErased?`<p class="staff-muted">${t('Sender and receiver details were erased after the retention period.')}</p>`:`<dl class="company-details"><div><dt>${t('Sender')}</dt><dd>${e(row.senderName)} · <bdi dir="ltr">${e(row.senderMobile)}</bdi></dd></div><div><dt>${t('Receiver')}</dt><dd>${e(row.receiverName)} · <bdi dir="ltr">${e(row.receiverMobile)}</bdi></dd></div></dl>`;
-  return `<article class="staff-record shipment-record"><span class="staff-badge">${t(statusLabel[row.status])}</span><h3><bdi>${e(row.number)}</bdi> <small class="staff-muted"><bdi>${e(row.trackingCode)}</bdi></small></h3>
-   <p><strong>${e(place(row,'origin'))}</strong> → <strong>${e(place(row,'destination'))}</strong></p>
-   <p>${e(language==='ar'?row.routeNameAr:row.routeNameEn)} · <bdi>${e(when(row,row.departureAt))}</bdi>${row.tripStatus==='canceled'?` · <span class="staff-alert bad">${t('Trip canceled')}</span>`:''}</p>${people}
-   <p>${row.items.map(i=>`${t(categoryLabel[i.category])} <bdi>${e(kilos(i.weightGrams))}</bdi> ${t('kg')}`).join(' · ')}</p>
-   <p><strong><bdi>${e(money(row.amountMinor,row.currency))}</bdi></strong>${row.payment?` · ${t(methodLabel[row.payment.method])} · <bdi>${e(row.payment.receiptNumber)}</bdi>`:''}${row.tagNumber?` · ${t('Tag')} <bdi>${e(row.tagNumber)}</bdi>`:''}</p>
-   ${open?`<p class="staff-alert bad">${t(kindLabel[open.kind])}${open.note?`: ${e(open.note)}`:''} · ${t('Recorded state')}: ${t(statusLabel[row.lifecycle])}. ${t('It cannot move or be handed over until the problem is resolved.')}</p>`:''}
-   <details><summary>${t('History')}</summary><ol class="booking-events">${row.events.map(v=>`<li>${t(eventLabel[v.event])}${v.event==='moved'&&v.to?` · ${t(statusLabel[v.to])}`:''}${v.reason&&v.event!=='exception_reported'&&v.event!=='exception_resolved'?` · ${e(v.reason)}`:''} <small><bdi>${e(when(row,v.at))}</bdi></small></li>`).join('')}</ol></details>
-   ${actions?`<div class="staff-actions">${actions}</div>`:''}</article>`;
+  return {id:row.id,cls:'shipment-record'+(open?' list-row-problem':''),status:row.status,date:row.events.find(v=>v.event==='received')?.at||row.departureAt,
+   text:[row.number,row.trackingCode,row.tagNumber,row.payment?.receiptNumber,row.detailsErased?'':[row.senderName,row.senderMobile,row.receiverName,row.receiverMobile].join(' '),place(row,'origin'),place(row,'destination')].filter(Boolean).join(' '),
+   cells:{
+    shipment:`<strong class="list-key"><bdi>${e(row.number)}</bdi></strong><span class="list-sub"><bdi>${e(row.trackingCode)}</bdi></span>${row.tagNumber?`<span class="list-sub">${t('Tag')} <bdi>${e(row.tagNumber)}</bdi></span>`:''}`,
+    route:`<span class="list-route"><strong>${e(place(row,'origin'))}</strong><span aria-hidden="true" class="list-arrow">→</span><strong>${e(place(row,'destination'))}</strong></span><span class="list-sub">${e(language==='ar'?row.routeNameAr:row.routeNameEn)} · <bdi>${e(when(row,row.departureAt))}</bdi></span>${row.tripStatus==='canceled'?`<span class="list-sub bad">${t('Trip canceled')}</span>`:''}`,
+    people:row.detailsErased?`<span class="list-sub">${t('Sender and receiver details were erased after the retention period.')}</span>`:`<span class="list-person"><small>${t('Sender')}</small> ${e(row.senderName)} <bdi dir="ltr">${e(row.senderMobile)}</bdi></span><span class="list-person"><small>${t('Receiver')}</small> ${e(row.receiverName)} <bdi dir="ltr">${e(row.receiverMobile)}</bdi></span>`,
+    status:`<div class="list-status-cell status-${e(row.status)}"><span class="staff-badge">${t(statusLabel[row.status])}</span>${row.events.length?`<span class="list-sub">${t(eventLabel[row.events[row.events.length-1].event])} · <bdi>${e(when(row,row.events[row.events.length-1].at))}</bdi></span>`:''}${open?`<span class="list-sub bad">${t(kindLabel[open.kind])}${open.note?`: ${e(open.note)}`:''} · ${t('Recorded state')}: ${t(statusLabel[row.lifecycle])}. ${t('It cannot move or be handed over until the problem is resolved.')}</span>`:''}<details><summary>${t('History')}</summary><ol class="booking-events">${row.events.map(v=>`<li>${t(eventLabel[v.event])}${v.event==='moved'&&v.to?` · ${t(statusLabel[v.to])}`:''}${v.reason&&v.event!=='exception_reported'&&v.event!=='exception_resolved'?` · ${e(v.reason)}`:''} <small><bdi>${e(when(row,v.at))}</bdi></small></li>`).join('')}</ol></details></div>`,
+    items:`<span>${row.items.map(i=>`${t(categoryLabel[i.category])} <bdi>${e(kilos(i.weightGrams))}</bdi> ${t('kg')}`).join(' · ')}</span><strong class="list-sub"><bdi>${e(money(row.amountMinor,row.currency))}</bdi></strong>${row.payment?`<span class="list-sub">${t(methodLabel[row.payment.method])} · <bdi>${e(row.payment.receiptNumber)}</bdi></span>`:''}`,
+    actions:actions?`<div class="staff-actions list-actions">${actions}</div>`:''}};
  };
 
  const printSheet=(html,after)=>{
@@ -70,10 +71,14 @@ export function bindShipments(root,data,ctx){
 
  const paint=result=>{
   if(!box.isConnected)return;
-  const items=result.items,find=id=>items.find(row=>row.id===id);
+  const items=result.items;lastItems=items;
   box.removeAttribute('aria-busy');
   noticeBox.innerHTML=notice?`<p class="staff-alert bad" role="alert">${e(t(notice))}</p>`:'';notice='';
-  box.innerHTML=`${items.length===50?`<p class="staff-alert" role="status">${t('Showing the latest 50 shipments. Search by number to find an older one.')}</p>`:''}<div class="staff-grid">${items.map(card).join('')}</div>${items.length?'':`<p>${t(current.query||current.token?'No shipment matches your search.':'No shipments yet.')}</p>`}`;
+  paintList(box,items,{t,e,title:'Shipments',zone:data.company.timezone,row:card,empty:current.query||current.token?'No shipment matches your search.':'No shipments yet.',statuses:Object.entries(statusLabel),
+   before:items.length===50?`<p class="staff-alert" role="status">${t('Showing the latest 50 shipments. Search by number to find an older one.')}</p>`:'',
+   columns:[{key:'shipment',label:'Shipment'},{key:'route',label:'Route'},{key:'people',label:'Sender and receiver'},{key:'status',label:'Status'},{key:'items',label:'Items and payment'},{key:'actions',label:'Options'}]},remembered.list,bindRows);
+ };
+ const bindRows=()=>{const items=lastItems,find=id=>items.find(row=>row.id===id);
   box.querySelectorAll('[data-move]').forEach(b=>b.onclick=async()=>{const row=find(b.dataset.move);b.disabled=true;try{await api(`${base}/${row.id}/move`,'POST',{to:b.dataset.to,version:row.version});await load();}catch(error){b.disabled=false;b.insertAdjacentHTML('afterend',`<p class="staff-alert bad" role="alert">${e(t(error.message))}</p>`);}});
   box.querySelectorAll('[data-unload]').forEach(b=>b.onclick=()=>{const row=find(b.dataset.unload);openForm('Take off the bus',`<p><bdi>${e(row.number)}</bdi></p>`+input('reason','Reason','text','maxlength="300"')+noNames,f=>api(`${base}/${row.id}/move`,'POST',{to:'received',reason:f.get('reason'),version:row.version}));});
   box.querySelectorAll('[data-deliver]').forEach(b=>b.onclick=()=>{const row=find(b.dataset.deliver);openForm('Hand over to receiver',`<p><bdi>${e(row.number)}</bdi> · ${e(place(row,'destination'))}</p><p>${t('Ask the receiver for their phone number and full name. Both must match the shipment.')}</p>`+input('receiverMobile','Receiver phone number','tel','maxlength="30" dir="ltr" autocomplete="off" inputmode="tel"')+input('receiverName','Receiver full name','text','maxlength="100" autocomplete="off"'),f=>api(`${base}/${row.id}/deliver`,'POST',{receiverName:f.get('receiverName'),receiverMobile:f.get('receiverMobile'),version:row.version}));});
@@ -86,7 +91,7 @@ export function bindShipments(root,data,ctx){
    if(b.dataset.replace){openForm('Replace tag',`<p><bdi>${e(row.number)}</bdi> · <bdi>${e(row.tagNumber)}</bdi></p><p>${t('The old tag stops working as soon as the new one is made. Take it off the parcel.')}</p>`+input('reason','Reason','text','maxlength="300"')+noNames,async f=>{const made=await api(`${base}/${row.id}/tag`,'POST',{reason:f.get('reason'),version:row.version});dialog.addEventListener('close',()=>setTimeout(()=>show(made)),{once:true});return made;});return;}
    b.disabled=true;try{show(await api(`${base}/${row.id}/tag`,'POST',{}));}catch(error){notice=error.message==='REQUEST_FAILED'||error.message==='TAG_REASON_REQUIRED'?'TAG_MAYBE_MADE':error.message;await load();}
   });
-  if(!dialog.open&&matchMedia('(pointer:fine)').matches)form.elements.q.focus({preventScroll:true});
+  if(!dialog.open&&!box.contains(document.activeElement)&&matchMedia('(pointer:fine)').matches)form.elements.q.focus({preventScroll:true});
  };
  const load=async()=>{
   const mine=++latest,{query,token}=current;if(!box.isConnected)return;

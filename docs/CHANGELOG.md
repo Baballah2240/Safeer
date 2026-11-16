@@ -1,5 +1,9 @@
 # Changelog
 
+## Staff list pages for Shipments and Bookings - D94, 2026-11-16
+
+Staff workspace only (the booking site and the Booking/Driver apps are unchanged; no migration, no new APK). New src/list-page.js gives Shipments and Bookings one list layout: a page header with icon, subtitle and actions (New shipment, Price list), the existing search form, date presets by creation date in the company time zone (All, Today, 7D, 30D, 90D), a status filter, Filter this list, removable filter chips with a result count, a data table with a coloured status strip and an Options column, and pages of 20 rows. Under 900 px the table becomes stacked cards. Presets, status and Filter this list narrow only the rows already loaded (Shipments still loads the latest 50; Bookings the server search result). Every existing action, element id and permission is unchanged. Styles are in operations.css, Arabic text in staff-i18n.js. Tests: tests/list-page.test.mjs and new filter steps in tests/shipments.browser.mjs.
+
 ## Sessions is the working counter, bank transfer proof photos, Station shows station details - D93, 2026-11-16
 
 Migration 0027 adds safeer.payment_proofs with safeer.payment_proof_attach and safeer.payment_proof. A bank transfer (booking payment or walk-in sale) must carry a photo of the transfer (proof: JPEG, PNG or WebP data URL, at most 384 KB; PROOF_REQUIRED, INVALID_PROOF, PROOF_TOO_LARGE); the image is saved in the same transaction as the payment and served to staff at GET companies/:id/bookings/:bid/payment-proof. The staff app takes a photo (camera) or uploads an image, shrinks it on the device and previews it; the booking shows View proof of transfer. Payment requests may be up to 576 KB, and the staff page allows data: and blob: images for the preview. Sessions now holds your session, a booking finder (pay, change or print), the walk-in sale, the session list and payment methods; Station shows the stations (with Edit) and their counters.

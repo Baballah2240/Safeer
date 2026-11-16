@@ -59,6 +59,7 @@ export const publicAssets = {
   '/src/app-retired.js': ['src/app-retired.js', 'text/javascript'],
   '/src/app-retired.css': ['src/app-retired.css', 'text/css'],
   '/src/shipments.js': ['src/shipments.js', 'text/javascript'],
+  '/src/list-page.js': ['src/list-page.js', 'text/javascript'],
   '/src/operations.js': ['src/operations.js', 'text/javascript'],
   '/src/operations.css': ['src/operations.css', 'text/css'],
   '/src/booking-home.css': ['src/booking-home.css', 'text/css'],
