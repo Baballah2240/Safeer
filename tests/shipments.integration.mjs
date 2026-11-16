@@ -96,6 +96,10 @@ test('problems block hand-over until a resolver closes them; a missing shipment 
  let row=ok(await send(f,s,trip));
  row=ok(await f.admin.request(`${s.api}/${row.id}/exceptions`,'POST',{kind:'missing',note:'Not on the shelf'}));
  assert.equal(row.status,'exception_reported');
+ // D98: shipment resolvers get an alert; an operator without resolve does not.
+ {const resolver=await staff(f,s,['company.shipments.resolve']),worker=await staff(f,s,['company.shipments.operate']);
+  assert.equal(ok(await resolver.c.request('notifications/unread'),200).latest?.code,'shipment.exception');
+  assert.equal(ok(await worker.c.request('notifications'),200).items.some(n=>n.code==='shipment.exception'),false);}
  assert.equal(ok(await f.client().request('public/shipments/'+row.trackingCode),200).status,'delayed','The public sees a delay, not the details.');
  assert.equal((await f.admin.request(`${s.api}/${row.id}/return`,'POST',{reason:'Sender asked',version:row.version})).error.code,'SHIPMENT_EXCEPTION_OPEN');
  assert.equal((await f.admin.request(`${s.api}/${row.id}/exceptions/${row.exception.id}/resolve`,'POST',{outcome:'settled',currentPassword:'wrong-password-value'})).error.code,'REAUTHENTICATION_FAILED');

@@ -72,6 +72,8 @@ test('repeating a payment or refund key records money once, even at the same mom
  assert.equal(ok(await f.admin.request(s.base+'/counter'),200).session.totals.cashIn,150000);
  const refundKey=randomUUID(),twice=await Promise.all(Array.from({length:2},()=>refund(f,s,bid,{key:refundKey})));assert.ok(twice.every(r=>r.status===201),twice.map(r=>r.raw).join());assert.equal(await count(f,'refunds'),1);
  assert.equal((await refund(f,s,bid)).error.code,'ALREADY_REFUNDED');assert.equal(ok(await f.admin.request(s.base+'/counter'),200).session.totals.cashOut,150000);
+ // D98: one refund, one alert for finance readers, even when the request was repeated.
+ const finance=await staff(f,s,['company.finance.read']);assert.equal(ok(await finance.c.request('notifications'),200).items.filter(n=>n.code==='booking.refunded').length,1);
 }));
 
 test('refunds are full, until departure, or any time on a canceled trip, and free the seats',async()=>identityFixture(async f=>{
@@ -243,4 +245,10 @@ test('D93: a bank transfer needs a photo of the transfer, saved with the payment
  assert.equal(await f.admin.request(`${s.base}/bookings/${made.id}/payment-proof`).then(r=>r.status),200);
  // Someone without booking or counter access cannot see it.
  const other=await staff(f,s,['company.fleet.read']);assert.equal((await other.c.request(`${s.base}/bookings/${bb}/payment-proof`)).status,403);
+ // D98: each transfer with a photo reaches finance readers as an alert; others do not see it.
+ const finance=await staff(f,s,['company.finance.read']),mine=ok(await finance.c.request('notifications/unread'),200);
+ assert.equal(mine.latest?.code,'payment.proof');assert.equal(ok(await finance.c.request('notifications'),200).items.filter(n=>n.code==='payment.proof').length,2);
+ assert.equal(ok(await other.c.request('notifications'),200).items.some(n=>n.code==='payment.proof'),false);
+ const marked=ok(await finance.c.request('notifications/read-all','POST',{}));assert.ok(marked.marked>=2);
+ const after=ok(await finance.c.request('notifications/unread'),200);assert.equal(after.unreadCount,0);assert.equal(after.latest,null);
 }));

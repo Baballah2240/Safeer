@@ -1,5 +1,9 @@
 # Decisions
 
+## 2026-11-16 - Staff alerts
+
+D98: The owner asked for an unread badge as a button beside the sidebar button, a live pop-up for staff, the missing staff events, and a plan for passenger alerts (trip canceled, parcel arrived) by SMS or app push. The browser asks for a light unread count every 30 seconds instead of keeping a live connection, so it works through the current hosting without new infrastructure. A trip near departure without a driver is not an event yet because it needs a scheduled check.
+
 ## 2026-11-16 - Company sidebar groups
 
 D95: The owner asked for the sidebar in sections with dropdowns, a Settings button in the company, and each company's sidebar limited to the person's access there. Sections are still filtered by the person's permissions in the open company (no new permission rules); grouping and open/closed state are display only.

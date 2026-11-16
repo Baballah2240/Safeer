@@ -300,6 +300,8 @@ class PlatformController {
  @Get('platform/settings') settings(@Req() req:Request){return this.platform.settings(token(req)).then(reply);}
  @Put('platform/settings') save(@Req() req:Request,@Body() data:unknown){return this.platform.save(token(req),data).then(reply);}
  @Get('notifications') notifications(@Req() req:Request,@Query('before') before:string|undefined){return this.platform.notifications(token(req),before).then(reply);}
+ @Get('notifications/unread') unread(@Req() req:Request){return this.platform.unread(token(req)).then(reply);}
+ @Post('notifications/read-all') readAll(@Req() req:Request,@Body() data:unknown){return this.platform.readAll(token(req),data).then(reply);}
  @Post('notifications/:event/read') read(@Req() req:Request,@Param('event') id:string,@Body() data:unknown){return this.platform.read(token(req),id,data).then(reply);}
 }
 @Module({controllers:[BillingController,PublicBrandController,PassengerController,PlatformController,FinanceController,IdentityController,CompanyController,LuggageController,ShipmentController,ShipmentTrackingController,OperationsController,TicketingController,BookingController,RouteController,FleetController,TripSeatController,TripController,ReservationController,PublicController,PublicProfileController,BoardingController],providers:[BillingService,PassengerService,Database,ShipmentService,OperationsService,IdentityService,CompanyService,RouteService,FleetService,TripService,PublicService,ReservationService,TicketingService,LuggageService,BoardingService,FinanceService,PlatformService]})

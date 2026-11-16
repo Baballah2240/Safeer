@@ -27,5 +27,8 @@ export class PlatformService {
   return this.run(token,true,async c=>(await c.query('SELECT safeer.platform_dashboard($1,$2,$3) AS row',[from,to,Number(p)])).rows[0].row);
  }
  notifications(token:string,before:unknown){const id=before===undefined?null:eventId(before);return this.run(token,false,async c=>(await c.query('SELECT safeer.notifications_list($1) AS row',[id])).rows[0].row);}
+ // D98: the staff header badge and live pop-up.
+ unread(token:string){return this.run(token,false,async c=>(await c.query('SELECT safeer.notifications_unread() AS row')).rows[0].row);}
+ readAll(token:string,input:unknown){body(input,[]);return this.run(token,false,async c=>(await c.query('SELECT safeer.notifications_read_all() AS row')).rows[0].row);}
  read(token:string,id:string,input:unknown){body(input,[]);eventId(id);return this.run(token,false,async c=>(await c.query('SELECT safeer.notification_read($1) AS row',[id])).rows[0].row);}
 }

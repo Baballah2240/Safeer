@@ -76,6 +76,7 @@ export const publicAssets = {
   '/src/legal.js': ['src/legal.js', 'text/javascript'],
   '/staff': ['staff.html', 'text/html'],
   '/src/staff.js': ['src/staff.js', 'text/javascript'],
+  '/src/staff-alerts.js': ['src/staff-alerts.js', 'text/javascript'],
   '/src/staff-i18n.js': ['src/staff-i18n.js', 'text/javascript'],
   '/src/staff.css': ['src/staff.css', 'text/css'],
 };
