@@ -1,5 +1,9 @@
 # Changelog
 
+## One scrollbar style everywhere - D96, 2026-11-16
+
+Every web page (typography.css; home.css for the home page) uses the same scrollbar: thin, rounded, no arrow buttons, a soft thumb that darkens on hover, light and dark colours, and the system colour in forced-colours mode. Chromium and Safari use ::-webkit-scrollbar; Firefox uses scrollbar-width and scrollbar-color. The staff sidebar now uses the shared colour instead of near-invisible white. CSS only; no migration, no new APK.
+
 ## Company sidebar in dropdown groups and a Settings button - D95, 2026-11-16
 
 Staff workspace only; no migration, no new APK. The company sidebar shows Overview, then dropdown groups Planning (Trips, Routes, Drivers, Vehicles), Sales (Bookings, Reports), Operations (Sessions, Station, Luggage, Shipments) and Settings (company profile to audit). Each group has a count and opens or closes; the group holding the open screen is always open, Settings starts closed, and the choice is remembered per company on this device. As before, each person sees only the sections their access in that company allows, and a group with none is left out. The company header has a Settings button that opens the first settings screen the person may use. Tests: tests/operations.browser.mjs.

@@ -53,3 +53,19 @@ html body :is(bdi,time,input[type=date],input[type=number],.market-price,.driver
  html body #track-app .track-steps li{overflow-wrap:normal}
  html body .driver-settings-version,html body .driver-settings-version .drawer-version{font-family:var(--font-en);font-variant-numeric:tabular-nums}
 }
+
+/* D96: one scrollbar style everywhere: thin, rounded, quiet until hovered, following light and dark mode. */
+:root{--scroll-thumb:#7a6a5559;--scroll-thumb-hover:#7a6a55a6;--scroll-track:transparent}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--scroll-thumb:#e8d9bf47;--scroll-thumb-hover:#e8d9bf8c}}
+:root[data-theme=dark]{--scroll-thumb:#e8d9bf47;--scroll-thumb-hover:#e8d9bf8c}
+@supports selector(::-webkit-scrollbar){
+ ::-webkit-scrollbar{width:11px;height:11px}
+ ::-webkit-scrollbar-track{background:var(--scroll-track)}
+ ::-webkit-scrollbar-thumb{background:var(--scroll-thumb);border-radius:999px;border:3px solid transparent;background-clip:padding-box;min-height:40px}
+ ::-webkit-scrollbar-thumb:hover{background:var(--scroll-thumb-hover);border-width:2px;background-clip:padding-box}
+ ::-webkit-scrollbar-thumb:active{background:var(--scroll-thumb-hover);border-width:2px;background-clip:padding-box}
+ ::-webkit-scrollbar-corner{background:transparent}
+ ::-webkit-scrollbar-button{display:none;width:0;height:0}
+}
+@supports not selector(::-webkit-scrollbar){*{scrollbar-width:thin;scrollbar-color:var(--scroll-thumb) var(--scroll-track)}}
+@media(forced-colors:active){::-webkit-scrollbar-thumb{background:CanvasText}}

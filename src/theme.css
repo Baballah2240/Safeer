@@ -39,7 +39,7 @@
   html body .staff-shell{grid-template-columns:256px minmax(0,1fr);padding-inline-start:14px}
   html body :is(.staff-sidebar,.sidebar){background:linear-gradient(145deg,var(--sidebar-sheen),transparent 38%,#100b082e),var(--sidebar-glass);color:#f0e4d8;border:1px solid #fff2df47;border-radius:26px;box-shadow:0 12px 40px #120b0824,inset 0 1px 0 #fbe6d35c,inset 1px 0 0 #fbe6d31a;backdrop-filter:blur(24px) saturate(130%);-webkit-backdrop-filter:blur(24px) saturate(130%)}
   /* The sidebar remains dark in both themes so its navigation contrast is stable. */
-  html body .staff-sidebar{top:14px;height:calc(100dvh - 28px);margin-block:14px;padding:24px 16px;gap:18px;scrollbar-width:thin;scrollbar-color:#ffffff30 transparent}
+  html body .staff-sidebar{top:14px;height:calc(100dvh - 28px);margin-block:14px;padding:24px 16px;gap:18px;scrollbar-width:thin;scrollbar-color:var(--scroll-thumb,#7a6a5559) transparent}
   html body .staff-brand{font-size:18px;color:#fbe6d3}
   html body .staff-brand img{width:38px;height:38px;border-radius:12px;box-shadow:none}
   html body .staff-brand small{color:#b3bcb5}
