@@ -17,19 +17,10 @@ try{
  await send('Page.navigate',{url:`${web.origin}/marketplace?lang=en`});await until(ready);
  await new Promise(r=>setTimeout(r,300));
  assert.equal(await evaluate('document.querySelectorAll("[data-app-back]").length'),0,'No Back on the booking home.');
+ // D112: no Back button on any booking or parcel page.
  for(const [path,lang] of [['/company/no-such-company','en'],['/company/no-such-company','ar'],['/track','en']]){
-  await send('Page.navigate',{url:`${web.origin}${path}?lang=${lang}`});await until(ready+'&&Boolean(document.querySelector("[data-app-back]"))');
-  assert.equal(await evaluate('document.querySelector("[data-app-back]").getAttribute("href")'),lang==='ar'?'/marketplace?lang=ar':'/marketplace');
-  const box=await evaluate('JSON.stringify(document.querySelector("[data-app-back]").getBoundingClientRect())').then(JSON.parse);
-  assert.ok(box.top<120&&box.width>=44&&box.height>=44,'Back is a 44px target at the top.');
-  const menu=await evaluate('JSON.stringify(document.querySelector(".app-menu-trigger").getBoundingClientRect())').then(JSON.parse);
-  assert.ok(box.right<=menu.left||box.left>=menu.right,'Back does not cover the menu button.');
-  assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth+2'),`${path} ${lang} fits`);
-  writeFileSync(join(shots,`${path.split('/')[1]}-${lang}.png`),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
+  await send('Page.navigate',{url:`${web.origin}${path}?lang=${lang}`});await until(ready);await new Promise(r=>setTimeout(r,300));
+  assert.equal(await evaluate('document.querySelectorAll("[data-app-back]").length'),0,`No Back on ${path} ${lang}.`);
  }
- // From the booking home, Back on an inner page returns there.
- await send('Page.navigate',{url:`${web.origin}/marketplace?lang=en`});await until(ready);
- await evaluate(`location.href='/track?lang=en'`);await until('location.pathname==="/track"&&Boolean(document.querySelector("[data-app-back]"))');
- await evaluate('document.querySelector("[data-app-back]").click()');await until('location.pathname==="/marketplace"');
  console.log('app back ok');
 }finally{await browser?.close();await web.close();}

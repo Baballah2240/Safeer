@@ -447,3 +447,7 @@ The notification panel replayed its opening animation every time it redrew (when
 ## D111 — One passenger header bar
 
 On screens 1024px and wider, the booking and parcel pages show the menu button, the Safeer wordmark and the Book, Trips, Parcels and Profile tabs in one full-width header bar that stays at the top while scrolling. Phones keep the bottom tab bar. Tests: `headers`, `track` (updated for the bar on wide screens), `marketplace`, `marketplace-regressions`, `booking-hero`.
+
+## D112 — No Back button on passenger pages
+
+The booking and parcel pages no longer show a Back button in the header; the Book, Trips, Parcels and Profile tabs handle navigation. Staff and driver screens keep their Back button. Tests: `app-back` (now checks there is none on passenger pages), `headers`, `track`, `station-sessions`, `marketplace`.

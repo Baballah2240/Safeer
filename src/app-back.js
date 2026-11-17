@@ -1,12 +1,11 @@
 // D91: a Back button in the top bar of every inner screen of the passenger, tracking and
-// driver apps. Pages re-render their whole root, so the button is re-added after each render.
+// driver apps. D112: the booking and parcel pages have no Back button; their header tabs cover navigation.
+// Pages re-render their whole root, so the button is re-added after each render.
 const surface=document.documentElement.dataset.appSurface;
 const here=()=>new URL(location.href);
 function inner(){
  const url=here(),path=url.pathname,view=url.searchParams.get('view');
- if(surface==='booking')return /^\/(trip|hold|company)\//.test(path)||(url.searchParams.has('from')&&!view);
  if(surface==='driver')return ['scan','passengers'].includes(view);
- if(surface==='tracking')return true;
  if(surface==='staff')return (history.state?.staffDepth||0)>0;
  return false;
 }
