@@ -20,14 +20,14 @@ try{
     const fill=async(selector,value)=>{await until(`Boolean(document.querySelector(${JSON.stringify(selector)}))${selector.startsWith('#staff-dialog')?'&&document.querySelector("#staff-dialog").open':''}`);return evaluate(`(()=>{const n=document.querySelector(${JSON.stringify(selector)});n.value=${JSON.stringify(value)};n.dispatchEvent(new Event('input',{bubbles:true}));})()`);};
     const submit=selector=>evaluate(`document.querySelector(${JSON.stringify(selector)}).requestSubmit()`);
     const shot=async name=>writeFileSync(join(directory,name+'.png'),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
-    const signIn=async(email,pass)=>{await until('Boolean(document.querySelector("#staff-login"))');await fill('[name=login]',email);await fill('[name=password]',pass);await submit('#staff-login');try{await until('Boolean(document.querySelector("#change-password"))');}catch(error){throw Error('Sign-in did not finish: '+await evaluate('document.querySelector("[role=alert]")?.textContent||document.querySelector(".staff-main").textContent')+'; JS errors: '+JSON.stringify(await evaluate('window.__errors')));}};
+    const signIn=async(email,pass)=>{await until('Boolean(document.querySelector("#staff-login"))');await fill('[name=login]',email);await fill('[name=password]',pass);await submit('#staff-login');try{await until('Boolean(document.querySelector(".staff-welcome"))');}catch(error){throw Error('Sign-in did not finish: '+await evaluate('document.querySelector("[role=alert]")?.textContent||document.querySelector(".staff-main").textContent')+'; JS errors: '+JSON.stringify(await evaluate('window.__errors')));}};
     const tab=async(name,ready)=>{await click(`[data-tab="${name}"]`);await until(`Boolean(document.querySelector(${JSON.stringify(ready)}))`);};
     await send('Emulation.setDeviceMetricsOverride',{width:1366,height:900,deviceScaleFactor:1,mobile:false});
     await send('Page.navigate',{url:web.origin+'/staff'});
     await signIn('owner@safeer.local',f.password);
     assert.equal(await evaluate('document.documentElement.dataset.theme'),'light');
     await click('[data-theme-toggle]');assert.equal(await evaluate('document.documentElement.dataset.theme'),'dark');
-    await send('Page.reload');await until('Boolean(document.querySelector("#change-password"))');
+    await send('Page.reload');await until('Boolean(document.querySelector(".staff-welcome"))');
     assert.equal(await evaluate('document.documentElement.dataset.theme'),'dark');
     await click('[data-theme-toggle]');assert.equal(await evaluate('document.documentElement.dataset.theme'),'light');
     assert.equal(await evaluate('document.querySelectorAll(".staff-summary article").length'),3);
@@ -82,7 +82,7 @@ try{
       for(const lang of ['en','ar']){
       if(await evaluate('document.documentElement.lang')!==lang)await click('#staff-language');
       assert.equal(await evaluate('new URL(document.querySelector(\'#staff-ws-nav a[href^="/marketplace"]\').href).searchParams.get("lang")'),lang);
-      for(const [name,ready] of [['profile','#change-password'],['users','[data-create-user]'],['roles','[data-create-role]'],['sessions','[data-revoke]'],['audit','.staff-table']]){
+      for(const [name,ready] of [['profile','.staff-shortcuts'],['users','[data-create-user]'],['roles','[data-create-role]'],['sessions','[data-revoke]'],['audit','.staff-table']]){
         await tab(name,ready);
         for(const [width,height] of [[1920,1080],[1366,768],[390,844]]){
           await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width<700});
@@ -95,7 +95,7 @@ try{
     await click('#staff-ws-nav a[href^="/marketplace"]');await until('Boolean(document.querySelector("#market-search"))');
     assert.equal(await evaluate('document.documentElement.lang'),'ar');
     assert.equal(await evaluate('document.documentElement.dataset.theme'),'dark');
-    await click('a[href^="/staff"]');await until('Boolean(document.querySelector("#change-password"))');
+    await click('a[href^="/staff"]');await until('Boolean(document.querySelector(".staff-welcome"))');
     assert.equal(await evaluate('document.documentElement.lang'),'ar');
     await tab('roles','[data-create-role]');
     await click('[data-create-role]');await until('Boolean(document.querySelector("#staff-dialog form"))');assert.ok(await evaluate('document.querySelector("#staff-dialog").getBoundingClientRect().width<=innerWidth'));

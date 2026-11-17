@@ -58,7 +58,7 @@ try{await identityFixture(async f=>{
     await evaluate('document.querySelector("[data-theme-toggle]").click()');assert.notEqual(await evaluate('document.documentElement.dataset.theme'),theme,label+' interaction');
     await evaluate('document.querySelector("[data-theme-toggle]").click()');
     if(drawer)await evaluate(`(document.querySelector('#${drawer}-menu-close')||document.querySelector('#${drawer}-menu-toggle')).click()`);
-    const field={staff:'#change-password [name=currentPassword]',driver:'#driver-incident textarea',booking:'#market-date',preview:'#reservation-form [name=passengerName]'}[page];
+    const field={staff:'.staff-shortcuts button:last-child',driver:'#driver-incident textarea',booking:'#market-date',preview:'#reservation-form [name=passengerName]'}[page];
     await evaluate(`document.querySelector(${JSON.stringify(field)}).scrollIntoView({block:'start'})`);await settle();
     assert.ok(await evaluate(`document.querySelector(${JSON.stringify(field)}).getBoundingClientRect().top>=document.querySelector('${selector}').getBoundingClientRect().bottom-1`),label+' scrolled form field must clear header');
     if(drawer)assert.ok(await evaluate(`document.querySelector(${JSON.stringify(field)}).getBoundingClientRect().top>=document.querySelector('#${drawer}-menu-toggle').getBoundingClientRect().bottom+7`),label+' focused field clears fixed menu button');

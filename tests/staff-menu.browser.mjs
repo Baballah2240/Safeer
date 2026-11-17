@@ -33,7 +33,7 @@ try{await identityFixture(async f=>{
     await click('#staff-menu-toggle');await until('document.querySelector(".staff-shell").classList.contains("ws-collapsed")&&getComputedStyle(document.querySelector(".ws-nav")).display==="none"');
     await click('#staff-menu-toggle');await until('!document.querySelector(".staff-shell").classList.contains("ws-collapsed")');
    }else{
-    const field='#change-password [name=currentPassword]';
+    const field='#staff-search-input';
     await evaluate(`window.__field=document.querySelector('${field}');__field.value='fictional@example.test';__field.dispatchEvent(new Event('input',{bubbles:true}));`);
     assert.equal(await evaluate('getComputedStyle(document.querySelector(".ws-nav")).display'),'none',label+' sidebar closed initially');
     await click('#staff-menu-toggle');await until('document.querySelector(".staff-shell").classList.contains("ws-open")');
@@ -49,7 +49,7 @@ try{await identityFixture(async f=>{
     await until('!document.querySelector(".staff-shell").classList.contains("ws-open")&&document.activeElement.id==="staff-menu-toggle"');
     await click('#staff-menu-toggle');await click('#staff-ws-nav [data-tab=users]');await until('Boolean(document.querySelector("[data-create-user]"))');
     assert.equal(await evaluate('document.querySelector(".staff-shell").classList.contains("ws-open")||document.documentElement.classList.contains("app-drawer-open")'),false,label+' destination closes sidebar');
-    await click('[data-tab=profile]');await until('Boolean(document.querySelector("#change-password"))');
+    await click('[data-tab=profile]');await until('Boolean(document.querySelector(".staff-shortcuts"))');
    }
    assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth+2'),label+' page fits');
    // D101: the header stays at the top and holds theme, language, and for a signed-in person search, home, bell and profile.
@@ -61,6 +61,9 @@ try{await identityFixture(async f=>{
     await evaluate('document.querySelector("#staff-search-input").dispatchEvent(new KeyboardEvent("keydown",{key:"Enter",bubbles:true}))');await until('document.querySelector("[data-tab=audit]")?.getAttribute("aria-current")==="page"');
     await click('#staff-home');await until('Boolean(document.querySelector(".staff-shortcuts"))');
     await click('#staff-profile');assert.equal(await evaluate('document.querySelector("#staff-profile-menu").hidden'),false,label+' profile menu');await click('#staff-profile');
+    // D106: Overview holds no personal details; the header opens the profile page.
+    await click('[data-tab=profile]');await until('Boolean(document.querySelector(".staff-shortcuts"))');assert.equal(await evaluate('Boolean(document.querySelector("#change-password,.staff-profile"))'),false,label+' overview has no profile');
+    await click('#staff-profile');await click('[data-profile-open]');await until('Boolean(document.querySelector("#change-password"))');await click('[data-tab=profile]');await until('Boolean(document.querySelector(".staff-shortcuts"))');
    }
    if(width===390)writeFileSync(join(shots,`${signedIn}-${lang}-${theme}-page.png`),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
    assert.deepEqual(await evaluate('__errors'),[],label);layouts++;

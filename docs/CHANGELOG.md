@@ -420,3 +420,7 @@ The old slide-out drawer is removed from the staff workspace. The icon rail and 
 ## D105 — Profile only in the header
 
 The profile sidebar on the company dashboard is removed; the dashboard uses the full width. Your profile stays in the header menu.
+
+## D106 — Overview without personal details
+
+The workspace Overview no longer shows your profile or the password form. Your profile (name, email, roles, change password) is its own page, opened from the header profile menu or the search. A new account that must change its temporary password lands on that page, then on Overview.

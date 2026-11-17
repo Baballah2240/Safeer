@@ -23,7 +23,7 @@ try{await identityFixture(async f=>{
  const password=(pw=f.password)=>fill('#staff-dialog [name=currentPassword]',pw);
  const section=async id=>{await click(`[data-company-section="${id}"]`);await until(`document.querySelector('[data-company-section="${id}"]')?.getAttribute('aria-current')==='page'`);};
  const shot=name=>send('Page.captureScreenshot',{format:'png'}).then(r=>writeFileSync(join(shots,name+'.png'),Buffer.from(r.data,'base64')));
- const signIn=async(email,pass)=>{await until('Boolean(document.querySelector("#staff-login"))');await fill('[name=login]',email);await fill('[name=password]',pass);await evaluate('document.querySelector("#staff-login").requestSubmit()');await until('Boolean(document.querySelector("#change-password"))');};
+ const signIn=async(email,pass)=>{await until('Boolean(document.querySelector("#staff-login"))');await fill('[name=login]',email);await fill('[name=password]',pass);await evaluate('document.querySelector("#staff-login").requestSubmit()');await until('Boolean(document.querySelector(".staff-welcome"))');};
 
  const pw={currentPassword:f.password};
  const cid=(await f.admin.request('companies','POST',{nameEn:'Fictional Access Co',nameAr:'شركة تجريبية',slug:'access-browser',holdMinutes:30,timezone:'Africa/Khartoum',locale:'en',...pw})).data.id,base='companies/'+cid;
