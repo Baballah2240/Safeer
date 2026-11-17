@@ -53,7 +53,8 @@ try{await identityFixture(async f=>{
  writeFileSync(join(shots,'invoices-en.png'),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
  writeFileSync(join(shots,'billing-en.png'),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
  // The contract arrives in Notifications with a download link.
- await click('#staff-bell');await until('Boolean(document.querySelector(".notification-item a[download]"))');
+ await click('#staff-bell');await evaluate('window.__panel=document.querySelector("#staff-notifications .notify-panel")');await until('Boolean(document.querySelector(".notification-item a[download]"))');
+ assert.ok(await evaluate('Boolean(__panel)&&document.querySelector("#staff-notifications .notify-panel")===__panel'),'The notification panel opens once: loading does not rebuild it.');
  assert.ok(await evaluate(`[...document.querySelectorAll(".notification-item a[download]")].some(a=>a.getAttribute("href")===${JSON.stringify(pdfHref)})`),'The contract notification links to its PDF.');
  assert.ok(await evaluate('[...document.querySelectorAll(".notification-item a[download]")].some(a=>/\\/invoices\\/[0-9a-f-]+\\/pdf/.test(a.getAttribute("href")))'),'The invoice notification links to its PDF.');
  await click('[data-notify-close]');await until('!document.querySelector("#staff-notifications")');

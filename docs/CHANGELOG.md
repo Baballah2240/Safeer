@@ -432,3 +432,7 @@ On wide screens the menu button now collapses the sidebar to the icon rail (the 
 ## D108 — Whole unread badge
 
 The unread count on the bell was clipped to a quarter circle because buttons clip their contents. The bell now lets its badge show in full, with a thin ring that separates it from the bell.
+
+## D109 — Notification panel opens once
+
+The notification panel replayed its opening animation every time it redrew (when the list loaded, on a filter or after marking read), so it looked as if it popped up twice. The panel is now kept between redraws and only its contents update.
