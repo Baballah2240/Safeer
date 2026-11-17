@@ -556,3 +556,6 @@ html[data-app-surface=staff] body #staff-app .staff-main .staff-badge{border-rad
 html[data-app-surface=staff] body #staff-app .staff-main .staff-table th{background:var(--ws-soft);color:var(--ws-muted);border-color:var(--ws-line)}
 html[data-app-surface=staff] body #staff-app .staff-main .staff-table td{border-color:var(--ws-line)}
 html[data-app-surface=staff] body #staff-app .staff-workspace-footer{color:var(--ws-muted);border-top:1px solid var(--ws-line)}
+/* D108: the unread badge sits outside the bell, so the bell must not clip it (buttons clip their contents by default). */
+html[data-app-surface=staff] body #staff-app .app-bell,html[data-app-surface=staff] body .app-bell{overflow:visible}
+html[data-app-surface=staff] body .app-bell-count{z-index:1;box-shadow:0 0 0 2px var(--ws-bg,#fff)}

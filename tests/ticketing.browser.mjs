@@ -54,6 +54,8 @@ await fill('[data-pay-method]','cash');await submit();
  await f.migration.query("UPDATE safeer.notification_events SET actor_id=NULL WHERE code='booking.refunded'");
  await evaluate('document.dispatchEvent(new Event("visibilitychange"))');await until('document.querySelector("#staff-alert-card")?.open&&document.querySelector("#staff-alert-card").textContent.includes("Booking refunded")&&document.querySelector("#staff-alert-card").textContent.includes("RFD-00000001")');
 await new Promise(r=>setTimeout(r,700));await shot('notification-card'); assert.ok(Number(await evaluate('document.querySelector("#staff-bell [data-bell-count]").textContent'))>=1);
+ // D108: the badge circle is drawn whole, not clipped by the bell.
+ assert.ok(await evaluate(`(()=>{const b=document.querySelector("#staff-bell"),c=b.querySelector("[data-bell-count]"),r=c.getBoundingClientRect();return getComputedStyle(b).overflow==="visible"&&Math.abs(r.width-r.height)<1&&getComputedStyle(c).borderRadius==="50%"})()`),"Unread badge is a whole circle.");
  await click('#staff-alert-card [data-card-open]');await until('Boolean(document.querySelector("#staff-notifications [data-inbox-read-all]:not([disabled])"))');await click('[data-inbox-read-all]');await until('document.querySelector("#staff-bell [data-bell-count]")?.hidden===true');
  await click('[data-notify-close]');await until('!document.querySelector("#staff-notifications")');
  // A walk-in sale, including a seat lost to someone else part way through.

@@ -428,3 +428,7 @@ The workspace Overview no longer shows your profile or the password form. Your p
 ## D107 — Collapsible sidebar keeps the icon rail
 
 On wide screens the menu button now collapses the sidebar to the icon rail (the second sidebar slides away and the page widens smoothly) and expands it back to the full sidebar. Motion is off for people who prefer reduced motion.
+
+## D108 — Whole unread badge
+
+The unread count on the bell was clipped to a quarter circle because buttons clip their contents. The bell now lets its badge show in full, with a thin ring that separates it from the bell.
