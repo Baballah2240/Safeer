@@ -195,3 +195,4 @@ Object.assign(ar,{'Dashboard sections':'أقسام لوحة المعلومات',
 
 // D103
 Object.assign(ar,{'Show sidebar':'إظهار الشريط الجانبي','Hide sidebar':'إخفاء الشريط الجانبي'});
+Object.assign(ar,{'Other workspaces':'مساحات العمل الأخرى'});

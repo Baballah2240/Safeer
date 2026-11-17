@@ -24,29 +24,33 @@ try{await identityFixture(async f=>{
    await send('Page.navigate',{url:web.origin+'/staff?lang='+lang});
    await until(signedIn?'Boolean(document.querySelector(".staff-shortcuts"))':'document.querySelector("#staff-login")?.getAttribute("aria-busy")==="false"');
    assert.equal(await evaluate('document.querySelectorAll("#staff-app .sidebar-column,#staff-app header.staff-topbar").length'),0,label+' no legacy shell');
-   assert.equal(await evaluate('document.querySelector("#staff-sidebar").open'),false,label+' drawer closed initially');
-   const field=signedIn?'#change-password [name=currentPassword]':'#staff-login [name=login]';
-   await evaluate(`window.__field=document.querySelector('${field}');__field.value='fictional@example.test';__field.dispatchEvent(new Event('input',{bubbles:true}));`);
-   // D103: on wide screens a signed-in person's menu button hides and shows the workspace sidebar; the drawer is for narrow screens.
-   if(signedIn&&width>=1100){await click('#staff-menu-toggle');await until('document.querySelector(".staff-shell").classList.contains("ws-collapsed")');assert.equal(await evaluate('document.querySelector("#staff-sidebar").open'),false,label+' no drawer');await click('#staff-menu-toggle');await until('!document.querySelector(".staff-shell").classList.contains("ws-collapsed")');}else{
-   await click('#staff-menu-toggle');
-   assert.ok(await evaluate('document.querySelector("#staff-sidebar").contains(document.activeElement)'),label+' focus in modal');
-   assert.equal(await evaluate('Boolean(document.querySelector("#staff-sidebar [data-tab=users]"))'),signedIn,label+' permission navigation');
-   assert.equal(await evaluate('Boolean(document.querySelector("#staff-logout"))'),signedIn,label+' account controls');
+   // D104: the old drawer is gone; the workspace sidebar is the only navigation.
+   assert.equal(await evaluate('Boolean(document.querySelector("#staff-sidebar"))'),false,label+' no old drawer');
    if(await evaluate('document.documentElement.dataset.theme')!==theme)await click('[data-theme-toggle]');
-   assert.ok(await evaluate(`document.querySelector('${field}')===__field&&__field.value==='fictional@example.test'`),label+' theme preserves input');
-   await evaluate('document.querySelector("#staff-sidebar").scrollTop=10000;window.__menuScroll=document.querySelector("#staff-sidebar").scrollTop');
-   await click('#staff-language');
-   assert.ok(await evaluate('Math.abs(document.querySelector("#staff-sidebar").scrollTop-__menuScroll)<=3'),label+' language preserves menu scroll');
-   assert.ok(await evaluate('document.querySelector("#staff-sidebar").open'),label+' language preserves menu');
-   if(!signedIn)assert.equal(await evaluate('document.querySelector("#staff-login [name=login]").value'),'fictional@example.test',label+' login draft');
-   await click('#staff-language');
-   await evaluate('document.getAnimations().filter(a=>Number.isFinite(a.effect?.getComputedTiming().endTime)).forEach(a=>a.finish())');
-   assert.ok(await evaluate('(()=>{const d=document.querySelector("#staff-sidebar"),r=d.getBoundingClientRect();return r.left>=-1&&r.right<=innerWidth+1&&d.scrollWidth<=d.clientWidth+1})()'),label+' drawer fits');
-   if(width===390)writeFileSync(join(shots,`${signedIn}-${lang}-${theme}-menu.png`),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
-   await send('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});await send('Input.dispatchKeyEvent',{type:'keyUp',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
-   await until('!document.querySelector("#staff-sidebar").open&&document.activeElement.id==="staff-menu-toggle"');
-   if(signedIn){await click('#staff-menu-toggle');await click('#staff-sidebar [data-tab=users]');await until('Boolean(document.querySelector("[data-create-user]"))');assert.equal(await evaluate('document.querySelector("#staff-sidebar").open'),false,label+' destination closes menu');assert.equal(await evaluate('document.documentElement.classList.contains("app-drawer-open")'),false,label+' destination restores body scrolling');}}
+   if(!signedIn)assert.equal(await evaluate('Boolean(document.querySelector("#staff-menu-toggle"))'),false,label+' no menu when signed out');
+   else if(width>=1024){
+    assert.ok(await evaluate('getComputedStyle(document.querySelector(".ws-nav")).display!=="none"'),label+' sidebar shown');
+    await click('#staff-menu-toggle');await until('document.querySelector(".staff-shell").classList.contains("ws-collapsed")&&getComputedStyle(document.querySelector(".ws-nav")).display==="none"');
+    await click('#staff-menu-toggle');await until('!document.querySelector(".staff-shell").classList.contains("ws-collapsed")');
+   }else{
+    const field='#change-password [name=currentPassword]';
+    await evaluate(`window.__field=document.querySelector('${field}');__field.value='fictional@example.test';__field.dispatchEvent(new Event('input',{bubbles:true}));`);
+    assert.equal(await evaluate('getComputedStyle(document.querySelector(".ws-nav")).display'),'none',label+' sidebar closed initially');
+    await click('#staff-menu-toggle');await until('document.querySelector(".staff-shell").classList.contains("ws-open")');
+    assert.ok(await evaluate('document.querySelector("#staff-ws-nav").contains(document.activeElement)'),label+' focus in sidebar');
+    assert.ok(await evaluate('Boolean(document.querySelector("#staff-ws-nav [data-tab=users]"))&&Boolean(document.querySelector("#staff-logout"))'),label+' navigation and account controls');
+    await evaluate('document.getAnimations().forEach(a=>a.finish())');
+    assert.ok(await evaluate('(()=>{const d=document.querySelector("#staff-ws-nav"),r=d.getBoundingClientRect();return r.left>=-1&&r.right<=innerWidth+1&&d.scrollWidth<=d.clientWidth+1})()'),label+' sidebar fits');
+    if(await evaluate('document.documentElement.dataset.theme')!==theme)await click('[data-theme-toggle]');
+    assert.ok(await evaluate(`document.querySelector('${field}')===__field&&__field.value==='fictional@example.test'`),label+' theme preserves input');
+    await click('#staff-language');assert.ok(await evaluate('document.querySelector(".staff-shell").classList.contains("ws-open")'),label+' language keeps sidebar open');await click('#staff-language');
+    if(width===390)writeFileSync(join(shots,`${signedIn}-${lang}-${theme}-menu.png`),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
+    await send('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});await send('Input.dispatchKeyEvent',{type:'keyUp',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
+    await until('!document.querySelector(".staff-shell").classList.contains("ws-open")&&document.activeElement.id==="staff-menu-toggle"');
+    await click('#staff-menu-toggle');await click('#staff-ws-nav [data-tab=users]');await until('Boolean(document.querySelector("[data-create-user]"))');
+    assert.equal(await evaluate('document.querySelector(".staff-shell").classList.contains("ws-open")||document.documentElement.classList.contains("app-drawer-open")'),false,label+' destination closes sidebar');
+    await click('[data-tab=profile]');await until('Boolean(document.querySelector("#change-password"))');
+   }
    assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth+2'),label+' page fits');
    // D101: the header stays at the top and holds theme, language, and for a signed-in person search, home, bell and profile.
    assert.equal(await evaluate('getComputedStyle(document.querySelector(".staff-header")).position'),'sticky',label+' sticky header');

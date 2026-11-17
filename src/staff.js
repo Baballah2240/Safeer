@@ -5,7 +5,7 @@ import {citiesView,bindCities} from './routes.js';
 import {companyView,bindCompanies,loadCompanies,resetCompanies,companySidebar,accessEditor} from './companies.js';
 import {platformView,bindPlatform,loadPlatform,resetPlatform} from './platform.js';
 import {companyState} from './companies.js';
-import {drawerIcon,bindSideDrawer,appVersionLabel,legalLinks,passwordField} from './theme.js';
+import {appVersionLabel,legalLinks,passwordField} from './theme.js';
 import {staffText} from './staff-i18n.js';
 import {createStaffAlerts} from './staff-alerts.js';
 import {staffHeader,bindStaffHeader} from './staff-header.js';
@@ -15,7 +15,8 @@ import {presetShipmentSearch} from './shipments.js';
 const root=document.querySelector('#staff-app'),dialog=document.querySelector('#staff-dialog');
 const e=value=>String(value??'').replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));
 let language=new URL(location.href).searchParams.get('lang')==='ar'?'ar':'en',me=null,tab='profile',data=null,loading=false,message='',bad=false,csrfToken='',cursor=null;
-let refreshVersion=0,authEpoch=0;
+let refreshVersion=0,authEpoch=0,navOpen=false,closeNav=()=>{};
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&navOpen){event.stopPropagation();closeNav(true);}},true);
 // D92: each screen (tab, company, section) is a history entry, so Back and the phone's back gesture return to the previous screen.
 const startUrl=new URL(location.href);let firstOpen=!startUrl.searchParams.has('tab'),historyReady=false;
 if(['companies','cities','users','roles','sessions','audit','platform','profile'].includes(startUrl.searchParams.get('tab')))tab=startUrl.searchParams.get('tab');
@@ -63,19 +64,16 @@ function render(){
   queueMicrotask(syncHistory);
   if(me)signIn.clear();else signIn.capture(root.querySelector('#staff-login'));
   document.documentElement.lang=language;document.documentElement.dir=language==='ar'?'rtl':'ltr';
-  const companyNav=me&&tab==='companies'&&data?.company&&!loading?companySidebar(data,{t,e,language}):'';
-  const platformNav=me?`<nav class="staff-nav" aria-label="${t('Staff access')}">${tabs().map(([id,label])=>`<button type="button" data-tab="${id}" ${id===tab?'aria-current="page"':''}>${icon(id)}<span>${t(id==='profile'?'Overview':label)}</span></button>`).join('')}</nav>`:'';
-  const navigation=companyNav?companyNav+`<p class="staff-sidebar-label">${t('Safeer')}</p>`+platformNav:platformNav;
   const wide=me&&!me.mustChangePassword;
   const short={profile:'Home',platform:'Platform',companies:'Companies',cities:'Cities',users:'Users',roles:'Roles',sessions:'Sessions',audit:'Audit'};
   const rail=wide?`<nav class="ws-rail" aria-label="${t('Workspace')}">${tabs().map(([id,label])=>`<button type="button" data-tab="${id}" ${id===tab?'aria-current="page"':''} title="${e(t(id==='profile'?'Overview':label))}">${icon(id)}<span>${t(short[id]||label)}</span></button>`).join('')}</nav>`:'';
-  const second=wide?`<aside class="ws-nav" id="staff-ws-nav" aria-label="${t('Navigation')}">${me&&tab==='companies'&&data?.company&&!loading?companySidebar(data,{t,e,language},'ws-'):`<p class="ws-nav-title">${t('Workspace')}</p><nav class="staff-nav ws-nav-list" aria-label="${t('Staff access')}">${tabs().map(([id,label])=>`<button type="button" data-tab="${id}" ${id===tab?'aria-current="page"':''}>${icon(id)}<span>${t(id==='profile'?'Overview':label)}</span></button>`).join('')}</nav>`}<p class="ws-nav-foot"><span>${e(me.displayName)}</span><small>${appVersionLabel()}</small></p></aside>`:'';
-  const menuScroll=root.querySelector('#staff-sidebar')?.scrollTop||0,menuWasOpen=root.querySelector('#staff-sidebar')?.open,settingsOpen=root.querySelector('#staff-settings')?.open,focused=document.activeElement?.id;
-  root.innerHTML=`<div class="staff-shell staff-modern-shell ${me?'':'staff-signed-out'} ${me&&!me.mustChangePassword?'has-ws':''}"><dialog class="market-drawer staff-sidebar staff-app-menu" id="staff-sidebar" data-app-drawer aria-labelledby="staff-menu-title"><div class="market-drawer-head"><strong id="staff-menu-title">${t('Workspace')}</strong><button type="button" class="secondary app-drawer-close" id="staff-menu-close" aria-label="${t('Close')}">${drawerIcon('m6 6 12 12M18 6 6 18')}</button></div>${navigation}<nav class="market-drawer-nav" aria-label="${t('Workspace')}"><a href="/marketplace?lang=${language}">${icon('cities')}<span>${t('Marketplace')}</span></a><a href="/driver?lang=${language}">${icon('users')}<span>${t('Driver workspace')}</span></a></nav><div class="drawer-bottom">${me?`<div class="staff-drawer-actions"><button id="staff-refresh" type="button">${t('Refresh')}</button><button type="button" id="staff-logout">${t('Sign out')}</button></div>`:''}<p class="market-drawer-foot"><span class="drawer-version">${appVersionLabel()}</span></p></div></dialog>${rail}${second}<div class="staff-content">${staffHeader({me,t,e,language,bell:alerts.bell()})}<main class="staff-main">${alertHtml()}${!me?`<section class="staff-panel staff-login auth-card"><div class="auth-brand"><img src="/src/brand.svg" alt="" width="48" height="48"><span><strong>Safeer / سفير</strong><small>${t('Transport management')}</small></span></div><h1>${t('Welcome to Safeer')}</h1><p class="auth-lead">${t('Sign in to manage your workspace.')}</p><form id="staff-login" class="auth-form">${input('login','Email','email','autocomplete="username" maxlength="254" autocapitalize="none" spellcheck="false"')}${passwordField(language,t('Password'))}<button class="staff-primary auth-submit">${t('Sign in')}</button></form><p class="auth-note">${icon('roles')}<span>${t('Access follows your company and role.')}</span></p>${legalLinks(language)}</section>`:loading?shimmer(language):tab==='profile'?profile():tab==='platform'?platformView(data,{t,e,language,date}):!data?'':tab==='companies'?companyView(data,{t,e,language,date}):tab==='cities'?citiesView(data,{t,e,language}):tab==='users'?users():tab==='roles'?roles():tab==='sessions'?sessions():audit()}<footer class="staff-workspace-footer"><span>Safeer / &#1587;&#1601;&#1610;&#1585;</span><span>${t('Transport management')}</span></footer></main></div></div>`;
+  const second=wide?`<aside class="ws-nav" id="staff-ws-nav" aria-label="${t('Navigation')}">${me&&tab==='companies'&&data?.company&&!loading?companySidebar(data,{t,e,language},'ws-'):`<p class="ws-nav-title">${t('Workspace')}</p><nav class="staff-nav ws-nav-list" aria-label="${t('Staff access')}">${tabs().map(([id,label])=>`<button type="button" data-tab="${id}" ${id===tab?'aria-current="page"':''}>${icon(id)}<span>${t(id==='profile'?'Overview':label)}</span></button>`).join('')}</nav>`}<div class="ws-nav-foot"><nav class="ws-nav-links" aria-label="${t('Other workspaces')}"><a href="/marketplace?lang=${language}">${icon('cities')}<span>${t('Marketplace')}</span></a><a href="/driver?lang=${language}">${icon('users')}<span>${t('Driver workspace')}</span></a></nav><div class="ws-nav-actions"><button type="button" id="staff-refresh">${t('Refresh')}</button><button type="button" id="staff-logout">${t('Sign out')}</button></div><p><span>${e(me.displayName)}</span><small>${appVersionLabel()}</small></p></div></aside>`:'';
+  const navScroll=root.querySelector('#staff-ws-nav')?.scrollTop||0,settingsOpen=root.querySelector('#staff-settings')?.open,focused=document.activeElement?.id;
+  root.innerHTML=`<div class="staff-shell staff-modern-shell ${me?'':'staff-signed-out'} ${me&&!me.mustChangePassword?'has-ws':''}">${rail}${second}${wide?`<div class="ws-scrim" data-ws-scrim></div>`:''}<div class="staff-content">${staffHeader({me,t,e,language,bell:alerts.bell()})}<main class="staff-main">${alertHtml()}${!me?`<section class="staff-panel staff-login auth-card"><div class="auth-brand"><img src="/src/brand.svg" alt="" width="48" height="48"><span><strong>Safeer / سفير</strong><small>${t('Transport management')}</small></span></div><h1>${t('Welcome to Safeer')}</h1><p class="auth-lead">${t('Sign in to manage your workspace.')}</p><form id="staff-login" class="auth-form">${input('login','Email','email','autocomplete="username" maxlength="254" autocapitalize="none" spellcheck="false"')}${passwordField(language,t('Password'))}<button class="staff-primary auth-submit">${t('Sign in')}</button></form><p class="auth-note">${icon('roles')}<span>${t('Access follows your company and role.')}</span></p>${legalLinks(language)}</section>`:loading?shimmer(language):tab==='profile'?profile():tab==='platform'?platformView(data,{t,e,language,date}):!data?'':tab==='companies'?companyView(data,{t,e,language,date}):tab==='cities'?citiesView(data,{t,e,language}):tab==='users'?users():tab==='roles'?roles():tab==='sessions'?sessions():audit()}<footer class="staff-workspace-footer"><span>Safeer / &#1587;&#1601;&#1610;&#1585;</span><span>${t('Transport management')}</span></footer></main></div></div>`;
 
   signIn.restore(root.querySelector('#staff-login'));
   bind();settleToast();alerts.repaint();
-  if(menuWasOpen){root.querySelector('#staff-sidebar').showModal();root.querySelector('#staff-sidebar').scrollTop=menuScroll;document.documentElement.classList.add('app-drawer-open');root.querySelector('#staff-menu-toggle').setAttribute('aria-expanded','true');}
+  const navEl=root.querySelector('#staff-ws-nav');if(navEl)navEl.scrollTop=navScroll;
   if(focused)root.querySelector('#'+CSS.escape(focused))?.focus({preventScroll:true});
 }
 async function refresh(){
@@ -109,19 +107,23 @@ function showSecret(login,password){
 }
 // The close event arrives after a delay, so a form opened in that gap must not be cleared.
 dialog.addEventListener('close',()=>{if(!dialog.open)dialog.replaceChildren();});
+async function logout(){try{await api('auth/logout','POST',{});clearSession();message='';render();}catch(error){message=error.message;bad=true;render();}}
 function bind(){
-  bindSideDrawer(root,'staff-sidebar','staff-menu-toggle','staff-menu-close');
-  // D103: on wide screens the workspace sidebar is the main navigation; the menu button shows and hides it (remembered per browser).
-  const shell=root.querySelector('.staff-shell.has-ws'),menuToggle=root.querySelector('#staff-menu-toggle'),wideScreen=matchMedia('(min-width:1100px)');
-  if(shell&&menuToggle){
+  // D104: the workspace sidebar is the only navigation. On wide screens the menu button hides and shows it (remembered per browser);
+  // on narrow screens it slides in over the page and closes on a choice, the backdrop or Escape.
+  const shell=root.querySelector('.staff-shell.has-ws'),menuToggle=root.querySelector('#staff-menu-toggle'),wideScreen=matchMedia('(min-width:1024px)');
+  if(!shell){menuToggle?.remove();navOpen=false;document.documentElement.classList.remove('app-drawer-open');}
+  else{
    let hidden=false;try{hidden=localStorage.getItem('safeer.ws.hidden')==='1';}catch{}
-   const paint=()=>{shell.classList.toggle('ws-collapsed',hidden);if(wideScreen.matches){menuToggle.setAttribute('aria-expanded',String(!hidden));menuToggle.setAttribute('aria-controls','staff-ws-nav');menuToggle.removeAttribute('aria-haspopup');menuToggle.setAttribute('aria-label',t(hidden?'Show sidebar':'Hide sidebar'));}else{menuToggle.setAttribute('aria-controls','staff-sidebar');menuToggle.setAttribute('aria-haspopup','dialog');menuToggle.setAttribute('aria-label',t('Workspace'));}};
-   const drawer=menuToggle.onclick;
-   menuToggle.onclick=event=>{if(!wideScreen.matches)return drawer(event);hidden=!hidden;try{localStorage.setItem('safeer.ws.hidden',hidden?'1':'0');}catch{}paint();};
+   const paint=()=>{const wideNow=wideScreen.matches;if(wideNow)navOpen=false;shell.classList.toggle('ws-collapsed',wideNow&&hidden);shell.classList.toggle('ws-open',navOpen);document.documentElement.classList.toggle('app-drawer-open',navOpen);
+    const shown=wideNow?!hidden:navOpen;menuToggle.setAttribute('aria-expanded',String(shown));menuToggle.setAttribute('aria-label',t(shown?'Hide sidebar':'Show sidebar'));};
+   const close=focus=>{if(!navOpen)return;navOpen=false;paint();if(focus)menuToggle.focus({preventScroll:true});};
+   menuToggle.onclick=()=>{if(wideScreen.matches){hidden=!hidden;try{localStorage.setItem('safeer.ws.hidden',hidden?'1':'0');}catch{}}else{navOpen=!navOpen;}paint();if(navOpen)root.querySelector('#staff-ws-nav button,#staff-ws-nav a')?.focus({preventScroll:true});};
+   root.querySelector('[data-ws-scrim]').onclick=()=>close(true);
+   closeNav=close;
+   shell.addEventListener('click',event=>{if(navOpen&&event.target.closest('.ws-rail button,.ws-nav [data-tab],.ws-nav [data-company-section],.ws-nav [data-company-back],.ws-nav a[href],#staff-refresh,#staff-logout'))close(false);},true);
    wideScreen.onchange=()=>{if(shell.isConnected)paint();};paint();
   }
-  const menu=root.querySelector('#staff-sidebar');
-  menu.addEventListener('click',event=>{if(event.target.closest('nav button,[data-company-back],a[href],#staff-refresh,#staff-logout'))menu.close();},true);
   if(tab==='platform'&&!loading&&me?.superAdministrator)bindPlatform(root,data,{api,refresh,openForm,currentPassword,t,e,openCompany:id=>{resetCompanies();companyState.id=id;tab='companies';cursor=null;void refresh();}});
   root.querySelector('#staff-bell')?.addEventListener('click',()=>alerts.openPanel());
   if(me&&!me.mustChangePassword)bindStaffHeader(root,{t,e,
@@ -131,7 +133,7 @@ function bind(){
    lookup:(kind,q)=>{if(kind==='booking')presetBookingSearch(q);else presetShipmentSearch(q);companyState.section=kind==='booking'?'bookings':'shipments';render();},
    home:()=>{const start=!me.superAdministrator&&!me.permissions.some(p=>p.startsWith('identity.'))?'companies':'profile';if(start==='companies')companyState.section='';tab=start;cursor=null;message='';void refresh();},
    openProfile:()=>{tab='profile';cursor=null;message='';void refresh();},
-   logout:()=>root.querySelector('#staff-logout')?.click()});
+   logout});
 
   if(tab==='companies'&&data&&!loading&&me)bindCompanies(root,data,{api,refresh,render,openForm,input,currentPassword,dialog,t,e,language,me,openNotifications:()=>alerts.openPanel(),openProfile:()=>{tab='profile';cursor=null;message='';void refresh();}});
   if(tab==='cities'&&data&&!loading&&me)bindCities(root,data,{api,openForm,input,currentPassword,t,e,language});
@@ -139,7 +141,7 @@ function bind(){
   root.querySelector('#staff-search')?.addEventListener('input',filter);root.querySelector('#staff-scope')?.addEventListener('change',filter);filter();
   root.querySelector('#staff-language').onclick=()=>{language=language==='en'?'ar':'en';const url=new URL(location.href);url.searchParams.set('lang',language);history.replaceState(history.state,'',url);render();};
   const loginForm=root.querySelector('#staff-login');if(loginForm)loginForm.onsubmit=async event=>{event.preventDefault();const values=signIn.begin(loginForm);if(!values)return;try{await api('auth/login','POST',values);tab='profile';cursor=null;message='';bad=false;await refresh();}catch(error){message=error.message;bad=true;}finally{signIn.finish(root.querySelector('#staff-login'),!me);render();if(!me)root.querySelector('#staff-login [name=password]')?.focus();}};
-  root.querySelector('#staff-logout')?.addEventListener('click',async()=>{try{await api('auth/logout','POST',{});clearSession();message='';render();}catch(error){message=error.message;bad=true;render();}});
+  root.querySelector('#staff-logout')?.addEventListener('click',logout);
   root.querySelector('#staff-refresh')?.addEventListener('click',()=>{message='';void refresh();});
   root.querySelectorAll('[data-tab]').forEach(button=>button.onclick=()=>{tab=button.dataset.tab;cursor=null;message='';void refresh();});
   const passwordForm=root.querySelector('#change-password');if(passwordForm)passwordForm.onsubmit=async event=>{event.preventDefault();const fields=new FormData(passwordForm);if(fields.get('newPassword')!==fields.get('confirmPassword')){message='Password confirmation does not match.';bad=true;render();return;}passwordForm.querySelector('button').disabled=true;try{await api('auth/password','POST',{currentPassword:fields.get('currentPassword'),newPassword:fields.get('newPassword')});message='Password changed.';bad=false;await refresh();}catch(error){message=error.message;bad=true;render();}};

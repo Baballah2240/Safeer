@@ -398,7 +398,7 @@ html[data-app-surface=staff] body .staff-profile-menu button:hover{background:va
 html[data-app-surface=staff]{--ws-bg:#ffffff;--ws-soft:#f7f7f8;--ws-line:#e7e7ea;--ws-text:#1f2328;--ws-muted:#6b7280;--ws-hover:#f1f1f3;--ws-active:#ececef}
 html[data-app-surface=staff][data-theme=dark]{--ws-bg:#16191d;--ws-soft:#1c2025;--ws-line:#2c3138;--ws-text:#e9ebee;--ws-muted:#9aa1ab;--ws-hover:#22272d;--ws-active:#2a3037}
 html[data-app-surface=staff] body #staff-app .ws-rail,html[data-app-surface=staff] body #staff-app .ws-nav{display:none}
-@media(min-width:1100px){
+@media all{
  html[data-app-surface=staff] body #staff-app .staff-shell.has-ws{display:grid;grid-template-columns:68px 244px minmax(0,1fr);min-height:100dvh}
  html[data-app-surface=staff] body #staff-app .ws-rail{display:flex;flex-direction:column;align-items:center;gap:4px;position:sticky;top:0;height:100dvh;padding:12px 6px;background:var(--ws-soft);border-inline-end:1px solid var(--ws-line);z-index:40;overflow-y:auto;scrollbar-width:none}
  html[data-app-surface=staff] body #staff-app .ws-rail button{display:grid;justify-items:center;gap:3px;width:56px;min-height:52px;padding:7px 2px;border:0;border-radius:10px;background:transparent;box-shadow:none;color:var(--ws-muted);font-size:.64rem;font-weight:600;line-height:1.2}
@@ -500,14 +500,63 @@ html[data-app-surface=staff] body #staff-app .dash .dash-ring-part,html[data-app
 html[data-app-surface=staff] body #staff-app .ops.dash:has(.ops-with-panel){grid-template-columns:minmax(0,1fr)}
 html[data-app-surface=staff] body #staff-app .ops.dash:has(.ops-with-panel) .dash-side{display:none}
 /* Plain, light page behind the workspace on wide screens. */
-@media(min-width:1100px){html[data-app-surface=staff] body:has(#staff-app .has-ws){background:var(--ws-soft);background-image:none}html[data-app-surface=staff] body:has(#staff-app .has-ws)::before,html[data-app-surface=staff] body:has(#staff-app .has-ws)::after{display:none}html[data-app-surface=staff] body #staff-app .has-ws .staff-topbar.app-masthead.staff-header{background:var(--ws-bg);box-shadow:none;border-bottom:1px solid var(--ws-line)}}
+@media(min-width:1024px){html[data-app-surface=staff] body:has(#staff-app .has-ws){background:var(--ws-soft);background-image:none}html[data-app-surface=staff] body:has(#staff-app .has-ws)::before,html[data-app-surface=staff] body:has(#staff-app .has-ws)::after{display:none}html[data-app-surface=staff] body #staff-app .has-ws .staff-topbar.app-masthead.staff-header{background:var(--ws-bg);box-shadow:none;border-bottom:1px solid var(--ws-line)}}
 html[data-app-surface=staff] body #staff-app .ws-nav button.company-side-toggle{display:flex;justify-content:flex-start;width:100%;border:0;background:transparent;box-shadow:none;text-transform:uppercase;letter-spacing:.06em;font-weight:700}
 html[data-app-surface=staff] body #staff-app .ws-nav button.company-side-toggle:hover{background:var(--ws-hover);color:var(--ws-text)}
 html[data-app-surface=staff] body #staff-app .ws-nav .company-side-count{background:var(--ws-active);color:var(--ws-muted)}
 html[data-app-surface=staff] body #staff-app .dash-side-actions button{border:1px solid var(--ws-line);border-radius:8px;background:var(--ws-bg);box-shadow:none;color:var(--ws-text);font-weight:600}
 html[data-app-surface=staff] body #staff-app .dash-side-actions button:hover{background:var(--ws-hover)}
 html[data-app-surface=staff] body #staff-app .dash :is(.ops-kpi,.dash-stat){transition:none}
-@media(min-width:1100px){html[data-app-surface=staff] body #staff-app .has-ws .staff-header :is(.header-icon,.app-bell,.staff-profile-button,.app-back){border:1px solid var(--ws-line);border-radius:8px;background:var(--ws-bg);box-shadow:none;color:var(--ws-text)}html[data-app-surface=staff] body #staff-app .has-ws .staff-header :is(.header-icon,.app-bell,.app-back):hover{background:var(--ws-hover)}html[data-app-surface=staff] body #staff-app .has-ws .staff-search-box input{border-radius:8px;border:1px solid var(--ws-line);background:var(--ws-soft);box-shadow:none}html[data-app-surface=staff] body #staff-app .has-ws .staff-profile-button{border-radius:999px}}
+@media(min-width:1024px){html[data-app-surface=staff] body #staff-app .has-ws .staff-header :is(.header-icon,.app-bell,.staff-profile-button,.app-back){border:1px solid var(--ws-line);border-radius:8px;background:var(--ws-bg);box-shadow:none;color:var(--ws-text)}html[data-app-surface=staff] body #staff-app .has-ws .staff-header :is(.header-icon,.app-bell,.app-back):hover{background:var(--ws-hover)}html[data-app-surface=staff] body #staff-app .has-ws .staff-search-box input{border-radius:8px;border:1px solid var(--ws-line);background:var(--ws-soft);box-shadow:none}html[data-app-surface=staff] body #staff-app .has-ws .staff-profile-button{border-radius:999px}}
 
 /* D103: hide the workspace sidebar from the header button */
-@media(min-width:1100px){html[data-app-surface=staff] body #staff-app .staff-shell.has-ws.ws-collapsed{grid-template-columns:minmax(0,1fr)}html[data-app-surface=staff] body #staff-app .has-ws.ws-collapsed :is(.ws-rail,.ws-nav){display:none}}
+@media(min-width:1024px){html[data-app-surface=staff] body #staff-app .staff-shell.has-ws.ws-collapsed{grid-template-columns:minmax(0,1fr)}html[data-app-surface=staff] body #staff-app .has-ws.ws-collapsed :is(.ws-rail,.ws-nav){display:none}}
+
+/* D104: one layout for the whole staff workspace. The workspace sidebar is the only navigation:
+   a grid column on wide screens, a slide-in panel over the page on narrow ones. */
+html[data-app-surface=staff] body #staff-app .ws-scrim{display:none}
+@media(max-width:1023px){
+ html[data-app-surface=staff] body #staff-app .staff-shell.has-ws{display:block}
+ html[data-app-surface=staff] body #staff-app .has-ws:not(.ws-open) :is(.ws-rail,.ws-nav){display:none}
+ html[data-app-surface=staff] body #staff-app .has-ws.ws-open .ws-rail{position:fixed;inset-block:0;inset-inline-start:0;width:68px;height:100dvh;z-index:81}
+ html[data-app-surface=staff] body #staff-app .has-ws.ws-open .ws-nav{position:fixed;inset-block:0;inset-inline-start:68px;width:min(268px,calc(100vw - 84px));height:100dvh;z-index:81;box-shadow:0 18px 50px #0000002e;background:var(--ws-bg)}
+ html[data-app-surface=staff] body #staff-app .has-ws.ws-open .ws-nav .staff-nav{grid-template-columns:minmax(0,1fr)}
+ html[data-app-surface=staff] body #staff-app .has-ws.ws-open .ws-scrim{display:block;position:fixed;inset:0;z-index:80;background:#0f12164d}
+}
+html[data-app-surface=staff] body #staff-app .ws-nav-links{display:grid;gap:1px;margin:0 0 8px}
+html[data-app-surface=staff] body #staff-app .ws-nav-links a{display:flex;align-items:center;gap:9px;min-height:32px;padding:5px 9px;border-radius:7px;color:var(--ws-text);font-size:.84rem;text-decoration:none}
+html[data-app-surface=staff] body #staff-app .ws-nav-links a:hover{background:var(--ws-hover)}
+html[data-app-surface=staff] body #staff-app .ws-nav-links svg{width:16px;height:16px;color:var(--ws-muted)}
+html[data-app-surface=staff] body #staff-app .ws-nav-actions{display:flex;gap:6px;margin:0 0 8px}
+html[data-app-surface=staff] body #staff-app .ws-nav-actions button{flex:1;min-height:30px;padding:4px 8px;border:1px solid var(--ws-line);border-radius:7px;background:var(--ws-bg);box-shadow:none;color:var(--ws-text);font-size:.78rem;font-weight:600}
+html[data-app-surface=staff] body #staff-app .ws-nav-actions button:hover{background:var(--ws-hover)}
+html[data-app-surface=staff] body #staff-app .ws-nav-foot p{display:grid;gap:2px;margin:0}
+
+/* D104: the minimal look on every staff page: white surfaces, light grey borders, compact spacing, small radii, colour only for status. */
+html[data-app-surface=staff] body:has(#staff-app){background:var(--ws-soft);background-image:none}
+html[data-app-surface=staff] body:has(#staff-app)::before,html[data-app-surface=staff] body:has(#staff-app)::after{display:none}
+html[data-app-surface=staff] body #staff-app .staff-topbar.app-masthead.staff-header{background:var(--ws-bg);box-shadow:none;border-bottom:1px solid var(--ws-line)}
+html[data-app-surface=staff] body #staff-app .staff-header :is(.header-icon,.app-bell,.staff-profile-button,.app-back){border:1px solid var(--ws-line);border-radius:8px;background:var(--ws-bg);box-shadow:none;color:var(--ws-text)}
+html[data-app-surface=staff] body #staff-app .staff-header :is(.header-icon,.app-bell,.app-back):hover{background:var(--ws-hover)}
+html[data-app-surface=staff] body #staff-app .staff-header .staff-profile-button{border-radius:999px}
+html[data-app-surface=staff] body #staff-app .staff-search-box input{border-radius:8px;border:1px solid var(--ws-line);background:var(--ws-soft);box-shadow:none;color:var(--ws-text)}
+html[data-app-surface=staff] body #staff-app .staff-main{color:var(--ws-text)}
+html[data-app-surface=staff] body #staff-app .staff-main :is(.staff-welcome,.staff-panel,.staff-record,.staff-summary>article,.staff-alert,.staff-login,.ops-company){background:var(--ws-bg);background-image:none;border:1px solid var(--ws-line);border-radius:10px;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;color:var(--ws-text)}
+html[data-app-surface=staff] body #staff-app .staff-main .staff-welcome{padding:18px 20px;gap:12px}
+html[data-app-surface=staff] body #staff-app .staff-main .staff-welcome h1{font-size:1.35rem;margin:2px 0 4px;color:var(--ws-text)}
+html[data-app-surface=staff] body #staff-app .staff-main .staff-panel{padding:18px 20px}
+html[data-app-surface=staff] body #staff-app .staff-main .staff-record{padding:14px 16px}
+html[data-app-surface=staff] body #staff-app .staff-main :is(.staff-panel h2,.staff-section-head h2){font-size:1.1rem;color:var(--ws-text)}
+html[data-app-surface=staff] body #staff-app .staff-main :is(.staff-record h3,.staff-record strong){color:var(--ws-text)}
+html[data-app-surface=staff] body #staff-app .staff-main :is(.staff-eyebrow,.staff-muted,.staff-welcome p,.staff-panel>p,.staff-section-head p,.staff-record p){color:var(--ws-muted)}
+html[data-app-surface=staff] body #staff-app .staff-main :is(input:not([type=checkbox],[type=radio],[type=range]),select,textarea){min-height:36px;padding:6px 10px;border:1px solid var(--ws-line);border-radius:8px;background:var(--ws-bg);box-shadow:none;color:var(--ws-text)}
+html[data-app-surface=staff] body #staff-app .staff-main :is(input,select,textarea):focus-visible{outline:2px solid #3f76ff;outline-offset:0;border-color:#3f76ff}
+html[data-app-surface=staff] body #staff-app .staff-main label{color:var(--ws-text);font-size:.84rem;font-weight:600}
+html[data-app-surface=staff] body #staff-app .staff-main :is(.staff-welcome,.staff-panel,.staff-record,.staff-actions,.staff-section-head,.ops-company) button:not(.staff-primary,[class*=dash-],[class*=ops-],[class*=list-],[class*=seat],[class*=brand-]),html[data-app-surface=staff] body #staff-app .staff-main button.secondary{min-height:32px;padding:5px 12px;border:1px solid var(--ws-line);border-radius:7px;background:var(--ws-bg);background-image:none;box-shadow:none;color:var(--ws-text);font-size:.84rem;font-weight:600}
+html[data-app-surface=staff] body #staff-app .staff-main :is(.staff-welcome,.staff-panel,.staff-record,.staff-actions,.staff-section-head,.ops-company) button:not(.staff-primary,[class*=dash-],[class*=ops-],[class*=list-],[class*=seat],[class*=brand-]):hover:not(:disabled),html[data-app-surface=staff] body #staff-app .staff-main button.secondary:hover:not(:disabled){background:var(--ws-hover)}
+html[data-app-surface=staff] body #staff-app .staff-main button.staff-primary{min-height:32px;padding:5px 14px;border:1px solid var(--accent);border-radius:7px;background:var(--accent);background-image:none;box-shadow:none;color:#fff;font-size:.84rem;font-weight:600}
+html[data-app-surface=staff] body #staff-app .staff-main button.staff-primary:hover:not(:disabled){filter:brightness(.92)}
+html[data-app-surface=staff] body #staff-app .staff-main .staff-badge{border-radius:6px;padding:2px 8px;font-size:.72rem;box-shadow:none}
+html[data-app-surface=staff] body #staff-app .staff-main .staff-table th{background:var(--ws-soft);color:var(--ws-muted);border-color:var(--ws-line)}
+html[data-app-surface=staff] body #staff-app .staff-main .staff-table td{border-color:var(--ws-line)}
+html[data-app-surface=staff] body #staff-app .staff-workspace-footer{color:var(--ws-muted);border-top:1px solid var(--ws-line)}

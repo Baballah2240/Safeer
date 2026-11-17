@@ -27,14 +27,14 @@ try{await identityFixture(async f=>{
  await send('Emulation.setDeviceMetricsOverride',{width:1440,height:960,deviceScaleFactor:1,mobile:false});
  await send('Page.navigate',{url:web.origin+'/staff'});await until('Boolean(document.querySelector("#staff-login"))');await fill('[name=login]','owner@safeer.local');await fill('[name=password]',f.password);await evaluate('document.querySelector("#staff-login").requestSubmit()');await until('Boolean(document.querySelector("[data-tab=companies]"))');
  await open();
- assert.equal(await evaluate('document.querySelector(".staff-sidebar [data-company-section][aria-current=page]").textContent'),'Overview','Overview opens first and is selected in the sidebar.');
+ assert.equal(await evaluate('document.querySelector(".ws-nav [data-company-section][aria-current=page]").textContent'),'Overview','Overview opens first and is selected in the sidebar.');
  // D95: Overview first, then dropdown groups; Settings starts closed.
- assert.deepEqual(await evaluate('[...document.querySelectorAll(".staff-sidebar .company-side-nav")].map(n=>[...n.querySelectorAll("button")].map(b=>b.textContent))'),[['Overview'],['Trips','Routes','Drivers','Vehicles'],['Bookings','Reports'],['Sessions','Station','Luggage','Shipments'],['Company profile','Branches & stations','Public page','Brand & theme','Plan & contract','Company staff','Company roles','Support access','Company audit']]);
- assert.equal(await evaluate('document.querySelector(".staff-sidebar #side-group-settings").hidden'),true);
- await click('.staff-sidebar [data-side-toggle=planning]');assert.equal(await evaluate('document.querySelector(".staff-sidebar #side-group-planning").hidden'),true);
- await click('.staff-sidebar [data-side-toggle=planning]');assert.equal(await evaluate('document.querySelector(".staff-sidebar [data-side-toggle=planning]").getAttribute("aria-expanded")'),'true');
- await click('[data-company-settings]');await until('document.querySelector(".staff-sidebar [data-company-section=overview][aria-current=page]")&&!document.querySelector(".staff-sidebar #side-group-settings").hidden');
- await click('.staff-sidebar [data-company-section=operations]');await until('Boolean(document.querySelector(".ops-kpi strong"))');
+ assert.deepEqual(await evaluate('[...document.querySelectorAll(".ws-nav .company-side-nav")].map(n=>[...n.querySelectorAll("button")].map(b=>b.textContent))'),[['Overview'],['Trips','Routes','Drivers','Vehicles'],['Bookings','Reports'],['Sessions','Station','Luggage','Shipments'],['Company profile','Branches & stations','Public page','Brand & theme','Plan & contract','Company staff','Company roles','Support access','Company audit']]);
+ assert.equal(await evaluate('document.querySelector(".ws-nav #ws-side-group-settings").hidden'),true);
+ await click('.ws-nav [data-side-toggle=planning]');assert.equal(await evaluate('document.querySelector(".ws-nav #ws-side-group-planning").hidden'),true);
+ await click('.ws-nav [data-side-toggle=planning]');assert.equal(await evaluate('document.querySelector(".ws-nav [data-side-toggle=planning]").getAttribute("aria-expanded")'),'true');
+ await click('[data-company-settings]');await until('document.querySelector(".ws-nav [data-company-section=overview][aria-current=page]")&&!document.querySelector(".ws-nav #ws-side-group-settings").hidden');
+ await click('.ws-nav [data-company-section=operations]');await until('Boolean(document.querySelector(".ops-kpi strong"))');
  assert.equal(await kpi('Departures today'),'3');assert.equal(await kpi('Passengers booked'),'6');assert.equal(await kpi('Boarded'),'0');assert.equal(await kpi('Needs attention'),'1');
  assert.equal(await evaluate('document.querySelectorAll(".ops-table tbody tr").length'),3);
  // D102: dashboard status counts filter the departures; charts, activity and the profile sidebar are present.
@@ -46,7 +46,7 @@ try{await identityFixture(async f=>{
  // D103: the header menu button hides and shows the workspace sidebar on wide screens, without opening the drawer.
  assert.ok(await evaluate('getComputedStyle(document.querySelector(".ws-nav")).display!=="none"'),'sidebar shown');
  await click('#staff-menu-toggle');await until('document.querySelector(".staff-shell").classList.contains("ws-collapsed")&&getComputedStyle(document.querySelector(".ws-nav")).display==="none"');
- assert.equal(await evaluate('document.querySelector("#staff-sidebar").open'),false,'drawer stays closed');assert.equal(await evaluate('document.querySelector("#staff-menu-toggle").getAttribute("aria-expanded")'),'false');
+ assert.equal(await evaluate('Boolean(document.querySelector("#staff-sidebar"))'),false,'old drawer removed');assert.equal(await evaluate('document.querySelector("#staff-menu-toggle").getAttribute("aria-expanded")'),'false');
  await click('#staff-menu-toggle');await until('!document.querySelector(".staff-shell").classList.contains("ws-collapsed")&&getComputedStyle(document.querySelector(".ws-rail")).display!=="none"');
  await evaluate('scrollTo(0,0)');await shot('dashboard-light');
  await click('[data-theme-toggle]');await evaluate('scrollTo(0,0)');await new Promise(r=>setTimeout(r,900));await shot('dashboard-dark');await click('[data-theme-toggle]');
@@ -72,7 +72,7 @@ try{await identityFixture(async f=>{
  assert.equal(await evaluate('document.querySelectorAll(".ops-panel-actions [data-ops-go]").length'),2,'Trip details link to Trips and Bookings.');
  await click('[data-ops-close]');await until('!document.querySelector(".ops-panel")');
  await evaluate(`document.querySelector('[data-ops-row="${s.trips.soon}"] td:nth-child(2)').click()`);await until('Boolean(document.querySelector(".ops-panel"))');
- await click('.ops-kpi-link[data-ops-go=trips]');await until('document.querySelector(".staff-sidebar [data-company-section][aria-current=page]")?.textContent==="Trips"');
+ await click('.ops-kpi-link[data-ops-go=trips]');await until('document.querySelector(".ws-nav [data-company-section][aria-current=page]")?.textContent==="Trips"');
  await click('[data-company-section=operations]');await until('Boolean(document.querySelector(".ops-kpi-link"))');
 
  for(const [lang,width,height] of [['en',390,844],['ar',390,844],['ar',1440,960],['en',320,740]]){

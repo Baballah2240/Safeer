@@ -57,7 +57,7 @@ try{await identityFixture(async f=>{
     if(drawer)await evaluate(`document.querySelector('#${drawer}-menu-toggle').click();(s=>{if(s)s.open=true})(document.querySelector('#${drawer}-settings'))`);
     await evaluate('document.querySelector("[data-theme-toggle]").click()');assert.notEqual(await evaluate('document.documentElement.dataset.theme'),theme,label+' interaction');
     await evaluate('document.querySelector("[data-theme-toggle]").click()');
-    if(drawer)await evaluate(`document.querySelector('#${drawer}-menu-close').click()`);
+    if(drawer)await evaluate(`(document.querySelector('#${drawer}-menu-close')||document.querySelector('#${drawer}-menu-toggle')).click()`);
     const field={staff:'#change-password [name=currentPassword]',driver:'#driver-incident textarea',booking:'#market-date',preview:'#reservation-form [name=passengerName]'}[page];
     await evaluate(`document.querySelector(${JSON.stringify(field)}).scrollIntoView({block:'start'})`);await settle();
     assert.ok(await evaluate(`document.querySelector(${JSON.stringify(field)}).getBoundingClientRect().top>=document.querySelector('${selector}').getBoundingClientRect().bottom-1`),label+' scrolled form field must clear header');
