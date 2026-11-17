@@ -408,3 +408,7 @@ D63: modern distinct app menus, navigation descriptions, clearer active states, 
 ## 2026-11-10 - My Trips glass redesign (D64)
 
 D64: glass My Trips with Upcoming/Past, next reservation/photo card, journey timeline, paid-ticket/seat/QR view, Book/Trips/Profile navigation, guest preferences, passenger-count selection and matching Driver palette. Fixed ticket anchors causing unnecessary reloads and passenger-count links briefly retaining old intent. Added exact schedule and protected QR projection; signed Android 0.17.0/17000. See [the design/release handover](archive/MY_TRIPS_GLASS_0.17.0_2026-11-10.md).
+
+## D103 — Workspace sidebar is the main navigation
+
+On screens 1100px and wider, the header menu button now hides and shows the icon rail and second sidebar (remembered per browser) instead of opening the old drawer. The drawer remains for narrow screens.

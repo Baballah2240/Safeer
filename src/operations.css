@@ -508,3 +508,6 @@ html[data-app-surface=staff] body #staff-app .dash-side-actions button{border:1p
 html[data-app-surface=staff] body #staff-app .dash-side-actions button:hover{background:var(--ws-hover)}
 html[data-app-surface=staff] body #staff-app .dash :is(.ops-kpi,.dash-stat){transition:none}
 @media(min-width:1100px){html[data-app-surface=staff] body #staff-app .has-ws .staff-header :is(.header-icon,.app-bell,.staff-profile-button,.app-back){border:1px solid var(--ws-line);border-radius:8px;background:var(--ws-bg);box-shadow:none;color:var(--ws-text)}html[data-app-surface=staff] body #staff-app .has-ws .staff-header :is(.header-icon,.app-bell,.app-back):hover{background:var(--ws-hover)}html[data-app-surface=staff] body #staff-app .has-ws .staff-search-box input{border-radius:8px;border:1px solid var(--ws-line);background:var(--ws-soft);box-shadow:none}html[data-app-surface=staff] body #staff-app .has-ws .staff-profile-button{border-radius:999px}}
+
+/* D103: hide the workspace sidebar from the header button */
+@media(min-width:1100px){html[data-app-surface=staff] body #staff-app .staff-shell.has-ws.ws-collapsed{grid-template-columns:minmax(0,1fr)}html[data-app-surface=staff] body #staff-app .has-ws.ws-collapsed :is(.ws-rail,.ws-nav){display:none}}

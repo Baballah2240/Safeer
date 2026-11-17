@@ -43,6 +43,11 @@ try{await identityFixture(async f=>{
  await click('.dash-stat[data-dash-status=unassigned]');await until('document.querySelectorAll(".ops-table tbody tr").length===1');
  await click('[data-dash-clear]');await until('document.querySelectorAll(".ops-table tbody tr").length===3');
  await until('Boolean(document.querySelector("#dash-side .dash-person"))&&!document.querySelector("#dash-activity [role=status]")');
+ // D103: the header menu button hides and shows the workspace sidebar on wide screens, without opening the drawer.
+ assert.ok(await evaluate('getComputedStyle(document.querySelector(".ws-nav")).display!=="none"'),'sidebar shown');
+ await click('#staff-menu-toggle');await until('document.querySelector(".staff-shell").classList.contains("ws-collapsed")&&getComputedStyle(document.querySelector(".ws-nav")).display==="none"');
+ assert.equal(await evaluate('document.querySelector("#staff-sidebar").open'),false,'drawer stays closed');assert.equal(await evaluate('document.querySelector("#staff-menu-toggle").getAttribute("aria-expanded")'),'false');
+ await click('#staff-menu-toggle');await until('!document.querySelector(".staff-shell").classList.contains("ws-collapsed")&&getComputedStyle(document.querySelector(".ws-rail")).display!=="none"');
  await evaluate('scrollTo(0,0)');await shot('dashboard-light');
  await click('[data-theme-toggle]');await evaluate('scrollTo(0,0)');await new Promise(r=>setTimeout(r,900));await shot('dashboard-dark');await click('[data-theme-toggle]');
  assert.ok(await evaluate('document.querySelector(".ops-attention").textContent.includes("Driver unassigned")'),'Unassigned trips are surfaced.');

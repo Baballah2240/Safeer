@@ -27,6 +27,8 @@ try{await identityFixture(async f=>{
    assert.equal(await evaluate('document.querySelector("#staff-sidebar").open'),false,label+' drawer closed initially');
    const field=signedIn?'#change-password [name=currentPassword]':'#staff-login [name=login]';
    await evaluate(`window.__field=document.querySelector('${field}');__field.value='fictional@example.test';__field.dispatchEvent(new Event('input',{bubbles:true}));`);
+   // D103: on wide screens a signed-in person's menu button hides and shows the workspace sidebar; the drawer is for narrow screens.
+   if(signedIn&&width>=1100){await click('#staff-menu-toggle');await until('document.querySelector(".staff-shell").classList.contains("ws-collapsed")');assert.equal(await evaluate('document.querySelector("#staff-sidebar").open'),false,label+' no drawer');await click('#staff-menu-toggle');await until('!document.querySelector(".staff-shell").classList.contains("ws-collapsed")');}else{
    await click('#staff-menu-toggle');
    assert.ok(await evaluate('document.querySelector("#staff-sidebar").contains(document.activeElement)'),label+' focus in modal');
    assert.equal(await evaluate('Boolean(document.querySelector("#staff-sidebar [data-tab=users]"))'),signedIn,label+' permission navigation');
@@ -44,7 +46,7 @@ try{await identityFixture(async f=>{
    if(width===390)writeFileSync(join(shots,`${signedIn}-${lang}-${theme}-menu.png`),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
    await send('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});await send('Input.dispatchKeyEvent',{type:'keyUp',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
    await until('!document.querySelector("#staff-sidebar").open&&document.activeElement.id==="staff-menu-toggle"');
-   if(signedIn){await click('#staff-menu-toggle');await click('#staff-sidebar [data-tab=users]');await until('Boolean(document.querySelector("[data-create-user]"))');assert.equal(await evaluate('document.querySelector("#staff-sidebar").open'),false,label+' destination closes menu');assert.equal(await evaluate('document.documentElement.classList.contains("app-drawer-open")'),false,label+' destination restores body scrolling');}
+   if(signedIn){await click('#staff-menu-toggle');await click('#staff-sidebar [data-tab=users]');await until('Boolean(document.querySelector("[data-create-user]"))');assert.equal(await evaluate('document.querySelector("#staff-sidebar").open'),false,label+' destination closes menu');assert.equal(await evaluate('document.documentElement.classList.contains("app-drawer-open")'),false,label+' destination restores body scrolling');}}
    assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth+2'),label+' page fits');
    // D101: the header stays at the top and holds theme, language, and for a signed-in person search, home, bell and profile.
    assert.equal(await evaluate('getComputedStyle(document.querySelector(".staff-header")).position'),'sticky',label+' sticky header');

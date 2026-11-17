@@ -192,3 +192,6 @@ Object.assign(ar,{'Money':'المال','Hide details':'إخفاء التفاصي
 Object.assign(ar,{'Home':'الرئيسية','Search pages, bookings or shipments':'ابحث في الصفحات أو الحجوزات أو الشحنات','Change theme':'تغيير المظهر','Find booking':'البحث عن الحجز','Find shipment':'البحث عن الشحنة','No matching pages':'لا توجد صفحات مطابقة'});
 // D102: workspace dashboard.
 Object.assign(ar,{'Dashboard sections':'أقسام لوحة المعلومات','Summary':'الملخص','Departures':'المغادرات','Activity':'النشاط','Overview':'نظرة عامة','Trip status':'حالة الرحلات','Seats booked by departure':'المقاعد المحجوزة لكل مغادرة','Departures by status':'المغادرات حسب الحالة','seats booked':'مقاعد محجوزة','seats':'مقاعد','Showing':'المعروض','Show all':'عرض الكل','Recent activity':'النشاط الأخير','No recent activity.':'لا يوجد نشاط حديث.','Time zone':'المنطقة الزمنية','Your sections':'أقسامك','Access':'الصلاحية','Company settings':'إعدادات الشركة','Navigation':'التنقل','Platform':'المنصة','Companies':'الشركات','Cities':'المدن','Users':'المستخدمون','Roles':'الأدوار','Sessions':'الجلسات','Audit':'التدقيق'});
+
+// D103
+Object.assign(ar,{'Show sidebar':'إظهار الشريط الجانبي','Hide sidebar':'إخفاء الشريط الجانبي'});
