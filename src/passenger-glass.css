@@ -139,3 +139,14 @@
 /* D110: four passenger tabs; on mid-width screens the top tab bar shows icons only so it clears the centred wordmark. */
 @media screen and (min-width:1024px) and (max-width:1279px){html:is([data-app-surface=booking],[data-app-surface=tracking]) body .passenger-bottom-nav a span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}
 @media screen and (max-width:420px){html body .passenger-bottom-nav a span{white-space:nowrap;font-size:.7rem;overflow:hidden;text-overflow:ellipsis;max-width:100%}}
+/* D111: one header bar on wide screens. The menu button, wordmark and passenger tabs share a single full-width,
+   sticky bar instead of three separate floating pieces. */
+@media screen and (min-width:1024px){
+ html:is([data-app-surface=booking],[data-app-surface=tracking]) body :is(#market,#track-app) .market-bar.app-masthead{position:sticky;top:0;z-index:34;min-height:calc(64px + var(--safe-top,0px));padding-block:calc(10px + var(--safe-top,0px)) 10px;background:color-mix(in srgb,var(--paper,#fff) 88%,transparent);backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);border-bottom:1px solid color-mix(in srgb,var(--ink,#1d1d1d) 10%,transparent);box-shadow:0 1px 12px #3c280f0f}
+ html:is([data-app-surface=booking],[data-app-surface=tracking]) body .passenger-bottom-nav{z-index:56;padding:0;border:0;background:transparent;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+ html:is([data-app-surface=booking],[data-app-surface=tracking])[data-theme=dark] body .passenger-bottom-nav{box-shadow:none}
+ html:is([data-app-surface=booking],[data-app-surface=tracking]) body .passenger-bottom-nav a{min-height:42px;border-radius:10px;padding-inline:14px}
+ html:is([data-app-surface=booking],[data-app-surface=tracking]) body .passenger-bottom-nav a:not([aria-current=page]):hover{background:color-mix(in srgb,var(--ink,#1d1d1d) 7%,transparent);color:var(--ink)}
+ html:is([data-app-surface=booking],[data-app-surface=tracking]) body .app-masthead>.app-menu-trigger{border-radius:10px;box-shadow:none}
+}
+@media(prefers-reduced-transparency:reduce){html:is([data-app-surface=booking],[data-app-surface=tracking]) body :is(#market,#track-app) .market-bar.app-masthead{background:var(--paper);backdrop-filter:none;-webkit-backdrop-filter:none}}

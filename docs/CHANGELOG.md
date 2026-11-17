@@ -443,3 +443,7 @@ The notification panel replayed its opening animation every time it redrew (when
 - The booking page has a **Send a parcel** card explaining drop-off, payment, tracking and collection, with a link to tracking.
 - The parcel page shows **How to send a parcel** beside the tracker (side by side on wide screens), links back to choosing a bus company, and its menu links to staff sign-in.
 - A tracking result ends with **Track another code** and **Find a bus trip**, so no page is a dead end.
+
+## D111 — One passenger header bar
+
+On screens 1024px and wider, the booking and parcel pages show the menu button, the Safeer wordmark and the Book, Trips, Parcels and Profile tabs in one full-width header bar that stays at the top while scrolling. Phones keep the bottom tab bar. Tests: `headers`, `track` (updated for the bar on wide screens), `marketplace`, `marketplace-regressions`, `booking-hero`.

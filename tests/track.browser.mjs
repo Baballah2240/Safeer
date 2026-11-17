@@ -39,7 +39,7 @@ try{await identityFixture(async f=>{
   if(width<700)await evaluate('document.documentElement.style.setProperty("--safe-top","32px")');
   await evaluate('scrollTo(0,0)');
   const layout=await evaluate('(()=>{const h=document.querySelector(".track-bar"),r=h.getBoundingClientRect(),n=h.querySelector(".app-header-name").getBoundingClientRect(),i=document.querySelector("#track-code").getBoundingClientRect(),probe=document.createElement("span");probe.style.color="var(--app-primary)";document.body.append(probe);const primary=getComputedStyle(probe).color;probe.remove();return {center:Math.abs((n.left+n.right-r.left-r.right)/2),background:getComputedStyle(h).backgroundColor,top:document.querySelector("#track-menu-toggle").getBoundingClientRect().top,fieldFits:i.left>=0&&i.right<=innerWidth,primary:primary,button:getComputedStyle(document.querySelector(".track-submit")).backgroundColor}})()');
-  assert.ok(layout.center<=1&&layout.background==='rgba(0, 0, 0, 0)'&&layout.fieldFits,label+' shared header and field fit');
+  assert.ok(layout.center<=1&&(width>=1024||layout.background==='rgba(0, 0, 0, 0)')&&layout.fieldFits,label+' shared header and field fit');
   if(width<700)assert.ok(layout.top>=32,label+' safe inset');
   assert.equal(layout.primary,layout.button,label+' action uses shared app color');
   assert.equal(await evaluate('document.querySelectorAll(".passenger-bottom-nav a").length'),4,label+' shared passenger navigation');

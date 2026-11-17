@@ -38,6 +38,8 @@ try{await identityFixture(async f=>{
     const gap=width<=760?10:12;
     // D101: the staff workspace header stays at the top of the screen.
     if(page==='staff'){assert.equal(state.position,'sticky',label+' staff header sticks');assert.ok(Math.abs(state.top)<=1,label+' staff header at the top');}
+    // D111: on wide screens the booking menu, wordmark and tabs share one sticky header bar.
+    else if(page==='booking'&&width>=1024){assert.equal(state.position,'sticky',label+' one booking header bar sticks');assert.ok(Math.abs(state.top)<=1,label+' booking header at the top');}
     else if(page==='booking'||page==='driver'){
      assert.equal(state.position,'relative',label+' wordmark belongs to the body');
      assert.ok(Math.abs(state.top+state.scroll-start.y)<=1,label+' wordmark scrolls with the body');
@@ -45,11 +47,11 @@ try{await identityFixture(async f=>{
      assert.equal(state.measured,0,label+' body wordmark needs no sticky clearance');
     }else{assert.equal(state.position,'sticky',label);assert.ok(Math.abs(state.top-gap)<=1,label+' header must keep its floating top gap');}
     assert.ok(state.left>=-1&&state.right<=width+1,label+' header clipped');assert.ok(state.bottom<=height,label+' header too tall');
-    if(page==='preview')assert.ok(Math.abs(state.measured-state.height)<=1&&state.padding>=state.height+gap,label+' focus offset follows header height and top gap');if(page==='booking'||page==='driver'){
+    if(page==='preview')assert.ok(Math.abs(state.measured-state.height)<=1&&state.padding>=state.height+gap,label+' focus offset follows header height and top gap');if((page==='booking'&&width<1024)||page==='driver'){
      assert.equal(state.blur,'none',label+' minimal app bar');
      assert.ok(await evaluate('getComputedStyle(document.querySelector(".app-header-name").parentElement).backgroundColor==="rgba(0, 0, 0, 0)"'),label+' transparent app bar');
      assert.ok(await evaluate('(()=>{const e=document.querySelector(".app-header-name"),r=e.getBoundingClientRect(),h=e.parentElement.getBoundingClientRect();return Math.abs((r.left+r.right-h.left-h.right)/2)<=1&&getComputedStyle(e.parentElement).boxShadow==="none"})()'),label+' centered app name without panel shadow');
-    }else assert.match(state.blur,/blur\(28px\)/,label+' glass');
+    }else if(page!=='booking')assert.match(state.blur,/blur\(28px\)/,label+' glass');
     // Check the actual hit target too: DOM click alone cannot detect an overlay.
     const drawer=page==='staff'?'staff':page==='booking'?'market':page==='driver'?'driver':null;
     const navigation=drawer?`#${drawer}-menu-toggle`:'[data-theme-toggle]';
