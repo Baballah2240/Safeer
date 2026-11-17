@@ -12,7 +12,9 @@ test('a monthly invoice charges the fee plus commission on net collections and i
  await paid(f,s,trip,['1','2']);
  const manager=await staff(f,s,['company.profile.manage']),mpw={currentPassword:manager.pass},plain=await staff(f,s,['company.trips.read']);
  const issue=(who,m,pw)=>who.request(s.base+'/invoices','POST',{month:m,...pw});
- ok(await f.admin.request(s.base+'/billing','PUT',{monthlyFeeMinor:'2500000',commissionBps:350,currency:'SDG',startsOn:month+'-01',...s.pw}),200);
+ const today=new Date().toISOString().slice(0,10);ok(await f.admin.request(s.base+'/billing','PUT',{monthlyFeeMinor:'2500000',commissionBps:350,currency:'SDG',startsOn:today,endsOn:new Date(Date.now()+365*864e5).toISOString().slice(0,10),...s.pw}),200);
+ // D115: contracts cannot start in the past, so this one is moved back to last month directly (triggers off) to test billing.
+ await f.migration.query('SET session_replication_role=replica');await f.migration.query("UPDATE safeer.company_contracts SET starts_on=$2::date WHERE company_id=$1",[s.cid,month+'-01']);await f.migration.query('SET session_replication_role=DEFAULT');
  assert.equal((await issue(f.admin,month,s.pw)).error?.code,'INVOICE_NO_CONTRACT','An unaccepted contract is not billed.');
  const contract=ok(await manager.c.request(s.base+'/billing'),200).contracts[0];
  ok(await manager.c.request(`${s.base}/contracts/${contract.id}/accept`,'POST',mpw));

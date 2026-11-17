@@ -18,7 +18,10 @@ async function setup(f){
 }
 
 test('a plan issues a numbered contract to both notification centers, and a company manager accepts it once',async()=>identityFixture(async f=>{
- const s=await setup(f),plan={monthlyFeeMinor:'2500000',commissionBps:350,currency:'SDG',startsOn:'2026-12-01',notes:'First month free.'};
+ const s=await setup(f),after=n=>new Date(Date.now()+n*864e5).toISOString().slice(0,10),plan={monthlyFeeMinor:'2500000',commissionBps:350,currency:'SDG',startsOn:after(10),endsOn:after(375),notes:'First month free.'};
+ // D115: a fixed term that starts today or later, ends after it and runs at most five years.
+ for(const [over,code] of [[{startsOn:after(-1)},'CONTRACT_START_PAST'],[{endsOn:after(10)},'CONTRACT_END_BEFORE_START'],[{endsOn:after(10+366*5)},'CONTRACT_TERM_TOO_LONG'],[{endsOn:undefined},'INVALID_INPUT']])
+  assert.equal((await f.admin.request(s.base+'/billing','PUT',{...plan,...over,...s.pw})).error?.code,code,code);
  assert.equal((await s.manager.c.request(s.base+'/billing','PUT',{...plan,...s.manager.pw})).status,403,'Only a Super Administrator sets a plan.');
  assert.equal((await f.admin.request(s.base+'/billing','PUT',{...plan,commissionBps:9000,...s.pw})).error?.code,'INVALID_COMMISSION');
  const first=ok(await f.admin.request(s.base+'/billing','PUT',{...plan,...s.pw}),200);assert.match(first.number,/^SAF-\d{4}-\d{5}$/);
@@ -27,7 +30,7 @@ test('a plan issues a numbered contract to both notification centers, and a comp
  for(const [who,copy] of [[f.admin,'Safeer copy'],[s.manager.c,'Company copy']]){
   const inbox=ok(await who.request('notifications'),200),n=inbox.items.find(x=>x.code==='contract.issued');assert.ok(n,'Both parties receive the contract notification.');assert.equal(n.sourceId,first.id);
   const pdf=await who.request(`${s.base}/contracts/${first.id}/pdf`);assert.equal(pdf.status,200);assert.equal(pdf.headers.get('content-type'),'application/pdf');assert.match(pdf.headers.get('content-disposition'),/attachment; filename="Safeer-contract-SAF-/);
-  assert.ok(pdf.raw.startsWith('%PDF-1.4'));assert.ok(pdf.raw.includes(copy));assert.ok(pdf.raw.includes('SDG 25,000.00'));assert.ok(pdf.raw.includes('3.5%'));
+  assert.ok(pdf.raw.startsWith('%PDF-1.4'));assert.ok(pdf.raw.includes(copy));assert.ok(pdf.raw.includes('SDG 25,000.00'));assert.ok(pdf.raw.includes('3.5%'));assert.ok(pdf.raw.includes('End date'));
   // D83: the Arabic copy embeds the Arabic font and maps its glyphs back to Arabic text for search and copy.
   const ar=await who.request(`${s.base}/contracts/${first.id}/pdf?lang=ar`);assert.equal(ar.status,200);assert.match(ar.headers.get('content-disposition'),/-ar\.pdf"/);
   for(const part of ['/FontFile2','/Identity-H','/ToUnicode','/Lang (ar)','<0641>','<0646>'])assert.ok(ar.raw.includes(part),part);
@@ -40,11 +43,18 @@ test('a plan issues a numbered contract to both notification centers, and a comp
  assert.equal((await s.manager.c.request(`${s.base}/contracts/${first.id}/accept`,'POST',s.manager.pw)).error?.code,'CONTRACT_ACCEPTED');
  assert.ok(ok(await f.admin.request('notifications'),200).items.some(x=>x.code==='contract.accepted'&&x.sourceId===first.id),'The Safeer owner is told the contract was accepted.');
  assert.ok((await f.admin.request(`${s.base}/contracts/${first.id}/pdf`)).raw.includes('Accepted in Safeer'));
- // A new plan replaces the contract; the old one stays on record and can no longer be accepted.
+ // D115: issued terms cannot be changed, even directly in the database.
+ await assert.rejects(f.migration.query('UPDATE safeer.company_contracts SET monthly_fee_minor=1 WHERE id=$1',[first.id]),e=>e.code==='42501');
+ await assert.rejects(f.migration.query('DELETE FROM safeer.company_contracts WHERE id=$1',[first.id]),e=>e.code==='42501');
+ // A new contract does not end the accepted one until the company accepts it; a newer one withdraws one still waiting.
  b=ok(await f.admin.request(s.base+'/billing'),200);
  const second=ok(await f.admin.request(s.base+'/billing','PUT',{...plan,commissionBps:300,version:b.plan.version,...s.pw}),200);assert.notEqual(second.number,first.number);
  assert.equal((await f.admin.request(s.base+'/billing','PUT',{...plan,version:b.plan.version,...s.pw})).error?.code,'STALE_VERSION');
- b=ok(await s.manager.c.request(s.base+'/billing'),200);assert.equal(b.contracts.length,2);assert.ok(b.contracts.find(k=>k.id===first.id).supersededAt);assert.equal(b.contracts.find(k=>k.id===second.id).supersededAt,null);
+ b=ok(await s.manager.c.request(s.base+'/billing'),200);assert.equal(b.contracts.length,2);assert.equal(b.contracts.find(k=>k.id===first.id).supersededAt,null,'The accepted contract stays in force.');assert.equal(b.contracts.find(k=>k.id===second.id).endsOn,plan.endsOn);
+ const third=ok(await f.admin.request(s.base+'/billing','PUT',{...plan,commissionBps:250,version:ok(await f.admin.request(s.base+'/billing'),200).plan.version,...s.pw}),200);
+ assert.equal((await s.manager.c.request(`${s.base}/contracts/${second.id}/accept`,'POST',s.manager.pw)).error?.code,'CONTRACT_SUPERSEDED','A withdrawn contract cannot be accepted.');
+ ok(await s.manager.c.request(`${s.base}/contracts/${third.id}/accept`,'POST',s.manager.pw));
+ b=ok(await s.manager.c.request(s.base+'/billing'),200);assert.ok(b.contracts.find(k=>k.id===third.id).acceptedAt);assert.equal(b.contracts.find(k=>k.id===first.id).supersededAt,null,'The older contract is replaced by start date, not rewritten.');
 }));
 
 test('a company sets its own colors and logo; passengers see them once the company is listed',async()=>identityFixture(async f=>{

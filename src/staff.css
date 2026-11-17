@@ -136,3 +136,7 @@ html body .staff-shell.has-company-brand .staff-primary:hover:not(:disabled),htm
 .manifest-scroll{overflow-x:auto}.manifest-table{width:100%;border-collapse:collapse;font-size:.8rem}.manifest-table :is(th,td){padding:5px 6px;border:1px solid var(--border);text-align:start;vertical-align:top}
 .manifest-sign{margin-top:24px;display:grid;gap:14px}
 @media print{@page{size:A4 landscape;margin:10mm}.manifest-scroll{overflow:visible}.manifest-table{font-size:8.5pt}.manifest-table :is(th,td){border-color:#000}.manifest-table tr{break-inside:avoid}.manifest-table thead{display:table-header-group}.manifest-sheet{color:#000}}
+
+/* D115: the contract term reads as one line of dates. */
+html body .billing-summary .billing-term{display:block;font-size:1.05rem;line-height:1.5;font-weight:650}
+html body .billing-expiry{margin-block:12px}

@@ -28,7 +28,7 @@ try{await identityFixture(async f=>{
  await click('[data-billing-edit]');await until('document.querySelector("#staff-dialog").open');
  // D84: the page behind an open card does not scroll.
  assert.equal(await evaluate('getComputedStyle(document.documentElement).overflowY'),'hidden','The page is locked while a card is open.');
- await fill('#staff-dialog [name=fee]','25,000.50');await fill('#staff-dialog [name=commission]','3.5');await fill('#staff-dialog [name=startsOn]','2026-12-01');await submit();
+ await fill('#staff-dialog [name=fee]','25,000.50');await fill('#staff-dialog [name=commission]','3.5');assert.ok(await evaluate('Boolean(document.querySelector("#staff-dialog [name=endsOn]").value)&&document.querySelector("#staff-dialog [name=startsOn]").min===document.querySelector("#staff-dialog [name=startsOn]").value'),'D115: the term defaults to one year from today, and the start cannot be in the past.');await submit();
  assert.notEqual(await evaluate('getComputedStyle(document.documentElement).overflowY'),'hidden','The page scrolls again once the card closes.');
  await until('document.querySelectorAll(".billing-table tbody tr").length===1');
  assert.ok(await evaluate('document.querySelector(".billing-summary").textContent.includes("25,000.50")&&document.querySelector(".billing-summary").textContent.includes("3.5%")'));

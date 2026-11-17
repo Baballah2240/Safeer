@@ -14,7 +14,7 @@ const language=(value:unknown)=>value===undefined||value==='en'?'en' as const:va
 // D82: a Super Administrator sets each company's plan (monthly fee + commission); saving it issues a numbered
 // contract that the company's profile managers and the Safeer owner receive as a PDF in their notifications.
 // A company manager accepts it once. Each company also sets its own brand colors and logo.
-const contractView=`id,number,plan_version AS "planVersion",monthly_fee_minor::text AS "monthlyFeeMinor",commission_bps AS "commissionBps",currency,to_char(starts_on,'YYYY-MM-DD') AS "startsOn",notes,issued_at AS "issuedAt",issued_by_name AS "issuedByName",accepted_at AS "acceptedAt",accepted_by_name AS "acceptedByName",superseded_at AS "supersededAt"`;
+const contractView=`id,number,plan_version AS "planVersion",monthly_fee_minor::text AS "monthlyFeeMinor",commission_bps AS "commissionBps",currency,to_char(starts_on,'YYYY-MM-DD') AS "startsOn",to_char(ends_on,'YYYY-MM-DD') AS "endsOn",notes,issued_at AS "issuedAt",issued_by_name AS "issuedByName",accepted_at AS "acceptedAt",accepted_by_name AS "acceptedByName",superseded_at AS "supersededAt"`;
 const hex=(value:unknown)=>{if(value===null||value===undefined||value==='')return null;if(typeof value!=='string'||!/^#[0-9a-fA-F]{6}$/.test(value))fail('INVALID_COLOR');return value.toLowerCase();};
 // White text must stay readable on the brand color (WCAG AA, 4.5:1), because buttons and the page header use it.
 const luminance=(color:string)=>{const [r,g,b]=[1,3,5].map(i=>{const c=parseInt(color.slice(i,i+2),16)/255;return c<=.03928?c/12.92:((c+.055)/1.055)**2.4;});return .2126*r+.7152*g+.0722*b;};
@@ -38,28 +38,33 @@ export class BillingService {
 
  async billing(token:string,cid:string){uuid(cid);return this.run(token,async(c,p)=>{
   await this.company(c,cid);if(!p.superAdministrator&&!await this.can(c,cid,'company.profile.manage'))fail('FORBIDDEN',403);
-  const plan=(await c.query(`SELECT monthly_fee_minor::text AS "monthlyFeeMinor",commission_bps AS "commissionBps",currency,to_char(starts_on,'YYYY-MM-DD') AS "startsOn",notes,version,updated_at AS "updatedAt" FROM safeer.company_billing_plans WHERE company_id=$1`,[cid])).rows[0]||null;
+  const plan=(await c.query(`SELECT monthly_fee_minor::text AS "monthlyFeeMinor",commission_bps AS "commissionBps",currency,to_char(starts_on,'YYYY-MM-DD') AS "startsOn",to_char(ends_on,'YYYY-MM-DD') AS "endsOn",notes,version,updated_at AS "updatedAt" FROM safeer.company_billing_plans WHERE company_id=$1`,[cid])).rows[0]||null;
   const contracts=(await c.query(`SELECT ${contractView} FROM safeer.company_contracts WHERE company_id=$1 ORDER BY issued_at DESC,id LIMIT 50`,[cid])).rows;
   const invoices=(await c.query(`SELECT ${invoiceView} FROM safeer.company_invoices i WHERE i.company_id=$1 ORDER BY i.period_month DESC,i.issued_at DESC LIMIT 36`,[cid])).rows;
-  return {plan,contracts,invoices,canEdit:p.superAdministrator,canAccept:!p.superAdministrator&&await this.can(c,cid,'company.profile.manage')&&await this.member(c,cid,p)};
+  return {plan,contracts,invoices,today:new Date().toISOString().slice(0,10),canEdit:p.superAdministrator,canAccept:!p.superAdministrator&&await this.can(c,cid,'company.profile.manage')&&await this.member(c,cid,p)};
  });}
  async saveBilling(token:string,cid:string,input:unknown){
-  uuid(cid);const data=body(input,['monthlyFeeMinor','commissionBps','currency','startsOn','notes','version','currentPassword']);
+  uuid(cid);const data=body(input,['monthlyFeeMinor','commissionBps','currency','startsOn','endsOn','notes','version','currentPassword']);
   const fee=String(data.monthlyFeeMinor??'');if(!/^\d{1,12}$/.test(fee)||BigInt(fee)>100000000000n)fail('INVALID_FEE');
   const bps=data.commissionBps;if(typeof bps!=='number'||!Number.isSafeInteger(bps)||bps<0||bps>5000)fail('INVALID_COMMISSION');
   const currency=text(data.currency,3,3).toUpperCase();if(!/^[A-Z]{3}$/.test(currency))fail('INVALID_INPUT');
   const startsOn=text(data.startsOn,10,10);if(!/^\d{4}-\d{2}-\d{2}$/.test(startsOn)||new Date(startsOn+'T00:00:00Z').toISOString().slice(0,10)!==startsOn)fail('INVALID_INPUT');
+  // D115: a fixed term that starts today or later and ends after it, at most five years on. Past dates cannot be rewritten.
+  const endsOn=text(data.endsOn,10,10);if(!/^\d{4}-\d{2}-\d{2}$/.test(endsOn)||new Date(endsOn+'T00:00:00Z').toISOString().slice(0,10)!==endsOn)fail('INVALID_INPUT');
+  const today=new Date().toISOString().slice(0,10),limit=new Date(startsOn+'T00:00:00Z');limit.setUTCFullYear(limit.getUTCFullYear()+5);
+  if(startsOn<today)fail('CONTRACT_START_PAST');if(endsOn<=startsOn)fail('CONTRACT_END_BEFORE_START');if(endsOn>limit.toISOString().slice(0,10))fail('CONTRACT_TERM_TOO_LONG');
   const notes=data.notes===undefined||data.notes===null?'':text(data.notes,0,500);if(/[\u0000-\u001f\u007f]/.test(notes))fail('INVALID_INPUT');
   const v=data.version===undefined||data.version===null?null:version(data.version);
   await this.identity.reauthenticate(token,data.currentPassword);
   return this.run(token,async(c,p)=>{
    if(!p.superAdministrator)fail('FORBIDDEN',403);const co=await this.company(c,cid);
-   const saved=v===null?await c.query('INSERT INTO safeer.company_billing_plans(company_id,monthly_fee_minor,commission_bps,currency,starts_on,notes,updated_by) VALUES($1,$2,$3,$4,$5,$6,$7) ON CONFLICT DO NOTHING RETURNING version',[cid,fee,bps,currency,startsOn,notes,p.id])
-    :await c.query('UPDATE safeer.company_billing_plans SET monthly_fee_minor=$2,commission_bps=$3,currency=$4,starts_on=$5,notes=$6,updated_by=$7,updated_at=clock_timestamp(),version=version+1 WHERE company_id=$1 AND version=$8 RETURNING version',[cid,fee,bps,currency,startsOn,notes,p.id,v]);
+   const saved=v===null?await c.query('INSERT INTO safeer.company_billing_plans(company_id,monthly_fee_minor,commission_bps,currency,starts_on,ends_on,notes,updated_by) VALUES($1,$2,$3,$4,$5,$8,$6,$7) ON CONFLICT DO NOTHING RETURNING version',[cid,fee,bps,currency,startsOn,notes,p.id,endsOn])
+    :await c.query('UPDATE safeer.company_billing_plans SET monthly_fee_minor=$2,commission_bps=$3,currency=$4,starts_on=$5,ends_on=$9,notes=$6,updated_by=$7,updated_at=clock_timestamp(),version=version+1 WHERE company_id=$1 AND version=$8 RETURNING version',[cid,fee,bps,currency,startsOn,notes,p.id,v,endsOn]);
    if(!saved.rowCount)fail('STALE_VERSION',409);
-   await c.query('UPDATE safeer.company_contracts SET superseded_at=clock_timestamp() WHERE company_id=$1 AND superseded_at IS NULL',[cid]);
+   // A contract still waiting for acceptance is withdrawn; an accepted one stays in force until a newer accepted one starts.
+   await c.query('UPDATE safeer.company_contracts SET superseded_at=clock_timestamp() WHERE company_id=$1 AND superseded_at IS NULL AND accepted_at IS NULL',[cid]);
    const id=randomUUID();
-   const row=(await c.query(`INSERT INTO safeer.company_contracts(id,company_id,number,plan_version,company_name_en,company_name_ar,contact_email,phone,address,monthly_fee_minor,commission_bps,currency,starts_on,notes,issued_by,issued_by_name) VALUES($1,$2,'',$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) RETURNING number`,[id,cid,saved.rows[0].version,co.name_en,co.name_ar,co.contact_email,co.phone,co.address,fee,bps,currency,startsOn,notes,p.id,p.displayName])).rows[0];
+   const row=(await c.query(`INSERT INTO safeer.company_contracts(id,company_id,number,plan_version,company_name_en,company_name_ar,contact_email,phone,address,monthly_fee_minor,commission_bps,currency,starts_on,notes,issued_by,issued_by_name,ends_on) VALUES($1,$2,'',$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16) RETURNING number`,[id,cid,saved.rows[0].version,co.name_en,co.name_ar,co.contact_email,co.phone,co.address,fee,bps,currency,startsOn,notes,p.id,p.displayName,endsOn])).rows[0];
    await this.audit(c,p,cid,'contract.issued',id);return {id,number:row.number};
   },true);
  }
@@ -78,10 +83,10 @@ export class BillingService {
  // The Safeer owner gets the "Safeer copy" and the company the "Company copy"; the terms are identical.
  async pdf(token:string,cid:string,id:string,lang_:unknown){uuid(cid);uuid(id);const lang=language(lang_);return this.run(token,async(c,p)=>{
   await this.company(c,cid);
-  const row=(await c.query(`SELECT number,company_name_en,company_name_ar,contact_email,phone,address,monthly_fee_minor::text AS fee,commission_bps,currency,to_char(starts_on,'YYYY-MM-DD') AS starts_on,notes,issued_at,issued_by_name,accepted_at,accepted_by_name,superseded_at FROM safeer.company_contracts WHERE company_id=$1 AND id=$2`,[cid,id])).rows[0];
+  const row=(await c.query(`SELECT number,company_name_en,company_name_ar,contact_email,phone,address,monthly_fee_minor::text AS fee,commission_bps,currency,to_char(starts_on,'YYYY-MM-DD') AS starts_on,to_char(ends_on,'YYYY-MM-DD') AS ends_on,notes,issued_at,issued_by_name,accepted_at,accepted_by_name,superseded_at FROM safeer.company_contracts WHERE company_id=$1 AND id=$2`,[cid,id])).rows[0];
   if(!row)fail('NOT_FOUND',404);
   const iso=(v:Date|null)=>v?new Date(v).toISOString():null;
-  return {name:`Safeer-contract-${row.number}${lang==='ar'?'-ar':''}.pdf`,data:contractPdf({number:row.number,copy:p.superAdministrator?'safeer':'company',lang,companyNameEn:row.company_name_en,companyNameAr:row.company_name_ar,contactEmail:row.contact_email,phone:row.phone,address:row.address,monthlyFeeMinor:row.fee,commissionBps:row.commission_bps,currency:row.currency,startsOn:row.starts_on,notes:row.notes,issuedAt:iso(row.issued_at)!,issuedByName:row.issued_by_name,acceptedAt:iso(row.accepted_at),acceptedByName:row.accepted_by_name,supersededAt:iso(row.superseded_at)})};
+  return {name:`Safeer-contract-${row.number}${lang==='ar'?'-ar':''}.pdf`,data:contractPdf({number:row.number,copy:p.superAdministrator?'safeer':'company',lang,companyNameEn:row.company_name_en,companyNameAr:row.company_name_ar,contactEmail:row.contact_email,phone:row.phone,address:row.address,monthlyFeeMinor:row.fee,commissionBps:row.commission_bps,currency:row.currency,startsOn:row.starts_on,endsOn:row.ends_on,notes:row.notes,issuedAt:iso(row.issued_at)!,issuedByName:row.issued_by_name,acceptedAt:iso(row.accepted_at),acceptedByName:row.accepted_by_name,supersededAt:iso(row.superseded_at)})};
  });}
 
  // D87: the Super Administrator issues one invoice per finished month; a voided month can be issued again.

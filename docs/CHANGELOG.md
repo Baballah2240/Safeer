@@ -462,3 +462,12 @@ Safeer Passenger and Safeer Driver have Settings > App lock: Off, PIN (4-6 digit
 - **Manifest:** after a session closes, the employee sees **Your closed sessions** (their last three) with **Print manifest**; session managers have the same button on every closed session. The manifest lists the company, counter, station, who opened and closed it and when, the cash totals and count, then every ticket sold in the session grouped by trip (route, date, time, bus, driver): ticket number, seat, passenger, mobile, journey stops, luggage, booking reference, receipt, payment method, amount paid and status, followed by any refunds, and signature lines. It prints on A4 landscape.
 - **Server:** `GET /api/v1/companies/{id}/counter/sessions/{sid}/manifest` (database function `safeer.session_manifest`, migration 0031). Only the employee who opened the session (while still allowed to work that counter) or a session manager for the station can read it, and `company.bookings.read` is also required. An open session returns `SESSION_STILL_OPEN`. The counter overview also returns `recentClosed`.
 - Tests: `ticketing` integration (new D114 test), `station-sessions` and `ticketing` browser tests, unit tests (API path count 106).
+
+## D115 — Contracts with a fixed term
+
+- A new contract needs a **start date** (today or later; no backdating) and an **end date** (after the start, at most five years). The form offers 6 months, 1 year, 2 years, 3 years or a custom end date, and a renewal defaults to the day after the current contract ends.
+- Issued contracts cannot be edited or deleted (the database already fixed their terms; deletes are now refused too). "Change plan" is now **New contract**: an accepted contract stays in force until the company accepts the new one and it starts; a newer contract withdraws one still waiting for acceptance.
+- Each contract shows its **term** and a status: Waiting for acceptance, Starts later, Active, Expired, Replaced or Withdrawn. The current contract card shows its number, fee, commission, term and days left, with a warning 30 days before it ends and when no contract is in force.
+- The PDF shows the end date and fixed-term wording; contracts issued before this change keep no end date (month to month).
+- Invoices use only an accepted contract in force during the month (migration 0032).
+- Tests: `billing` and `invoices` integration (date rules, guard, withdrawal), `billing` browser test, database and platform integration, unit tests.
