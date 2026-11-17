@@ -88,3 +88,8 @@ kotlin {
 flutter {
     source = "../.."
 }
+
+// Theme.AppCompat for the biometric prompt on Android 8 (D113).
+dependencies {
+    implementation("androidx.appcompat:appcompat:1.7.1")
+}

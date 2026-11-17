@@ -451,3 +451,7 @@ On screens 1024px and wider, the booking and parcel pages show the menu button, 
 ## D112 — No Back button on passenger pages
 
 The booking and parcel pages no longer show a Back button in the header; the Book, Trips, Parcels and Profile tabs handle navigation. Staff and driver screens keep their Back button. Tests: `app-back` (now checks there is none on passenger pages), `headers`, `track`, `station-sessions`, `marketplace`.
+
+## D113 — App lock in the mobile apps
+
+Safeer Passenger and Safeer Driver have Settings > App lock: Off, PIN (4-6 digits, stored as a salted hash) or Biometrics (fingerprint or face, with the PIN as fallback). The app locks on start and when it goes to the background. Five wrong PINs start a 30-second wait that doubles each time. Details in mobile/UPDATES.md. Tests: safeer_core `app_lock_test.dart`, both app suites, `flutter analyze`.

@@ -43,6 +43,7 @@ class DriverApp extends StatelessWidget {
             camera: camera,
             child: MaterialApp(
               debugShowCheckedModeBanner: false,
+              builder: (context, child) => AppLockGate(lock: settings.lock, child: child ?? const SizedBox.shrink()),
               onGenerateTitle: (c) => SafeerStrings.of(c).appDriver,
               locale: locale,
               supportedLocales: SafeerStrings.supportedLocales,

@@ -227,6 +227,29 @@ class SafeerStrings {
   String get demoValid => _t('valid for the active trip', 'صالحة للرحلة الحالية');
   String get demoWrongTrip => _t('ticket for another trip', 'تذكرة لرحلة أخرى');
   String get demoRefunded => _t('refunded ticket', 'تذكرة مستردة');
+
+  // D113: app lock
+  String get appLock => _t('App lock', 'قفل التطبيق');
+  String get lockOff => _t('Off', 'إيقاف');
+  String get lockPin => _t('PIN', 'رمز PIN');
+  String get lockBiometric => _t('Biometrics', 'البصمة');
+  String get lockHint => _t('Ask for a PIN or your fingerprint or face each time you open the app.', 'اطلب رمز PIN أو البصمة أو الوجه في كل مرة تفتح فيها التطبيق.');
+  String get biometricUnavailable => _t('No fingerprint or face is set up on this phone.', 'لا توجد بصمة أو وجه مسجل على هذا الهاتف.');
+  String get changePin => _t('Change PIN', 'تغيير رمز PIN');
+  String get createPin => _t('Choose a PIN', 'اختر رمز PIN');
+  String get createPinHint => _t('4 to 6 digits', 'من 4 إلى 6 أرقام');
+  String get confirmPin => _t('Enter the PIN again', 'أدخل الرمز مرة أخرى');
+  String get pinMismatch => _t('The PINs did not match. Try again.', 'الرمزان غير متطابقين. حاول مرة أخرى.');
+  String get currentPin => _t('Enter your current PIN', 'أدخل رمزك الحالي');
+  String get enterPin => _t('Enter your PIN', 'أدخل رمز PIN');
+  String get wrongPin => _t('Wrong PIN', 'رمز غير صحيح');
+  String tryAgainIn(int seconds) => _t('Too many attempts. Try again in $seconds s.', 'محاولات كثيرة. حاول بعد $seconds ثانية.');
+  String get useBiometrics => _t('Use fingerprint or face', 'استخدم البصمة أو الوجه');
+  String get unlockReason => _t('Unlock Safeer', 'افتح قفل سفير');
+  String get confirmBiometricReason => _t('Confirm to turn on biometric unlock', 'أكّد لتفعيل الفتح بالبصمة');
+  String get deleteDigit => _t('Delete', 'حذف');
+  String get done => _t('Done', 'تم');
+  String get forgotPin => _t('Forgot your PIN? Clear the app data in Android settings, then set up the app again.', 'نسيت الرمز؟ امسح بيانات التطبيق من إعدادات أندرويد ثم أعد إعداد التطبيق.');
 }
 
 class _Delegate extends LocalizationsDelegate<SafeerStrings> {

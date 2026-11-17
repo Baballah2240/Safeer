@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 
+import 'app_lock.dart';
 import 'storage.dart';
 
 /// Appearance and language, saved on the phone. Dark is the default, as on the website.
 class AppSettings extends ChangeNotifier {
-  AppSettings(this._store);
+  AppSettings(this._store, {BiometricCheck? biometrics}) : lock = AppLock(_store, biometrics: biometrics);
   final KeyValueStore _store;
+
+  /// PIN or biometric app lock (D113).
+  final AppLock lock;
   ThemeMode themeMode = ThemeMode.dark;
 
   /// null follows the phone language (Arabic phones get Arabic, others English).
@@ -19,6 +23,7 @@ class AppSettings extends ChangeNotifier {
     };
     final lang = await _store.read('safeer.language');
     locale = lang == 'ar' || lang == 'en' ? Locale(lang!) : null;
+    await lock.load();
     notifyListeners();
   }
 

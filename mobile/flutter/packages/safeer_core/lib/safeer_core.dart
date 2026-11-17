@@ -4,6 +4,7 @@ library;
 import 'package:intl/date_symbol_data_local.dart';
 
 export 'src/api/api_client.dart';
+export 'src/app_lock.dart';
 export 'src/config.dart';
 export 'src/demo_qr.dart';
 export 'src/driver/demo.dart';
@@ -21,6 +22,7 @@ export 'src/settings.dart';
 export 'src/storage.dart';
 export 'src/theme/palette.dart';
 export 'src/theme/theme.dart';
+export 'src/widgets/app_lock_view.dart';
 export 'src/widgets/brand.dart';
 export 'src/widgets/controls.dart';
 export 'src/widgets/qr_view.dart';

@@ -1,5 +1,11 @@
 # Safeer mobile status
 
+## App lock - D113, 2026-11-17 (source only, no APK built)
+
+Both Flutter apps get Settings > App lock: Off, PIN or Biometrics. A 4-6 digit PIN is stored only as a salted, stretched SHA-256 hash in the app's private storage; Biometrics (fingerprint or face, through local_auth) always keeps that PIN as the fallback. The app locks when it goes to the background and when it starts, and shows a full-screen keypad until the PIN or biometric check passes. After five wrong PINs the keypad waits 30 seconds, doubling after each further wrong PIN. Turning the lock off or changing the PIN asks for the current PIN. A forgotten PIN is reset by clearing the app data in Android settings.
+
+Native changes: MainActivity is now FlutterFragmentActivity and the launch and normal themes use Theme.AppCompat.DayNight.NoActionBar (androidx.appcompat added), as local_auth requires. Checked: flutter analyze (no issues), safeer_core tests (18, including 5 new app lock tests), Safeer Passenger (14) and Safeer Driver (13) tests. Not yet released: needs a new version and APK build, and a check on a phone with a fingerprint.
+
 ## Part-route booking and driver stops - Safeer Passenger 0.20.0 / 20000, Safeer Driver 0.20.0 / 20000, 2026-11-15
 
 D89/D90 in the apps. Safeer Passenger books a journey between middle stops at that journey's own price (it sends the stops with the seat map and the hold), marks such results "Part of the route" and shows the passenger's own pickup point. Before this version a part-route search result booked in the app would have booked the whole trip. Safeer Driver shows where each passenger boards and gets off in the passenger list and on each scan. Both apps show the trip's own seat hold time (1-3 hours) from the server.
