@@ -36,14 +36,16 @@ try{await identityFixture(async f=>{
     await evaluate(`scrollTo(0,${Math.min(start.max,start.y+240)})`);await settle();
     const state=await evaluate(`(()=>{const n=document.querySelector('${selector}'),r=n.getBoundingClientRect(),c=getComputedStyle(n);return {top:r.top,bottom:r.bottom,left:r.left,right:r.right,height:r.height,scroll:scrollY,menuTop:document.querySelector(".app-menu-trigger")?.getBoundingClientRect().top,position:c.position,blur:c.backdropFilter,measured:parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sticky-header-height')),padding:parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop)};})()`);
     const gap=width<=760?10:12;
-    if(page==='staff'||page==='booking'||page==='driver'){
+    // D101: the staff workspace header stays at the top of the screen.
+    if(page==='staff'){assert.equal(state.position,'sticky',label+' staff header sticks');assert.ok(Math.abs(state.top)<=1,label+' staff header at the top');}
+    else if(page==='booking'||page==='driver'){
      assert.equal(state.position,'relative',label+' wordmark belongs to the body');
      assert.ok(Math.abs(state.top+state.scroll-start.y)<=1,label+' wordmark scrolls with the body');
      assert.ok(Math.abs(state.menuTop-start.menuTop)<=1,label+' menu button remains fixed independently');
      assert.equal(state.measured,0,label+' body wordmark needs no sticky clearance');
     }else{assert.equal(state.position,'sticky',label);assert.ok(Math.abs(state.top-gap)<=1,label+' header must keep its floating top gap');}
     assert.ok(state.left>=-1&&state.right<=width+1,label+' header clipped');assert.ok(state.bottom<=height,label+' header too tall');
-    if(page==='preview')assert.ok(Math.abs(state.measured-state.height)<=1&&state.padding>=state.height+gap,label+' focus offset follows header height and top gap');if(page==='staff'||page==='booking'||page==='driver'){
+    if(page==='preview')assert.ok(Math.abs(state.measured-state.height)<=1&&state.padding>=state.height+gap,label+' focus offset follows header height and top gap');if(page==='booking'||page==='driver'){
      assert.equal(state.blur,'none',label+' minimal app bar');
      assert.ok(await evaluate('getComputedStyle(document.querySelector(".app-header-name").parentElement).backgroundColor==="rgba(0, 0, 0, 0)"'),label+' transparent app bar');
      assert.ok(await evaluate('(()=>{const e=document.querySelector(".app-header-name"),r=e.getBoundingClientRect(),h=e.parentElement.getBoundingClientRect();return Math.abs((r.left+r.right-h.left-h.right)/2)<=1&&getComputedStyle(e.parentElement).boxShadow==="none"})()'),label+' centered app name without panel shadow');
@@ -52,7 +54,7 @@ try{await identityFixture(async f=>{
     const drawer=page==='staff'?'staff':page==='booking'?'market':page==='driver'?'driver':null;
     const navigation=drawer?`#${drawer}-menu-toggle`:'[data-theme-toggle]';
     assert.ok(await evaluate(`(()=>{const b=document.querySelector(${JSON.stringify(navigation)}),r=b.getBoundingClientRect();return document.elementFromPoint(r.left+r.width/2,r.top+r.height/2)?.closest(${JSON.stringify(navigation)})===b;})()`),label+' navigation hit target');
-    if(drawer)await evaluate(`document.querySelector('#${drawer}-menu-toggle').click();document.querySelector('#${drawer}-settings').open=true`);
+    if(drawer)await evaluate(`document.querySelector('#${drawer}-menu-toggle').click();(s=>{if(s)s.open=true})(document.querySelector('#${drawer}-settings'))`);
     await evaluate('document.querySelector("[data-theme-toggle]").click()');assert.notEqual(await evaluate('document.documentElement.dataset.theme'),theme,label+' interaction');
     await evaluate('document.querySelector("[data-theme-toggle]").click()');
     if(drawer)await evaluate(`document.querySelector('#${drawer}-menu-close').click()`);
@@ -71,7 +73,7 @@ try{await identityFixture(async f=>{
  for(const [name,value] of [['prefers-reduced-motion','reduce'],['prefers-reduced-transparency','reduce'],['forced-colors','active']]){
   await send('Emulation.setEmulatedMedia',{features:[{name,value}]});await settle();
   if(name!=='prefers-reduced-motion')assert.equal(await evaluate('getComputedStyle(document.querySelector(".staff-topbar")).backdropFilter'),'none');
-  assert.equal(await evaluate('getComputedStyle(document.querySelector(".staff-topbar")).position'),'relative');
+  assert.equal(await evaluate('getComputedStyle(document.querySelector(".staff-topbar")).position'),'sticky','D101: the staff header stays at the top in every mode');
  }
  await send('Emulation.setEmulatedMedia',{media:'print',features:[]});assert.notEqual(await evaluate('getComputedStyle(document.querySelector(".staff-topbar")).position'),'sticky','Screen-only sticky styling does not affect print');
  writeFileSync(join(shots,'result.json'),JSON.stringify({passed:true,built,layouts,scrolling:true,headerReplacement:true,accessibilityPreferences:true,printIsolation:true},null,2)+'\n');

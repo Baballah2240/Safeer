@@ -13,6 +13,8 @@ const kilos=grams=>(grams/1000).toLocaleString('en-GB',{maximumFractionDigits:3}
 const shipmentPattern=/^(SHP|SPT|RCP)-[0-9]{8}$|^SH-[2-9A-HJ-NP-Z]{8}$/;
 let remembered={company:null,query:null,list:listState()};
 export const resetShipments=()=>{remembered={company:null,query:null,list:listState()};};
+// D101: the header search opens Shipments with a code already searched.
+let presetQuery=null;export const presetShipmentSearch=q=>{presetQuery=q;};
 
 export function shipmentsView(data,{t}){
  const cap=data.capabilities;
@@ -27,6 +29,7 @@ export function bindShipments(root,data,ctx){
  const money=(minor,currency)=>moneyText(minor,currency||'SDG',language);
  const noNames=`<p class="staff-muted">${t('Do not include names or numbers.')}</p>`;
  if(remembered.company!==cid)remembered={company:cid,query:null,list:listState()};
+ if(presetQuery){remembered.query=presetQuery;presetQuery=null;}
  let current={query:remembered.query,token:null},options=null,latest=0,notice='',lastItems=[];
  const loadOptions=async()=>{options=await api(base+'/options');return options;};
 

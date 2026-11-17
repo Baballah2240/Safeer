@@ -1,5 +1,9 @@
 # Changelog
 
+## Staff header fixed to the top - D101, 2026-11-17
+
+The staff workspace header (src/staff-header.js) stays at the top of the screen and holds the menu button, a Home button (your workspace overview, or your company for company-only staff), the Safeer name, a search bar in the middle, theme and language buttons (moved from the menu drawer), the notification bell and the profile (initials and name, with Your profile and Sign out). Search lists the pages and company sections the person may open, and a booking reference (SF-) or shipment code (SH-, SHP-, SPT-, RCP-) opens that search in the open company; arrow keys, Enter and Esc work, and Ctrl+K or Cmd+K moves to it. On phones the search takes its own row. The header drops its blur for reduced transparency and high contrast, and does not stick when printing. Staff web only; no new APK. Tests: staff-menu and headers browser.
+
 ## Notifications panel - D100, 2026-11-17
 
 Notifications are no longer a page. The bell (and Open notifications on the card) opens a panel over the current screen: unread count or You're all caught up, Mark all read, close, search, filters All / Unread / Money / Operations / Company, an updates count with Refresh, cards with category, time, title, meaning, company and read state, Details, Mark read and PDF downloads for contracts and invoices, Older notifications, and full screen on phones. Migration 0030 returns each event's details and read time in the list, and restores the D14 privacy rule for details: references, problem types, routes and times only, no amounts and no free-text notes (D99 had shown amounts and notes). Old ?tab=notifications links open the panel. Staff web only; no new APK.

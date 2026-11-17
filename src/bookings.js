@@ -4,6 +4,8 @@ import {methodLabel,methodOptions,moneyText} from './station.js';
 import {listHeader,paintList,listState} from './list-page.js';
 let nextBooking=null,bookingList={company:null,state:listState()};
 export const openBookingNext=id=>{nextBooking=id;};
+// D101: the header search opens Bookings with a reference already searched.
+let presetQuery=null;export const presetBookingSearch=q=>{presetQuery=q;};
 const statusLabel={held:'Held',expired:'Expired',released:'Released',confirmed:'Paid',refunded:'Refunded'},eventLabel={held:'Seats held',expired:'Hold ended',released:'Seats released',changed:'Details corrected',erased:'Personal details erased',paid:'Paid',refunded:'Refunded'},actorLabel={passenger:'by the passenger',staff:'by staff',trip_canceled:'when the trip was canceled',system:'automatically'};
 const bagStatus={registered:'Registered',tagged:'Tagged',loaded:'Loaded',in_transit:'In transit',unloaded:'Unloaded',collected:'Collected',lost:'Lost',exception_reported:'Problem reported'};
 const money=(row,language)=>new Intl.NumberFormat(language==='ar'?'ar-SD-u-nu-latn':'en-GB',{style:'currency',currency:row.currency,maximumFractionDigits:2}).format(row.amountMinor/100);
@@ -86,7 +88,7 @@ export function bindBookings(root,data,ctx){
   }catch(error){if(box.isConnected)box.insertAdjacentHTML('afterbegin',failure(error));}finally{if(button?.isConnected)button.disabled=false;}
  };
  root.querySelector('#booking-search').onsubmit=event=>{event.preventDefault();void search(new FormData(event.target).get('q').trim());};
- void search('');
+ {const q=presetQuery||'';presetQuery=null;const field=root.querySelector('#booking-search [name=q]');if(field)field.value=q;void search(q);}
  // After a payment, refund or sale, the same booking reopens so its documents can be printed.
  if(nextBooking){const id=nextBooking;nextBooking=null;void open(null,id);}
 }

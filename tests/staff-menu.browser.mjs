@@ -27,7 +27,7 @@ try{await identityFixture(async f=>{
    assert.equal(await evaluate('document.querySelector("#staff-sidebar").open'),false,label+' drawer closed initially');
    const field=signedIn?'#change-password [name=currentPassword]':'#staff-login [name=login]';
    await evaluate(`window.__field=document.querySelector('${field}');__field.value='fictional@example.test';__field.dispatchEvent(new Event('input',{bubbles:true}));`);
-   await click('#staff-menu-toggle');await click('#staff-settings summary');
+   await click('#staff-menu-toggle');
    assert.ok(await evaluate('document.querySelector("#staff-sidebar").contains(document.activeElement)'),label+' focus in modal');
    assert.equal(await evaluate('Boolean(document.querySelector("#staff-sidebar [data-tab=users]"))'),signedIn,label+' permission navigation');
    assert.equal(await evaluate('Boolean(document.querySelector("#staff-logout"))'),signedIn,label+' account controls');
@@ -36,7 +36,7 @@ try{await identityFixture(async f=>{
    await evaluate('document.querySelector("#staff-sidebar").scrollTop=10000;window.__menuScroll=document.querySelector("#staff-sidebar").scrollTop');
    await click('#staff-language');
    assert.ok(await evaluate('Math.abs(document.querySelector("#staff-sidebar").scrollTop-__menuScroll)<=3'),label+' language preserves menu scroll');
-   assert.ok(await evaluate('document.querySelector("#staff-sidebar").open&&document.querySelector("#staff-settings").open'),label+' language preserves menu');
+   assert.ok(await evaluate('document.querySelector("#staff-sidebar").open'),label+' language preserves menu');
    if(!signedIn)assert.equal(await evaluate('document.querySelector("#staff-login [name=login]").value'),'fictional@example.test',label+' login draft');
    await click('#staff-language');
    await evaluate('document.getAnimations().filter(a=>Number.isFinite(a.effect?.getComputedTiming().endTime)).forEach(a=>a.finish())');
@@ -46,6 +46,16 @@ try{await identityFixture(async f=>{
    await until('!document.querySelector("#staff-sidebar").open&&document.activeElement.id==="staff-menu-toggle"');
    if(signedIn){await click('#staff-menu-toggle');await click('#staff-sidebar [data-tab=users]');await until('Boolean(document.querySelector("[data-create-user]"))');assert.equal(await evaluate('document.querySelector("#staff-sidebar").open'),false,label+' destination closes menu');assert.equal(await evaluate('document.documentElement.classList.contains("app-drawer-open")'),false,label+' destination restores body scrolling');}
    assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth+2'),label+' page fits');
+   // D101: the header stays at the top and holds theme, language, and for a signed-in person search, home, bell and profile.
+   assert.equal(await evaluate('getComputedStyle(document.querySelector(".staff-header")).position'),'sticky',label+' sticky header');
+   assert.equal(await evaluate('["[data-theme-toggle]","#staff-language","#staff-search-input","#staff-home","#staff-bell","#staff-profile"].filter(s=>document.querySelector(".staff-header "+s)).length'),signedIn?6:2,label+' header controls');
+   assert.ok(await evaluate('(()=>{const r=document.querySelector(".staff-header").getBoundingClientRect();return r.left>=-1&&r.right<=innerWidth+1})()'),label+' header fits');
+   if(signedIn&&lang==='en'&&theme==='light'){
+    await evaluate('(()=>{const i=document.querySelector("#staff-search-input");i.focus();i.value="audit";i.dispatchEvent(new Event("input"))})()');await until('Boolean(document.querySelector("#staff-search-results [data-search-index]"))');
+    await evaluate('document.querySelector("#staff-search-input").dispatchEvent(new KeyboardEvent("keydown",{key:"Enter",bubbles:true}))');await until('document.querySelector("[data-tab=audit]")?.getAttribute("aria-current")==="page"');
+    await click('#staff-home');await until('Boolean(document.querySelector(".staff-shortcuts"))');
+    await click('#staff-profile');assert.equal(await evaluate('document.querySelector("#staff-profile-menu").hidden'),false,label+' profile menu');await click('#staff-profile');
+   }
    if(width===390)writeFileSync(join(shots,`${signedIn}-${lang}-${theme}-page.png`),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
    assert.deepEqual(await evaluate('__errors'),[],label);layouts++;
   }

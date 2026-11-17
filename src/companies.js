@@ -158,7 +158,7 @@ export function accessEditor(data,{t,e}){
 }
 
 // D65: company sections for the sidebar, in the owner's order, filtered by permission.
-function companySections(cap){
+export function companySections(cap){
   return [
     ['operations','Overview',cap.operations,'main','grid'],['trips','Trips',cap.tripsRead,'planning','calendar'],['routes','Routes',cap.routesRead,'planning','pin'],
     ['drivers','Drivers',cap.driversRead,'planning','person'],['fleet','Vehicles',cap.fleetRead,'planning','bus'],

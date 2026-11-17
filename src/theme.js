@@ -13,6 +13,7 @@ const label=language=>language==='ar'
 function apply(){
   document.documentElement.dataset.theme=theme;
   document.querySelectorAll('[data-theme-toggle]').forEach(button=>{
+    if(button.hasAttribute('data-theme-icon')){button.setAttribute('aria-label',label(document.documentElement.lang));button.title=label(document.documentElement.lang);return;}
     button.textContent=label(document.documentElement.lang);
   });
 }
