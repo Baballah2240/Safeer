@@ -59,3 +59,12 @@
 .market-company-logo{flex:none;width:64px;height:64px;border-radius:16px;object-fit:contain;background:#fff;border:1px solid var(--border)}
 html body .market-band.market-band-brand,html[data-app-surface] body .market-band.market-band-brand{background:var(--company-band);border-color:transparent}
 html body .market-band.market-band-brand :is(h1,p,a,.market-company),html[data-app-surface] body .market-band.market-band-brand :is(h1,p,a,.market-company){color:#fff}
+/* D110: sending a parcel is part of the booking page, linked to tracking. */
+.market-parcel{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;align-items:center;margin-top:20px;padding:clamp(16px,2.4vw,24px);border:1px solid var(--border);border-radius:14px;background:var(--material-paper);box-shadow:var(--shadow-panel)}
+.market-parcel h2{margin:0 0 6px;font-size:1.15rem}
+.market-parcel p{margin:0;color:var(--muted);line-height:1.5}
+.market-parcel-icon{display:grid;place-items:center;width:52px;height:52px;border-radius:14px;background:var(--accent-wash,#f4e3d3);color:var(--accent)}
+.market-parcel-icon svg{width:26px;height:26px}
+.market-parcel-actions{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:10px}
+.market-parcel-primary{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 20px;border-radius:999px;background:var(--accent);color:#fff;font-weight:700;text-decoration:none}
+@media(min-width:760px){.market-parcel{grid-template-columns:auto minmax(0,1fr) auto}.market-parcel-actions{grid-column:auto}}

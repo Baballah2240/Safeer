@@ -436,3 +436,10 @@ The unread count on the bell was clipped to a quarter circle because buttons cli
 ## D109 — Notification panel opens once
 
 The notification panel replayed its opening animation every time it redrew (when the list loaded, on a filter or after marking read), so it looked as if it popped up twice. The panel is now kept between redraws and only its contents update.
+
+## D110 — Booking and parcel pages connected
+
+- Every passenger page has a fourth tab, **Parcels** (the tracking page); on 1024–1279px screens the top tabs show icons only so they clear the wordmark, and on small phones labels stay on one line.
+- The booking page has a **Send a parcel** card explaining drop-off, payment, tracking and collection, with a link to tracking.
+- The parcel page shows **How to send a parcel** beside the tracker (side by side on wide screens), links back to choosing a bus company, and its menu links to staff sign-in.
+- A tracking result ends with **Track another code** and **Find a bus trip**, so no page is a dead end.

@@ -18,7 +18,7 @@
  html[data-app-surface=booking] #market-search :is(select,input){min-width:0;width:100%;min-height:50px;margin-top:6px;background:var(--glass-control);color:var(--ink);border:1px solid var(--glass-rim);border-radius:14px;box-sizing:border-box}
  html[data-app-surface=booking] #market-search .market-buttons{grid-column:1/-1}
  html[data-app-surface=booking] #market-search .market-buttons .primary{width:100%;border-radius:16px}
- .passenger-bottom-nav{position:fixed;z-index:35;bottom:calc(12px + env(safe-area-inset-bottom));inset-inline:0;margin-inline:auto;width:min(560px,calc(100% - 28px));display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;padding:7px;border:1px solid var(--glass-rim);border-radius:28px;background:var(--surface-soft);backdrop-filter:blur(28px) saturate(145%);-webkit-backdrop-filter:blur(28px) saturate(145%);box-shadow:0 12px 40px #bb571524,inset 0 1px 0 #ffffff8c;box-sizing:border-box}
+ .passenger-bottom-nav{position:fixed;z-index:35;bottom:calc(12px + env(safe-area-inset-bottom));inset-inline:0;margin-inline:auto;width:min(560px,calc(100% - 28px));display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;padding:7px;border:1px solid var(--glass-rim);border-radius:28px;background:var(--surface-soft);backdrop-filter:blur(28px) saturate(145%);-webkit-backdrop-filter:blur(28px) saturate(145%);box-shadow:0 12px 40px #bb571524,inset 0 1px 0 #ffffff8c;box-sizing:border-box}
  .passenger-bottom-nav a{display:grid;justify-items:center;align-content:center;gap:4px;min-height:60px;border-radius:22px;color:var(--muted);font-size:.8rem;font-weight:600;text-decoration:none}
  .passenger-bottom-nav svg{width:25px;height:25px}
  .passenger-bottom-nav a[aria-current=page]{color:#123a2d;background:#123a2d1c}
@@ -127,7 +127,7 @@
  html:is([data-app-surface=booking],[data-app-surface=tracking]){scroll-padding-block-start:calc(var(--safe-top,0px) + 72px);scroll-padding-block-end:calc(100px + env(safe-area-inset-bottom))}
  @media (min-width:1024px){
   html:is([data-app-surface=booking],[data-app-surface=tracking]){scroll-padding-block-end:24px}
-  html:is([data-app-surface=booking],[data-app-surface=tracking]) body .passenger-bottom-nav{top:calc(10px + var(--safe-top,0px));bottom:auto;inset-inline-start:auto;inset-inline-end:clamp(16px,2.5vw,32px);width:auto;margin:0;grid-template-columns:repeat(3,auto);gap:4px;padding:5px;border-radius:999px;box-shadow:0 10px 28px #3c280f1f,inset 0 1px 0 #ffffff8c}
+  html:is([data-app-surface=booking],[data-app-surface=tracking]) body .passenger-bottom-nav{top:calc(10px + var(--safe-top,0px));bottom:auto;inset-inline-start:auto;inset-inline-end:clamp(16px,2.5vw,32px);width:auto;margin:0;grid-template-columns:repeat(4,auto);gap:4px;padding:5px;border-radius:999px;box-shadow:0 10px 28px #3c280f1f,inset 0 1px 0 #ffffff8c}
   html:is([data-app-surface=booking],[data-app-surface=tracking])[data-theme=dark] body .passenger-bottom-nav{box-shadow:0 10px 28px #00000059,inset 0 1px 0 #e8d9bf26}
   html:is([data-app-surface=booking],[data-app-surface=tracking]) body .passenger-bottom-nav a{grid-auto-flow:column;justify-content:center;align-items:center;gap:8px;min-height:44px;padding:0 18px;border-radius:999px;font-size:.92rem}
   html:is([data-app-surface=booking],[data-app-surface=tracking]) body .passenger-bottom-nav svg{width:20px;height:20px}
@@ -136,3 +136,6 @@
  }
  @media (min-width:1024px) and (max-width:1199px){html:is([data-app-surface=booking],[data-app-surface=tracking]) body .passenger-bottom-nav a{padding:0 12px;gap:6px}}
 }
+/* D110: four passenger tabs; on mid-width screens the top tab bar shows icons only so it clears the centred wordmark. */
+@media screen and (min-width:1024px) and (max-width:1279px){html:is([data-app-surface=booking],[data-app-surface=tracking]) body .passenger-bottom-nav a span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}
+@media screen and (max-width:420px){html body .passenger-bottom-nav a span{white-space:nowrap;font-size:.7rem;overflow:hidden;text-overflow:ellipsis;max-width:100%}}

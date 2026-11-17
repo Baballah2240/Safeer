@@ -42,7 +42,11 @@ try{await identityFixture(async f=>{
   assert.ok(layout.center<=1&&layout.background==='rgba(0, 0, 0, 0)'&&layout.fieldFits,label+' shared header and field fit');
   if(width<700)assert.ok(layout.top>=32,label+' safe inset');
   assert.equal(layout.primary,layout.button,label+' action uses shared app color');
-  assert.equal(await evaluate('document.querySelectorAll(".passenger-bottom-nav a").length'),3,label+' shared passenger navigation');
+  assert.equal(await evaluate('document.querySelectorAll(".passenger-bottom-nav a").length'),4,label+' shared passenger navigation');
+  // D110: the parcel page is a tab of its own, explains how to send a parcel, and links to the booking page.
+  assert.equal(await evaluate('document.querySelector(".passenger-bottom-nav a[aria-current=page]")?.getAttribute("href").split("?")[0]'),'/track',label+' parcels tab active');
+  assert.equal(await evaluate('document.querySelectorAll(".track-how li").length'),3,label+' how to send a parcel');
+  assert.ok(await evaluate('document.querySelector(".track-how-link").getAttribute("href").includes("/marketplace")&&Boolean(document.querySelector("#track-menu a[href*=staff]"))'),label+' links onward');
   assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth+2'),label+' no horizontal overflow');
   if(width===390)writeFileSync(join(shots,`${lang}-${theme}.png`),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
   assert.deepEqual(await evaluate('__errors'),[],label+' browser errors');layouts++;
