@@ -75,9 +75,9 @@ export function bindCompanies(root,data,ctx){
   const optional=(name,label,value='',max=300)=>`<label>${t(label)}<input name="${name}" maxlength="${max}" value="${e(value)}"></label>`;
   const enabled=row=>`<label class="staff-check"><input name="active" type="checkbox" ${row?.active!==false?'checked':''}>${t('Active')}</label>`;
   root.querySelectorAll('[data-company-open]').forEach(b=>b.onclick=()=>{companyState.id=b.dataset.companyOpen;companyState.section='operations';companyState.tripFrom='';void refresh();});
-  root.querySelector('[data-company-back]')?.addEventListener('click',()=>{resetCompanies();void refresh();});
+  root.querySelectorAll('[data-company-back]').forEach(b=>b.addEventListener('click',()=>{resetCompanies();void refresh();}));
   root.querySelectorAll('[data-company-section]').forEach(b=>b.onclick=()=>{companyState.section=b.dataset.companySection;render();});
-  root.querySelectorAll('[data-side-toggle]').forEach(b=>b.onclick=()=>{const list=root.querySelector('#side-group-'+b.dataset.sideToggle),open=list.hidden;list.hidden=!open;b.setAttribute('aria-expanded',String(open));saveSideGroup(data.company.id,b.dataset.sideToggle,open);});
+  root.querySelectorAll('[data-side-toggle]').forEach(b=>b.onclick=()=>{const list=b.closest('.company-side-group').querySelector('nav'),open=list.hidden;list.hidden=!open;b.setAttribute('aria-expanded',String(open));saveSideGroup(data.company.id,b.dataset.sideToggle,open);});
   root.querySelectorAll('[data-company-settings]').forEach(b=>b.onclick=()=>{const first=companySections(data.capabilities).find(r=>r[3]==='settings');if(!first)return;saveSideGroup(data.company.id,'settings',true);companyState.section=first[0];render();});
   const profileForm=row=>{
     const isSuper=data.company?data.capabilities.superAdministrator:data.canCreate;
@@ -93,7 +93,7 @@ export function bindCompanies(root,data,ctx){
   if(companyState.section==='drivers')bindDrivers(root,data,ctx);
   if(companyState.section==='trips')bindTrips(root,data,{...ctx,setTripFrom:value=>{companyState.tripFrom=value;void refresh();}});
   if(companyState.section==='bookings')bindBookings(root,data,ctx);
-  if(companyState.section==='operations')bindOperations(root,data,{...ctx,openSection:(id,then)=>{companyState.section=id;render();setTimeout(()=>then?.());}});
+  if(companyState.section==='operations')bindOperations(root,data,{...ctx,sectionCount:companySections(data.capabilities).length,openSettings:companySections(data.capabilities).some(r=>r[3]==='settings')?()=>{companyState.section=companySections(data.capabilities).find(r=>r[3]==='settings')[0];render();}:null,openSection:(id,then)=>{companyState.section=id;render();setTimeout(()=>then?.());}});
   if(companyState.section==='luggage')bindLuggage(root,data,ctx);
   if(companyState.section==='shipments')bindShipments(root,data,ctx);
   if(companyState.section==='finance')bindFinance(root,data,ctx);
@@ -174,7 +174,7 @@ const sideIcon=name=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
 const sideKey=cid=>'safeer.staff.side.'+cid;
 function sideGroupsOpen(cid){try{return JSON.parse(localStorage.getItem(sideKey(cid))||'{}')||{};}catch{return {};}}
 function saveSideGroup(cid,key,value){try{const v=sideGroupsOpen(cid);v[key]=value;localStorage.setItem(sideKey(cid),JSON.stringify(v));}catch{}}
-export function companySidebar(data,{t,e,language}){
+export function companySidebar(data,{t,e,language},prefix=''){
   if(!data?.company)return '';
   const sections=companySections(data.capabilities),current=sections.some(([id])=>id===companyState.section)?companyState.section:sections[0][0];
   const item=([id,label,,,icon])=>`<button type="button" data-company-section="${id}" ${current===id?'aria-current="page"':''}>${sideIcon(icon)}<span>${t(label)}</span></button>`;
@@ -182,7 +182,7 @@ export function companySidebar(data,{t,e,language}){
   const open=sideGroupsOpen(data.company.id),currentGroup=sections.find(r=>r[0]===current)?.[3];
   const group=(key,label,icon)=>{const rows=sections.filter(r=>r[3]===key);if(!rows.length)return '';if(!label)return `<nav class="staff-nav company-side-nav" aria-label="${t('Company workspace')}">${rows.map(item).join('')}</nav>`;
    const expanded=key===currentGroup||open[key]!==false&&(key!=='settings'||open[key]===true);
-   return `<div class="company-side-group${key==='settings'?' is-settings':''}" data-side-group="${key}"><button type="button" class="company-side-toggle" data-side-toggle="${key}" aria-expanded="${expanded}" aria-controls="side-group-${key}">${sideIcon(icon)}<span>${t(label)}</span><small class="company-side-count">${rows.length}</small>${sideIcon('chevron')}</button><nav class="staff-nav company-side-nav" id="side-group-${key}" aria-label="${t(label)}" ${expanded?'':'hidden'}>${rows.map(item).join('')}</nav></div>`;};
+   return `<div class="company-side-group${key==='settings'?' is-settings':''}" data-side-group="${key}"><button type="button" class="company-side-toggle" data-side-toggle="${key}" aria-expanded="${expanded}" aria-controls="${prefix}side-group-${key}">${sideIcon(icon)}<span>${t(label)}</span><small class="company-side-count">${rows.length}</small>${sideIcon('chevron')}</button><nav class="staff-nav company-side-nav" id="${prefix}side-group-${key}" aria-label="${t(label)}" ${expanded?'':'hidden'}>${rows.map(item).join('')}</nav></div>`;};
   const logo=companyLogoUrl(data.company.id,data.branding);
   return `<p class="company-side-name${logo?' has-logo':''}">${logo?`<img src="${logo}" alt="" width="28" height="28">`:''}<span>${e(language==='ar'?data.company.nameAr:data.company.nameEn)}</span></p>${group('main','')}${group('planning','Planning','calendar')}${group('sales','Sales','ticket')}${group('operations','Operations','counter')}${group('settings','Settings','gear')}${data.selectionCount>1||data.canCreate?`<button type="button" class="company-side-back" data-company-back>${sideIcon('back')}<span>${t('All companies')}</span></button>`:''}`;
 }

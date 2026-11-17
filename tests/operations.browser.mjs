@@ -37,6 +37,14 @@ try{await identityFixture(async f=>{
  await click('.staff-sidebar [data-company-section=operations]');await until('Boolean(document.querySelector(".ops-kpi strong"))');
  assert.equal(await kpi('Departures today'),'3');assert.equal(await kpi('Passengers booked'),'6');assert.equal(await kpi('Boarded'),'0');assert.equal(await kpi('Needs attention'),'1');
  assert.equal(await evaluate('document.querySelectorAll(".ops-table tbody tr").length'),3);
+ // D102: dashboard status counts filter the departures; charts, activity and the profile sidebar are present.
+ assert.equal(await evaluate('document.querySelector("[data-dash-status=scheduled] strong").textContent'),'2');assert.equal(await evaluate('document.querySelector("[data-dash-status=unassigned] strong").textContent'),'1');
+ assert.equal(await evaluate('document.querySelectorAll(".dash-bar").length'),3);
+ await click('.dash-stat[data-dash-status=unassigned]');await until('document.querySelectorAll(".ops-table tbody tr").length===1');
+ await click('[data-dash-clear]');await until('document.querySelectorAll(".ops-table tbody tr").length===3');
+ await until('Boolean(document.querySelector("#dash-side .dash-person"))&&!document.querySelector("#dash-activity [role=status]")');
+ await evaluate('scrollTo(0,0)');await shot('dashboard-light');
+ await click('[data-theme-toggle]');await evaluate('scrollTo(0,0)');await new Promise(r=>setTimeout(r,900));await shot('dashboard-dark');await click('[data-theme-toggle]');
  assert.ok(await evaluate('document.querySelector(".ops-attention").textContent.includes("Driver unassigned")'),'Unassigned trips are surfaced.');
  assert.ok(await evaluate('Boolean(document.querySelector("#ops-create"))'),'Authorized staff see Create trip.');
  await click(`[data-ops-trip="${s.trips.soon}"]`);await until('Boolean(document.querySelector(".ops-panel .ops-bar"))');

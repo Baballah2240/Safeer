@@ -11,13 +11,17 @@ const icons={
  seat:'M7 4v9h9l2 7M7 13l-2 7M16 13V8',chevron:'m9 6 6 6-6 6',ticket:'M4 8a2 2 0 0 0 0 4v4h16v-4a2 2 0 0 0 0-4V4H4zM13 4v12',plus:'M12 5v14M5 12h14',close:'M6 6l12 12M18 6 6 18',refresh:'M20 7V3l-4 4M20 7a8 8 0 1 0 0 10',
 };
 const svg=name=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${icons[name]}"/></svg>`;
-let state={company:null,trip:null,timer:null};
-export const resetOperations=()=>{clearInterval(state.timer);state={company:null,trip:null,timer:null};};
+let state={company:null,trip:null,timer:null,status:''};
+export const resetOperations=()=>{clearInterval(state.timer);state={company:null,trip:null,timer:null,status:''};};
+// D102: dashboard colours are kept for statuses and chart data only.
+const statusColor={scheduled:'#9ca3af',boarding:'#3b82f6',departed:'#f59e0b',arrived:'#22c55e',delayed:'#eab308',unassigned:'#dc2626',canceled:'#9f1239',draft:'#cbd5e1'};
+const statusOrder=['scheduled','boarding','departed','arrived','delayed','unassigned','canceled'];
+const initials=name=>String(name||'').trim().split(/\s+/).filter(Boolean).slice(0,2).map(w=>[...w][0]).join('').toUpperCase()||'?';
 
 export function operationsView(data,{t}){
  const cap=data.capabilities;
- return `<section class="ops" aria-labelledby="ops-title"><header class="ops-head"><div><h1 id="ops-title">${t('Operations overview')}</h1><p class="ops-day" id="ops-day"></p></div><div class="ops-head-actions"><button type="button" class="secondary ops-icon-button" id="ops-refresh" aria-label="${t('Refresh')}" title="${t('Refresh')}">${svg('refresh')}</button>${cap.tripsManage?`<button type="button" class="staff-primary ops-create" id="ops-create">${svg('plus')}<span>${t('Create trip')}</span></button>`:''}</div></header>
- <div id="ops-body" aria-live="polite"><div class="ops-kpis" aria-hidden="true">${'<article class="ops-kpi ops-skeleton"></article>'.repeat(4)}</div><p role="status" class="ops-loading">${t('Loading today\'s departures…')}</p></div></section>`;
+ return `<section class="ops dash" aria-labelledby="ops-title"><div class="dash-main"><header class="ops-head"><div><h1 id="ops-title">${t('Operations overview')}</h1><p class="ops-day" id="ops-day"></p></div><div class="ops-head-actions"><button type="button" class="secondary ops-icon-button" id="ops-refresh" aria-label="${t('Refresh')}" title="${t('Refresh')}">${svg('refresh')}</button>${cap.tripsManage?`<button type="button" class="staff-primary ops-create" id="ops-create">${svg('plus')}<span>${t('Create trip')}</span></button>`:''}</div></header>
+ <nav class="dash-tabs" aria-label="${t('Dashboard sections')}">${[['ops-summary','Summary'],['ops-table-title','Departures'],['ops-attention-anchor','Needs attention'],['dash-activity','Activity']].map(([id,label],i)=>`<button type="button" data-dash-tab="${id}" ${i===0?'aria-current="true"':''}>${t(label)}</button>`).join('')}</nav><div id="ops-body" aria-live="polite"><div class="ops-kpis" aria-hidden="true">${'<article class="ops-kpi ops-skeleton"></article>'.repeat(4)}</div><p role="status" class="ops-loading">${t('Loading today\'s departures…')}</p></div></div><aside class="dash-side" id="dash-side" aria-label="${t('Your profile')}"></aside></section>`;
 }
 
 export function bindOperations(root,data,ctx){
@@ -57,15 +61,48 @@ export function bindOperations(root,data,ctx){
    :`<p class="staff-muted">${t('Passenger names need booking access.')}</p>`}
    <div class="ops-panel-actions">${cap.tripsRead?`<button type="button" class="staff-primary" data-ops-go="trips">${svg('bus')}<span>${t(d.status==='unassigned'&&cap.tripsManage?'Assign a driver':'Manage in Trips')}</span></button>`:''}${cap.bookingsRead?`<button type="button" class="secondary" data-ops-go="bookings">${svg('ticket')}<span>${t('Open Bookings')}</span></button>`:''}</div></aside>`;
  };
+ let feed=null;
+ const statusLabel=status=>t((statusInfo[status]||statusInfo.scheduled)[0]);
+ const counts=rows=>{const c={};for(const r of rows)c[r.status]=(c[r.status]||0)+1;return c;};
+ // Trip status counts, like the workload strip: each opens the departures with that status.
+ const workload=rows=>{const c=counts(rows);return `<section class="dash-block" aria-labelledby="dash-status-title"><h2 class="dash-h" id="dash-status-title">${t('Trip status')}</h2><div class="dash-status">${statusOrder.map(k=>`<button type="button" class="dash-stat" data-dash-status="${k}" aria-pressed="${state.status===k}" ${c[k]?'':'data-empty'}><span class="dash-stat-label"><span class="dash-dot" data-color="${statusColor[k]}"></span>${statusLabel(k)}</span><strong><bdi>${c[k]||0}</bdi></strong></button>`).join('')}</div></section>`;};
+ // Seats booked on each departure (bars), coloured by status; a bar opens that trip.
+ const seatChart=rows=>{const list=rows.slice(0,12),max=Math.max(1,...list.map(r=>r.seatCount||r.booked||1));
+  return `<section class="dash-card dash-chart" aria-labelledby="dash-seats-title"><h2 class="dash-h" id="dash-seats-title">${t('Seats booked by departure')}</h2>${list.length?`<div class="dash-bars" role="list">${list.map(r=>`<button type="button" role="listitem" class="dash-bar" data-ops-trip="${e(r.id)}" title="${e(time(r.departureAt))} · ${e(r.booked)}/${e(r.seatCount||0)}" aria-label="${e(time(r.departureAt))}: ${e(r.booked)} ${t('of')} ${e(r.seatCount||0)} ${t('seats booked')}"><span class="dash-bar-track"><span class="dash-bar-fill" data-height="${Math.round((r.booked||0)*100/max)}" data-color="${statusColor[r.status]||statusColor.scheduled}"></span></span><small><bdi>${e(time(r.departureAt))}</bdi></small></button>`).join('')}</div><p class="dash-axis"><span><bdi>0</bdi></span><span><bdi>${max}</bdi> ${t('seats')}</span></p>`:`<p class="dash-empty">${t('No departures today.')}</p>`}</section>`;};
+ // Departures by status as a half ring with a legend.
+ const statusChart=rows=>{const c=counts(rows),total=rows.length,keys=statusOrder.filter(k=>c[k]);let at=0;
+  const arc=(from,to)=>{const a=Math.PI*(1-from),b=Math.PI*(1-to),r=80,cx=100,cy=95,x1=cx+r*Math.cos(a),y1=cy-r*Math.sin(a),x2=cx+r*Math.cos(b),y2=cy-r*Math.sin(b);return `M${x1.toFixed(2)} ${y1.toFixed(2)} A${r} ${r} 0 0 1 ${x2.toFixed(2)} ${y2.toFixed(2)}`;};
+  const gap=keys.length>1?0.012:0;
+  const paths=keys.map(k=>{const from=at,to=at+c[k]/total;at=to;return `<path d="${arc(from+gap/2,Math.max(from+gap/2+0.001,to-gap/2))}" class="dash-ring-part" data-color="${statusColor[k]}"/>`;}).join('');
+  return `<section class="dash-card dash-chart" aria-labelledby="dash-ring-title"><h2 class="dash-h" id="dash-ring-title">${t('Departures by status')}</h2>${total?`<div class="dash-ring"><svg viewBox="0 0 200 110" role="img" aria-label="${keys.map(k=>`${statusLabel(k)} ${c[k]}`).join(', ')}"><path d="${arc(0,1)}" class="dash-ring-base"/>${paths}</svg><ul class="dash-legend">${statusOrder.map(k=>`<li><button type="button" data-dash-status="${k}" aria-pressed="${state.status===k}"><span class="dash-dot" data-color="${statusColor[k]}"></span><span>${statusLabel(k)}</span><strong><bdi>${c[k]||0}</bdi></strong></button></li>`).join('')}</ul></div>`:`<p class="dash-empty">${t('No departures today.')}</p>`}</section>`;};
+ // Recent activity: this company's latest notifications for this person.
+ const activity=()=>`<section class="dash-block dash-activity" id="dash-activity" aria-labelledby="dash-activity-title"><header class="dash-row"><h2 class="dash-h" id="dash-activity-title">${t('Recent activity')}</h2>${ctx.openNotifications?`<button type="button" class="secondary" data-dash-inbox>${t('Open notifications')}</button>`:''}</header>${feed===null?`<p class="dash-empty" role="status">${t('Loading…')}</p>`:feed.length?`<ol class="dash-feed">${feed.map(n=>`<li><span class="dash-feed-icon">${svg(n.code.startsWith('trip')||n.code.startsWith('journey')?'bus':n.code.startsWith('booking')||n.code.startsWith('payment')?'ticket':'alert')}</span><span><strong>${e(t(n.code))}</strong><small><bdi>${e(new Intl.DateTimeFormat(language==='ar'?'ar-SD-u-nu-latn':'en-GB',{dateStyle:'medium',timeStyle:'short',timeZone:tz}).format(new Date(n.at)))}</bdi>${n.read?'':` · ${t('Unread')}`}</small></span></li>`).join('')}</ol>`:`<p class="dash-empty">${t('No recent activity.')}</p>`}</section>`;
+ const loadFeed=async()=>{try{const r=await api('notifications');feed=r.items.filter(n=>n.companyId===cid).slice(0,6);}catch{feed=[];}if(view)paint();};
+ // Right sidebar: the person and the company.
+ const paintSide=()=>{const side=root.querySelector('#dash-side');if(!side||side.dataset.ready===language)return;side.dataset.ready=language;const me=ctx.me||{},c=data.company,sections=ctx.sectionCount||0;
+  side.innerHTML=`<div class="dash-cover" aria-hidden="true"></div><div class="dash-person"><span class="dash-avatar" aria-hidden="true">${e(initials(me.displayName))}</span><strong>${e(me.displayName||'')}</strong><small><bdi>${e(me.login||'')}</bdi></small></div>
+   <dl class="dash-facts"><div><dt>${t('Company')}</dt><dd>${e(language==='ar'?c.nameAr:c.nameEn)}</dd></div><div><dt>${t('Status')}</dt><dd>${t(c.status==='approved'?'Approved':c.status==='suspended'?'Suspended':'Pending approval')}</dd></div><div><dt>${t('Time zone')}</dt><dd><bdi>${e(c.timezone)}</bdi></dd></div><div><dt>${t('Your sections')}</dt><dd><bdi>${sections}</bdi></dd></div><div><dt>${t('Access')}</dt><dd>${t(me.superAdministrator?'Full platform access':'Permission-based access')}</dd></div></dl>
+   <div class="dash-side-actions">${ctx.openProfile?`<button type="button" class="secondary" data-dash-profile>${t('Your profile')}</button>`:''}${ctx.openSettings?`<button type="button" class="secondary" data-dash-settings>${t('Company settings')}</button>`:''}${ctx.openNotifications?`<button type="button" class="secondary" data-dash-inbox-side>${t('Notifications')}</button>`:''}</div>`;
+  side.querySelector('[data-dash-profile]')?.addEventListener('click',()=>ctx.openProfile());
+  side.querySelector('[data-dash-settings]')?.addEventListener('click',()=>ctx.openSettings());
+  side.querySelector('[data-dash-inbox-side]')?.addEventListener('click',()=>ctx.openNotifications());};
+ // Tabs jump to their part of the dashboard.
+ root.querySelectorAll('[data-dash-tab]').forEach(b=>b.onclick=()=>{root.querySelectorAll('[data-dash-tab]').forEach(x=>x.removeAttribute('aria-current'));b.setAttribute('aria-current','true');const target=root.querySelector('#'+b.dataset.dashTab)||root.querySelector('#ops-body');target.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});});
  const paint=()=>{
   if(!body.isConnected){clearInterval(state.timer);return;}
   const day=root.querySelector('#ops-day');
   if(failed&&!view){body.innerHTML=`<div class="ops-error" role="alert"><p>${e(t(failed))}</p><button type="button" class="staff-primary" data-ops-retry>${t('Try again')}</button></div>`;body.querySelector('[data-ops-retry]').onclick=()=>void load();return;}
   if(!view)return;
   if(day)day.textContent=new Intl.DateTimeFormat(language==='ar'?'ar-SD-u-nu-latn':'en-GB',{dateStyle:'full',timeZone:tz}).format(new Date(view.asOf));
-  body.innerHTML=`${failed?`<p class="staff-alert bad" role="alert">${e(t(failed))}</p>`:''}<div class="ops-kpis">${kpis(view.summary)}</div><div class="ops-layout ${state.trip?'ops-with-panel':''}"><section class="ops-main" aria-labelledby="ops-table-title"><h2 id="ops-table-title">${t('Today\'s departures')}</h2>${table(view.departures)}${attention(view.attention)}</section>${panel()}</div>`;
+  body.innerHTML=`${failed?`<p class="staff-alert bad" role="alert">${e(t(failed))}</p>`:''}<section class="dash-block" id="ops-summary" aria-labelledby="dash-overview-title"><h2 class="dash-h" id="dash-overview-title">${t('Overview')}</h2><div class="ops-kpis">${kpis(view.summary)}</div></section>${workload(view.departures)}<div class="dash-charts">${seatChart(view.departures)}${statusChart(view.departures)}</div><div class="ops-layout ${state.trip?'ops-with-panel':''}"><section class="ops-main" aria-labelledby="ops-table-title"><h2 id="ops-table-title">${t('Today\'s departures')}</h2>${state.status?`<p class="dash-filter">${t('Showing')}: <span class="dash-dot" data-color="${statusColor[state.status]}"></span>${t((statusInfo[state.status]||statusInfo.scheduled)[0])} <button type="button" class="secondary" data-dash-clear>${t('Show all')}</button></p>`:''}${table(state.status?view.departures.filter(r=>r.status===state.status):view.departures)}<span id="ops-attention-anchor"></span>${attention(view.attention)}</section>${panel()}</div>${activity()}`;
   // CSP forbids inline style attributes; set the bar width through the CSSOM.
   body.querySelectorAll('[data-pct]').forEach(bar=>{bar.style.width=bar.dataset.pct+'%';});
+  body.querySelectorAll('[data-color]').forEach(n=>{n.style.setProperty('--dash-color',n.dataset.color);});
+  body.querySelectorAll('[data-height]').forEach(n=>{n.style.height=n.dataset.height+'%';});
+  body.querySelectorAll('[data-dash-status]').forEach(b=>b.onclick=()=>{state.status=state.status===b.dataset.dashStatus?'':b.dataset.dashStatus;paint();body.querySelector('#ops-table-title')?.scrollIntoView({behavior:'smooth',block:'start'});});
+  body.querySelector('[data-dash-clear]')?.addEventListener('click',()=>{state.status='';paint();});
+  body.querySelector('[data-dash-inbox]')?.addEventListener('click',()=>ctx.openNotifications?.());
+  paintSide();
   body.querySelectorAll('[data-ops-trip]').forEach(b=>b.onclick=()=>{state.trip=b.dataset.opsTrip===state.trip&&b.classList.contains('ops-row-open')?null:b.dataset.opsTrip;detail=null;paint();if(state.trip)void loadTrip(true);});
   body.querySelector('[data-ops-close]')?.addEventListener('click',()=>{const id=state.trip;state.trip=null;detail=null;paint();body.querySelector(`[data-ops-trip="${CSS.escape(id)}"]`)?.focus();});
   body.querySelector('[data-ops-empty-create]')?.addEventListener('click',create);
@@ -75,7 +112,7 @@ export function bindOperations(root,data,ctx){
  };
  const load=async()=>{
   try{view=await api(base);failed='';}catch(error){failed=error.message||'REQUEST_FAILED';}
-  paint();if(state.trip)void loadTrip(false);
+  paint();void loadFeed();if(state.trip)void loadTrip(false);
  };
  const loadTrip=async focus=>{
   const id=state.trip;

@@ -394,3 +394,117 @@ html[data-app-surface=staff] body .staff-profile-menu button:hover{background:va
 @media print{html[data-app-surface=staff] body #staff-app .staff-topbar.app-masthead.staff-header{position:static;box-shadow:none}}
 @media(min-width:761px){html[data-app-surface=staff] body #staff-app .staff-topbar.app-masthead.staff-header{width:100%;max-width:none;box-sizing:border-box;border-radius:0}}
 @media(min-width:761px){html[data-app-surface=staff] body .staff-header>.staff-search,html[data-app-surface=staff] body .staff-header>.staff-search-space{flex:1 1 0}html[data-app-surface=staff] body .staff-header>.staff-header-end{margin-inline-start:auto}}
+/* D102: Plane-style workspace: slim icon rail, second sidebar, and a minimal dashboard. Staff workspace only. */
+html[data-app-surface=staff]{--ws-bg:#ffffff;--ws-soft:#f7f7f8;--ws-line:#e7e7ea;--ws-text:#1f2328;--ws-muted:#6b7280;--ws-hover:#f1f1f3;--ws-active:#ececef}
+html[data-app-surface=staff][data-theme=dark]{--ws-bg:#16191d;--ws-soft:#1c2025;--ws-line:#2c3138;--ws-text:#e9ebee;--ws-muted:#9aa1ab;--ws-hover:#22272d;--ws-active:#2a3037}
+html[data-app-surface=staff] body #staff-app .ws-rail,html[data-app-surface=staff] body #staff-app .ws-nav{display:none}
+@media(min-width:1100px){
+ html[data-app-surface=staff] body #staff-app .staff-shell.has-ws{display:grid;grid-template-columns:68px 244px minmax(0,1fr);min-height:100dvh}
+ html[data-app-surface=staff] body #staff-app .ws-rail{display:flex;flex-direction:column;align-items:center;gap:4px;position:sticky;top:0;height:100dvh;padding:12px 6px;background:var(--ws-soft);border-inline-end:1px solid var(--ws-line);z-index:40;overflow-y:auto;scrollbar-width:none}
+ html[data-app-surface=staff] body #staff-app .ws-rail button{display:grid;justify-items:center;gap:3px;width:56px;min-height:52px;padding:7px 2px;border:0;border-radius:10px;background:transparent;box-shadow:none;color:var(--ws-muted);font-size:.64rem;font-weight:600;line-height:1.2}
+ html[data-app-surface=staff] body #staff-app .ws-rail button svg{width:19px;height:19px}
+ html[data-app-surface=staff] body #staff-app .ws-rail button:hover{background:var(--ws-hover);color:var(--ws-text)}
+ html[data-app-surface=staff] body #staff-app .ws-rail button[aria-current=page]{background:var(--ws-active);color:var(--ws-text)}
+ html[data-app-surface=staff] body #staff-app .ws-nav{display:flex;flex-direction:column;gap:2px;position:sticky;top:0;height:100dvh;overflow-y:auto;padding:14px 10px;background:var(--ws-bg);border-inline-end:1px solid var(--ws-line);z-index:39;color:var(--ws-text)}
+ html[data-app-surface=staff] body #staff-app .ws-nav .staff-nav{display:grid;gap:1px;border:0;padding:0}
+ html[data-app-surface=staff] body #staff-app .ws-nav .staff-nav button,html[data-app-surface=staff] body #staff-app .ws-nav .company-side-back{display:flex;align-items:center;gap:9px;width:100%;min-height:32px;padding:5px 9px;border:0;border-radius:7px;background:transparent;box-shadow:none;color:var(--ws-text);font-size:.84rem;font-weight:500;text-align:start}
+ html[data-app-surface=staff] body #staff-app .ws-nav .staff-nav button svg,html[data-app-surface=staff] body #staff-app .ws-nav .company-side-back svg{width:16px;height:16px;color:var(--ws-muted)}
+ html[data-app-surface=staff] body #staff-app .ws-nav .staff-nav button:hover,html[data-app-surface=staff] body #staff-app .ws-nav .company-side-back:hover{background:var(--ws-hover)}
+ html[data-app-surface=staff] body #staff-app .ws-nav .staff-nav button[aria-current=page]{background:var(--ws-active);color:var(--ws-text);font-weight:600;box-shadow:none}
+ html[data-app-surface=staff] body #staff-app .ws-nav .staff-nav button[aria-current=page] svg{color:var(--ws-text)}
+ html[data-app-surface=staff] body #staff-app .ws-nav .company-side-name{margin:2px 6px 10px;padding:0 0 10px;border-bottom:1px solid var(--ws-line);font-size:.92rem;color:var(--ws-text)}
+ html[data-app-surface=staff] body #staff-app .ws-nav button.company-side-toggle{min-height:30px;padding:4px 9px;font-size:.7rem;color:var(--ws-muted);border-radius:7px}
+ html[data-app-surface=staff] body #staff-app .ws-nav .company-side-group>.company-side-nav{margin-inline-start:14px;padding-inline-start:8px;border-inline-start:1px solid var(--ws-line)}
+ html[data-app-surface=staff] body #staff-app .ws-nav .company-side-group.is-settings{border-top-color:var(--ws-line)}
+ html[data-app-surface=staff] body #staff-app .ws-nav-title{margin:4px 9px 6px;font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ws-muted)}
+ html[data-app-surface=staff] body #staff-app .ws-nav-foot{margin:auto 0 0;padding:10px 9px 2px;border-top:1px solid var(--ws-line);display:grid;gap:2px;font-size:.78rem;color:var(--ws-text)}
+ html[data-app-surface=staff] body #staff-app .ws-nav-foot small{color:var(--ws-muted);font-size:.7rem}
+ html[data-app-surface=staff] body .has-ws .staff-content{min-width:0}
+}
+/* Dashboard */
+html[data-app-surface=staff] body #staff-app .ops.dash{display:grid;gap:18px;color:var(--ws-text)}
+@media(min-width:1280px){html[data-app-surface=staff] body #staff-app .ops.dash{grid-template-columns:minmax(0,1fr) 300px;align-items:start}}
+html[data-app-surface=staff] body #staff-app .dash-main{min-width:0;display:grid;gap:14px;align-content:start}
+html[data-app-surface=staff] body #staff-app .dash .ops-head{margin:0}
+html[data-app-surface=staff] body #staff-app .dash-tabs{display:flex;gap:2px;border-bottom:1px solid var(--ws-line);overflow-x:auto;scrollbar-width:none}
+html[data-app-surface=staff] body #staff-app .dash-tabs button{min-height:36px;padding:6px 12px;border:0;border-bottom:2px solid transparent;border-radius:0;background:transparent;box-shadow:none;color:var(--ws-muted);font-size:.85rem;font-weight:600;white-space:nowrap}
+html[data-app-surface=staff] body #staff-app .dash-tabs button[aria-current=true]{color:var(--ws-text);border-bottom-color:var(--ws-text)}
+html[data-app-surface=staff] body #staff-app .dash-tabs button:hover{color:var(--ws-text)}
+html[data-app-surface=staff] body #staff-app #ops-body{display:grid;gap:18px}
+html[data-app-surface=staff] body #staff-app .dash-h{margin:0 0 10px;font-size:.98rem;font-weight:700;color:var(--ws-text)}
+html[data-app-surface=staff] body #staff-app .dash .ops-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+html[data-app-surface=staff] body #staff-app .dash .ops-kpi{min-height:74px;padding:12px 14px;border-radius:10px;border:1px solid var(--ws-line);background:var(--ws-bg);box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;gap:12px}
+html[data-app-surface=staff] body #staff-app .dash .ops-kpi .ops-kpi-icon{width:34px;height:34px;border-radius:8px;background:var(--ws-soft);color:var(--ws-muted);border:1px solid var(--ws-line)}
+html[data-app-surface=staff] body #staff-app .dash .ops-kpi span{color:var(--ws-muted);font-size:.8rem}
+html[data-app-surface=staff] body #staff-app .dash .ops-kpi strong{color:var(--ws-text);font-size:1.25rem}
+html[data-app-surface=staff] body #staff-app .dash button.ops-kpi-link:hover{transform:none;border-color:var(--ws-muted)}
+html[data-app-surface=staff] body #staff-app .dash-status{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+html[data-app-surface=staff] body #staff-app .dash-stat{display:grid;gap:6px;justify-items:start;min-height:64px;padding:10px 12px;border-radius:10px;border:1px solid var(--ws-line);background:var(--ws-bg);box-shadow:none;color:var(--ws-text);text-align:start}
+html[data-app-surface=staff] body #staff-app .dash-stat:hover{border-color:var(--ws-muted)}
+html[data-app-surface=staff] body #staff-app .dash-stat[aria-pressed=true]{border-color:var(--ws-text);box-shadow:inset 0 0 0 1px var(--ws-text)}
+html[data-app-surface=staff] body #staff-app .dash-stat[data-empty] strong{color:var(--ws-muted)}
+html[data-app-surface=staff] body #staff-app .dash-stat-label{display:flex;align-items:center;gap:7px;font-size:.78rem;color:var(--ws-muted);font-weight:500}
+html[data-app-surface=staff] body #staff-app .dash-stat strong{font-size:1.15rem}
+html[data-app-surface=staff] body #staff-app .dash-dot{display:inline-block;width:10px;height:10px;flex:none;border-radius:3px;background:var(--dash-color,#9ca3af)}
+html[data-app-surface=staff] body #staff-app .dash-charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:12px}
+html[data-app-surface=staff] body #staff-app .dash-card{padding:14px 16px;border-radius:10px;border:1px solid var(--ws-line);background:var(--ws-bg);min-width:0}
+html[data-app-surface=staff] body #staff-app .dash-bars{display:flex;align-items:flex-end;gap:8px;height:190px;padding:8px 4px 0;border-bottom:1px solid var(--ws-line);background:repeating-linear-gradient(to top,transparent 0 37px,var(--ws-line) 37px 38px)}
+html[data-app-surface=staff] body #staff-app .dash-bar{flex:1 1 0;min-width:18px;height:100%;display:grid;grid-template-rows:1fr auto;gap:4px;padding:0;border:0;background:transparent;box-shadow:none;cursor:pointer}
+html[data-app-surface=staff] body #staff-app .dash-bar-track{display:flex;align-items:flex-end;justify-content:center;height:100%}
+html[data-app-surface=staff] body #staff-app .dash-bar-fill{display:block;width:min(34px,70%);min-height:3px;border-radius:4px 4px 0 0;background:var(--dash-color)}
+html[data-app-surface=staff] body #staff-app .dash-bar:hover .dash-bar-fill,html[data-app-surface=staff] body #staff-app .dash-bar:focus-visible .dash-bar-fill{filter:brightness(.9)}
+html[data-app-surface=staff] body #staff-app .dash-bar small{font-size:.66rem;color:var(--ws-muted);text-align:center;white-space:nowrap}
+html[data-app-surface=staff] body #staff-app .dash-axis{display:flex;justify-content:space-between;margin:6px 0 0;font-size:.7rem;color:var(--ws-muted)}
+html[data-app-surface=staff] body #staff-app .dash-ring{display:grid;grid-template-columns:minmax(140px,1fr) minmax(140px,1fr);align-items:center;gap:12px}
+html[data-app-surface=staff] body #staff-app .dash-ring svg{width:100%;max-width:260px}
+html[data-app-surface=staff] body #staff-app .dash-ring path{fill:none;stroke-width:22;stroke-linecap:butt}
+html[data-app-surface=staff] body #staff-app .dash-ring-base{stroke:var(--ws-soft)}
+html[data-app-surface=staff] body #staff-app .dash-ring-part{stroke:var(--dash-color)}
+html[data-app-surface=staff] body #staff-app .dash-legend{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+html[data-app-surface=staff] body #staff-app .dash-legend button{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px;width:100%;min-height:28px;padding:3px 6px;border:0;border-radius:6px;background:transparent;box-shadow:none;color:var(--ws-text);font-size:.78rem;font-weight:500;text-align:start}
+html[data-app-surface=staff] body #staff-app .dash-legend button:hover,html[data-app-surface=staff] body #staff-app .dash-legend button[aria-pressed=true]{background:var(--ws-hover)}
+html[data-app-surface=staff] body #staff-app .dash-empty{margin:0;padding:24px 0;text-align:center;color:var(--ws-muted);font-size:.85rem}
+html[data-app-surface=staff] body #staff-app .dash-filter{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-size:.82rem;color:var(--ws-muted)}
+html[data-app-surface=staff] body #staff-app .dash-filter button{min-height:30px;padding:4px 10px;font-size:.76rem}
+html[data-app-surface=staff] body #staff-app .dash .ops-main,html[data-app-surface=staff] body #staff-app .dash .ops-panel{border-radius:10px;border:1px solid var(--ws-line);background:var(--ws-bg);box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+html[data-app-surface=staff] body #staff-app .dash .ops-table-wrap{border-color:var(--ws-line);border-radius:8px}
+html[data-app-surface=staff] body #staff-app .dash .ops-table th{background:var(--ws-soft);font-size:.78rem}
+html[data-app-surface=staff] body #staff-app .dash-activity{padding:14px 16px;border-radius:10px;border:1px solid var(--ws-line);background:var(--ws-bg)}
+html[data-app-surface=staff] body #staff-app .dash-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
+html[data-app-surface=staff] body #staff-app .dash-row .dash-h{margin:0}
+html[data-app-surface=staff] body #staff-app .dash-row button{min-height:32px;font-size:.78rem}
+html[data-app-surface=staff] body #staff-app .dash-feed{list-style:none;margin:0;padding:0;display:grid}
+html[data-app-surface=staff] body #staff-app .dash-feed li{display:flex;align-items:center;gap:10px;padding:9px 2px;border-top:1px solid var(--ws-line)}
+html[data-app-surface=staff] body #staff-app .dash-feed li:first-child{border-top:0}
+html[data-app-surface=staff] body #staff-app .dash-feed-icon{width:28px;height:28px;flex:none;display:grid;place-items:center;border-radius:50%;background:var(--ws-soft);border:1px solid var(--ws-line);color:var(--ws-muted)}
+html[data-app-surface=staff] body #staff-app .dash-feed-icon svg{width:15px;height:15px}
+html[data-app-surface=staff] body #staff-app .dash-feed strong{display:block;font-size:.85rem;font-weight:600}
+html[data-app-surface=staff] body #staff-app .dash-feed small{color:var(--ws-muted);font-size:.74rem}
+html[data-app-surface=staff] body #staff-app .dash-side{display:none}
+@media(min-width:1280px){html[data-app-surface=staff] body #staff-app .dash-side{display:block;position:sticky;top:76px;border:1px solid var(--ws-line);border-radius:12px;background:var(--ws-bg);overflow:hidden}}
+html[data-app-surface=staff] body #staff-app .dash-cover{height:84px;background:linear-gradient(135deg,#1f2937,#4b5563 55%,#111827)}
+html[data-app-surface=staff] body #staff-app .dash-person{display:grid;gap:2px;padding:0 16px 12px;margin-top:-28px}
+html[data-app-surface=staff] body #staff-app .dash-avatar{width:56px;height:56px;display:grid;place-items:center;margin-bottom:6px;border-radius:12px;border:3px solid var(--ws-bg);background:var(--material-navy,var(--accent));color:#fff;font-weight:800;font-size:1.05rem}
+html[data-app-surface=staff] body #staff-app .dash-person strong{font-size:1rem;color:var(--ws-text)}
+html[data-app-surface=staff] body #staff-app .dash-person small{color:var(--ws-muted);font-size:.78rem;overflow-wrap:anywhere}
+html[data-app-surface=staff] body #staff-app .dash-facts{margin:0;padding:6px 16px 10px;border-top:1px solid var(--ws-line);display:grid}
+html[data-app-surface=staff] body #staff-app .dash-facts>div{display:flex;justify-content:space-between;gap:12px;padding:7px 0;font-size:.8rem}
+html[data-app-surface=staff] body #staff-app .dash-facts dt{color:var(--ws-muted)}
+html[data-app-surface=staff] body #staff-app .dash-facts dd{margin:0;font-weight:600;text-align:end;color:var(--ws-text);overflow-wrap:anywhere}
+html[data-app-surface=staff] body #staff-app .dash-side-actions{display:grid;gap:6px;padding:12px 16px 16px;border-top:1px solid var(--ws-line)}
+html[data-app-surface=staff] body #staff-app .dash-side-actions button{min-height:34px;font-size:.8rem}
+@media(max-width:560px){html[data-app-surface=staff] body #staff-app .dash-ring{grid-template-columns:1fr}html[data-app-surface=staff] body #staff-app .dash-bars{height:150px}}
+html[data-app-surface=staff] body #staff-app .dash .dash-ring svg{width:100%;height:auto;max-width:260px;justify-self:center}
+html[data-app-surface=staff] body #staff-app .dash .dash-ring-part,html[data-app-surface=staff] body #staff-app .dash .dash-ring-base{fill:none;stroke-width:22}
+/* The right sidebar gives way to the trip details panel. */
+html[data-app-surface=staff] body #staff-app .ops.dash:has(.ops-with-panel){grid-template-columns:minmax(0,1fr)}
+html[data-app-surface=staff] body #staff-app .ops.dash:has(.ops-with-panel) .dash-side{display:none}
+/* Plain, light page behind the workspace on wide screens. */
+@media(min-width:1100px){html[data-app-surface=staff] body:has(#staff-app .has-ws){background:var(--ws-soft);background-image:none}html[data-app-surface=staff] body:has(#staff-app .has-ws)::before,html[data-app-surface=staff] body:has(#staff-app .has-ws)::after{display:none}html[data-app-surface=staff] body #staff-app .has-ws .staff-topbar.app-masthead.staff-header{background:var(--ws-bg);box-shadow:none;border-bottom:1px solid var(--ws-line)}}
+html[data-app-surface=staff] body #staff-app .ws-nav button.company-side-toggle{display:flex;justify-content:flex-start;width:100%;border:0;background:transparent;box-shadow:none;text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+html[data-app-surface=staff] body #staff-app .ws-nav button.company-side-toggle:hover{background:var(--ws-hover);color:var(--ws-text)}
+html[data-app-surface=staff] body #staff-app .ws-nav .company-side-count{background:var(--ws-active);color:var(--ws-muted)}
+html[data-app-surface=staff] body #staff-app .dash-side-actions button{border:1px solid var(--ws-line);border-radius:8px;background:var(--ws-bg);box-shadow:none;color:var(--ws-text);font-weight:600}
+html[data-app-surface=staff] body #staff-app .dash-side-actions button:hover{background:var(--ws-hover)}
+html[data-app-surface=staff] body #staff-app .dash :is(.ops-kpi,.dash-stat){transition:none}
+@media(min-width:1100px){html[data-app-surface=staff] body #staff-app .has-ws .staff-header :is(.header-icon,.app-bell,.staff-profile-button,.app-back){border:1px solid var(--ws-line);border-radius:8px;background:var(--ws-bg);box-shadow:none;color:var(--ws-text)}html[data-app-surface=staff] body #staff-app .has-ws .staff-header :is(.header-icon,.app-bell,.app-back):hover{background:var(--ws-hover)}html[data-app-surface=staff] body #staff-app .has-ws .staff-search-box input{border-radius:8px;border:1px solid var(--ws-line);background:var(--ws-soft);box-shadow:none}html[data-app-surface=staff] body #staff-app .has-ws .staff-profile-button{border-radius:999px}}
