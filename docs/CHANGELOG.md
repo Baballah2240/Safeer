@@ -416,3 +416,7 @@ On screens 1100px and wider, the header menu button now hides and shows the icon
 ## D104 — One workspace layout
 
 The old slide-out drawer is removed from the staff workspace. The icon rail and second sidebar are the only navigation: a column on screens 1024px and wider (the menu button hides and shows it), and a slide-in panel on narrower screens (closes on a choice, the backdrop or Escape). Marketplace, Driver workspace, Refresh and Sign out moved to the bottom of the sidebar. Every staff page uses the minimal look: white surfaces, light grey borders, compact spacing, small radii; main buttons keep the company colour.
+
+## D105 — Profile only in the header
+
+The profile sidebar on the company dashboard is removed; the dashboard uses the full width. Your profile stays in the header menu.

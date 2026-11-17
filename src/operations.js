@@ -16,12 +16,11 @@ export const resetOperations=()=>{clearInterval(state.timer);state={company:null
 // D102: dashboard colours are kept for statuses and chart data only.
 const statusColor={scheduled:'#9ca3af',boarding:'#3b82f6',departed:'#f59e0b',arrived:'#22c55e',delayed:'#eab308',unassigned:'#dc2626',canceled:'#9f1239',draft:'#cbd5e1'};
 const statusOrder=['scheduled','boarding','departed','arrived','delayed','unassigned','canceled'];
-const initials=name=>String(name||'').trim().split(/\s+/).filter(Boolean).slice(0,2).map(w=>[...w][0]).join('').toUpperCase()||'?';
 
 export function operationsView(data,{t}){
  const cap=data.capabilities;
  return `<section class="ops dash" aria-labelledby="ops-title"><div class="dash-main"><header class="ops-head"><div><h1 id="ops-title">${t('Operations overview')}</h1><p class="ops-day" id="ops-day"></p></div><div class="ops-head-actions"><button type="button" class="secondary ops-icon-button" id="ops-refresh" aria-label="${t('Refresh')}" title="${t('Refresh')}">${svg('refresh')}</button>${cap.tripsManage?`<button type="button" class="staff-primary ops-create" id="ops-create">${svg('plus')}<span>${t('Create trip')}</span></button>`:''}</div></header>
- <nav class="dash-tabs" aria-label="${t('Dashboard sections')}">${[['ops-summary','Summary'],['ops-table-title','Departures'],['ops-attention-anchor','Needs attention'],['dash-activity','Activity']].map(([id,label],i)=>`<button type="button" data-dash-tab="${id}" ${i===0?'aria-current="true"':''}>${t(label)}</button>`).join('')}</nav><div id="ops-body" aria-live="polite"><div class="ops-kpis" aria-hidden="true">${'<article class="ops-kpi ops-skeleton"></article>'.repeat(4)}</div><p role="status" class="ops-loading">${t('Loading today\'s departures…')}</p></div></div><aside class="dash-side" id="dash-side" aria-label="${t('Your profile')}"></aside></section>`;
+ <nav class="dash-tabs" aria-label="${t('Dashboard sections')}">${[['ops-summary','Summary'],['ops-table-title','Departures'],['ops-attention-anchor','Needs attention'],['dash-activity','Activity']].map(([id,label],i)=>`<button type="button" data-dash-tab="${id}" ${i===0?'aria-current="true"':''}>${t(label)}</button>`).join('')}</nav><div id="ops-body" aria-live="polite"><div class="ops-kpis" aria-hidden="true">${'<article class="ops-kpi ops-skeleton"></article>'.repeat(4)}</div><p role="status" class="ops-loading">${t('Loading today\'s departures…')}</p></div></div></section>`;
 }
 
 export function bindOperations(root,data,ctx){
@@ -78,14 +77,6 @@ export function bindOperations(root,data,ctx){
  // Recent activity: this company's latest notifications for this person.
  const activity=()=>`<section class="dash-block dash-activity" id="dash-activity" aria-labelledby="dash-activity-title"><header class="dash-row"><h2 class="dash-h" id="dash-activity-title">${t('Recent activity')}</h2>${ctx.openNotifications?`<button type="button" class="secondary" data-dash-inbox>${t('Open notifications')}</button>`:''}</header>${feed===null?`<p class="dash-empty" role="status">${t('Loading…')}</p>`:feed.length?`<ol class="dash-feed">${feed.map(n=>`<li><span class="dash-feed-icon">${svg(n.code.startsWith('trip')||n.code.startsWith('journey')?'bus':n.code.startsWith('booking')||n.code.startsWith('payment')?'ticket':'alert')}</span><span><strong>${e(t(n.code))}</strong><small><bdi>${e(new Intl.DateTimeFormat(language==='ar'?'ar-SD-u-nu-latn':'en-GB',{dateStyle:'medium',timeStyle:'short',timeZone:tz}).format(new Date(n.at)))}</bdi>${n.read?'':` · ${t('Unread')}`}</small></span></li>`).join('')}</ol>`:`<p class="dash-empty">${t('No recent activity.')}</p>`}</section>`;
  const loadFeed=async()=>{try{const r=await api('notifications');feed=r.items.filter(n=>n.companyId===cid).slice(0,6);}catch{feed=[];}if(view)paint();};
- // Right sidebar: the person and the company.
- const paintSide=()=>{const side=root.querySelector('#dash-side');if(!side||side.dataset.ready===language)return;side.dataset.ready=language;const me=ctx.me||{},c=data.company,sections=ctx.sectionCount||0;
-  side.innerHTML=`<div class="dash-cover" aria-hidden="true"></div><div class="dash-person"><span class="dash-avatar" aria-hidden="true">${e(initials(me.displayName))}</span><strong>${e(me.displayName||'')}</strong><small><bdi>${e(me.login||'')}</bdi></small></div>
-   <dl class="dash-facts"><div><dt>${t('Company')}</dt><dd>${e(language==='ar'?c.nameAr:c.nameEn)}</dd></div><div><dt>${t('Status')}</dt><dd>${t(c.status==='approved'?'Approved':c.status==='suspended'?'Suspended':'Pending approval')}</dd></div><div><dt>${t('Time zone')}</dt><dd><bdi>${e(c.timezone)}</bdi></dd></div><div><dt>${t('Your sections')}</dt><dd><bdi>${sections}</bdi></dd></div><div><dt>${t('Access')}</dt><dd>${t(me.superAdministrator?'Full platform access':'Permission-based access')}</dd></div></dl>
-   <div class="dash-side-actions">${ctx.openProfile?`<button type="button" class="secondary" data-dash-profile>${t('Your profile')}</button>`:''}${ctx.openSettings?`<button type="button" class="secondary" data-dash-settings>${t('Company settings')}</button>`:''}${ctx.openNotifications?`<button type="button" class="secondary" data-dash-inbox-side>${t('Notifications')}</button>`:''}</div>`;
-  side.querySelector('[data-dash-profile]')?.addEventListener('click',()=>ctx.openProfile());
-  side.querySelector('[data-dash-settings]')?.addEventListener('click',()=>ctx.openSettings());
-  side.querySelector('[data-dash-inbox-side]')?.addEventListener('click',()=>ctx.openNotifications());};
  // Tabs jump to their part of the dashboard.
  root.querySelectorAll('[data-dash-tab]').forEach(b=>b.onclick=()=>{root.querySelectorAll('[data-dash-tab]').forEach(x=>x.removeAttribute('aria-current'));b.setAttribute('aria-current','true');const target=root.querySelector('#'+b.dataset.dashTab)||root.querySelector('#ops-body');target.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});});
  const paint=()=>{
@@ -102,7 +93,6 @@ export function bindOperations(root,data,ctx){
   body.querySelectorAll('[data-dash-status]').forEach(b=>b.onclick=()=>{state.status=state.status===b.dataset.dashStatus?'':b.dataset.dashStatus;paint();body.querySelector('#ops-table-title')?.scrollIntoView({behavior:'smooth',block:'start'});});
   body.querySelector('[data-dash-clear]')?.addEventListener('click',()=>{state.status='';paint();});
   body.querySelector('[data-dash-inbox]')?.addEventListener('click',()=>ctx.openNotifications?.());
-  paintSide();
   body.querySelectorAll('[data-ops-trip]').forEach(b=>b.onclick=()=>{state.trip=b.dataset.opsTrip===state.trip&&b.classList.contains('ops-row-open')?null:b.dataset.opsTrip;detail=null;paint();if(state.trip)void loadTrip(true);});
   body.querySelector('[data-ops-close]')?.addEventListener('click',()=>{const id=state.trip;state.trip=null;detail=null;paint();body.querySelector(`[data-ops-trip="${CSS.escape(id)}"]`)?.focus();});
   body.querySelector('[data-ops-empty-create]')?.addEventListener('click',create);

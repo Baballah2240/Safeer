@@ -93,7 +93,7 @@ export function bindCompanies(root,data,ctx){
   if(companyState.section==='drivers')bindDrivers(root,data,ctx);
   if(companyState.section==='trips')bindTrips(root,data,{...ctx,setTripFrom:value=>{companyState.tripFrom=value;void refresh();}});
   if(companyState.section==='bookings')bindBookings(root,data,ctx);
-  if(companyState.section==='operations')bindOperations(root,data,{...ctx,sectionCount:companySections(data.capabilities).length,openSettings:companySections(data.capabilities).some(r=>r[3]==='settings')?()=>{companyState.section=companySections(data.capabilities).find(r=>r[3]==='settings')[0];render();}:null,openSection:(id,then)=>{companyState.section=id;render();setTimeout(()=>then?.());}});
+  if(companyState.section==='operations')bindOperations(root,data,{...ctx,openSection:(id,then)=>{companyState.section=id;render();setTimeout(()=>then?.());}});
   if(companyState.section==='luggage')bindLuggage(root,data,ctx);
   if(companyState.section==='shipments')bindShipments(root,data,ctx);
   if(companyState.section==='finance')bindFinance(root,data,ctx);

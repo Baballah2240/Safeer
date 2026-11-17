@@ -42,7 +42,7 @@ try{await identityFixture(async f=>{
  assert.equal(await evaluate('document.querySelectorAll(".dash-bar").length'),3);
  await click('.dash-stat[data-dash-status=unassigned]');await until('document.querySelectorAll(".ops-table tbody tr").length===1');
  await click('[data-dash-clear]');await until('document.querySelectorAll(".ops-table tbody tr").length===3');
- await until('Boolean(document.querySelector("#dash-side .dash-person"))&&!document.querySelector("#dash-activity [role=status]")');
+ await until('!document.querySelector("#dash-side")&&!document.querySelector("#dash-activity [role=status]")');
  // D103: the header menu button hides and shows the workspace sidebar on wide screens, without opening the drawer.
  assert.ok(await evaluate('getComputedStyle(document.querySelector(".ws-nav")).display!=="none"'),'sidebar shown');
  await click('#staff-menu-toggle');await until('document.querySelector(".staff-shell").classList.contains("ws-collapsed")&&getComputedStyle(document.querySelector(".ws-nav")).display==="none"');

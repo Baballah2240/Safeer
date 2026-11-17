@@ -423,7 +423,6 @@ html[data-app-surface=staff] body #staff-app .ws-rail,html[data-app-surface=staf
 }
 /* Dashboard */
 html[data-app-surface=staff] body #staff-app .ops.dash{display:grid;gap:18px;color:var(--ws-text)}
-@media(min-width:1280px){html[data-app-surface=staff] body #staff-app .ops.dash{grid-template-columns:minmax(0,1fr) 300px;align-items:start}}
 html[data-app-surface=staff] body #staff-app .dash-main{min-width:0;display:grid;gap:14px;align-content:start}
 html[data-app-surface=staff] body #staff-app .dash .ops-head{margin:0}
 html[data-app-surface=staff] body #staff-app .dash-tabs{display:flex;gap:2px;border-bottom:1px solid var(--ws-line);overflow-x:auto;scrollbar-width:none}
@@ -480,32 +479,16 @@ html[data-app-surface=staff] body #staff-app .dash-feed-icon{width:28px;height:2
 html[data-app-surface=staff] body #staff-app .dash-feed-icon svg{width:15px;height:15px}
 html[data-app-surface=staff] body #staff-app .dash-feed strong{display:block;font-size:.85rem;font-weight:600}
 html[data-app-surface=staff] body #staff-app .dash-feed small{color:var(--ws-muted);font-size:.74rem}
-html[data-app-surface=staff] body #staff-app .dash-side{display:none}
-@media(min-width:1280px){html[data-app-surface=staff] body #staff-app .dash-side{display:block;position:sticky;top:76px;border:1px solid var(--ws-line);border-radius:12px;background:var(--ws-bg);overflow:hidden}}
-html[data-app-surface=staff] body #staff-app .dash-cover{height:84px;background:linear-gradient(135deg,#1f2937,#4b5563 55%,#111827)}
-html[data-app-surface=staff] body #staff-app .dash-person{display:grid;gap:2px;padding:0 16px 12px;margin-top:-28px}
-html[data-app-surface=staff] body #staff-app .dash-avatar{width:56px;height:56px;display:grid;place-items:center;margin-bottom:6px;border-radius:12px;border:3px solid var(--ws-bg);background:var(--material-navy,var(--accent));color:#fff;font-weight:800;font-size:1.05rem}
-html[data-app-surface=staff] body #staff-app .dash-person strong{font-size:1rem;color:var(--ws-text)}
-html[data-app-surface=staff] body #staff-app .dash-person small{color:var(--ws-muted);font-size:.78rem;overflow-wrap:anywhere}
-html[data-app-surface=staff] body #staff-app .dash-facts{margin:0;padding:6px 16px 10px;border-top:1px solid var(--ws-line);display:grid}
-html[data-app-surface=staff] body #staff-app .dash-facts>div{display:flex;justify-content:space-between;gap:12px;padding:7px 0;font-size:.8rem}
-html[data-app-surface=staff] body #staff-app .dash-facts dt{color:var(--ws-muted)}
-html[data-app-surface=staff] body #staff-app .dash-facts dd{margin:0;font-weight:600;text-align:end;color:var(--ws-text);overflow-wrap:anywhere}
-html[data-app-surface=staff] body #staff-app .dash-side-actions{display:grid;gap:6px;padding:12px 16px 16px;border-top:1px solid var(--ws-line)}
-html[data-app-surface=staff] body #staff-app .dash-side-actions button{min-height:34px;font-size:.8rem}
 @media(max-width:560px){html[data-app-surface=staff] body #staff-app .dash-ring{grid-template-columns:1fr}html[data-app-surface=staff] body #staff-app .dash-bars{height:150px}}
 html[data-app-surface=staff] body #staff-app .dash .dash-ring svg{width:100%;height:auto;max-width:260px;justify-self:center}
 html[data-app-surface=staff] body #staff-app .dash .dash-ring-part,html[data-app-surface=staff] body #staff-app .dash .dash-ring-base{fill:none;stroke-width:22}
 /* The right sidebar gives way to the trip details panel. */
 html[data-app-surface=staff] body #staff-app .ops.dash:has(.ops-with-panel){grid-template-columns:minmax(0,1fr)}
-html[data-app-surface=staff] body #staff-app .ops.dash:has(.ops-with-panel) .dash-side{display:none}
 /* Plain, light page behind the workspace on wide screens. */
 @media(min-width:1024px){html[data-app-surface=staff] body:has(#staff-app .has-ws){background:var(--ws-soft);background-image:none}html[data-app-surface=staff] body:has(#staff-app .has-ws)::before,html[data-app-surface=staff] body:has(#staff-app .has-ws)::after{display:none}html[data-app-surface=staff] body #staff-app .has-ws .staff-topbar.app-masthead.staff-header{background:var(--ws-bg);box-shadow:none;border-bottom:1px solid var(--ws-line)}}
 html[data-app-surface=staff] body #staff-app .ws-nav button.company-side-toggle{display:flex;justify-content:flex-start;width:100%;border:0;background:transparent;box-shadow:none;text-transform:uppercase;letter-spacing:.06em;font-weight:700}
 html[data-app-surface=staff] body #staff-app .ws-nav button.company-side-toggle:hover{background:var(--ws-hover);color:var(--ws-text)}
 html[data-app-surface=staff] body #staff-app .ws-nav .company-side-count{background:var(--ws-active);color:var(--ws-muted)}
-html[data-app-surface=staff] body #staff-app .dash-side-actions button{border:1px solid var(--ws-line);border-radius:8px;background:var(--ws-bg);box-shadow:none;color:var(--ws-text);font-weight:600}
-html[data-app-surface=staff] body #staff-app .dash-side-actions button:hover{background:var(--ws-hover)}
 html[data-app-surface=staff] body #staff-app .dash :is(.ops-kpi,.dash-stat){transition:none}
 @media(min-width:1024px){html[data-app-surface=staff] body #staff-app .has-ws .staff-header :is(.header-icon,.app-bell,.staff-profile-button,.app-back){border:1px solid var(--ws-line);border-radius:8px;background:var(--ws-bg);box-shadow:none;color:var(--ws-text)}html[data-app-surface=staff] body #staff-app .has-ws .staff-header :is(.header-icon,.app-bell,.app-back):hover{background:var(--ws-hover)}html[data-app-surface=staff] body #staff-app .has-ws .staff-search-box input{border-radius:8px;border:1px solid var(--ws-line);background:var(--ws-soft);box-shadow:none}html[data-app-surface=staff] body #staff-app .has-ws .staff-profile-button{border-radius:999px}}
 
