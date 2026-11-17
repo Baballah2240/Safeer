@@ -424,3 +424,7 @@ The profile sidebar on the company dashboard is removed; the dashboard uses the 
 ## D106 — Overview without personal details
 
 The workspace Overview no longer shows your profile or the password form. Your profile (name, email, roles, change password) is its own page, opened from the header profile menu or the search. A new account that must change its temporary password lands on that page, then on Overview.
+
+## D107 — Collapsible sidebar keeps the icon rail
+
+On wide screens the menu button now collapses the sidebar to the icon rail (the second sidebar slides away and the page widens smoothly) and expands it back to the full sidebar. Motion is off for people who prefer reduced motion.

@@ -493,7 +493,20 @@ html[data-app-surface=staff] body #staff-app .dash :is(.ops-kpi,.dash-stat){tran
 @media(min-width:1024px){html[data-app-surface=staff] body #staff-app .has-ws .staff-header :is(.header-icon,.app-bell,.staff-profile-button,.app-back){border:1px solid var(--ws-line);border-radius:8px;background:var(--ws-bg);box-shadow:none;color:var(--ws-text)}html[data-app-surface=staff] body #staff-app .has-ws .staff-header :is(.header-icon,.app-bell,.app-back):hover{background:var(--ws-hover)}html[data-app-surface=staff] body #staff-app .has-ws .staff-search-box input{border-radius:8px;border:1px solid var(--ws-line);background:var(--ws-soft);box-shadow:none}html[data-app-surface=staff] body #staff-app .has-ws .staff-profile-button{border-radius:999px}}
 
 /* D103: hide the workspace sidebar from the header button */
-@media(min-width:1024px){html[data-app-surface=staff] body #staff-app .staff-shell.has-ws.ws-collapsed{grid-template-columns:minmax(0,1fr)}html[data-app-surface=staff] body #staff-app .has-ws.ws-collapsed :is(.ws-rail,.ws-nav){display:none}}
+/* D107: collapsing keeps the icon rail; only the second sidebar slides away. */
+@media(min-width:1024px){
+ html[data-app-surface=staff] body #staff-app .staff-shell.has-ws{transition:grid-template-columns .24s cubic-bezier(.2,.8,.2,1)}
+ html[data-app-surface=staff] body #staff-app .staff-shell.has-ws.ws-collapsed{grid-template-columns:68px 0px minmax(0,1fr)}
+ html[data-app-surface=staff] body #staff-app .has-ws .ws-nav{transition:opacity .18s ease,visibility 0s linear 0s}
+ html[data-app-surface=staff] body #staff-app .has-ws.ws-collapsed .ws-nav{visibility:hidden;opacity:0;padding-inline:0;border-inline-end-width:0;overflow:hidden;transition:opacity .12s ease,visibility 0s linear .24s}
+ html[data-app-surface=staff] body #staff-app .has-ws.ws-collapsed .ws-rail{box-shadow:1px 0 0 var(--ws-line)}
+}
+@media(prefers-reduced-motion:reduce){html[data-app-surface=staff] body #staff-app .staff-shell.has-ws,html[data-app-surface=staff] body #staff-app .has-ws .ws-nav{transition:none}}
+/* D107: a clearer rail: active item gets an accent bar, and each icon names itself on hover and focus. */
+html[data-app-surface=staff] body #staff-app .ws-rail button{position:relative}
+html[data-app-surface=staff] body #staff-app .ws-rail button[aria-current=page]::before{content:"";position:absolute;inset-block:12px;inset-inline-start:-6px;width:3px;border-radius:0 3px 3px 0;background:var(--accent)}
+html[dir=rtl] body #staff-app .ws-rail button[aria-current=page]::before{border-radius:3px 0 0 3px}
+html[data-app-surface=staff] body #staff-app .ws-rail button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
 
 /* D104: one layout for the whole staff workspace. The workspace sidebar is the only navigation:
    a grid column on wide screens, a slide-in panel over the page on narrow ones. */

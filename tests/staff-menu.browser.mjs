@@ -30,7 +30,7 @@ try{await identityFixture(async f=>{
    if(!signedIn)assert.equal(await evaluate('Boolean(document.querySelector("#staff-menu-toggle"))'),false,label+' no menu when signed out');
    else if(width>=1024){
     assert.ok(await evaluate('getComputedStyle(document.querySelector(".ws-nav")).display!=="none"'),label+' sidebar shown');
-    await click('#staff-menu-toggle');await until('document.querySelector(".staff-shell").classList.contains("ws-collapsed")&&getComputedStyle(document.querySelector(".ws-nav")).display==="none"');
+    await click('#staff-menu-toggle');await until('document.querySelector(".staff-shell").classList.contains("ws-collapsed")&&getComputedStyle(document.querySelector(".ws-nav")).visibility==="hidden"&&getComputedStyle(document.querySelector(".ws-rail")).display!=="none"');
     await click('#staff-menu-toggle');await until('!document.querySelector(".staff-shell").classList.contains("ws-collapsed")');
    }else{
     const field='#staff-search-input';

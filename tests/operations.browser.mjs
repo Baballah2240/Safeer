@@ -45,7 +45,8 @@ try{await identityFixture(async f=>{
  await until('!document.querySelector("#dash-side")&&!document.querySelector("#dash-activity [role=status]")');
  // D103: the header menu button hides and shows the workspace sidebar on wide screens, without opening the drawer.
  assert.ok(await evaluate('getComputedStyle(document.querySelector(".ws-nav")).display!=="none"'),'sidebar shown');
- await click('#staff-menu-toggle');await until('document.querySelector(".staff-shell").classList.contains("ws-collapsed")&&getComputedStyle(document.querySelector(".ws-nav")).display==="none"');
+ await click('#staff-menu-toggle');await until('document.querySelector(".staff-shell").classList.contains("ws-collapsed")&&getComputedStyle(document.querySelector(".ws-nav")).visibility==="hidden"&&getComputedStyle(document.querySelector(".ws-rail")).display!=="none"');
+ await new Promise(r=>setTimeout(r,500));await shot("collapsed");
  assert.equal(await evaluate('Boolean(document.querySelector("#staff-sidebar"))'),false,'old drawer removed');assert.equal(await evaluate('document.querySelector("#staff-menu-toggle").getAttribute("aria-expanded")'),'false');
  await click('#staff-menu-toggle');await until('!document.querySelector(".staff-shell").classList.contains("ws-collapsed")&&getComputedStyle(document.querySelector(".ws-rail")).display!=="none"');
  await evaluate('scrollTo(0,0)');await shot('dashboard-light');
