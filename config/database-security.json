@@ -526,6 +526,8 @@
     "safeer.payment_proof_attach(uuid,uuid,uuid,text,bytea)",
     "safeer.payment_proof(uuid,uuid)",
     "safeer.notifications_unread()",
-    "safeer.notifications_read_all()"
+    "safeer.notifications_read_all()",
+    "safeer.session_manifest(uuid,uuid)",
+    "safeer.my_closed_sessions(uuid)"
   ]
 }

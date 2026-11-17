@@ -33,7 +33,7 @@ export class TicketingService {
   if(!(await c.query('SELECT 1 FROM safeer.companies WHERE id=$1',[cid])).rowCount)fail('NOT_FOUND',404);
   return action(c,p.id);
  },false);}
- overview(token:string,cid:string){return this.staff(token,cid,async c=>(await c.query('SELECT safeer.counter_overview($1) AS row',[cid])).rows[0].row);}
+ overview(token:string,cid:string){return this.staff(token,cid,async c=>{const row=(await c.query('SELECT safeer.counter_overview($1) AS row',[cid])).rows[0].row;row.recentClosed=(await c.query('SELECT safeer.my_closed_sessions($1) AS row',[cid])).rows[0].row;return row;});}
  trip(token:string,cid:string,tid:string,from?:unknown,to?:unknown){uuid(tid);const f=stopIndex(from),l=stopIndex(to);return this.staff(token,cid,async c=>{const row=(await c.query('SELECT safeer.counter_trip($1,$2,$3::integer,$4::integer) AS row',[cid,tid,f,l])).rows[0].row;if(!row)fail('NOT_FOUND',404);return row;});}
  // D72: departures on one company-local day, for walk-in sales beyond the overview's next 100.
  trips(token:string,cid:string,day:unknown){
@@ -58,6 +58,8 @@ export class TicketingService {
   const data=body(input,['counterId','openingMinor']),counter=uuid(data.counterId),opening=minor(data.openingMinor,1000000000);
   return this.staff(token,cid,async(c,actor)=>(await c.query('SELECT safeer.open_session($1,$2,$3,$4) AS row',[cid,actor,counter,opening])).rows[0].row);
  }
+ // D114: everything sold and refunded in a closed session, for the printed manifest.
+ manifest(token:string,cid:string,sid:string){uuid(sid);return this.staff(token,cid,async c=>{const row=(await c.query('SELECT safeer.session_manifest($1,$2) AS row',[cid,sid])).rows[0].row;if(!row)fail('NOT_FOUND',404);return row;});}
  async closeSession(token:string,cid:string,sid:string,input:unknown){
   uuid(sid);const data=body(input,['countedMinor','note','currentPassword']),counted=minor(data.countedMinor,10000000000),note=optional(data.note,300);
   await this.identity.reauthenticate(token,data.currentPassword);

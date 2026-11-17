@@ -252,3 +252,26 @@ test('D93: a bank transfer needs a photo of the transfer, saved with the payment
  const marked=ok(await finance.c.request('notifications/read-all','POST',{}));assert.ok(marked.marked>=2);
  const after=ok(await finance.c.request('notifications/unread'),200);assert.equal(after.unreadCount,0);assert.equal(after.latest,null);
 }));
+
+test('D114: a closed session has a manifest of every ticket sold in it, for its opener and session managers only',async()=>identityFixture(async f=>{
+ const s=await setup(f),id=await s.trip();ok(await open(f,s));
+ const sold=ok(await f.admin.request(s.base+'/counter/sales','POST',{tripId:id,seats:['3','4'],mobile:'0912345678',travelers:[{seat:'3',name:'Fictional Manifest One'},{seat:'4',name:'Fictional Manifest Two'}],method:'cash',key:randomUUID()}));
+ const session=ok(await f.admin.request(s.base+'/counter'),200).session;
+ assert.equal((await f.admin.request(`${s.base}/counter/sessions/${session.id}/manifest`)).error.code,'SESSION_STILL_OPEN','An open session has no manifest yet.');
+ ok(await f.admin.request(`${s.base}/counter/sessions/${session.id}/close`,'POST',{countedMinor:100000+session.totals.cashIn,...s.pw}));
+ const overview=ok(await f.admin.request(s.base+'/counter'),200);
+ assert.equal(overview.session,null);assert.equal(overview.recentClosed[0].id,session.id,'The employee sees the session just closed.');
+ const m=ok(await f.admin.request(`${s.base}/counter/sessions/${session.id}/manifest`),200);
+ assert.equal(m.bookings.length,1);const b=m.bookings[0];
+ assert.deepEqual(b.tickets.map(t=>t.seat),['3','4']);assert.ok(b.tickets.every(t=>/^\S+$/.test(t.number)&&t.status==='valid'));
+ assert.deepEqual(b.travelers.map(p=>p.name),['Fictional Manifest One','Fictional Manifest Two']);
+ assert.equal(b.paymentMethod,'cash');assert.ok(b.receiptNumber);assert.equal(b.paidMinor,session.totals.cashIn);assert.equal(b.reference,sold.reference??b.reference);assert.ok(b.routeNameEn&&b.date&&b.time);
+ assert.ok(m.closedAt&&m.closedBy&&m.companyNameEn);assert.equal(m.totals.payments,1);assert.deepEqual(m.refunds,[]);
+ // Staff who neither opened the session nor manage sessions cannot read it.
+ const viewer=await staff(f,s,['company.profile.read','company.bookings.read']);
+ assert.equal((await viewer.c.request(`${s.base}/counter/sessions/${session.id}/manifest`)).status,403);
+ const seller=await staff(f,s,['company.profile.read','company.bookings.read','company.ticketing.operate'],{branchId:s.branch,stationId:s.station},'station');
+ assert.equal((await seller.c.request(`${s.base}/counter/sessions/${session.id}/manifest`)).status,403,'Another employee cannot read it.');
+ assert.deepEqual(ok(await seller.c.request(s.base+'/counter'),200).recentClosed,[]);
+ await assert.rejects(f.api.db.pool.query('SELECT safeer.session_manifest($1,$2)',[s.cid,session.id]),e=>e.code==='42501','Without a session, the function refuses.');
+}));

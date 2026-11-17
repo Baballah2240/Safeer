@@ -43,6 +43,7 @@ export async function grantIdentityRuntime(client,role){
     GRANT EXECUTE ON FUNCTION safeer.payment_proof_attach(uuid,uuid,uuid,text,bytea),safeer.payment_proof(uuid,uuid) TO "${role}";
     GRANT EXECUTE ON FUNCTION safeer.notifications_unread(),safeer.notifications_read_all() TO "${role}";
     GRANT EXECUTE ON FUNCTION safeer.public_book(uuid,text[],uuid,text,text,text,text,jsonb,integer,integer),safeer.counter_sale(uuid,uuid,uuid,text[],uuid,text,text,text,text,jsonb,text,text,text,integer,integer),safeer.public_trip(uuid,integer,integer),safeer.counter_trip(uuid,uuid,integer,integer) TO "${role}";
+    GRANT EXECUTE ON FUNCTION safeer.session_manifest(uuid,uuid),safeer.my_closed_sessions(uuid) TO "${role}";
     GRANT EXECUTE ON FUNCTION safeer.invoice_issue(uuid,date,text),safeer.invoice_settle(uuid,uuid,text,text) TO "${role}";
     GRANT EXECUTE ON FUNCTION safeer.company_actor(),safeer.company_super(),safeer.company_can(uuid,text,uuid,uuid),safeer.company_has(uuid,text),safeer.member_visible(uuid,uuid,boolean),safeer.assignment_allowed(uuid,uuid,uuid,uuid) TO "${role}";`);
 }

@@ -14654,6 +14654,73 @@
           }
         }
       }
+    },
+    "/api/v1/companies/{id}/counter/sessions/{sid}/manifest": {
+      "get": {
+        "summary": "Read the manifest of a closed session",
+        "description": "D114. Every booking paid and every refund made in the session, with trip, bus, driver, seats, tickets, travellers, luggage and receipt. The opener (still allowed to operate the counter) or company.sessions.manage at the station; company.bookings.read is also required. An open session returns SESSION_STILL_OPEN.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "sid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input."
+          },
+          "401": {
+            "description": "Sign in to continue."
+          },
+          "403": {
+            "description": "Not permitted."
+          },
+          "404": {
+            "description": "Not found."
+          },
+          "409": {
+            "description": "Conflict with the booking, session or version."
+          }
+        }
+      }
     }
   },
   "components": {

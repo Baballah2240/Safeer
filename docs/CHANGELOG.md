@@ -455,3 +455,10 @@ The booking and parcel pages no longer show a Back button in the header; the Boo
 ## D113 — App lock in the mobile apps
 
 Safeer Passenger and Safeer Driver have Settings > App lock: Off, PIN (4-6 digits, stored as a salted hash) or Biometrics (fingerprint or face, with the PIN as fallback). The app locks on start and when it goes to the background. Five wrong PINs start a 30-second wait that doubles each time. Details in mobile/UPDATES.md. Tests: safeer_core `app_lock_test.dart`, both app suites, `flutter analyze`.
+
+## D114 — Session manifest and walk-in sale
+
+- **Walk-in sale:** an open counter session has a **Walk-in sale** button beside Close session, and the sale form now comes directly after the session (before "Pay or change a booking"), so staff can sell a seat and take payment from a customer straight away.
+- **Manifest:** after a session closes, the employee sees **Your closed sessions** (their last three) with **Print manifest**; session managers have the same button on every closed session. The manifest lists the company, counter, station, who opened and closed it and when, the cash totals and count, then every ticket sold in the session grouped by trip (route, date, time, bus, driver): ticket number, seat, passenger, mobile, journey stops, luggage, booking reference, receipt, payment method, amount paid and status, followed by any refunds, and signature lines. It prints on A4 landscape.
+- **Server:** `GET /api/v1/companies/{id}/counter/sessions/{sid}/manifest` (database function `safeer.session_manifest`, migration 0031). Only the employee who opened the session (while still allowed to work that counter) or a session manager for the station can read it, and `company.bookings.read` is also required. An open session returns `SESSION_STILL_OPEN`. The counter overview also returns `recentClosed`.
+- Tests: `ticketing` integration (new D114 test), `station-sessions` and `ticketing` browser tests, unit tests (API path count 106).

@@ -51,6 +51,22 @@ try{await identityFixture(async f=>{
  await until('new URL(location.href).searchParams.get("section")==="sessions"&&Boolean(document.querySelector("[data-company-section=sessions][aria-current=page]"))');
  await until('!document.querySelector("[data-app-back]")');
 
+ // D114: an open session has a Walk-in sale button that goes to the sale form.
+ await until('Boolean(document.querySelector("[data-walk-in]"))');await evaluate('document.querySelector("[data-walk-in]").click()');
+ await until('(()=>{const r=document.querySelector("#station-sale")?.getBoundingClientRect();return r&&r.top<innerHeight&&r.bottom>0})()');
+ assert.ok(await evaluate('Boolean(document.querySelector("#station-session").compareDocumentPosition(document.querySelector("#station-sale"))&Node.DOCUMENT_POSITION_FOLLOWING)&&Boolean(document.querySelector("#station-sale").compareDocumentPosition(document.querySelector("#station-lookup"))&Node.DOCUMENT_POSITION_FOLLOWING)'),'Walk-in sale comes straight after the session.');
+ await shot('cashier-walk-in');
+ // Closing the session offers its manifest, which opens as a printable sheet.
+ await evaluate('document.querySelector("#station-session [data-session-close]").click()');
+ await fill('#staff-dialog [name=counted]','500');await fill('#staff-dialog [name=currentPassword]',password);await evaluate('document.querySelector("#staff-dialog form").requestSubmit()');
+ await until('Boolean(document.querySelector("#station-session [data-manifest]"))',20000);await shot('cashier-closed');
+ await evaluate('document.querySelector("#station-session [data-manifest]").click()');
+ await until('document.querySelector("#staff-dialog")?.open&&Boolean(document.querySelector("#staff-dialog .manifest-sheet"))');
+ assert.ok(await evaluate('/Session manifest/.test(document.querySelector("#staff-dialog").textContent)&&/North counter 1/.test(document.querySelector("#staff-dialog").textContent)&&/No tickets were sold/.test(document.querySelector("#staff-dialog").textContent)'),'manifest content');
+ assert.ok(await evaluate('Boolean(document.querySelector("#staff-dialog [data-manifest-print]"))'));
+ await shot('cashier-manifest');
+ await evaluate('document.querySelector("#staff-dialog [data-manifest-close]").click()');await until('!document.querySelector("#staff-dialog").open');
+
  // A link opens Sessions directly.
  await send('Page.navigate',{url:`${web.origin}/staff?tab=companies&company=${cid}&section=sessions&lang=ar`});
  await until('Boolean(document.querySelector("[data-company-section=sessions][aria-current=page]"))');

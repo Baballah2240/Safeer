@@ -127,3 +127,12 @@ html body .staff-shell.has-company-brand .staff-primary:hover:not(:disabled),htm
 .payment-proof-preview{margin:0;display:grid;gap:6px;justify-items:start}
 .payment-proof-preview img{max-width:min(100%,280px);max-height:240px;border-radius:10px;object-fit:contain;background:#fff}
 .payment-proof-file{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;clip:rect(0 0 0 0)}
+/* D114: walk-in sale entry and the printed manifest of a closed counter session. */
+.station-recent{margin-top:14px;border-top:1px solid var(--border);padding-top:12px}.station-recent h3{margin:0 0 8px;font-size:1rem}.station-recent ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}.station-recent li{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+#staff-dialog.manifest-dialog{width:min(1180px,calc(100vw - 24px));max-width:none}
+.manifest-tools{position:sticky;top:0;z-index:1;background:inherit;padding-block:4px 10px}
+.manifest-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px 16px}
+.manifest-trip{margin-top:18px}.manifest-trip h3{margin:0 0 4px;font-size:1rem}.manifest-trip>p{margin:0 0 8px}
+.manifest-scroll{overflow-x:auto}.manifest-table{width:100%;border-collapse:collapse;font-size:.8rem}.manifest-table :is(th,td){padding:5px 6px;border:1px solid var(--border);text-align:start;vertical-align:top}
+.manifest-sign{margin-top:24px;display:grid;gap:14px}
+@media print{@page{size:A4 landscape;margin:10mm}.manifest-scroll{overflow:visible}.manifest-table{font-size:8.5pt}.manifest-table :is(th,td){border-color:#000}.manifest-table tr{break-inside:avoid}.manifest-table thead{display:table-header-group}.manifest-sheet{color:#000}}
