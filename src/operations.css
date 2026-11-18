@@ -559,3 +559,52 @@ html[data-app-surface=staff] body #staff-app .staff-workspace-footer{color:var(-
 /* D108: the unread badge sits outside the bell, so the bell must not clip it (buttons clip their contents by default). */
 html[data-app-surface=staff] body #staff-app .app-bell,html[data-app-surface=staff] body .app-bell{overflow:visible}
 html[data-app-surface=staff] body .app-bell-count{z-index:1;box-shadow:0 0 0 2px var(--ws-bg,#fff)}
+
+/* D117: the home shortcuts, every form card (#staff-dialog), the notification centre and the new-notification card
+   use the same minimal workspace look as the pages: plain surfaces, thin borders, small radii, one accent colour. */
+html[data-app-surface=staff] body #staff-app .staff-shortcuts button{background:var(--ws-bg);background-image:none;border:1px solid var(--ws-line);border-radius:10px;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;color:var(--ws-text);padding:16px 18px;min-height:0}
+html[data-app-surface=staff] body #staff-app .staff-shortcuts button:hover{background:var(--ws-hover);border-color:var(--ws-line);transform:none;box-shadow:none}
+html[data-app-surface=staff] body #staff-app .staff-shortcuts button:focus-visible{outline:2px solid var(--accent,#3f76ff);outline-offset:2px}
+html[data-app-surface=staff] body #staff-app .staff-shortcuts button>svg,html[data-app-surface=staff] body #staff-app .staff-shortcuts button .icon{background:var(--ws-soft);border:1px solid var(--ws-line);border-radius:8px;color:var(--ws-text);box-shadow:none}
+html[data-app-surface=staff] body #staff-app .staff-shortcuts button span{color:var(--ws-text)}
+html[data-app-surface=staff] body #staff-app .staff-shortcuts button small{color:var(--ws-muted)}
+html[data-app-surface=staff] body #staff-app .staff-shortcuts button::after{color:var(--ws-muted)}
+
+html[data-app-surface=staff] body :is(#staff-dialog,dialog.staff-notify){background:var(--ws-bg);background-image:none;color:var(--ws-text);border:1px solid var(--ws-line);border-radius:12px;box-shadow:0 20px 50px #0f121633;backdrop-filter:none;-webkit-backdrop-filter:none}
+html[data-app-surface=staff] body :is(#staff-dialog,dialog.staff-notify)::backdrop{background:#0f121659;backdrop-filter:none;-webkit-backdrop-filter:none}
+html[data-app-surface=staff] body #staff-dialog :is(h2,h3,legend,label,strong){color:var(--ws-text)}
+html[data-app-surface=staff] body #staff-dialog h2{font-size:1.15rem}
+html[data-app-surface=staff] body :is(#staff-dialog,dialog.staff-notify) :is(p,small,.staff-muted){color:var(--ws-muted)}
+html[data-app-surface=staff] body :is(#staff-dialog,dialog.staff-notify) :is(input:not([type=checkbox],[type=radio],[type=range]),select,textarea){min-height:36px;padding:6px 10px;border:1px solid var(--ws-line);border-radius:8px;background:var(--ws-bg);box-shadow:none;color:var(--ws-text)}
+html[data-app-surface=staff] body :is(#staff-dialog,dialog.staff-notify) :is(input,select,textarea):focus-visible{outline:2px solid #3f76ff;outline-offset:0;border-color:#3f76ff}
+html[data-app-surface=staff] body #staff-dialog fieldset{border:1px solid var(--ws-line);border-radius:10px}
+html[data-app-surface=staff] body :is(#staff-dialog,dialog.staff-notify) button:not(.staff-primary,[class*=seat]){min-height:34px;padding:5px 12px;border:1px solid var(--ws-line);border-radius:8px;background:var(--ws-bg);background-image:none;box-shadow:none;color:var(--ws-text);font-size:.86rem;font-weight:600}
+html[data-app-surface=staff] body :is(#staff-dialog,dialog.staff-notify) button:not(.staff-primary,[class*=seat]):hover:not(:disabled){background:var(--ws-hover)}
+html[data-app-surface=staff] body :is(#staff-dialog,dialog.staff-notify) button.staff-primary{min-height:34px;padding:5px 14px;border:1px solid var(--accent,#3f76ff);border-radius:8px;background:var(--accent,#3f76ff);background-image:none;box-shadow:none;color:#fff;font-size:.86rem;font-weight:600}
+html[data-app-surface=staff] body :is(#staff-dialog,dialog.staff-notify) button.staff-primary:hover:not(:disabled){filter:brightness(.93)}
+html[data-app-surface=staff] body :is(#staff-dialog,dialog.staff-notify) :is(a.staff-link,a[download]){color:var(--ws-text);border-radius:8px}
+
+/* Notification centre. */
+html[data-app-surface=staff] body dialog.staff-notify .notify-panel{background:var(--ws-bg);background-image:none;border-radius:12px;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;color:var(--ws-text)}
+html[data-app-surface=staff] body dialog.staff-notify :is(.notify-head,.notify-bar,.notify-foot){background:var(--ws-bg);border-color:var(--ws-line)}
+html[data-app-surface=staff] body dialog.staff-notify .notify-head h2{color:var(--ws-text);font-size:1.2rem}
+html[data-app-surface=staff] body dialog.staff-notify .notify-search input{background:var(--ws-soft);border-radius:8px}
+html[data-app-surface=staff] body dialog.staff-notify .notify-filters button{border-radius:999px;min-height:30px;padding:3px 12px;font-size:.82rem}
+html[data-app-surface=staff] body dialog.staff-notify .notify-filters button[aria-pressed=true]{background:var(--ws-text);border-color:var(--ws-text);color:var(--ws-bg)}
+html[data-app-surface=staff] body dialog.staff-notify .notify-close{width:34px;height:34px;min-height:34px;padding:0;border-radius:8px}
+html[data-app-surface=staff] body dialog.staff-notify .notification-item{background:var(--ws-bg);background-image:none;border:0;border-bottom:1px solid var(--ws-line);border-radius:0;box-shadow:none;padding:14px 4px;margin:0}
+html[data-app-surface=staff] body dialog.staff-notify .notification-item.notification-unread{background:var(--ws-soft);border-inline-start:3px solid var(--accent,#3f76ff);padding-inline-start:10px}
+html[data-app-surface=staff] body dialog.staff-notify .notify-title{background:none;border:0;box-shadow:none;padding:0;margin:4px 0;font-size:.98rem;color:var(--ws-text)}
+html[data-app-surface=staff] body dialog.staff-notify .notify-facts{background:var(--ws-soft);border:1px solid var(--ws-line);border-radius:8px;box-shadow:none}
+html[data-app-surface=staff] body dialog.staff-notify .notify-foot{border-top:1px solid var(--ws-line);color:var(--ws-muted)}
+
+/* The new-notification card that pops up on arrival. */
+html[data-app-surface=staff] body .staff-alert-card-body{background:var(--ws-bg);background-image:none;color:var(--ws-text);border:1px solid var(--ws-line);border-radius:12px;box-shadow:0 20px 50px #0f121633;backdrop-filter:none;-webkit-backdrop-filter:none}
+/* D117 follow-up: same weight as the generic dialog rules, so the selected filter, close button, search icon room
+   and checkbox rows win. */
+html[data-app-surface=staff] body :is(#staff-dialog,dialog.staff-notify) .notify-filters button[aria-pressed=true]{background:var(--ws-text);border-color:var(--ws-text);color:var(--ws-bg)}
+html[data-app-surface=staff] body :is(#staff-dialog,dialog.staff-notify) .notify-filters button{border-radius:999px;min-height:30px;padding:3px 12px;font-size:.82rem}
+html[data-app-surface=staff] body :is(#staff-dialog,dialog.staff-notify) .notify-close{width:34px;height:34px;min-height:34px;padding:0;display:inline-grid;place-items:center}
+html[data-app-surface=staff] body :is(#staff-dialog,dialog.staff-notify) .notify-search input{padding-inline-start:38px;background:var(--ws-soft)}
+html[data-app-surface=staff] body #staff-dialog label:has(>input:is([type=checkbox],[type=radio])){background:var(--ws-soft);background-image:none;border:1px solid var(--ws-line);border-radius:8px;box-shadow:none;color:var(--ws-text)}
+html[data-app-surface=staff] body #staff-dialog input:is([type=checkbox],[type=radio]){accent-color:var(--accent,#3f76ff)}

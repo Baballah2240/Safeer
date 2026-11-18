@@ -31,6 +31,8 @@ try{await identityFixture(async f=>{
     const label=`${page}/${theme}/${lang}/${width}`;
     await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width<700});await evaluate('document.activeElement?.blur();scrollTo(0,0)');await settle();
     assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth+2'),label+' overflow');
+    // D117: the compact staff home may fit a tall screen; a spacer gives the sticky-header check something to scroll.
+    if(page==='staff')await evaluate('(()=>{if(document.documentElement.scrollHeight>innerHeight+400)return;const m=document.querySelector(".staff-main")||document.body;let d=m.querySelector("[data-test-spacer]");if(!d){d=document.createElement("div");d.dataset.testSpacer="";m.append(d)}d.style.height=(innerHeight+400)+"px"})()');
     const start=await evaluate(`(()=>{const n=document.querySelector('${selector}'),r=n.getBoundingClientRect();return {y:r.top+scrollY,menuTop:document.querySelector(".app-menu-trigger")?.getBoundingClientRect().top,height:r.height,max:document.documentElement.scrollHeight-innerHeight};})()`);
     assert.ok(start.max>start.y+2,label+' must have real scrollable content');
     await evaluate(`scrollTo(0,${Math.min(start.max,start.y+240)})`);await settle();
@@ -60,6 +62,7 @@ try{await identityFixture(async f=>{
     await evaluate('document.querySelector("[data-theme-toggle]").click()');assert.notEqual(await evaluate('document.documentElement.dataset.theme'),theme,label+' interaction');
     await evaluate('document.querySelector("[data-theme-toggle]").click()');
     if(drawer)await evaluate(`(document.querySelector('#${drawer}-menu-close')||document.querySelector('#${drawer}-menu-toggle')).click()`);
+    await evaluate('document.querySelector("[data-test-spacer]")?.remove()');
     const field={staff:'.staff-shortcuts button:last-child',driver:'#driver-incident textarea',booking:'#market-date',preview:'#reservation-form [name=passengerName]'}[page];
     await evaluate(`document.querySelector(${JSON.stringify(field)}).scrollIntoView({block:'start'})`);await settle();
     assert.ok(await evaluate(`document.querySelector(${JSON.stringify(field)}).getBoundingClientRect().top>=document.querySelector('${selector}').getBoundingClientRect().bottom-1`),label+' scrolled form field must clear header');

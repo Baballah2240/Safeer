@@ -475,3 +475,7 @@ Safeer Passenger and Safeer Driver have Settings > App lock: Off, PIN (4-6 digit
 ## D116 — Faster page loading
 
 The build now adds `<link rel="modulepreload">` for every script module each page imports (worked out from the static imports, so the list never goes stale). The browser fetches all of a page's scripts at once instead of finding them one level at a time; the staff workspace has 26 modules five levels deep. `scripts/measure-loading.mjs [origin]` measures each page on a slow phone connection (250 ms latency, about 1.6 Mbps).
+
+## D117 — Cards and pop-ups match the workspace
+
+The home shortcut cards, every create/edit form (`#staff-dialog`), the notification centre and the new-notification card now use the minimal workspace look (plain surface, thin border, small radius, company accent for the main button) in light and dark, instead of the older green glass style. The selected notification filter is filled, unread notifications have an accent edge, and checkbox rows in forms are neutral. The headers browser test adds a temporary spacer when the compact staff home fits a tall screen.
