@@ -471,3 +471,7 @@ Safeer Passenger and Safeer Driver have Settings > App lock: Off, PIN (4-6 digit
 - The PDF shows the end date and fixed-term wording; contracts issued before this change keep no end date (month to month).
 - Invoices use only an accepted contract in force during the month (migration 0032).
 - Tests: `billing` and `invoices` integration (date rules, guard, withdrawal), `billing` browser test, database and platform integration, unit tests.
+
+## D116 — Faster page loading
+
+The build now adds `<link rel="modulepreload">` for every script module each page imports (worked out from the static imports, so the list never goes stale). The browser fetches all of a page's scripts at once instead of finding them one level at a time; the staff workspace has 26 modules five levels deep. `scripts/measure-loading.mjs [origin]` measures each page on a slow phone connection (250 ms latency, about 1.6 Mbps).
