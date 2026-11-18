@@ -77,7 +77,7 @@ test('production start: Render command migrates, limits its runtime role, serves
    const r=await owner.send(page);assert.equal(r.status,200,page);
    assert.match(r.headers['strict-transport-security']||'',/max-age=31536000/,page+' HSTS');
    assert.match(r.headers['content-security-policy']||'',/default-src 'self'; script-src 'self'/,page+' CSP');
-   assert.equal(r.headers['x-content-type-options'],'nosniff');assert.equal(r.headers['cache-control'],'no-store',page);
+   assert.equal(r.headers['x-content-type-options'],'nosniff');assert.equal(r.headers['cross-origin-opener-policy'],'same-origin',page);assert.equal(r.headers['cross-origin-resource-policy'],'same-origin',page);assert.equal(r.headers['cache-control'],'no-store',page);
    assert.equal(r.headers['permissions-policy'],page==='/driver'?'camera=(self), microphone=(), geolocation=(), payment=(), usb=()':'camera=(), microphone=(), geolocation=(), payment=(), usb=()',page);
   }
   const asset=await owner.send('/src/marketplace.js');assert.equal(asset.status,200);assert.equal(asset.headers['cache-control'],'no-cache');

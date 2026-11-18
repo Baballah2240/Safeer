@@ -1,5 +1,9 @@
 # Changelog
 
+## Security review and cross-origin headers - D118, 2026-11-19
+
+Reviewed everything added since the D72 audit; see docs/testing/SECURITY_REVIEW_2026-11-19.md. No exploitable weakness was found. Every page and file now also sends Cross-Origin-Opener-Policy and Cross-Origin-Resource-Policy: same-origin. The new attack test tests/security-probe.integration.mjs refuses anonymous, unprivileged and other-company callers on the new billing, branding, invoice, contract, fare, manifest and payment-proof endpoints, and sends 1,105 hostile requests with no server error. Website only; no migration, no new APK.
+
 ## Workspace layout and dashboard in the style of Plane - D102, 2026-11-17
 
 Staff workspace only; no migration, no new APK. From 1100 px wide the signed-in workspace has a slim icon rail (Home, Platform, Companies, Cities, Users, Roles, Sessions, Audit, by access) and a second sidebar (the open company's grouped sections, or the workspace pages) beside the content; narrower screens keep the menu drawer. The company Overview becomes a dashboard: tabs (Summary, Departures, Needs attention, Activity) that jump to each part, the existing summary cards, trip status counts that filter today's departures, a seats-booked-by-departure bar chart whose bars open the trip, a departures-by-status half ring with a legend that filters, the departures table and trip details as before, recent activity from this company's notifications, and from 1280 px a right sidebar with the person and the company (Your profile, Company settings, Notifications). Minimal styling: white surfaces, light grey borders, compact spacing; colour is used for statuses and charts, with matching dark colours. Tests: operations browser.

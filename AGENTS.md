@@ -1,5 +1,7 @@
 # Safeer
 
+- D118 (2026-11-19): security review of D73-D117 (docs/testing/SECURITY_REVIEW_2026-11-19.md). Every response carries COOP and CORP same-origin; keep Google sign-in a full-page redirect (a popup would break under COOP). For new endpoints, add them to tests/security-probe.integration.mjs (anonymous, unprivileged and other-company refusal, plus hostile-input fields), and keep new SECURITY DEFINER functions on SET search_path=pg_catalog with EXECUTE revoked from PUBLIC.
+
 - D90 (2026-11-15): hold time comes only from safeer.trip_hold_minutes (per-trip 1-3 hours, else the company default, never more than 180 minutes). Trip forms take hours; the API keeps minutes (offsets) and holdHours.
 
 - D89 (2026-11-15): stop-to-stop journeys (migration 0025, route_fares, safeer.segment_fare/seat_taken/trip_doc). A booking's journey is its seat allocations' segment [from,to); always check seat availability with segment overlap (safeer.seat_taken), never per trip. Journey prices come only from safeer.segment_fare. Keep the old whole-trip function signatures working for the published apps.

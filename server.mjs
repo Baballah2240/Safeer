@@ -41,6 +41,9 @@ export async function startServer({port = 4320, built = false, identityApiUrl, p
     response.setHeader('Cache-Control', 'no-store');
     response.setHeader('Permissions-Policy','camera=(), microphone=(), geolocation=(), payment=(), usb=()');
     response.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'");
+    // Isolate Safeer windows from pages on other sites and stop other sites embedding its files (Google sign-in is a full-page redirect, not a popup).
+    response.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+    response.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
     if (hosted) response.setHeader('Strict-Transport-Security', 'max-age=31536000');
     // Hosting health checks reach the service by its internal address.
     const healthCheck = hosted && request.url === '/api/v1/health' && request.method === 'GET';
