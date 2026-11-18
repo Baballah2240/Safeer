@@ -1,5 +1,17 @@
 # Changelog
 
+## Staff layout polish - D119, 2026-11-19
+
+Staff web only; no migration, no new APK.
+- **Company bar:** the bar above Operations overview has padding and space before the title. The company name leads, and on phones it takes its own row.
+- **Company page header:** more compact. The platform owner no longer sees "Your access is limited to your assigned company".
+- **Trips:** search and "Show trips from" share one row (stacked on phones). Trip cards use smaller, tighter text and keep their buttons along the bottom.
+- **Workspace home:** the shortcut cards fill the full width (3 columns from 1200px, 2 from 1000px) instead of leaving a third empty.
+- **Trip status tiles:** numbers line up when a label wraps.
+- **Headings and cards:** "Today's departures" uses the same heading size as the other dashboard sections, and page headers and summary cards are tighter.
+
+Tests: operations, trips, companies, sidebar, headers, fleet, ticketing, platform, finance and direct-permissions browser.
+
 ## Security review and cross-origin headers - D118, 2026-11-19
 
 Reviewed everything added since the D72 audit; see docs/testing/SECURITY_REVIEW_2026-11-19.md. No exploitable weakness was found. Every page and file now also sends Cross-Origin-Opener-Policy and Cross-Origin-Resource-Policy: same-origin. The new attack test tests/security-probe.integration.mjs refuses anonymous, unprivileged and other-company callers on the new billing, branding, invoice, contract, fare, manifest and payment-proof endpoints, and sends 1,105 hostile requests with no server error. Website only; no migration, no new APK.
