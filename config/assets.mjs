@@ -1,6 +1,8 @@
 // One explicit public-asset list for the local server and static build.
 export const publicAssets = {
   '/src/app-back.js': ['src/app-back.js', 'text/javascript'],
+  '/src/keyboard.js': ['src/keyboard.js', 'text/javascript'],
+  '/src/keyboard.css': ['src/keyboard.css', 'text/css'],
   '/src/payment-proof.js': ['src/payment-proof.js', 'text/javascript'],
   '/src/loading.js': ['src/loading.js', 'text/javascript'],
   '/src/typography.css': ['src/typography.css', 'text/css'],

@@ -1,0 +1,5 @@
+/* D123: while the on-screen keyboard is open, floating bottom bars step aside so they never cover the field. */
+html.keyboard-open :is(.passenger-bottom-nav,.staff-toast){visibility:hidden;opacity:0;pointer-events:none}
+@media (pointer:coarse){html{scroll-padding-block:72px calc(24px + var(--keyboard-inset,0px))}}
+/* Phones zoom into fields under 16px; keep every typing field at 16px on small screens. */
+@media (max-width:760px){:is(input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea){font-size:max(16px,1em)}}

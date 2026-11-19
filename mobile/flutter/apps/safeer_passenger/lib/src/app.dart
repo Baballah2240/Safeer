@@ -68,7 +68,7 @@ class _PassengerAppState extends State<PassengerApp> {
             child: MaterialApp(
               navigatorKey: _navigator,
               debugShowCheckedModeBanner: false,
-              builder: (context, child) => AppLockGate(lock: widget.settings.lock, child: child ?? const SizedBox.shrink()),
+              builder: (context, child) => KeyboardDismissOnTap(child: AppLockGate(lock: widget.settings.lock, child: child ?? const SizedBox.shrink())),
               onGenerateTitle: (c) => SafeerStrings.of(c).appPassenger,
               locale: locale,
               supportedLocales: SafeerStrings.supportedLocales,

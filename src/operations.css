@@ -637,7 +637,7 @@ html[data-app-surface=staff] body #staff-app .dash-stat>strong{margin-top:auto}
 }
 html[data-app-surface=staff] body #staff-app .staff-main .staff-welcome p:not(.staff-eyebrow){margin:6px 0 0}
 html[data-app-surface=staff] body #staff-app .staff-main .staff-summary>article{padding:16px 18px;min-height:0;gap:6px}
-html[data-app-surface=staff] body #staff-app .staff-main .staff-summary>article strong{font-size:1.6rem;line-height:1.15}
+html[data-app-surface=staff] body #staff-app .staff-main .staff-summary>article strong{font-size:clamp(1.1rem,5.2vw,1.6rem);line-height:1.15;overflow-wrap:normal;word-break:keep-all;hyphens:manual}
 
 /* D121: city photos in the city catalog. */
 html[data-app-surface=staff] body #staff-app .city-photo{display:block;width:100%;aspect-ratio:16/9;height:auto;margin-bottom:10px;border-radius:12px;object-fit:cover;background:var(--surface-soft,#f1ece3)}

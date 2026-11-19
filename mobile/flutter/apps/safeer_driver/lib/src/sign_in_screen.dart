@@ -13,6 +13,7 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   final _email = TextEditingController();
   final _password = TextEditingController();
+  final _passwordFocus = FocusNode();
   bool _hidden = true, _busy = false;
   String? _problem;
 
@@ -20,6 +21,7 @@ class _SignInScreenState extends State<SignInScreen> {
   void dispose() {
     _email.dispose();
     _password.dispose();
+    _passwordFocus.dispose();
     super.dispose();
   }
 
@@ -62,7 +64,7 @@ class _SignInScreenState extends State<SignInScreen> {
       ),
       body: SafeArea(
         child: AutofillGroup(
-          child: ListView(padding: const EdgeInsets.fromLTRB(20, 0, 20, 24), children: [
+          child: FormBody(maxWidth: 460, padding: const EdgeInsets.fromLTRB(20, 0, 20, 24), children: [
             SafeerWordmark(caption: s.appDriver),
             if (demo) const Padding(padding: EdgeInsets.only(top: 16), child: DemoBanner()),
             const SizedBox(height: 28),
@@ -78,13 +80,18 @@ class _SignInScreenState extends State<SignInScreen> {
               textDirection: TextDirection.ltr,
               autofillHints: const [AutofillHints.username, AutofillHints.email],
               textInputAction: TextInputAction.next,
+              autocorrect: false,
+              scrollPadding: keyboardScrollPadding,
+              onSubmitted: (_) => _passwordFocus.requestFocus(),
               decoration: InputDecoration(labelText: s.email, prefixIcon: const Icon(Icons.alternate_email)),
             ),
             const SizedBox(height: 14),
             TextField(
               controller: _password,
               enabled: !_busy,
+              focusNode: _passwordFocus,
               obscureText: _hidden,
+              scrollPadding: keyboardScrollPadding,
               autofillHints: const [AutofillHints.password],
               textInputAction: TextInputAction.done,
               onSubmitted: (_) => _submit(),

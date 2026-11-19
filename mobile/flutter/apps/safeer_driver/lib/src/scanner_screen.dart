@@ -315,9 +315,7 @@ class _NumberSheetState extends State<_NumberSheet> {
   @override
   Widget build(BuildContext context) {
     final s = SafeerStrings.of(context);
-    return Padding(
-      padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + MediaQuery.viewInsetsOf(context).bottom),
-      child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+    return KeyboardSheet(children: [
         Text(s.typeTicketNumber, style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 12),
         TextField(
@@ -328,12 +326,12 @@ class _NumberSheetState extends State<_NumberSheet> {
           keyboardType: TextInputType.visiblePassword,
           autocorrect: false,
           enableSuggestions: false,
+          textInputAction: TextInputAction.done,
           onSubmitted: (_) => _submit(),
           decoration: InputDecoration(labelText: s.ticketNumber, hintText: s.ticketNumberHint, errorText: _problem, prefixIcon: const Icon(Icons.confirmation_number_outlined)),
         ),
         const SizedBox(height: 16),
         PrimaryButton(label: s.checkTicket, icon: Icons.search, onPressed: _submit),
-      ]),
-    );
+      ]);
   }
 }

@@ -47,13 +47,16 @@ class _PassengersScreenState extends State<PassengersScreen> {
               await c.syncPending();
               await c.load();
             },
-            child: ListView(padding: const EdgeInsets.all(16), children: [
+            child: ListView(keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, padding: const EdgeInsets.all(16), children: [
               if (DriverScope.of(context).session.repository.isDemo) const Padding(padding: EdgeInsets.only(bottom: 12), child: DemoBanner()),
               Text(widget.trip.route.pick(s.isArabic), style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 12),
               _Totals(expected: c.expectedCount, boarded: c.boardedCount, pending: waiting.length),
               const SizedBox(height: 16),
               TextField(
+                textInputAction: TextInputAction.search,
+                scrollPadding: keyboardScrollPadding,
+                onSubmitted: (_) => FocusManager.instance.primaryFocus?.unfocus(),
                 decoration: InputDecoration(labelText: s.searchPassengers, prefixIcon: const Icon(Icons.search)),
                 onChanged: (v) => setState(() => _query = v),
               ),

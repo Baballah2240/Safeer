@@ -25,6 +25,7 @@ export 'src/theme/theme.dart';
 export 'src/widgets/app_lock_view.dart';
 export 'src/widgets/brand.dart';
 export 'src/widgets/controls.dart';
+export 'src/widgets/keyboard.dart';
 export 'src/widgets/qr_view.dart';
 export 'src/widgets/seat_map.dart';
 export 'src/widgets/settings_view.dart';

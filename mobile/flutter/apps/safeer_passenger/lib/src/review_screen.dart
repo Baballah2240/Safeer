@@ -21,6 +21,14 @@ class _ReviewScreenState extends State<ReviewScreen> {
   final _form = GlobalKey<FormState>();
   late final Map<String, TextEditingController> _names = {for (final s in widget.seats) s: TextEditingController()};
   final _mobile = TextEditingController();
+  // Next on the keyboard goes traveller by traveller, then to the mobile number; Done books.
+  late final Map<String, FocusNode> _focus = {for (final s in widget.seats) s: FocusNode()};
+  final _mobileFocus = FocusNode();
+
+  FocusNode _after(String seat) {
+    final i = widget.seats.indexOf(seat);
+    return i + 1 < widget.seats.length ? _focus[widget.seats[i + 1]]! : _mobileFocus;
+  }
   final String _key = uuidV4();
   bool _busy = false;
   String? _problem, _mobileProblem;
@@ -31,6 +39,10 @@ class _ReviewScreenState extends State<ReviewScreen> {
       c.dispose();
     }
     _mobile.dispose();
+    for (final f in _focus.values) {
+      f.dispose();
+    }
+    _mobileFocus.dispose();
     super.dispose();
   }
 
@@ -112,10 +124,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
             child: Form(
               key: _form,
               // A column, not a lazy list: every traveller field stays built, so all are validated.
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+              child: FormBody(
                   children: [
                     if (PassengerScope.of(context).repository.isDemo) const Padding(padding: EdgeInsets.only(bottom: 12), child: DemoBanner()),
                     SolidCard(
@@ -159,9 +168,13 @@ class _ReviewScreenState extends State<ReviewScreen> {
                         padding: const EdgeInsets.only(bottom: 12),
                         child: TextFormField(
                           controller: _names[seat],
+                          focusNode: _focus[seat],
+                          onFieldSubmitted: (_) => _after(seat).requestFocus(),
                           enabled: !_busy,
                           textCapitalization: TextCapitalization.words,
                           textInputAction: TextInputAction.next,
+                          autofillHints: const [AutofillHints.name],
+                          scrollPadding: keyboardScrollPadding,
                           maxLength: 100,
                           decoration: InputDecoration(labelText: s.passengerName(ltr(seat)), prefixIcon: const Icon(Icons.person_outline), counterText: ''),
                           validator: (v) => (v ?? '').trim().length < 2 ? s.nameRequired : null,
@@ -169,10 +182,14 @@ class _ReviewScreenState extends State<ReviewScreen> {
                       ),
                     TextFormField(
                       controller: _mobile,
+                      focusNode: _mobileFocus,
                       enabled: !_busy,
                       keyboardType: TextInputType.phone,
                       textDirection: TextDirection.ltr,
                       autofillHints: const [AutofillHints.telephoneNumber],
+                      textInputAction: TextInputAction.done,
+                      scrollPadding: keyboardScrollPadding,
+                      onFieldSubmitted: (_) => _submit(),
                       decoration: InputDecoration(labelText: s.mobile, hintText: s.mobileHint, prefixIcon: const Icon(Icons.phone_outlined), errorText: _mobileProblem),
                       validator: (v) => _mobilePattern.hasMatch((v ?? '').replaceAll(RegExp(r'[\s\-()]'), '')) ? null : s.mobileInvalid,
                     ),
@@ -181,7 +198,6 @@ class _ReviewScreenState extends State<ReviewScreen> {
                     if (_problem != null) ...[const SizedBox(height: 12), StatusPanel(icon: Icons.error_outline, tone: StatusTone.error, title: _problem!)],
                     const SizedBox(height: 8),
                   ],
-                ),
               ),
             ),
           ),

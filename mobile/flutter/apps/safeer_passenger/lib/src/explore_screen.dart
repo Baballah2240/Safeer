@@ -236,6 +236,7 @@ class _CityPickerState extends State<_CityPicker> {
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
             child: TextField(
               autofocus: false,
+              textInputAction: TextInputAction.search,
               decoration: InputDecoration(labelText: s.searchCities, prefixIcon: const Icon(Icons.search)),
               onChanged: (v) => setState(() => _query = v),
             ),
@@ -243,7 +244,7 @@ class _CityPickerState extends State<_CityPicker> {
           Expanded(
             child: list.isEmpty
                 ? MessageState(icon: Icons.location_off_outlined, title: s.noCityMatch)
-                : ListView(children: [
+                : ListView(keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, children: [
                     for (final c in list)
                       ListTile(
                         title: Text(c.name.pick(ar), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),

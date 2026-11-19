@@ -1,5 +1,11 @@
 # Changelog
 
+## Layout on every device and typing help - D123, 2026-11-19
+
+- **Phone apps (Flutter):** both apps were checked on small, large and folding phones, tablets and landscape, in English and Arabic, at large text sizes and with the keyboard open. Fixed: the ticket-number sheet in Safeer Driver overflowed when the keyboard opened, sign-in and review forms now stay a readable width on tablets, and Next on the review screen goes traveller by traveller, then to the mobile number (Done books). Tapping empty space or dragging a form closes the keyboard, and the focused field stays above the keyboard.
+- **Website on phones:** every page now asks the browser to resize for the on-screen keyboard. On touch screens the keyboard shows Next until the last field and Go on the last, Enter moves to the next field instead of sending the form, the field being typed in is scrolled above the keyboard, and the floating booking bar hides while typing. Typing fields stay at 16px so phones do not zoom in. The staff overview figures no longer break words on narrow phones.
+- **Tests:** layout_test.dart in both Flutter apps and tests/keyboard.browser.mjs.
+
 ## Journey steps and trip tracking - D122, 2026-11-19
 
 - **Driver journey steps:** on the driver page and in the Safeer Driver app, the driver starts the trip (even if some passengers have not boarded), marks each stop reached, marks the destination reached and then closes the trip. The steps must go in that order and the server enforces it. Each step is recorded in the company audit history.
