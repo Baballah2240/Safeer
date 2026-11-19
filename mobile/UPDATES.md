@@ -1,6 +1,10 @@
 # Safeer mobile status
 
-## Journey steps - D122, 2026-11-19 (source only, no APK built)
+## Safeer Driver 0.21.0 - 2026-11-19
+
+Released Safeer Driver 0.21.0 (21000) with the D122 Journey screen. The website download links and the in-app update button now point at v0.21.0 through src/app-release.js. Safeer Passenger stays at 0.20.0. Checked statically (aapt2 badging, signing key); not installed on a phone.
+
+## Journey steps - D122, 2026-11-19
 
 Safeer Driver gets a Journey button on the active trip card. The Journey screen lists every stop with its planned time and offers, in order: Start trip (allowed with passengers still not boarded; the confirmation says how many), Arrived at this stop for each middle stop, Destination reached, then Close trip. Each step asks for confirmation and the server checks the order. Demo mode supports the same steps. Checked: flutter analyze (no issues) and Safeer Driver tests (15, including 2 new journey tests). Not yet released: needs a new version and APK build.
 
