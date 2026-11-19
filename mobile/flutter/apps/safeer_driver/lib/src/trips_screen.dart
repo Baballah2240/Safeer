@@ -3,6 +3,7 @@ import 'package:safeer_core/safeer_core.dart';
 
 import 'app.dart';
 import 'boarding_controller.dart';
+import 'journey_screen.dart';
 import 'passengers_screen.dart';
 import 'scanner_screen.dart';
 import 'session.dart';
@@ -157,6 +158,17 @@ class ActiveTripCard extends StatelessWidget {
                   ),
                 ]),
               ),
+            // D122: start, stops, destination and close.
+            const SizedBox(height: 14),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => JourneyScreen(trip: trip, controller: controller))),
+                icon: const Icon(Icons.route_outlined),
+                label: Text(s.journeyTitle),
+                style: OutlinedButton.styleFrom(minimumSize: const Size(0, 52)),
+              ),
+            ),
           ]),
         );
       },

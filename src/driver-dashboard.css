@@ -124,3 +124,16 @@ body:has(#driver-app){background:radial-gradient(ellipse at 95% 0,rgba(185,83,15
 #driver-app .legal-links a{color:var(--driver-accent-ink)}
 #driver-app .auth-note svg{color:var(--driver-accent-ink)}
 #driver-app :is(button,input,textarea,select,a):focus-visible{outline-color:var(--driver-accent-ink)}
+
+/* D122: journey steps (start, stops, destination, close). */
+.journey-steps{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:0}
+.journey-stop{position:relative;display:grid;grid-template-columns:18px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}
+.journey-stop:last-child{border-bottom:0}
+.journey-stop strong{display:block}
+.journey-stop small{color:var(--muted)}
+.journey-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--muted);background:var(--surface)}
+.journey-stop.is-reached .journey-dot{border-color:#1f7a4d;background:#1f7a4d}
+.journey-stop button{min-height:44px;white-space:nowrap}
+.journey-close{width:100%;min-height:52px;margin-top:12px}
+.journey-closed{padding:10px 12px;border-radius:12px;background:#1f7a4d1a;font-weight:600}
+@media(max-width:560px){.journey-stop{grid-template-columns:18px 1fr}.journey-stop button{grid-column:2;width:100%}}

@@ -1,5 +1,13 @@
 # Changelog
 
+## Journey steps and trip tracking - D122, 2026-11-19
+
+- **Driver journey steps:** on the driver page and in the Safeer Driver app, the driver starts the trip (even if some passengers have not boarded), marks each stop reached, marks the destination reached and then closes the trip. The steps must go in that order and the server enforces it. Each step is recorded in the company audit history.
+- **Trip tracking for passengers:** the tracking page (/track) now also takes a booking reference (SF-…) and shows the bus's progress: not started, on the way with the next stop, arrived, or completed, with planned and actual times for every stop. It shows no passenger details, works only for active bookings, and is rate limited per visitor like parcel tracking. The home page has new "Track your trip" links.
+- **Database:** migration 0034 adds the stop check-in table and the "closed" step. New tests: tests/journey.integration.mjs and the Flutter journey_test.dart.
+
+The Safeer Driver app needs a new APK for the Journey screen; the driver web page works at once.
+
 ## City photos on popular routes - D121, 2026-11-19
 
 - **Destination photos:** each popular route card on the booking page now shows a photo of the destination city instead of the bus. Cities without a photo still show the coach picture.

@@ -69,6 +69,7 @@ String driverError(SafeerStrings s, Object error) {
       'RATE_LIMITED' => s.rateLimited,
       'PASSWORD_CHANGE_REQUIRED' => s.passwordChangeNeeded,
       'UNAUTHENTICATED' => s.sessionExpired,
+      'JOURNEY_STATE' => s.journeyNotYet,
       _ => s.serverError,
     };
   }

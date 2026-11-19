@@ -22,7 +22,7 @@ const newTrackingCode=()=>'SH-'+[...randomBytes(8)].map(byte=>trackingAlphabet[b
 const qrPath=(token:string)=>{const code=qrcode(0,'M');code.addData(token);code.make();const size=code.getModuleCount();let path='';for(let row=0;row<size;row++)for(let column=0;column<size;column++)if(code.isDark(row,column))path+=`M${column} ${row}h1v1h-1z`;return {size,path};};
 const personName=(value:unknown)=>{const name=text(value,2,100).replace(/\s+/g,' ');if(/[<>]/.test(name))fail('INVALID_INPUT');return name;};
 
-class Limiter {
+export class Limiter {
  private readonly seen=new Map<string,{since:number,count:number}>();
  constructor(private readonly max:number,private readonly windowMs:number){}
  take(key:string){const now=Date.now(),entry=this.seen.get(key);if(!entry||now-entry.since>this.windowMs){if(this.seen.size>20000)this.seen.clear();this.seen.set(key,{since:now,count:1});return;}if(++entry.count>this.max)fail('RATE_LIMITED',429,'Too many requests. Try again later.');}

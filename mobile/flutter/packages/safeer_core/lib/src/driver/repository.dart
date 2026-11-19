@@ -20,6 +20,12 @@ abstract class DriverRepository {
 
   /// Rechecks and boards exactly once; a repeat returns alreadyBoarded.
   Future<ScanResult> board(DriverTrip trip, Credential credential);
+
+  /// D122: 'departed' (start the trip, even with passengers missing), 'arrived' (destination) or 'closed'.
+  Future<void> journeyEvent(DriverTrip trip, String event);
+
+  /// D122: an intermediate stop reached (stop index along the route).
+  Future<void> reachStop(DriverTrip trip, int stopIndex);
 }
 
 class LiveDriverRepository implements DriverRepository {
@@ -70,4 +76,10 @@ class LiveDriverRepository implements DriverRepository {
   @override
   Future<ScanResult> board(DriverTrip trip, Credential credential) async =>
       ScanResult.fromReply((await api.post('${_path(trip)}/board', credential.toJson()) as Map).cast(), board: true, credential: credential);
+
+  @override
+  Future<void> journeyEvent(DriverTrip trip, String event) async => api.post('${_path(trip)}/events', {'event': event});
+
+  @override
+  Future<void> reachStop(DriverTrip trip, int stopIndex) async => api.post('${_path(trip)}/stops', {'stopIndex': stopIndex});
 }

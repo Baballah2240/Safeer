@@ -35,6 +35,7 @@
     "test:trips:browser": "node tests/trips.browser.mjs",
     "test:marketplace": "node --test tests/marketplace.integration.mjs",
     "test:city-photos": "node --test tests/city-photos.integration.mjs",
+    "test:journey": "node --test tests/journey.integration.mjs",
     "test:marketplace:browser": "node tests/marketplace.browser.mjs",
     "test:reservations": "node --test tests/reservations.integration.mjs",
     "test:reservations:browser": "node tests/reservations.browser.mjs",

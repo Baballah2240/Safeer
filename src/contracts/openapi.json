@@ -12132,7 +12132,8 @@
                   "event": {
                     "enum": [
                       "departed",
-                      "arrived"
+                      "arrived",
+                      "closed"
                     ]
                   }
                 }
@@ -14832,6 +14833,97 @@
           },
           "404": {
             "description": "No photo."
+          }
+        }
+      }
+    },
+    "/api/v1/driver/companies/{cid}/trips/{tid}/stops": {
+      "post": {
+        "summary": "Record an intermediate stop reached",
+        "description": "Assigned driver or company.journeys.manage; CSRF. After the start and before the destination, in travel order (JOURNEY_STATE otherwise). Repeating a stop returns the first time.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "tid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "stopIndex"
+                ],
+                "properties": {
+                  "stopIndex": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 28
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Recorded."
+          },
+          "403": {
+            "description": "Not this driver's trip."
+          },
+          "409": {
+            "description": "JOURNEY_STATE"
+          }
+        }
+      }
+    },
+    "/api/v1/public/track/trips/{reference}": {
+      "get": {
+        "summary": "Follow a trip with a booking reference",
+        "description": "Public, limited per visitor. Returns the company, stops with planned and reached times, and departed/arrived/closed times; never passenger details. 404 for unknown, released or expired bookings.",
+        "parameters": [
+          {
+            "name": "reference",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^SF-[2-9A-HJ-NP-Z]{8}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trip progress."
+          },
+          "404": {
+            "description": "Not found."
+          },
+          "429": {
+            "description": "Too many attempts."
           }
         }
       }

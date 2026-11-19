@@ -170,6 +170,27 @@ class SafeerStrings {
   String boardedOf(int b, int e) => _t('$b of $e boarded', 'صعد $b من $e');
   String get scanTicket => _t('Scan ticket', 'مسح التذكرة');
   String get passengers => _t('Passengers', 'المسافرون');
+  // D122: journey steps.
+  String get journeyTitle => _t('Journey', 'الرحلة');
+  String get startTrip => _t('Start trip', 'بدء الرحلة');
+  String get arrivedAtStop => _t('Arrived at this stop', 'الوصول إلى هذه المحطة');
+  String get destinationReached => _t('Destination reached', 'الوصول إلى الوجهة');
+  String get closeTrip => _t('Close trip', 'إغلاق الرحلة');
+  String get tripClosed => _t('Trip closed', 'أُغلقت الرحلة');
+  String get journeyNotStarted => _t('Not started', 'لم تبدأ');
+  String get journeyOnTheWay => _t('On the way', 'في الطريق');
+  String get journeyAtDestination => _t('At the destination — close the trip when done', 'في الوجهة — أغلق الرحلة عند الانتهاء');
+  String plannedAt(String time) => _t('Planned $time', 'المخطط $time');
+  String reachedAt(String time) => _t('Reached $time', 'الوصول $time');
+  String startedAt(String time) => _t('Started $time', 'الانطلاق $time');
+  String startTripConfirm(int missing) => missing == 0
+      ? _t('Start the trip now?', 'بدء الرحلة الآن؟')
+      : _t('Start the trip now? $missing passengers have not boarded yet.', 'بدء الرحلة الآن؟ لم يصعد $missing من الركاب بعد.');
+  String get stopConfirm => _t('Confirm arrival at this stop?', 'تأكيد الوصول إلى هذه المحطة؟');
+  String get destinationConfirm => _t('Confirm arrival at the destination?', 'تأكيد الوصول إلى الوجهة؟');
+  String get closeConfirm => _t('Close this trip? It cannot be reopened.', 'إغلاق هذه الرحلة؟ لا يمكن إعادة فتحها.');
+  String get journeyNotYet => _t('The trip can be started from its departure time.', 'يمكن بدء الرحلة من موعد مغادرتها.');
+  String get confirm => _t('Confirm', 'تأكيد');
   String get noAssignedTrips => _t('No assigned trips', 'لا توجد رحلات مسندة');
   String get noAssignedTripsHint => _t('Trips your company assigns to you appear here.', 'تظهر هنا الرحلات التي تسندها إليك شركتك.');
   String get boardingOpen => _t('Boarding open', 'الصعود مفتوح');

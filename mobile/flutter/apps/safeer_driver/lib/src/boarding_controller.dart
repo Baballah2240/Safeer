@@ -65,6 +65,31 @@ class BoardingController extends ChangeNotifier {
     }
   }
 
+  /// D122: record a journey step, then reload the trip. Returns the error, if any.
+  Object? journeyError;
+  bool journeyBusy = false;
+  Future<bool> journey(Future<void> Function() step) async {
+    if (journeyBusy) return false;
+    journeyBusy = true;
+    journeyError = null;
+    _notify();
+    try {
+      await step();
+      await load();
+      return true;
+    } catch (e) {
+      journeyError = e;
+      if (e is ApiException && e.status == 401) onSessionLost?.call();
+      return false;
+    } finally {
+      journeyBusy = false;
+      _notify();
+    }
+  }
+
+  Future<bool> recordEvent(String event) => journey(() => repository.journeyEvent(trip, event));
+  Future<bool> reachStop(int index) => journey(() => repository.reachStop(trip, index));
+
   /// A code read by the camera. Returns null when the read is suppressed.
   Future<ScanResult?> scan(String raw) async {
     if (processing) return null;

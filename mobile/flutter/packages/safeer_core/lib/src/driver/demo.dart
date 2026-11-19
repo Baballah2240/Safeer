@@ -112,7 +112,19 @@ class DemoDriverRepository implements DriverRepository {
       'demo-trip-2' => const [_Name('Mina Al Barri land port', 'الميناء البري'), _Name('Wad Madani bus terminal', 'موقف ود مدني')],
       _ => const [_Name('Port Sudan bus terminal', 'موقف بورتسودان'), _Name('Mina Al Barri land port', 'الميناء البري')],
     };
+    final j = _journeys.putIfAbsent(t.id, () => {});
+    final last = stops.length - 1;
+    final progress = JourneyProgress(
+      departedAt: j[-1],
+      arrivedAt: j[last],
+      closedAt: j[-2],
+      stops: [
+        for (var i = 0; i < stops.length; i++)
+          JourneyStop(index: i, place: stops[i].bilingual, plannedAt: t.departureAt.add(Duration(minutes: i == last ? t.arrivalAt.difference(t.departureAt).inMinutes : 0)), reachedAt: i == 0 ? j[-1] : j[i]),
+      ],
+    );
     return Manifest(
+      progress: progress,
       tripId: t.id,
       boardingOpen: _open(t),
       timezone: t.timezone,
@@ -120,6 +132,40 @@ class DemoDriverRepository implements DriverRepository {
       stops: [for (final s in stops) s.bilingual],
       passengers: [for (final p in _passengers[t.id]!) p.view],
     );
+  }
+
+  /// Demo journey state per trip: -1 started, -2 closed, other keys are stop indexes reached.
+  final Map<String, Map<int, DateTime>> _journeys = {};
+
+  @override
+  Future<void> journeyEvent(DriverTrip trip, String event) async {
+    await _wait();
+    _session();
+    final m = await manifest(trip);
+    final p = m.progress!, j = _journeys[trip.id]!;
+    final now = _clock().toUtc();
+    switch (event) {
+      case 'departed':
+        j.putIfAbsent(-1, () => now);
+      case 'arrived':
+        if (!p.started) throw ApiException(409, 'JOURNEY_STATE');
+        j.putIfAbsent(p.lastIndex, () => now);
+      case 'closed':
+        if (!p.arrived) throw ApiException(409, 'JOURNEY_STATE');
+        j.putIfAbsent(-2, () => now);
+      default:
+        throw ApiException(400, 'INVALID_INPUT');
+    }
+  }
+
+  @override
+  Future<void> reachStop(DriverTrip trip, int stopIndex) async {
+    await _wait();
+    _session();
+    final p = (await manifest(trip)).progress!;
+    final stop = p.stops.where((s) => s.index == stopIndex).firstOrNull;
+    if (stop == null || !p.canReach(stop)) throw ApiException(409, 'JOURNEY_STATE');
+    _journeys[trip.id]![stopIndex] = _clock().toUtc();
   }
 
   String? _number(Credential c) {

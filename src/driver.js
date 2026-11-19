@@ -112,7 +112,7 @@ function detail(){
  if(!selected||!manifest)return `<section class="staff-panel driver-empty"><h2>${t('Passenger manifest')}</h2><p>${t('Choose a trip to see its manifest.')}</p></section>`;
  const journey=manifest.events.some(x=>x.event==='arrived')?'arrived':manifest.events.length?'departed':'scheduled';
  const open=manifest.status==='published'&&journey!=='arrived';
- return `<section class="driver-detail" data-view="${view}">${dashboard(journey)}${scannerPanel(open&&manifest.boardingOpen===true)}<section class="staff-panel driver-operations"><h2>${t('Journey')}</h2><div class="staff-actions">${open?`<button data-event="departed" ${busy?'disabled':''}>${t('Record departure')}</button>`:''}${manifest.status==='published'&&journey==='departed'?`<button data-event="arrived" ${busy?'disabled':''}>${t('Record arrival')}</button>`:''}</div>${manifest.events.map(x=>`<p>${t(x.event)} · <bdi>${e(when(x.at))}</bdi></p>`).join('')}</section>
+ return `<section class="driver-detail" data-view="${view}">${dashboard(journey)}${scannerPanel(open&&manifest.boardingOpen===true)}${journeyPanel()}
  ${open?`<section class="staff-panel driver-manual-panel"><h2>${t('Check ticket')}</h2><p>${t('Use a keyboard scanner. Checking does not board the passenger.')}</p><form id="driver-scan"><label>${t('Scan or paste ticket QR')}<input name="token" dir="ltr" required maxlength="66" autocomplete="off" spellcheck="false" value="${e(scan)}"></label><button class="staff-primary" ${busy?'disabled':''}>${t('Check ticket')}</button></form><details class="driver-manual-entry" id="driver-manual-entry" ${manualEntryOpen?'open':''}><summary>${t('Enter ticket number instead')}</summary><form id="driver-manual-ticket"><label>${t('Printed ticket number')}<input name="ticketNumber" dir="ltr" maxlength="16" pattern="[Tt][Kk][Tt]-[0-9]{8,12}" placeholder="TKT-00000001" autocomplete="off" autocapitalize="characters" spellcheck="false" required value="${e(manualNumber)}"></label><p>${t('Use the number printed on the passenger ticket, for example TKT-00000001.')}</p><button class="staff-primary" ${busy?'disabled':''}>${t('Check ticket')}</button></form></details>${checked?`<div class="driver-check" role="status"><p class="driver-validation-title">${t(checked.boardedAt?'Already boarded':'Ticket valid for this trip')}</p><strong>${e(checked.name||t('Name erased'))}</strong><p>${t('Seat')} <bdi>${e(checked.seat)}</bdi> · <bdi>${e(checked.ticket)}</bdi></p>${checked.boardedAt?`<p>${t('Boarded')} · ${e(when(checked.boardedAt))}</p>`:`<button data-board class="staff-primary" ${busy?'disabled':''}>${t('Confirm boarding')}</button>`}<button data-clear ${busy?'disabled':''}>${t('Clear')}</button></div>`:''}</section>`:''}
  ${passengerPanel()}
  ${(manifest.shipments||[]).length?`<section class="staff-panel"><h2>${t('Shipments on this trip')}</h2><p>${t('Parcels only. The destination office hands them over.')}</p><div class="staff-table-wrap" tabindex="0" role="region" aria-label="${t('Shipments on this trip')}"><table class="staff-table"><thead><tr>${['Shipment','Items','Destination office','Status'].map(x=>`<th scope="col">${t(x)}</th>`).join('')}</tr></thead><tbody>${manifest.shipments.map(x=>`<tr><td><bdi>${e(x.number)}</bdi></td><td><bdi>${e(x.items)}</bdi></td><td>${e(language==='ar'?x.destinationAr:x.destinationEn)}</td><td>${t(shipmentStatus[x.status]||x.status)}</td></tr>`).join('')}</tbody></table></div></section>`:''}
@@ -152,8 +152,12 @@ function bind(){
  root.querySelector('[data-board]')?.addEventListener('click',()=>{if(!checkedInput||!checked)return;const input=checkedInput;void action(async()=>{await api(path()+'/board','POST',input);await reload();camera.setPaused(Boolean(pendingScan));message='Boarding saved.';});});
  root.querySelectorAll('[data-event]').forEach(button=>button.onclick=()=>{
   const kind=button.dataset.event,count=manifest.passengers.filter(x=>x.valid&&!x.boardedAt).length;
-  if(!confirm(kind==='departed'?t('Confirm departure? Remaining valid passengers not boarded:')+' '+count:t('Confirm arrival?')))return;
+  if(!confirm(kind==='departed'?t('Start the trip now? Passengers not boarded yet:')+' '+count:kind==='closed'?t('Close this trip? It cannot be reopened.'):t('Confirm arrival at the destination?')))return;
   void action(async()=>{await api(path()+'/events','POST',{event:kind});await reload();message='Journey event saved.';});
+ });
+ root.querySelectorAll('[data-stop]').forEach(button=>button.onclick=()=>{
+  if(!confirm(t('Confirm arrival at this stop?')))return;
+  void action(async()=>{await api(path()+'/stops','POST',{stopIndex:Number(button.dataset.stop)});await reload();message='Stop saved.';});
  });
  const form=root.querySelector('#driver-incident');
  if(form){form.elements.kind.disabled=form.elements.note.disabled=Boolean(incident.locked);}
@@ -165,3 +169,24 @@ function bind(){
 }
 render();
 await action(async()=>{try{me=await api('auth/me');if(!me.mustChangePassword)await reload();}catch(error){if(error.message!=='UNAUTHENTICATED')throw error;}finally{signIn.finish(root.querySelector('#driver-login'));}});
+
+// D122: the journey step by step. Start the trip (passengers may still be missing), mark each stop reached,
+// mark the destination reached, then close the trip.
+function journeyPanel(){
+ const p=manifest.progress||{stops:[]},stops=p.stops||[],last=stops.length-1,live=manifest.status==='published',off=busy?'disabled':'';
+ const lastReached=Math.max(0,...stops.filter(s=>s.reachedAt&&s.index<last).map(s=>s.index));
+ const place=s=>e(language==='ar'?(s.stationAr?s.cityAr+' · '+s.stationAr:s.cityAr):(s.stationEn?s.cityEn+' · '+s.stationEn:s.cityEn));
+ const row=s=>{
+  let action='';
+  if(live&&!s.reachedAt){
+   if(s.index===0)action=`<button class="staff-primary" data-event="departed" ${off}>${t('Start trip')}</button>`;
+   else if(p.departedAt&&!p.arrivedAt&&s.index===last)action=`<button class="staff-primary" data-event="arrived" ${off}>${t('Destination reached')}</button>`;
+   else if(p.departedAt&&!p.arrivedAt&&s.index>lastReached)action=`<button data-stop="${s.index}" ${off}>${t('Arrived at this stop')}</button>`;
+  }
+  return `<li class="journey-stop${s.reachedAt?' is-reached':''}"><span class="journey-dot" aria-hidden="true"></span><div><strong>${place(s)}</strong><small>${t('Planned')} <bdi>${e(when(s.plannedAt))}</bdi>${s.reachedAt?` · ${t(s.index===0?'Started':'Reached')} <bdi>${e(when(s.reachedAt))}</bdi>`:''}</small></div>${action}</li>`;
+ };
+ const close=live&&p.arrivedAt&&!p.closedAt?`<button class="staff-primary journey-close" data-event="closed" ${off}>${t('Close trip')}</button>`:'';
+ return `<section class="staff-panel driver-operations"><h2>${t('Journey')}</h2>${p.closedAt?`<p class="journey-closed">${t('Trip closed')} · <bdi>${e(when(p.closedAt))}</bdi></p>`:''}<ol class="journey-steps">${stops.map(row).join('')}</ol>${close}</section>`;
+}
+Object.assign(ar,{'Start trip':'بدء الرحلة','Destination reached':'الوصول إلى الوجهة','Arrived at this stop':'الوصول إلى هذه المحطة','Close trip':'إغلاق الرحلة','Trip closed':'أُغلقت الرحلة','Planned':'المخطط','Started':'بدأت','Reached':'وصلت','closed':'مغلقة',
+ 'Start the trip now? Passengers not boarded yet:':'بدء الرحلة الآن؟ الركاب الذين لم يصعدوا بعد:','Confirm arrival at this stop?':'تأكيد الوصول إلى هذه المحطة؟','Confirm arrival at the destination?':'تأكيد الوصول إلى الوجهة؟','Close this trip? It cannot be reopened.':'إغلاق هذه الرحلة؟ لا يمكن إعادة فتحها.','Stop saved.':'تم حفظ المحطة.'});

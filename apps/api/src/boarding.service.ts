@@ -3,6 +3,7 @@ import {Database} from './database.js';
 import {IdentityService} from './identity.service.js';
 import {body,digest,text,uuid,fail} from './security.js';
 import type {PoolClient} from 'pg';
+import {Limiter} from './shipment.service.js';
 
 @Injectable()
 export class BoardingService {
@@ -13,7 +14,9 @@ export class BoardingService {
  }
  trips(token:string){return this.run(token,async c=>(await c.query('SELECT safeer.driver_trips() AS row')).rows[0].row);}
  manifest(token:string,cid:string,tid:string){uuid(cid);uuid(tid);return this.run(token,async c=>{
-  const row=(await c.query('SELECT safeer.driver_manifest($1,$2) AS row',[cid,tid])).rows[0].row;if(!row)fail('NOT_FOUND',404);return row;
+  const row=(await c.query('SELECT safeer.driver_manifest($1,$2) AS row',[cid,tid])).rows[0].row;if(!row)fail('NOT_FOUND',404);
+  // D122: stop-by-stop progress for the start, stop, destination and close buttons.
+  row.progress=(await c.query('SELECT safeer.driver_progress($1,$2) AS row',[cid,tid])).rows[0].row;return row;
  });}
  verify(token:string,cid:string,tid:string,input:unknown,board=false){
   uuid(cid);uuid(tid);const data=body(input,['token','ticketNumber']);
@@ -24,8 +27,21 @@ export class BoardingService {
   return this.run(token,async c=>(await c.query('SELECT safeer.driver_verify($1,$2,$3,$4) AS row',[cid,tid,qr,board])).rows[0].row);
  }
  event(token:string,cid:string,tid:string,input:unknown){
-  uuid(cid);uuid(tid);const data=body(input,['event']);if(!['departed','arrived'].includes(String(data.event)))fail('INVALID_INPUT');
+  uuid(cid);uuid(tid);const data=body(input,['event']);if(!['departed','arrived','closed'].includes(String(data.event)))fail('INVALID_INPUT');
   return this.run(token,async c=>(await c.query('SELECT safeer.driver_event($1,$2,$3) AS row',[cid,tid,data.event])).rows[0].row);
+ }
+ stop(token:string,cid:string,tid:string,input:unknown){
+  uuid(cid);uuid(tid);const data=body(input,['stopIndex']);const idx=data.stopIndex;
+  if(typeof idx!=='number'||!Number.isInteger(idx)||idx<1||idx>28)fail('INVALID_INPUT');
+  return this.run(token,async c=>(await c.query('SELECT safeer.driver_stop($1,$2,$3) AS row',[cid,tid,idx])).rows[0].row);
+ }
+ // Public: progress of the trip on a booking reference. Unknown and malformed references look the same.
+ private readonly tracking=new Limiter(60,3600000);
+ async track(reference:unknown,client:string){
+  this.tracking.take(client);
+  const value=typeof reference==='string'?reference.trim().toUpperCase():'';
+  if(!/^SF-[2-9A-HJ-NP-Z]{8}$/.test(value))fail('NOT_FOUND',404);
+  const row=(await this.db.pool.query('SELECT safeer.public_trip_progress($1) AS row',[value])).rows[0]?.row;if(!row)fail('NOT_FOUND',404);return row;
  }
  incident(token:string,cid:string,tid:string,input:unknown){
   uuid(cid);uuid(tid);const data=body(input,['kind','note','key']),kind=text(data.kind,1,10),note=text(data.note,1,500),key=uuid(data.key);

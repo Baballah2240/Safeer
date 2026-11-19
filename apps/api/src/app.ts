@@ -291,7 +291,14 @@ class BoardingController {
  @Post('companies/:cid/trips/:tid/verify') verify(@Req() req:Request,@Param('cid') cid:string,@Param('tid') tid:string,@Body() data:unknown){return this.boarding.verify(token(req),cid,tid,data).then(reply);}
  @Post('companies/:cid/trips/:tid/board') board(@Req() req:Request,@Param('cid') cid:string,@Param('tid') tid:string,@Body() data:unknown){return this.boarding.verify(token(req),cid,tid,data,true).then(reply);}
  @Post('companies/:cid/trips/:tid/events') event(@Req() req:Request,@Param('cid') cid:string,@Param('tid') tid:string,@Body() data:unknown){return this.boarding.event(token(req),cid,tid,data).then(reply);}
+ @Post('companies/:cid/trips/:tid/stops') stop(@Req() req:Request,@Param('cid') cid:string,@Param('tid') tid:string,@Body() data:unknown){return this.boarding.stop(token(req),cid,tid,data).then(reply);}
  @Post('companies/:cid/trips/:tid/incidents') incident(@Req() req:Request,@Param('cid') cid:string,@Param('tid') tid:string,@Body() data:unknown){return this.boarding.incident(token(req),cid,tid,data).then(reply);}
+}
+// D122: passengers follow their trip with the booking reference.
+@Controller('api/v1/public/track')
+class TripTrackingController {
+ constructor(private readonly boarding:BoardingService){}
+ @Get('trips/:reference') track(@Req() req:Request,@Param('reference') reference:string){return this.boarding.track(reference,client(req)).then(reply);}
 }
 @Controller('api/v1/companies/:id/finance')
 class FinanceController {
@@ -312,7 +319,7 @@ class PlatformController {
  @Post('notifications/read-all') readAll(@Req() req:Request,@Body() data:unknown){return this.platform.readAll(token(req),data).then(reply);}
  @Post('notifications/:event/read') read(@Req() req:Request,@Param('event') id:string,@Body() data:unknown){return this.platform.read(token(req),id,data).then(reply);}
 }
-@Module({controllers:[BillingController,PublicBrandController,PublicCityController,PassengerController,PlatformController,FinanceController,IdentityController,CompanyController,LuggageController,ShipmentController,ShipmentTrackingController,OperationsController,TicketingController,BookingController,RouteController,FleetController,TripSeatController,TripController,ReservationController,PublicController,PublicProfileController,BoardingController],providers:[BillingService,PassengerService,Database,ShipmentService,OperationsService,IdentityService,CompanyService,RouteService,FleetService,TripService,PublicService,ReservationService,TicketingService,LuggageService,BoardingService,FinanceService,PlatformService]})
+@Module({controllers:[BillingController,PublicBrandController,PublicCityController,TripTrackingController,PassengerController,PlatformController,FinanceController,IdentityController,CompanyController,LuggageController,ShipmentController,ShipmentTrackingController,OperationsController,TicketingController,BookingController,RouteController,FleetController,TripSeatController,TripController,ReservationController,PublicController,PublicProfileController,BoardingController],providers:[BillingService,PassengerService,Database,ShipmentService,OperationsService,IdentityService,CompanyService,RouteService,FleetService,TripService,PublicService,ReservationService,TicketingService,LuggageService,BoardingService,FinanceService,PlatformService]})
 export class IdentityModule {}
 
 export async function createIdentityApi({port=4321,webOrigin='http://127.0.0.1:4320'}:{port?:number;webOrigin?:string}={}){

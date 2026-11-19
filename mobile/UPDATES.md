@@ -1,5 +1,9 @@
 # Safeer mobile status
 
+## Journey steps - D122, 2026-11-19 (source only, no APK built)
+
+Safeer Driver gets a Journey button on the active trip card. The Journey screen lists every stop with its planned time and offers, in order: Start trip (allowed with passengers still not boarded; the confirmation says how many), Arrived at this stop for each middle stop, Destination reached, then Close trip. Each step asks for confirmation and the server checks the order. Demo mode supports the same steps. Checked: flutter analyze (no issues) and Safeer Driver tests (15, including 2 new journey tests). Not yet released: needs a new version and APK build.
+
 ## App lock - D113, 2026-11-17 (source only, no APK built)
 
 Both Flutter apps get Settings > App lock: Off, PIN or Biometrics. A 4-6 digit PIN is stored only as a salted, stretched SHA-256 hash in the app's private storage; Biometrics (fingerprint or face, through local_auth) always keeps that PIN as the fallback. The app locks when it goes to the background and when it starts, and shows a full-screen keypad until the PIN or biometric check passes. After five wrong PINs the keypad waits 30 seconds, doubling after each further wrong PIN. Turning the lock off or changing the PIN asks for the current PIN. A forgotten PIN is reset by clearing the app data in Android settings.

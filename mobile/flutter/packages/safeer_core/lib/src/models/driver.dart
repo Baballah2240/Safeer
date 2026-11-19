@@ -64,9 +64,58 @@ class ManifestPassenger {
       );
 }
 
+/// One stop of the journey: planned time and, once recorded, when the bus reached it (D122).
+class JourneyStop {
+  const JourneyStop({required this.index, required this.place, required this.plannedAt, this.reachedAt});
+  final int index;
+  final Bilingual place;
+  final DateTime? plannedAt, reachedAt;
+  bool get reached => reachedAt != null;
+
+  factory JourneyStop.fromJson(Map<String, Object?> j) {
+    String join(String city, Object? station) => station is String && station.isNotEmpty ? '$city · $station' : city;
+    return JourneyStop(
+      index: j['index'] is int ? j['index'] as int : 0,
+      place: Bilingual(join(_s(j['cityEn']), j['stationEn']), join(_s(j['cityAr']), j['stationAr'])),
+      plannedAt: _d(j['plannedAt']),
+      reachedAt: _d(j['reachedAt']),
+    );
+  }
+}
+
+/// Start, stops reached, destination and close, as recorded by the driver.
+class JourneyProgress {
+  const JourneyProgress({required this.stops, this.departedAt, this.arrivedAt, this.closedAt});
+  final List<JourneyStop> stops;
+  final DateTime? departedAt, arrivedAt, closedAt;
+  bool get started => departedAt != null;
+  bool get arrived => arrivedAt != null;
+  bool get closed => closedAt != null;
+  int get lastIndex => stops.isEmpty ? 0 : stops.last.index;
+
+  /// Intermediate stops the driver may still mark: after the last one reached, before the destination.
+  bool canReach(JourneyStop s) {
+    if (!started || arrived || s.reached || s.index <= 0 || s.index >= lastIndex) return false;
+    final reached = stops.where((x) => x.reached && x.index > 0 && x.index < lastIndex).map((x) => x.index);
+    return s.index > (reached.isEmpty ? 0 : reached.reduce((a, b) => a > b ? a : b));
+  }
+
+  static JourneyProgress? fromJson(Object? v) {
+    if (v is! Map) return null;
+    final j = v.cast<String, Object?>();
+    return JourneyProgress(
+      stops: _list(j['stops']).map(JourneyStop.fromJson).toList(),
+      departedAt: _d(j['departedAt']),
+      arrivedAt: _d(j['arrivedAt']),
+      closedAt: _d(j['closedAt']),
+    );
+  }
+}
+
 /// GET /driver/companies/:cid/trips/:tid (safeer.driver_manifest).
 class Manifest {
-  const Manifest({required this.tripId, required this.boardingOpen, required this.timezone, required this.stops, required this.passengers, required this.departureAt});
+  const Manifest({required this.tripId, required this.boardingOpen, required this.timezone, required this.stops, required this.passengers, required this.departureAt, this.progress});
+  final JourneyProgress? progress;
   final String tripId, timezone;
   final bool boardingOpen;
   final DateTime? departureAt;
@@ -82,7 +131,7 @@ class Manifest {
   int get boardedCount => expected.where((p) => p.boarded).length;
 
   Manifest withPassengers(List<ManifestPassenger> list) =>
-      Manifest(tripId: tripId, boardingOpen: boardingOpen, timezone: timezone, stops: stops, passengers: list, departureAt: departureAt);
+      Manifest(tripId: tripId, boardingOpen: boardingOpen, timezone: timezone, stops: stops, passengers: list, departureAt: departureAt, progress: progress);
 
   factory Manifest.fromJson(Map<String, Object?> j) => Manifest(
         tripId: _s(j['tripId']),
@@ -91,6 +140,7 @@ class Manifest {
         departureAt: _d(j['departureAt']),
         stops: _list(j['stops']).map((s) => Bilingual(_s(s['nameEn']), _s(s['nameAr']))).toList(),
         passengers: _list(j['passengers']).map(ManifestPassenger.fromJson).toList(),
+        progress: JourneyProgress.fromJson(j['progress']),
       );
 }
 

@@ -195,6 +195,10 @@
       "rls": true,
       "privileges": []
     },
+    "journey_stop_events": {
+      "rls": true,
+      "privileges": []
+    },
     "luggage_events": {
       "rls": true,
       "privileges": []
@@ -538,6 +542,9 @@
     "safeer.notifications_read_all()",
     "safeer.session_manifest(uuid,uuid)",
     "safeer.my_closed_sessions(uuid)",
-    "safeer.public_city_photo(text)"
+    "safeer.public_city_photo(text)",
+    "safeer.driver_stop(uuid,uuid,integer)",
+    "safeer.driver_progress(uuid,uuid)",
+    "safeer.public_trip_progress(text)"
   ]
 }

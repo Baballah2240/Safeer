@@ -48,3 +48,17 @@ html[data-app-surface=tracking] #track-app .track-how li p{margin:5px 0 0;line-h
 html[data-app-surface=tracking] #track-app .track-how-link,html[data-app-surface=tracking] #track-app .track-next a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 18px;border-radius:999px;border:1px solid var(--border);color:var(--ink);font-weight:700;text-decoration:none}
 html[data-app-surface=tracking] #track-app .track-next{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;padding-top:16px;border-top:1px solid var(--border)}
 html[data-app-surface=tracking] #track-app .track-next button{min-height:44px;border-radius:999px;padding:10px 18px}
+
+/* D122: trip progress by booking reference. */
+@media screen {
+ #track-app .track-trip h2{margin:4px 0 8px;font-size:1.3rem}
+ #track-app .track-journey{list-style:none;margin:16px 0;padding:0;display:grid}
+ #track-app .track-journey li{position:relative;display:grid;grid-template-columns:20px 1fr;gap:12px;padding:0 0 18px}
+ #track-app .track-journey li:not(:last-child)::before{content:'';position:absolute;inset-inline-start:9px;top:18px;bottom:0;width:2px;background:var(--border)}
+ #track-app .track-journey li>span{width:16px;height:16px;margin-top:3px;border-radius:50%;border:2px solid var(--muted);background:var(--surface)}
+ #track-app .track-journey li.done>span{border-color:#1f7a4d;background:#1f7a4d}
+ #track-app .track-journey li.done:not(:last-child)::before{background:#1f7a4d}
+ #track-app .track-journey li.current>span{border-color:#c8610f;box-shadow:0 0 0 4px #c8610f33}
+ #track-app .track-journey strong{display:block}
+ #track-app .track-journey small{color:var(--muted)}
+}
