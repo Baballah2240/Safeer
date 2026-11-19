@@ -264,6 +264,14 @@ class SafeerStrings {
   String get currentPin => _t('Enter your current PIN', 'أدخل رمزك الحالي');
   String get enterPin => _t('Enter your PIN', 'أدخل رمز PIN');
   String get wrongPin => _t('Wrong PIN', 'رمز غير صحيح');
+  String get lockAfter => _t('Lock after', 'القفل بعد');
+  String lockAfterChoice(Duration d) => d == Duration.zero
+      ? _t('Immediately when I leave the app', 'فورًا عند مغادرة التطبيق')
+      : d.inMinutes == 0
+          ? _t('${d.inSeconds} seconds', '${d.inSeconds} ثانية')
+          : d.inMinutes == 1
+              ? _t('1 minute', 'دقيقة واحدة')
+              : _t('${d.inMinutes} minutes', '${d.inMinutes} دقائق');
   String tryAgainIn(int seconds) => _t('Too many attempts. Try again in $seconds s.', 'محاولات كثيرة. حاول بعد $seconds ثانية.');
   String get useBiometrics => _t('Use fingerprint or face', 'استخدم البصمة أو الوجه');
   String get unlockReason => _t('Unlock Safeer', 'افتح قفل سفير');

@@ -1,5 +1,10 @@
 # Changelog
 
+## App lock timer - D124, 2026-11-19
+
+- **Phone apps (Flutter):** Settings > App lock now has "Lock after": immediately when you leave the app, or after 30 seconds, 1, 5 or 15 minutes. With a timer, the app asks for the PIN or fingerprint/face again only after being in the background that long, or after being left untouched that long while open; every touch restarts the timer.
+- **Tests:** two new tests in safeer_core app_lock_test.dart.
+
 ## Layout on every device and typing help - D123, 2026-11-19
 
 - **Phone apps (Flutter):** both apps were checked on small, large and folding phones, tablets and landscape, in English and Arabic, at large text sizes and with the keyboard open. Fixed: the ticket-number sheet in Safeer Driver overflowed when the keyboard opened, sign-in and review forms now stay a readable width on tablets, and Next on the review screen goes traveller by traveller, then to the mobile number (Done books). Tapping empty space or dragging a form closes the keyboard, and the focused field stays above the keyboard.

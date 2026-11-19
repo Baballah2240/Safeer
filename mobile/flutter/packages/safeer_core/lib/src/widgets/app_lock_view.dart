@@ -29,14 +29,31 @@ class _AppLockGateState extends State<AppLockGate> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _idle?.cancel();
     super.dispose();
+  }
+
+  Timer? _idle;
+
+  // Restarted on every touch: locks the app when it is left untouched for [AppLock.after].
+  void _touched() {
+    _idle?.cancel();
+    final lock = widget.lock;
+    if (!lock.enabled || lock.locked || lock.after == Duration.zero) return;
+    _idle = Timer(lock.after, lock.lock);
   }
 
   // Only "paused" (the app is in the background): the fingerprint dialog itself makes
   // the app briefly inactive, which must not lock it again.
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused) widget.lock.lock();
+    if (state == AppLifecycleState.paused) {
+      _idle?.cancel();
+      widget.lock.leftApp();
+    } else if (state == AppLifecycleState.resumed) {
+      widget.lock.returned();
+      _touched();
+    }
   }
 
   @override
@@ -44,10 +61,15 @@ class _AppLockGateState extends State<AppLockGate> with WidgetsBindingObserver {
         listenable: widget.lock,
         builder: (context, _) {
           final locked = widget.lock.locked;
-          return Stack(fit: StackFit.expand, children: [
+          if (locked) {
+            _idle?.cancel();
+          } else if (_idle == null || !_idle!.isActive) {
+            _touched();
+          }
+          return Listener(behavior: HitTestBehavior.translucent, onPointerDown: (_) => _touched(), child: Stack(fit: StackFit.expand, children: [
             Offstage(offstage: locked, child: TickerMode(enabled: !locked, child: widget.child)),
             if (locked) LockScreen(lock: widget.lock),
-          ]);
+          ]));
         },
       );
 }
@@ -372,6 +394,17 @@ class _AppLockSettingsState extends State<AppLockSettings> {
             padding: const EdgeInsets.only(top: 6),
             child: Text(bio.data == false ? '${s.lockHint} ${s.biometricUnavailable}' : s.lockHint, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: p.muted)),
           ),
+          if (widget.lock.enabled) ...[
+            const SizedBox(height: 12),
+            DropdownButtonFormField<Duration>(
+              key: const ValueKey('app-lock-after'),
+              initialValue: widget.lock.after,
+              isExpanded: true,
+              decoration: InputDecoration(labelText: s.lockAfter, prefixIcon: const Icon(Icons.timer_outlined)),
+              items: [for (final d in AppLock.delays) DropdownMenuItem(value: d, child: Text(s.lockAfterChoice(d)))],
+              onChanged: (d) => d == null ? null : widget.lock.setAfter(d),
+            ),
+          ],
           if (widget.lock.enabled)
             ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.password), title: Text(s.changePin), onTap: _changePin),
           const SizedBox(height: 8),

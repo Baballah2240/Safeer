@@ -138,4 +138,59 @@ void main() {
     expect(bio.asked, 1);
     expect(find.text('Trips'), findsOneWidget);
   });
+
+  test('auto-lock timer: locks only after being away for the chosen time, and is saved (D124)', () async {
+    var now = DateTime(2026, 11, 19, 9);
+    final store = MemoryStore();
+    final lock = AppLock(store, biometrics: FakeBiometrics(), clock: () => now);
+    await lock.setPin('2468');
+    lock.unlockWithPin('2468');
+    lock.leftApp();
+    expect(lock.locked, isTrue, reason: 'Immediately is the default');
+    lock.unlockWithPin('2468');
+    await lock.setAfter(const Duration(minutes: 1));
+    lock.leftApp();
+    expect(lock.locked, isFalse);
+    now = now.add(const Duration(seconds: 50));
+    lock.returned();
+    expect(lock.locked, isFalse, reason: 'back within a minute');
+    lock.leftApp();
+    now = now.add(const Duration(seconds: 61));
+    lock.returned();
+    expect(lock.locked, isTrue, reason: 'away a minute or longer');
+    await lock.setAfter(const Duration(seconds: 7));
+    expect(lock.after, Duration.zero, reason: 'only the listed choices are accepted');
+    await lock.setAfter(const Duration(minutes: 5));
+    final again = AppLock(store, biometrics: FakeBiometrics());
+    await again.load();
+    expect(again.after, const Duration(minutes: 5));
+  });
+
+  testWidgets('auto-lock timer locks the open app when it is left untouched, and touches restart it', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final settings = AppSettings(MemoryStore(), biometrics: FakeBiometrics()..has = false);
+    await settings.load();
+    await settings.lock.setPin('2468');
+    settings.lock.unlockWithPin('2468');
+    await tester.pumpWidget(host(settings, Scaffold(body: SettingsView(settings: settings, dataSource: 'Demo', version: '1'))));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const ValueKey('app-lock-after')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('app-lock-after')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('30 seconds').last);
+    await tester.pumpAndSettle();
+    expect(settings.lock.after, const Duration(seconds: 30));
+    await tester.pump(const Duration(seconds: 20));
+    await tester.tapAt(const Offset(380, 830));
+    await tester.pump(const Duration(seconds: 20));
+    expect(find.text('Enter your PIN'), findsNothing, reason: 'the touch restarted the timer');
+    await tester.pump(const Duration(seconds: 11));
+    await tester.pumpAndSettle();
+    expect(find.text('Enter your PIN'), findsOneWidget);
+    await typePin(tester, '2468');
+    expect(find.text('Enter your PIN'), findsNothing);
+  });
 }

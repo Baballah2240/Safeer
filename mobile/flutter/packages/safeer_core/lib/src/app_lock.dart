@@ -49,7 +49,15 @@ class AppLock extends ChangeNotifier {
   final BiometricCheck biometrics;
   final DateTime Function() _now;
 
-  static const _modeKey = 'safeer.lock.mode', _pinKey = 'safeer.lock.pin';
+  static const _modeKey = 'safeer.lock.mode', _pinKey = 'safeer.lock.pin', _afterKey = 'safeer.lock.after';
+
+  /// Choices for [after] (D124).
+  static const delays = [Duration.zero, Duration(seconds: 30), Duration(minutes: 1), Duration(minutes: 5), Duration(minutes: 15)];
+
+  /// Auto-lock timer: how long the app may be away, or left untouched while open, before it
+  /// locks. Zero locks as soon as the app leaves the screen (and never while it is in use).
+  Duration after = Duration.zero;
+  DateTime? _leftAt;
   static const minDigits = 4, maxDigits = 6;
 
   LockMode mode = LockMode.off;
@@ -73,6 +81,8 @@ class AppLock extends ChangeNotifier {
     final saved = await _store.read(_modeKey);
     mode = LockMode.values.firstWhere((m) => m.name == saved, orElse: () => LockMode.off);
     if (_pinRecord == null) mode = LockMode.off;
+    final seconds = int.tryParse(await _store.read(_afterKey) ?? '');
+    after = delays.firstWhere((d) => d.inSeconds == seconds, orElse: () => Duration.zero);
     locked = enabled;
     notifyListeners();
   }
@@ -101,6 +111,25 @@ class AppLock extends ChangeNotifier {
     mode = _pinRecord == null ? LockMode.off : value;
     await _store.write(_modeKey, mode.name);
     notifyListeners();
+  }
+
+  Future<void> setAfter(Duration value) async {
+    after = delays.contains(value) ? value : Duration.zero;
+    await _store.write(_afterKey, '${after.inSeconds}');
+    notifyListeners();
+  }
+
+  /// The app went to the background: lock now, or note the time for [returned].
+  void leftApp() {
+    if (after == Duration.zero) return lock();
+    _leftAt ??= _now();
+  }
+
+  /// The app is back on screen: lock when it was away for [after] or longer.
+  void returned() {
+    final left = _leftAt;
+    _leftAt = null;
+    if (left != null && !_now().difference(left).isNegative && _now().difference(left) >= after) lock();
   }
 
   Future<void> turnOff() async {

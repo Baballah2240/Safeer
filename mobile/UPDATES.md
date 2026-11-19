@@ -1,5 +1,9 @@
 # Safeer mobile status
 
+## App lock timer - D124, 2026-11-19 (source only, no APK built)
+
+Both apps: Settings > App lock > Lock after (Immediately, 30 seconds, 1, 5 or 15 minutes). The PIN or biometric lock returns after the app has been in the background, or left untouched while open, for that long. Immediately keeps the previous behaviour. Checked: flutter analyze (no issues), safeer_core tests (20, including 2 new), Safeer Driver (31) and Safeer Passenger (30). Not yet released: needs a new version and APK build, and a check on a phone.
+
 ## Safeer Driver 0.21.0 - 2026-11-19
 
 Released Safeer Driver 0.21.0 (21000) with the D122 Journey screen. The website download links and the in-app update button now point at v0.21.0 through src/app-release.js. Safeer Passenger stays at 0.20.0. Checked statically (aapt2 badging, signing key); not installed on a phone.
