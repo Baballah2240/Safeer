@@ -12,8 +12,11 @@ import 'surfaces.dart';
 /// Covers the app with the lock screen while [AppLock.locked], and locks the app when it
 /// leaves the screen (D113). Put it in MaterialApp.builder so it has text and theme.
 class AppLockGate extends StatefulWidget {
-  const AppLockGate({super.key, required this.lock, required this.child});
+  const AppLockGate({super.key, required this.lock, required this.child, this.account});
   final AppLock lock;
+
+  /// D125: the account the lock opens (shown under the title), or null.
+  final String? Function()? account;
   final Widget child;
   @override
   State<AppLockGate> createState() => _AppLockGateState();
@@ -68,7 +71,7 @@ class _AppLockGateState extends State<AppLockGate> with WidgetsBindingObserver {
           }
           return Listener(behavior: HitTestBehavior.translucent, onPointerDown: (_) => _touched(), child: Stack(fit: StackFit.expand, children: [
             Offstage(offstage: locked, child: TickerMode(enabled: !locked, child: widget.child)),
-            if (locked) LockScreen(lock: widget.lock),
+            if (locked) LockScreen(lock: widget.lock, account: widget.account?.call()),
           ]));
         },
       );
@@ -76,8 +79,9 @@ class _AppLockGateState extends State<AppLockGate> with WidgetsBindingObserver {
 
 /// Full-screen PIN keypad, with a fingerprint/face button when that is turned on.
 class LockScreen extends StatefulWidget {
-  const LockScreen({super.key, required this.lock});
+  const LockScreen({super.key, required this.lock, this.account});
   final AppLock lock;
+  final String? account;
   @override
   State<LockScreen> createState() => _LockScreenState();
 }
@@ -106,7 +110,8 @@ class _LockScreenState extends State<LockScreen> {
           key: const ValueKey('lock-pad'),
           header: const Padding(padding: EdgeInsets.only(bottom: 12), child: SafeerLogo(size: 56)),
           title: s.enterPin,
-          footer: s.forgotPin,
+          subtitle: widget.account == null ? null : s.unlockAccount(widget.account!),
+          footer: widget.account == null ? s.forgotPin : s.forgotAccountPin,
           wait: () => lock.wait,
           onBiometric: lock.mode == LockMode.biometric ? () => lock.unlockWithBiometrics(s.unlockReason) : null,
           onSubmit: (pin) async => lock.unlockWithPin(pin) ? null : (lock.wait == null ? s.wrongPin : s.tryAgainIn(lock.wait!.inSeconds + 1)),

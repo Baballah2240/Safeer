@@ -43,7 +43,7 @@ class DriverApp extends StatelessWidget {
             camera: camera,
             child: MaterialApp(
               debugShowCheckedModeBanner: false,
-              builder: (context, child) => KeyboardDismissOnTap(child: AppLockGate(lock: settings.lock, child: child ?? const SizedBox.shrink())),
+              builder: (context, child) => KeyboardDismissOnTap(child: AppLockGate(lock: settings.lock, account: () => session.savedEmail, child: child ?? const SizedBox.shrink())),
               onGenerateTitle: (c) => SafeerStrings.of(c).appDriver,
               locale: locale,
               supportedLocales: SafeerStrings.supportedLocales,
@@ -53,7 +53,7 @@ class DriverApp extends StatelessWidget {
               themeMode: settings.themeMode,
               home: ListenableBuilder(
                 listenable: session,
-                builder: (context, _) => session.account == null ? const SignInScreen() : const TripsScreen(),
+                builder: (context, _) => session.account != null ? const TripsScreen() : (session.restoring ? _Restoring(email: session.savedEmail ?? '') : const SignInScreen()),
               ),
             ),
           );
@@ -74,4 +74,20 @@ String driverError(SafeerStrings s, Object error) {
     };
   }
   return s.serverError;
+}
+
+/// D125: shown while the app signs in again with the saved account after the lock opened.
+class _Restoring extends StatelessWidget {
+  const _Restoring({required this.email});
+  final String email;
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        body: Center(
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            const CircularProgressIndicator(),
+            const SizedBox(height: 16),
+            Padding(padding: const EdgeInsets.symmetric(horizontal: 24), child: Text(SafeerStrings.of(context).signingInAs(email), textAlign: TextAlign.center)),
+          ]),
+        ),
+      );
 }

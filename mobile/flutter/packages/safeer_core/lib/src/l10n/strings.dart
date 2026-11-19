@@ -264,6 +264,10 @@ class SafeerStrings {
   String get currentPin => _t('Enter your current PIN', 'أدخل رمزك الحالي');
   String get enterPin => _t('Enter your PIN', 'أدخل رمز PIN');
   String get wrongPin => _t('Wrong PIN', 'رمز غير صحيح');
+  String unlockAccount(String email) => _t('Opens the account $email', 'يفتح الحساب $email');
+  String get forgotAccountPin => _t('Forgot your PIN? After 10 wrong PINs you are signed out and can sign in again with your password.', 'نسيت الرمز؟ بعد 10 محاولات خاطئة يتم تسجيل خروجك ويمكنك الدخول مجددًا بكلمة المرور.');
+  String get accountLockNote => _t('Turn on App lock in Settings to open your account with a PIN or fingerprint next time instead of your password.', 'فعّل قفل التطبيق في الإعدادات لفتح حسابك في المرة القادمة برمز PIN أو البصمة بدلًا من كلمة المرور.');
+  String signingInAs(String email) => _t('Signing in as $email…', 'جارٍ تسجيل الدخول باسم $email…');
   String get lockAfter => _t('Lock after', 'القفل بعد');
   String lockAfterChoice(Duration d) => d == Duration.zero
       ? _t('Immediately when I leave the app', 'فورًا عند مغادرة التطبيق')

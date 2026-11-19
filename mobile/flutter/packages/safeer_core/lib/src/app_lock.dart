@@ -64,6 +64,11 @@ class AppLock extends ChangeNotifier {
   String? _pinRecord;
   bool locked = false;
   int _failures = 0;
+
+  /// D125: wrong PINs in a row after which [onTooManyFailures] runs (the Driver app then
+  /// forgets the saved account and signs out). Without a handler the keypad only waits.
+  static const forgetAfter = 10;
+  Future<void> Function()? onTooManyFailures;
   DateTime? _waitUntil;
 
   bool get enabled => mode != LockMode.off && _pinRecord != null;
@@ -153,6 +158,12 @@ class AppLock extends ChangeNotifier {
     } else {
       _failures++;
       if (_failures >= 5) _waitUntil = _now().add(Duration(seconds: 30 << min(_failures - 5, 6)));
+      final forget = onTooManyFailures;
+      if (_failures >= forgetAfter && forget != null) {
+        _failures = 0;
+        _waitUntil = null;
+        forget();
+      }
       notifyListeners();
     }
     return ok;

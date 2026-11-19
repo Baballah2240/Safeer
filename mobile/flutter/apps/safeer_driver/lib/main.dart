@@ -14,6 +14,7 @@ Future<void> main() async {
   final settings = AppSettings(store);
   await settings.load();
   final DriverRepository repository = config.demo ? DemoDriverRepository() : LiveDriverRepository(SafeerApi(origin: config.origin));
-  final session = DriverSession(repository: repository, pending: PendingScans(store));
+  final session = DriverSession(repository: repository, pending: PendingScans(store), lock: settings.lock, vault: SecureDeviceStore());
+  await session.load();
   runApp(DriverApp(session: session, settings: settings, config: config));
 }

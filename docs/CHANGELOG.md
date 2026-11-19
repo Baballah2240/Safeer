@@ -1,5 +1,10 @@
 # Changelog
 
+## Account lock in Safeer Driver - D125, 2026-11-19
+
+- **Safeer Driver:** with App lock on, the driver signs in with the password once; after that the PIN or fingerprint/face opens their account directly, even after the app was closed or the server session ended. The lock screen shows which account it opens. The sign-in details are stored encrypted in the Android Keystore and removed on sign-out, when the lock is turned off, when the password no longer works (for example after a change on the website) or after 10 wrong PINs, which also signs the driver out.
+- **Tests:** apps/safeer_driver/test/account_lock_test.dart.
+
 ## App lock timer - D124, 2026-11-19
 
 - **Phone apps (Flutter):** Settings > App lock now has "Lock after": immediately when you leave the app, or after 30 seconds, 1, 5 or 15 minutes. With a timer, the app asks for the PIN or fingerprint/face again only after being in the background that long, or after being left untouched that long while open; every touch restarts the timer.

@@ -71,6 +71,7 @@ class _SignInScreenState extends State<SignInScreen> {
             Semantics(header: true, child: Text(s.signInTitle, style: t.headlineSmall)),
             const SizedBox(height: 4),
             Text(s.signInNote, style: t.bodySmall),
+            if (!DriverScope.of(context).settings.lock.enabled) Padding(padding: const EdgeInsets.only(top: 6), child: Text(s.accountLockNote, style: t.bodySmall)),
             const SizedBox(height: 20),
             if (session.sessionExpired) Padding(padding: const EdgeInsets.only(bottom: 16), child: StatusPanel(icon: Icons.lock_clock, tone: StatusTone.warning, title: s.sessionExpired)),
             TextField(
