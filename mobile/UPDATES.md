@@ -1,5 +1,9 @@
 # Safeer mobile status
 
+## Safeer Driver and Passenger 0.22.0 - 2026-11-19
+
+Released Safeer Driver 0.22.0 (22000) and Safeer Passenger 0.22.0 (22000) under the single tag v0.22.0 (Passenger skips 0.21.0 because tag v0.21.0 is the Driver release). Includes D123 (layout on every device, typing help) and D124 (app lock timer). The website download links and the in-app update button point at v0.22.0 through src/app-release.js. Checked: flutter analyze, all Flutter tests (20, 31, 30), npm run check; not installed on a phone.
+
 ## App lock timer - D124, 2026-11-19 (source only, no APK built)
 
 Both apps: Settings > App lock > Lock after (Immediately, 30 seconds, 1, 5 or 15 minutes). The PIN or biometric lock returns after the app has been in the background, or left untouched while open, for that long. Immediately keeps the previous behaviour. Checked: flutter analyze (no issues), safeer_core tests (20, including 2 new), Safeer Driver (31) and Safeer Passenger (30). Not yet released: needs a new version and APK build, and a check on a phone.
