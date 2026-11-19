@@ -8,7 +8,8 @@ import 'sign_in_screen.dart';
 import 'trips_screen.dart';
 
 // Shown in Settings; keep it equal to the version line in pubspec.yaml (D78).
-const driverVersion = '0.22.0 (22000)';
+const driverVersion = '0.23.0 (23000)';
+const driverVersionCode = 23000;
 
 class DriverScope extends InheritedWidget {
   const DriverScope({super.key, required this.session, required this.settings, required this.config, this.camera, required super.child});
@@ -43,7 +44,7 @@ class DriverApp extends StatelessWidget {
             camera: camera,
             child: MaterialApp(
               debugShowCheckedModeBanner: false,
-              builder: (context, child) => KeyboardDismissOnTap(child: AppLockGate(lock: settings.lock, account: () => session.savedEmail, child: child ?? const SizedBox.shrink())),
+              builder: (context, child) => KeyboardDismissOnTap(child: AppLockGate(lock: settings.lock, account: () => session.savedEmail, child: UpdatePrompt(updater: settings.updater, child: child ?? const SizedBox.shrink()))),
               onGenerateTitle: (c) => SafeerStrings.of(c).appDriver,
               locale: locale,
               supportedLocales: SafeerStrings.supportedLocales,

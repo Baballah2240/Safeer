@@ -13,6 +13,8 @@ Future<void> main() async {
   final store = DeviceStore();
   final settings = AppSettings(store);
   await settings.load();
+  // D126: offered inside the app when the website publishes a newer version (release builds only).
+  if (!config.demo) settings.updater = AppUpdater(flavor: 'driver', versionCode: driverVersionCode, origin: config.origin);
   final DriverRepository repository = config.demo ? DemoDriverRepository() : LiveDriverRepository(SafeerApi(origin: config.origin));
   final session = DriverSession(repository: repository, pending: PendingScans(store), lock: settings.lock, vault: SecureDeviceStore());
   await session.load();

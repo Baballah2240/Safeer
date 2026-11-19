@@ -268,6 +268,20 @@ class SafeerStrings {
   String get forgotAccountPin => _t('Forgot your PIN? After 10 wrong PINs you are signed out and can sign in again with your password.', 'نسيت الرمز؟ بعد 10 محاولات خاطئة يتم تسجيل خروجك ويمكنك الدخول مجددًا بكلمة المرور.');
   String get accountLockNote => _t('Turn on App lock in Settings to open your account with a PIN or fingerprint next time instead of your password.', 'فعّل قفل التطبيق في الإعدادات لفتح حسابك في المرة القادمة برمز PIN أو البصمة بدلًا من كلمة المرور.');
   String signingInAs(String email) => _t('Signing in as $email…', 'جارٍ تسجيل الدخول باسم $email…');
+  // D126: in-app update.
+  String get appUpdate => _t('App update', 'تحديث التطبيق');
+  String get checkForUpdates => _t('Check for updates', 'التحقق من وجود تحديث');
+  String get updateHint => _t('The app checks each time it opens.', 'يتحقق التطبيق في كل مرة يُفتح فيها.');
+  String get updateCheckFailed => _t('Could not check. Check the internet connection and try again.', 'تعذّر التحقق. تأكد من الاتصال بالإنترنت وحاول مجددًا.');
+  String updateAvailable(String version) => _t('Version $version is available', 'الإصدار $version متاح');
+  String updateNow(double mb) => _t('Update (${mb.toStringAsFixed(1)} MB)', 'تحديث (${mb.toStringAsFixed(1)} ميغابايت)');
+  String get updateKeepsData => _t('Installs over this app. Your sign-in, settings and saved data stay.', 'يُثبَّت فوق هذا التطبيق. يبقى تسجيل دخولك وإعداداتك وبياناتك المحفوظة.');
+  String updateDownloading(int percent) => _t('Downloading… $percent%', 'جارٍ التنزيل… $percent%');
+  String get updateInstallerOpened => _t('Tap Install in the window that opened. If you closed it, tap Update again.', 'اضغط تثبيت في النافذة التي فُتحت. إذا أغلقتها فاضغط تحديث مجددًا.');
+  String get updateAllowInstalls => _t('Allow installs from this app in the screen that opened, come back and tap Update again.', 'اسمح بالتثبيت من هذا التطبيق في الشاشة التي فُتحت، ثم عُد واضغط تحديث مجددًا.');
+  String get updateFailed => _t('The update could not be downloaded or did not match its checksum. Try again.', 'تعذّر تنزيل التحديث أو لم يطابق رمز التحقق. حاول مجددًا.');
+  String get updateTryAgain => _t('Try again', 'حاول مجددًا');
+  String get updateLater => _t('Later', 'لاحقًا');
   String get lockAfter => _t('Lock after', 'القفل بعد');
   String lockAfterChoice(Duration d) => d == Duration.zero
       ? _t('Immediately when I leave the app', 'فورًا عند مغادرة التطبيق')

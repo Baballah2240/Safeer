@@ -4,6 +4,7 @@ import '../l10n/strings.dart';
 import '../settings.dart';
 import '../theme/palette.dart';
 import 'app_lock_view.dart';
+import 'app_update_view.dart';
 import 'surfaces.dart';
 
 /// Language and appearance controls shared by both apps.
@@ -45,6 +46,7 @@ class SettingsView extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         AppLockSettings(lock: settings.lock),
+        if (settings.updater != null) AppUpdateSettings(updater: settings.updater!),
         ...children,
         const SizedBox(height: 8),
         ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.cloud_outlined), title: Text(s.dataSource), subtitle: Text(dataSource, style: TextStyle(color: p.muted))),

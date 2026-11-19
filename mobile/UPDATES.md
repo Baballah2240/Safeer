@@ -1,5 +1,9 @@
 # Safeer mobile status
 
+## Safeer Driver and Passenger 0.23.0 with in-app update - D126, 2026-11-19
+
+Both apps check https://safeer.mohbaba.online/mobile/releases on start and in Settings > App update, then download, verify (SHA-256 and size) and open the Android installer from inside the app. Native: REQUEST_INSTALL_PACKAGES, a FileProvider for cache updates/ and the safeer/update channel in MainActivity. Released as 0.23.0 (23000) under tag v0.23.0, including the D125 account lock. Checked: flutter analyze (no issues), safeer_core (24, including 4 new update tests), Safeer Driver (34) and Safeer Passenger (30). Not installed on a phone; the installer step can only be checked on a device.
+
 ## Account lock - D125, 2026-11-19 (source only, no APK built)
 
 Safeer Driver: the app lock now opens the driver's account. With the lock on, the PIN or fingerprint signs in without the password, using details kept encrypted in the Android Keystore (new dependency flutter_secure_storage). Sign-out, turning the lock off, a changed password or 10 wrong PINs remove them. Checked: flutter analyze (no issues), safeer_core (20), Safeer Driver (34, including 3 new) and Safeer Passenger (30) tests. Not yet released: needs a new version and APK build, and a check on a phone.

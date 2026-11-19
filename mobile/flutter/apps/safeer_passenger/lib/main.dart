@@ -12,6 +12,8 @@ Future<void> main() async {
   final store = DeviceStore();
   final settings = AppSettings(store);
   await settings.load();
+  // D126: offered inside the app when the website publishes a newer version (release builds only).
+  if (!config.demo) settings.updater = AppUpdater(flavor: 'booking', versionCode: passengerVersionCode, origin: config.origin);
   final trips = TripStore(store);
   final PassengerRepository repository;
   if (config.demo) {

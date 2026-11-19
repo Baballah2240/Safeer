@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'app_lock.dart';
+import 'app_update.dart';
 import 'storage.dart';
 
 /// Appearance and language, saved on the phone. Dark is the default, as on the website.
@@ -10,6 +11,9 @@ class AppSettings extends ChangeNotifier {
 
   /// PIN or biometric app lock (D113).
   final AppLock lock;
+
+  /// In-app update (D126). Set by main(); null in tests and previews.
+  AppUpdater? updater;
   ThemeMode themeMode = ThemeMode.dark;
 
   /// null follows the phone language (Arabic phones get Arabic, others English).

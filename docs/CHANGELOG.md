@@ -1,5 +1,10 @@
 # Changelog
 
+## In-app update - D126, 2026-11-19
+
+- **Both apps:** when a newer version is published, the app shows "Version X is available" with an Update button (also in Settings > App update, with Check for updates). It downloads the new APK from the Safeer GitHub release, checks its SHA-256 and size against the website's release information, and opens Android's installer, which installs it over the app and keeps sign-in, settings and saved data. The first time, Android asks to allow installs from the app.
+- **Release:** Safeer Driver and Safeer Passenger 0.23.0 (23000), with D125 and D126. Phones on 0.22.0 or older install 0.23.0 once from the website; later versions arrive inside the app.
+
 ## Account lock in Safeer Driver - D125, 2026-11-19
 
 - **Safeer Driver:** with App lock on, the driver signs in with the password once; after that the PIN or fingerprint/face opens their account directly, even after the app was closed or the server session ended. The lock screen shows which account it opens. The sign-in details are stored encrypted in the Android Keystore and removed on sign-out, when the lock is turned off, when the password no longer works (for example after a change on the website) or after 10 wrong PINs, which also signs the driver out.

@@ -7,7 +7,8 @@ import 'my_trips.dart';
 import 'settings_screen.dart';
 
 // Shown in Settings; keep it equal to the version line in pubspec.yaml (D78).
-const passengerVersion = '0.22.0 (22000)';
+const passengerVersion = '0.23.0 (23000)';
+const passengerVersionCode = 23000;
 
 /// Shared services for the Passenger screens.
 class PassengerScope extends InheritedWidget {
@@ -68,7 +69,7 @@ class _PassengerAppState extends State<PassengerApp> {
             child: MaterialApp(
               navigatorKey: _navigator,
               debugShowCheckedModeBanner: false,
-              builder: (context, child) => KeyboardDismissOnTap(child: AppLockGate(lock: widget.settings.lock, child: child ?? const SizedBox.shrink())),
+              builder: (context, child) => KeyboardDismissOnTap(child: AppLockGate(lock: widget.settings.lock, child: UpdatePrompt(updater: widget.settings.updater, child: child ?? const SizedBox.shrink()))),
               onGenerateTitle: (c) => SafeerStrings.of(c).appPassenger,
               locale: locale,
               supportedLocales: SafeerStrings.supportedLocales,
