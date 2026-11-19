@@ -1,5 +1,10 @@
 # Changelog
 
+## Steady backgrounds on phones - D127, 2026-11-19
+
+- **Website on phones:** the page background (the bus photo on the booking site, and the soft background on tracking, privacy and driver pages) no longer moves or rescales while scrolling. It stays pinned to the screen and keeps its size when the browser address bar hides or shows.
+- **Tests:** tests/background.browser.mjs.
+
 ## In-app update - D126, 2026-11-19
 
 - **Both apps:** when a newer version is published, the app shows "Version X is available" with an Update button (also in Settings > App update, with Check for updates). It downloads the new APK from the Safeer GitHub release, checks its SHA-256 and size against the website's release information, and opens Android's installer, which installs it over the app and keeps sign-in, settings and saved data. The first time, Android asks to allow installs from the app.

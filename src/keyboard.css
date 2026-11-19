@@ -3,3 +3,14 @@ html.keyboard-open :is(.passenger-bottom-nav,.staff-toast){visibility:hidden;opa
 @media (pointer:coarse){html{scroll-padding-block:72px calc(24px + var(--keyboard-inset,0px))}}
 /* Phones zoom into fields under 16px; keep every typing field at 16px on small screens. */
 @media (max-width:760px){:is(input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea){font-size:max(16px,1em)}}
+/* D127: steady page backgrounds on phones. background-attachment:fixed is ignored on iPhone (the art scrolls
+   away) and repaints unevenly on Android, and a fixed layer sized to the screen resizes whenever the address
+   bar hides or shows. Every background is one fixed layer as tall as the largest viewport (lvh), so it never
+   moves or rescales while scrolling. Staff screens draw their own background and are left alone. */
+@media screen{
+ html[data-app-surface]:not([data-app-surface=staff]):not([data-app-surface=booking]) body{background:var(--page);background-attachment:scroll}
+ html[data-app-surface]:not([data-app-surface=staff]):not([data-app-surface=booking]) body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:auto;height:100vh;height:100lvh;z-index:-2;pointer-events:none;background:var(--page-art),var(--page)}
+ html[data-app-surface=booking] body::before{inset:auto;top:0;left:0;right:0;height:100vh;height:100lvh}
+ body:has(#driver-app){background:var(--driver-page,var(--page));background-attachment:scroll}
+ body:has(#driver-app)::before{inset:auto;top:0;left:0;right:0;height:100vh;height:100lvh}
+}

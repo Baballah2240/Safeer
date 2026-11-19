@@ -17,6 +17,7 @@
     "test:db": "node --test tests/database.integration.mjs",
     "test:browser": "node tests/browser.mjs",
     "test:keyboard:browser": "node tests/keyboard.browser.mjs",
+    "test:background:browser": "node tests/background.browser.mjs",
     "check:docs": "node scripts/check-docs.mjs",
     "check": "npm test && npm run build && npm run check:docs",
     "build:api": "tsc -p apps/api/tsconfig.json",
