@@ -14727,6 +14727,114 @@
           }
         }
       }
+    },
+    "/api/v1/cities/{id}/photo": {
+      "put": {
+        "summary": "Set or remove a city photo",
+        "description": "Super Administrator only; CSRF and the current password. The photo is a PNG, JPEG or WebP data URL up to 128 KB (INVALID_PHOTO, PHOTO_TOO_LARGE). Send photo, or removePhoto: true.",
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "currentPassword"
+                ],
+                "properties": {
+                  "photo": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "removePhoto": {
+                    "type": "boolean"
+                  },
+                  "currentPassword": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Saved."
+          },
+          "400": {
+            "description": "Invalid photo or input."
+          },
+          "403": {
+            "description": "Not the Super Administrator."
+          },
+          "404": {
+            "description": "No such city."
+          }
+        }
+      }
+    },
+    "/api/v1/public/cities/{code}/photo": {
+      "get": {
+        "summary": "Read a city photo",
+        "description": "Public; browsers revalidate on every view (no-cache). 404 unless the city is active and has a photo.",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The photo image.",
+            "content": {
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "image/jpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "image/webp": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No photo."
+          }
+        }
+      }
     }
   },
   "components": {

@@ -2,15 +2,36 @@
 const select=(name,label,options,value,{t,e},required=true)=>`<label>${t(label)}<select name="${name}" ${required?'required':''}>${options.map(([id,title])=>`<option value="${e(id)}" ${id===value?'selected':''}>${e(title)}</option>`).join('')}</select></label>`;
 const names=(row,{input,e})=>input('nameEn','English name','text',`maxlength="100" value="${e(row?.nameEn||'')}"`)+input('nameAr','Arabic name','text',`dir="rtl" maxlength="100" value="${e(row?.nameAr||'')}"`);
 const enabled=(row,{t})=>`<label class="staff-check"><input name="active" type="checkbox" ${row?.active!==false?'checked':''}>${t('Active')}</label>`;
+// D121: a city photo is shown to passengers on popular route cards to that city.
+export const cityPhotoUrl=c=>c?.photoVersion?`/api/v1/public/cities/${encodeURIComponent(c.code)}/photo?v=${encodeURIComponent(c.photoVersion)}`:'';
+// Shrink a chosen picture on this device (at most 1280 px wide, WebP) so it fits the 128 KB limit.
+async function shrinkPhoto(file){
+ if(!['image/png','image/jpeg','image/webp'].includes(file.type))throw Error('INVALID_PHOTO');
+ let bitmap;try{bitmap=await createImageBitmap(file);}catch{throw Error('INVALID_PHOTO');}
+ const scale=Math.min(1,1280/bitmap.width),canvas=document.createElement('canvas');canvas.width=Math.round(bitmap.width*scale);canvas.height=Math.round(bitmap.height*scale);
+ canvas.getContext('2d').drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close?.();
+ for(const [width,quality] of [[1280,.82],[1280,.7],[1280,.58],[960,.6],[800,.5]]){
+  let source=canvas;if(canvas.width>width){source=document.createElement('canvas');source.width=width;source.height=Math.round(canvas.height*width/canvas.width);source.getContext('2d').drawImage(canvas,0,0,source.width,source.height);}
+  // Browsers that cannot write WebP fall back to JPEG.
+  let blob=await new Promise(resolve=>source.toBlob(resolve,'image/webp',quality));if(!blob||blob.type!=='image/webp')blob=await new Promise(resolve=>source.toBlob(resolve,'image/jpeg',quality));
+  if(blob&&['image/webp','image/jpeg'].includes(blob.type)&&blob.size<=131072)return await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(Error('INVALID_PHOTO'));r.readAsDataURL(blob);});
+ }
+ throw Error('PHOTO_TOO_LARGE');
+}
 export function citiesView(data,{t,e,language}){
  const name=row=>e(language==='ar'?row.nameAr:row.nameEn);
- return `<section class="staff-panel"><header class="staff-section-head"><div><h1>${t('Cities & destinations')}</h1><p>${t('Shared city catalog. Only the Super Administrator can change it.')}</p></div>${data.canManage?`<button type="button" data-city-create class="staff-primary">${t('Add city')}</button>`:''}</header><label>${t('Search')}<input id="staff-search" type="search" placeholder="${e(t('Search cities'))}"></label><div class="staff-grid route-catalog">${data.items.map(c=>`<article class="staff-record" data-search="${e(c.nameEn+' '+c.nameAr+' '+c.code)}"><strong>${name(c)}</strong><p><bdi>${e(c.code)} · ${e(c.countryCode)}</bdi></p><span class="staff-badge">${t(c.active?'Active':'Inactive')}</span>${data.canManage?`<div class="staff-actions"><button type="button" data-city-edit="${c.id}">${t('Edit city')}</button></div>`:''}</article>`).join('')||`<p>${t('No cities yet. Ask the Super Administrator to add them.')}</p>`}</div></section>`;
+ return `<section class="staff-panel"><header class="staff-section-head"><div><h1>${t('Cities & destinations')}</h1><p>${t('Shared city catalog. Only the Super Administrator can change it.')}</p></div>${data.canManage?`<button type="button" data-city-create class="staff-primary">${t('Add city')}</button>`:''}</header><label>${t('Search')}<input id="staff-search" type="search" placeholder="${e(t('Search cities'))}"></label><div class="staff-grid route-catalog">${data.items.map(c=>`<article class="staff-record city-record" data-search="${e(c.nameEn+' '+c.nameAr+' '+c.code)}">${cityPhotoUrl(c)?`<img class="city-photo" src="${cityPhotoUrl(c)}" alt="" width="320" height="180" loading="lazy">`:`<span class="city-photo city-photo-empty">${t('No photo yet')}</span>`}<strong>${name(c)}</strong><p><bdi>${e(c.code)} · ${e(c.countryCode)}</bdi></p><span class="staff-badge">${t(c.active?'Active':'Inactive')}</span>${data.canManage?`<div class="staff-actions"><button type="button" data-city-edit="${c.id}">${t('Edit city')}</button><button type="button" data-city-photo="${c.id}">${t('City photo')}</button></div>`:''}</article>`).join('')||`<p>${t('No cities yet. Ask the Super Administrator to add them.')}</p>`}</div></section>`;
 }
 export function bindCities(root,data,ctx){
  const {api,openForm,input,currentPassword,e}=ctx;
  const form=row=>openForm(row?'Edit city':'Add city',names(row,ctx)+input('code','Code','text',`pattern="[A-Za-z0-9_-]+" maxlength="40" value="${e(row?.code||'')}"`)+input('countryCode','Country code','text',`pattern="[A-Za-z]{2}" minlength="2" maxlength="2" value="${e(row?.countryCode||'SD')}"`)+enabled(row,ctx)+currentPassword(),f=>api('cities'+(row?'/'+row.id:''),row?'PATCH':'POST',{...Object.fromEntries(f),active:f.has('active'),...(row?{version:row.version}:{})}));
  root.querySelector('[data-city-create]')?.addEventListener('click',()=>form());
  root.querySelectorAll('[data-city-edit]').forEach(b=>b.onclick=()=>form(data.items.find(c=>c.id===b.dataset.cityEdit)));
+ const {t}=ctx;
+ root.querySelectorAll('[data-city-photo]').forEach(b=>b.onclick=()=>{const c=data.items.find(x=>x.id===b.dataset.cityPhoto);
+  openForm('City photo',`<p>${t('Passengers see this photo on popular routes to this city. Use a landscape picture of the place, not a bus.')}</p>${cityPhotoUrl(c)?`<img class="city-photo" src="${cityPhotoUrl(c)}" alt="" width="320" height="180">`:''}<label>${t('Photo (PNG, JPEG or WebP)')}<input name="photo" type="file" accept="image/png,image/jpeg,image/webp"></label>${c.photoVersion?`<label class="staff-check"><input name="removePhoto" type="checkbox">${t('Remove photo')}</label>`:''}`+currentPassword(),
+   async f=>{const file=f.get('photo'),remove=f.has('removePhoto');if(!(file&&file.size)&&!remove)throw Error('INVALID_PHOTO');
+    return api('cities/'+c.id+'/photo','PUT',remove&&!(file&&file.size)?{removePhoto:true,currentPassword:f.get('currentPassword')}:{photo:await shrinkPhoto(file),currentPassword:f.get('currentPassword')});});});
 }
 export function routesView(data,ctx){
  const {t,e,language}=ctx,items=data.routeCatalog?.items||[],name=id=>{const c=data.cities.find(c=>c.id===id);return c?e(language==='ar'?c.nameAr:c.nameEn):e(id);};

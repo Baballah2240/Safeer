@@ -13,7 +13,7 @@ const {version} = JSON.parse(readFileSync(new URL('./package.json', import.meta.
 // Connection options apply only to one hop. Each HTTP server owns its socket
 // lifetime/framing; forwarding these fields can contradict its own close limit.
 // D82: a company logo upload (PUT companies/:id/branding) may carry up to 96 KB of image data.
-const brandingPath=/^\/api\/v1\/companies\/[^/]+\/branding$/,paymentPath=/^\/api\/v1\/companies\/[^/]+\/(?:counter\/sales|bookings\/[^/]+\/pay)$/;
+const brandingPath=/^\/api\/v1\/(?:companies\/[^/]+\/branding|cities\/[^/]+\/photo)$/,paymentPath=/^\/api\/v1\/companies\/[^/]+\/(?:counter\/sales|bookings\/[^/]+\/pay)$/;
 const forwardedHeaders=headers=>{
   const excluded=new Set(['connection','keep-alive','proxy-connection','proxy-authenticate','proxy-authorization','te','trailer','transfer-encoding','upgrade',...String(headers.connection||'').split(',').map(x=>x.trim().toLowerCase())]);
   return Object.fromEntries(Object.entries(headers).filter(([name])=>!excluded.has(name.toLowerCase())));

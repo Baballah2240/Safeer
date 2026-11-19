@@ -97,6 +97,7 @@ class RouteController {
  @Get('cities') cities(@Req() req:Request){return this.routes.cities(token(req)).then(reply);}
  @Post('cities') city(@Req() req:Request,@Body() data:unknown){return this.routes.city(token(req),undefined,data).then(reply);}
  @Patch('cities/:id') updateCity(@Req() req:Request,@Param('id') id:string,@Body() data:unknown){return this.routes.city(token(req),id,data).then(reply);}
+ @Put('cities/:id/photo') cityPhoto(@Req() req:Request,@Param('id') id:string,@Body() data:unknown){return this.routes.savePhoto(token(req),id,data).then(reply);}
  @Get('companies/:id/routes') list(@Req() req:Request,@Param('id') id:string){return this.routes.routes(token(req),id).then(reply);}
  @Get('companies/:id/routes/:rid') detail(@Req() req:Request,@Param('id') id:string,@Param('rid') rid:string){return this.routes.detail(token(req),id,rid).then(reply);}
  @Post('companies/:id/routes') create(@Req() req:Request,@Param('id') id:string,@Body() data:unknown){return this.routes.save(token(req),id,undefined,data).then(reply);}
@@ -247,7 +248,7 @@ class TripSeatController {
 // D82: plan, contracts (PDF) and brand for one company; the public brand of a listed company.
 // Files: a contract downloads (never cached); a staff logo is private to the signed-in session; a public logo may be cached briefly.
 const file=(res:Response,type:string,data:Buffer,{name,cache='private, no-store'}:{name?:string;cache?:string}={})=>{res.setHeader('Content-Type',type);res.setHeader('Cache-Control',cache);res.setHeader('X-Content-Type-Options','nosniff');if(name)res.setHeader('Content-Disposition',`attachment; filename="${name}"`);res.end(data);};
-const brandingPath=/^\/api\/v1\/companies\/[^/]+\/branding$/;
+const brandingPath=/^\/api\/v1\/(?:companies\/[^/]+\/branding|cities\/[^/]+\/photo)$/;
 // D93: a payment may carry a proof image.
 const paymentPath=/^\/api\/v1\/companies\/[^/]+\/(?:counter\/sales|bookings\/[^/]+\/pay)$/;
 @Controller('api/v1/companies/:id')
@@ -263,6 +264,12 @@ class BillingController {
  @Post('invoices/:iid/paid') paid(@Req() req:Request,@Param('id') id:string,@Param('iid') iid:string,@Body() data:unknown){return this.billing.settleInvoice(token(req),id,iid,'paid',data).then(reply);}
  @Post('invoices/:iid/void') void(@Req() req:Request,@Param('id') id:string,@Param('iid') iid:string,@Body() data:unknown){return this.billing.settleInvoice(token(req),id,iid,'void',data).then(reply);}
  @Get('invoices/:iid/pdf') async invoicePdf(@Req() req:Request,@Param('id') id:string,@Param('iid') iid:string,@Query('lang') lang:unknown,@Res() res:Response){const r=await this.billing.invoicePdf(token(req),id,iid,lang);file(res,'application/pdf',r.data,{name:r.name});}
+}
+// D121: a city's photo for popular route cards.
+@Controller('api/v1/public/cities/:code')
+class PublicCityController {
+ constructor(private readonly routes:RouteService){}
+ @Get('photo') async photo(@Param('code') code:string,@Res() res:Response){const r=await this.routes.publicPhoto(code);file(res,r.type,r.data,{cache:'public, no-cache'});}
 }
 @Controller('api/v1/public/companies/:slug')
 class PublicBrandController {
@@ -305,7 +312,7 @@ class PlatformController {
  @Post('notifications/read-all') readAll(@Req() req:Request,@Body() data:unknown){return this.platform.readAll(token(req),data).then(reply);}
  @Post('notifications/:event/read') read(@Req() req:Request,@Param('event') id:string,@Body() data:unknown){return this.platform.read(token(req),id,data).then(reply);}
 }
-@Module({controllers:[BillingController,PublicBrandController,PassengerController,PlatformController,FinanceController,IdentityController,CompanyController,LuggageController,ShipmentController,ShipmentTrackingController,OperationsController,TicketingController,BookingController,RouteController,FleetController,TripSeatController,TripController,ReservationController,PublicController,PublicProfileController,BoardingController],providers:[BillingService,PassengerService,Database,ShipmentService,OperationsService,IdentityService,CompanyService,RouteService,FleetService,TripService,PublicService,ReservationService,TicketingService,LuggageService,BoardingService,FinanceService,PlatformService]})
+@Module({controllers:[BillingController,PublicBrandController,PublicCityController,PassengerController,PlatformController,FinanceController,IdentityController,CompanyController,LuggageController,ShipmentController,ShipmentTrackingController,OperationsController,TicketingController,BookingController,RouteController,FleetController,TripSeatController,TripController,ReservationController,PublicController,PublicProfileController,BoardingController],providers:[BillingService,PassengerService,Database,ShipmentService,OperationsService,IdentityService,CompanyService,RouteService,FleetService,TripService,PublicService,ReservationService,TicketingService,LuggageService,BoardingService,FinanceService,PlatformService]})
 export class IdentityModule {}
 
 export async function createIdentityApi({port=4321,webOrigin='http://127.0.0.1:4320'}:{port?:number;webOrigin?:string}={}){

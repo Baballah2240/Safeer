@@ -58,6 +58,15 @@
         "UPDATE"
       ]
     },
+    "city_photos": {
+      "rls": true,
+      "privileges": [
+        "SELECT",
+        "INSERT",
+        "UPDATE",
+        "DELETE"
+      ]
+    },
     "companies": {
       "rls": true,
       "privileges": [
@@ -528,6 +537,7 @@
     "safeer.notifications_unread()",
     "safeer.notifications_read_all()",
     "safeer.session_manifest(uuid,uuid)",
-    "safeer.my_closed_sessions(uuid)"
+    "safeer.my_closed_sessions(uuid)",
+    "safeer.public_city_photo(text)"
   ]
 }

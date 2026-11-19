@@ -1,5 +1,6 @@
 # Safeer
 
+- D121 (2026-11-19): city photos. Table safeer.city_photos (migration 0033, one PNG/JPEG/WebP up to 128 KB per city, RLS: staff read, Super Administrator writes), PUT /api/v1/cities/:id/photo (photo data URL or removePhoto, current password; shares the branding body limit) and public GET /api/v1/public/cities/:code/photo (active cities only). public_cities() returns photoVersion. The staff city catalog shrinks the picture in the browser (max 1280 px, WebP, JPEG fallback). Popular route cards show the destination city photo and fall back to the coach picture. New tables/functions must also be added to config/database-security.json and database/runtime-grants.mjs.
 - D120 (2026-11-19): the coach photo is the full-page background of the booking site (body::before in src/booking-home.css, D120 block, sized coach-800/1280/1672.webp with a light or dark wash). The old hero banner image is hidden; keep page content on solid or glass cards so it stays readable over the photo.
 - D119 (2026-11-19): staff layout polish in src/operations.css (end of file, D119 block). Use .staff-filter-row for a search box plus filters on one row, keep .ops-company as a padded context bar with the company name first, and show the "access is limited" note only to company staff, never to the Super Administrator.
 

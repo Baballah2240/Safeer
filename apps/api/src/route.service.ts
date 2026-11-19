@@ -7,7 +7,13 @@ import {body,text,uuid,version,fail,stopIndex} from './security.js';
 
 const code=(value:unknown)=>{const result=text(value,1,40).toUpperCase();if(!/^[A-Z0-9_-]+$/.test(result))fail('INVALID_INPUT');return result;};
 const enabled=(value:unknown)=>{if(typeof value!=='boolean')fail('INVALID_INPUT');return value;};
-const cityFields='id,code,name_en AS "nameEn",name_ar AS "nameAr",country_code AS "countryCode",active,version';
+const cityFields='id,code,name_en AS "nameEn",name_ar AS "nameAr",country_code AS "countryCode",active,version,(SELECT ph.version FROM safeer.city_photos ph WHERE ph.city_id=cities.id) AS "photoVersion"';
+// D121: one photo per city (PNG, JPEG or WebP, checked by file signature, at most 128 KB).
+const photoTypes:Record<string,(b:Buffer)=>boolean>={'image/png':b=>b.subarray(0,8).equals(Buffer.from([0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a])),'image/jpeg':b=>b[0]===0xff&&b[1]===0xd8&&b[2]===0xff,'image/webp':b=>b.subarray(0,4).toString('latin1')==='RIFF'&&b.subarray(8,12).toString('latin1')==='WEBP'};
+function cityPhoto(value:unknown){
+ if(typeof value!=='string')fail('INVALID_PHOTO');const match=/^data:(image\/(?:png|jpeg|webp));base64,([A-Za-z0-9+/]+={0,2})$/.exec(value);if(!match)fail('INVALID_PHOTO');
+ const data=Buffer.from(match[2],'base64');if(!data.length||data.length>131072)fail('PHOTO_TOO_LARGE');if(!photoTypes[match[1]](data))fail('INVALID_PHOTO');return {type:match[1],data};
+}
 const routeFields='r.id,r.code,r.name_en AS "nameEn",r.name_ar AS "nameAr",r.origin_city_id AS "originCityId",r.destination_city_id AS "destinationCityId",r.active,r.version';
 type Stop={cityId:string;stationId:string|null};
 
@@ -24,7 +30,7 @@ export class RouteService {
  }
  async cities(token:string){return this.run(token,async(c,p)=>({items:(await c.query(`SELECT ${cityFields} FROM safeer.cities ORDER BY name_en,id`)).rows,canManage:p.superAdministrator}));}
  async city(token:string,id:string|undefined,input:unknown){
-  if(id)uuid(id);const data=body(input,['code','nameEn','nameAr','countryCode','active','currentPassword',...(id?['version']:[])]);
+  if(id)uuid(id);const data=body(input,['code','nameEn','nameAr','countryCode','active','currentPassword',...(id?['version','photoVersion']:[])]);
   const values=[code(data.code),text(data.nameEn),text(data.nameAr),text(data.countryCode,2,2).toUpperCase(),enabled(data.active)];
   if(!/^[A-Z]{2}$/.test(String(values[3])))fail('INVALID_INPUT');const v=id?version(data.version):1;
   await this.identity.reauthenticate(token,data.currentPassword);
@@ -34,6 +40,23 @@ export class RouteService {
    else await c.query('INSERT INTO safeer.cities(code,name_en,name_ar,country_code,active,id) VALUES($1,$2,$3,$4,$5,$6)',[...values,target]);
    await c.query('INSERT INTO safeer.identity_audit(id,actor_id,action,target_id) VALUES($1,$2,$3,$4)',[randomUUID(),p.id,id?'catalog.city.updated':'catalog.city.created',target]);return {id:target};
   },true);
+ }
+ async savePhoto(token:string,id:string,input:unknown){
+  uuid(id);const data=body(input,['photo','removePhoto','currentPassword']);
+  if(data.removePhoto!==undefined&&typeof data.removePhoto!=='boolean')fail('INVALID_INPUT');
+  const remove=data.removePhoto===true,image=data.photo===undefined||data.photo===null?null:cityPhoto(data.photo);
+  if(remove===Boolean(image))fail('INVALID_INPUT');
+  await this.identity.reauthenticate(token,data.currentPassword);
+  return this.run(token,async(c,p)=>{
+   if(!p.superAdministrator)fail('FORBIDDEN',403);if(!(await c.query('SELECT 1 FROM safeer.cities WHERE id=$1',[id])).rowCount)fail('NOT_FOUND',404);
+   if(image)await c.query('INSERT INTO safeer.city_photos(city_id,photo_type,photo) VALUES($1,$2,$3) ON CONFLICT(city_id) DO UPDATE SET photo_type=EXCLUDED.photo_type,photo=EXCLUDED.photo,version=safeer.city_photos.version+1',[id,image.type,image.data]);
+   else await c.query('DELETE FROM safeer.city_photos WHERE city_id=$1',[id]);
+   await c.query('INSERT INTO safeer.identity_audit(id,actor_id,action,target_id) VALUES($1,$2,$3,$4)',[randomUUID(),p.id,image?'catalog.city.photo_set':'catalog.city.photo_removed',id]);return {id};
+  },true);
+ }
+ async publicPhoto(code:string){
+  if(typeof code!=='string'||code.length>40||!/^[A-Z0-9_-]+$/.test(code))fail('NOT_FOUND',404);
+  const row=(await this.db.pool.query('SELECT * FROM safeer.public_city_photo($1)',[code])).rows[0];if(!row)fail('NOT_FOUND',404);return {type:row.photo_type as string,data:row.photo as Buffer};
  }
  async routes(token:string,cid:string){uuid(cid);return this.run(token,async(c)=>{
   await this.access(c,cid);

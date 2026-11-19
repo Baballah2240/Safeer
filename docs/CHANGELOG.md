@@ -1,5 +1,13 @@
 # Changelog
 
+## City photos on popular routes - D121, 2026-11-19
+
+- **Destination photos:** each popular route card on the booking page now shows a photo of the destination city instead of the bus. Cities without a photo still show the coach picture.
+- **Editable:** in the staff workspace, Cities & destinations, the platform owner uses **City photo** to upload or remove a city picture. Large pictures are shrunk on the device before upload (at most 128 KB). Only PNG, JPEG and WebP are accepted, checked by file content.
+- **Security:** only the Super Administrator can change photos (password confirmed, recorded in the audit history). Passengers can only read photos of active cities. New test: tests/city-photos.integration.mjs.
+
+Database migration 0033 (applies on the next deploy). Website and API only; no new APK.
+
 ## Bus photo as the booking site background - D120, 2026-11-19
 
 - The coach photo now fills the whole booking page behind the search, routes and trips, softened with a light wash (darker in dark mode) so text stays readable. Phones load the small image and wide screens the large one.
