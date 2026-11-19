@@ -1,5 +1,12 @@
 # Changelog
 
+## Bus photo as the booking site background - D120, 2026-11-19
+
+- The coach photo now fills the whole booking page behind the search, routes and trips, softened with a light wash (darker in dark mode) so text stays readable. Phones load the small image and wide screens the large one.
+- The separate banner photo above the search is removed, so the search form moves up.
+
+Website only; no migration, no new APK.
+
 ## Staff layout polish - D119, 2026-11-19
 
 Staff web only; no migration, no new APK.

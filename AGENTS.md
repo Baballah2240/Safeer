@@ -1,5 +1,6 @@
 # Safeer
 
+- D120 (2026-11-19): the coach photo is the full-page background of the booking site (body::before in src/booking-home.css, D120 block, sized coach-800/1280/1672.webp with a light or dark wash). The old hero banner image is hidden; keep page content on solid or glass cards so it stays readable over the photo.
 - D119 (2026-11-19): staff layout polish in src/operations.css (end of file, D119 block). Use .staff-filter-row for a search box plus filters on one row, keep .ops-company as a padded context bar with the company name first, and show the "access is limited" note only to company staff, never to the Super Administrator.
 
 - D118 (2026-11-19): security review of D73-D117 (docs/testing/SECURITY_REVIEW_2026-11-19.md). Every response carries COOP and CORP same-origin; keep Google sign-in a full-page redirect (a popup would break under COOP). For new endpoints, add them to tests/security-probe.integration.mjs (anonymous, unprivileged and other-company refusal, plus hostile-input fields), and keep new SECURITY DEFINER functions on SET search_path=pg_catalog with EXECUTE revoked from PUBLIC.
