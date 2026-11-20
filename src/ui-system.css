@@ -10,18 +10,24 @@
 :root{--ui-radius:12px;--ui-h:48px;--ui-h-compact:36px;--ui-h-large:52px;--ui-icon:44px;--ui-text:15px;--ui-focus:#e8772a}
 @media screen{
  /* Action buttons */
- html body :is(button,a):is(.primary,.staff-primary,.secondary,.market-find,.auth-submit,.track-submit,.journey-ticket-button,.auth-reveal,.drawer-nav-action,.btn,.text-button):where(:not(.seat,.market-seat,.trip-seat,.header-icon,.sidebar-toggle,.app-menu-trigger,.app-drawer-close,.ops-icon-button,.theme-toggle,.app-bell,.header-lang,.menu-toggle,.lang-toggle)){
+ html body :is(button,a):is(.primary,.staff-primary,.secondary,.market-find,.auth-submit,.track-submit,.journey-ticket-button,.auth-reveal,.drawer-nav-action,.btn,.text-button):where(:not(.seat,.market-seat,.trip-seat,.header-icon,.sidebar-toggle,.app-menu-trigger,.app-drawer-close,.ops-icon-button,.app-bell,.header-lang,.menu-toggle,.lang-toggle)){
   min-height:var(--ui-h)!important;border-radius:var(--ui-radius)!important;padding-inline:20px!important;padding-block:0!important;font-size:var(--ui-text)!important;font-weight:600!important;line-height:1.2!important;letter-spacing:0!important;display:inline-flex;align-items:center;justify-content:center;gap:8px}
  html body :is(button,a).journey-ticket-button,html body :is(button,a).market-find,html body :is(button,a).auth-submit,html body :is(button,a).track-submit{display:flex}
  html body .text-button{min-height:40px!important;padding-inline:12px!important}
+ html body :is(button,a).btn{white-space:nowrap}
+ @media(max-width:480px){html body header :is(button,a).btn{padding-inline:14px!important;min-height:44px!important}}
+ /* Very small phones: the hero right below has the same Book a trip button */
+ @media(max-width:360px){html body .site-header .header-book{display:none!important}}
  /* Compact: inside tables and toolbars, and .btn-sm */
  html body :is(table,.staff-table,.ops-toolbar,.staff-section-head .row-actions) :is(button,a):is(.primary,.staff-primary,.secondary):where(:not(.seat,.market-seat,.trip-seat)),html body .btn-sm{
   min-height:var(--ui-h-compact)!important;padding-inline:14px!important;font-size:14px!important}
  html body .btn-lg{min-height:var(--ui-h-large)!important;padding-inline:26px!important;font-size:16px!important}
  /* Icon-only buttons */
- html body :is(button,a):is(.header-icon,.sidebar-toggle,.app-menu-trigger,.app-drawer-close,.ops-icon-button,.theme-toggle,.app-bell,.menu-toggle){
-  min-width:var(--ui-icon)!important;min-height:var(--ui-icon)!important;border-radius:50%!important;padding:0!important;display:inline-grid;place-items:center}
+ html body :is(button,a):is(.header-icon,.sidebar-toggle,.app-menu-trigger,.app-drawer-close,.ops-icon-button,.app-bell,.menu-toggle):not(.header-lang){
+  min-width:var(--ui-icon)!important;min-height:var(--ui-icon)!important;border-radius:50%!important;padding:0!important}
  html body :is(button,a):is(.header-lang,.lang-toggle){min-height:var(--ui-icon)!important;border-radius:999px!important;padding-inline:14px!important;font-size:14px!important;font-weight:600!important}
+ /* Choices with a text label in settings rows (theme, language): pills that fit their text */
+ html body :is(.market-preferences,.driver-preferences,.preferences) :is(button,a),html body :is(button,a).theme-toggle{min-height:40px!important;border-radius:999px!important;padding-inline:18px!important;padding-block:0!important;font-size:14px!important;font-weight:600!important;white-space:nowrap;width:auto!important;min-width:0!important}
  /* Pills: tabs and segmented choices */
  html body :is([role=tab],.tab-travel,.tab-ship,.trips-tab-upcoming,.trips-tab-past){min-height:44px!important;border-radius:999px!important;font-size:var(--ui-text)!important;font-weight:600!important}
  /* Text fields and menus */
