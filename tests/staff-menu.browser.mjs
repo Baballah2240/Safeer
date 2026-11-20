@@ -12,7 +12,7 @@ try{await identityFixture(async f=>{
  apiOrigin=f.api.origin;browser=await chrome(mkdtempSync(join(tmpdir(),'safeer-staff-menu-')));
  const {send,evaluate,until}=browser;await send('Page.enable');await send('Network.enable');
  await send('Page.addScriptToEvaluateOnNewDocument',{source:'window.__errors=[];addEventListener("error",e=>__errors.push(e.message));addEventListener("unhandledrejection",e=>__errors.push(String(e.reason)));'});
- const click=s=>evaluate(`document.querySelector(${JSON.stringify(s)}).click()`);
+ const click=async s=>{await until(`Boolean(document.querySelector(${JSON.stringify(s)}))`);return evaluate(`document.querySelector(${JSON.stringify(s)}).click()`);};
  let layouts=0;
  for(const signedIn of [false,true]){
   await send('Network.clearBrowserCookies');

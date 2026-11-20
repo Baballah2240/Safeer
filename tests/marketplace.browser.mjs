@@ -10,7 +10,7 @@ const shots=resolve('.qa/section-07-browser-'+(built?'built':'source'));mkdirSyn
 try{await identityFixture(async f=>{
  apiOrigin=f.api.origin;browser=await chrome(mkdtempSync(join(tmpdir(),'safeer-s07-')));const {send,evaluate,until}=browser;
  await send('Page.enable');await send('Page.addScriptToEvaluateOnNewDocument',{source:'window.__errors=[];addEventListener("error",e=>__errors.push(e.message));addEventListener("unhandledrejection",e=>__errors.push(String(e.reason)));document.addEventListener("securitypolicyviolation",e=>__errors.push("CSP "+e.violatedDirective));'});
- const click=s=>evaluate(`document.querySelector(${JSON.stringify(s)}).click()`);
+ const click=async s=>{await until(`Boolean(document.querySelector(${JSON.stringify(s)}))`);return evaluate(`document.querySelector(${JSON.stringify(s)}).click()`);};
  const fill=async(s,value)=>{await until(`Boolean(document.querySelector(${JSON.stringify(s)}))`);await evaluate(`(()=>{const n=document.querySelector(${JSON.stringify(s)});n.value=${JSON.stringify(value)};n.dispatchEvent(new Event('input',{bubbles:true}));n.dispatchEvent(new Event('change',{bubbles:true}));})()`);};
  const pw={currentPassword:f.password},need=r=>{assert.ok(r.status<300,r.raw);return r.data;},day=d=>new Date(Date.now()+d*86400000).toISOString().slice(0,10);
  const cid=need(await f.admin.request('companies','POST',{nameEn:'<b>Fictional</b> Nile',nameAr:'شركة النيل',slug:'fictional-nile',holdMinutes:30,timezone:'Africa/Khartoum',locale:'en',...pw})).id,w=need(await f.admin.request('companies/'+cid));need(await f.admin.request('companies/'+cid,'PATCH',{...w.company,id:undefined,status:'approved',...pw}));

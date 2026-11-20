@@ -10,7 +10,7 @@ const shots=resolve('.qa/section-06-browser-'+(built?'built':'source'));mkdirSyn
 try{await identityFixture(async f=>{
  apiOrigin=f.api.origin;browser=await chrome(mkdtempSync(join(tmpdir(),'safeer-s06-')));const {send,evaluate,until}=browser;
  await send('Page.enable');await send('Page.addScriptToEvaluateOnNewDocument',{source:'window.__errors=[];addEventListener("error",e=>__errors.push(e.message));addEventListener("unhandledrejection",e=>__errors.push(String(e.reason)));document.addEventListener("securitypolicyviolation",e=>__errors.push("CSP "+e.violatedDirective));'});
- const click=s=>evaluate(`document.querySelector(${JSON.stringify(s)}).click()`);
+ const click=async s=>{await until(`Boolean(document.querySelector(${JSON.stringify(s)}))`);return evaluate(`document.querySelector(${JSON.stringify(s)}).click()`);};
  const fill=async(s,value)=>{await until(`Boolean(document.querySelector(${JSON.stringify(s)}))`);await evaluate(`(()=>{const n=document.querySelector(${JSON.stringify(s)});n.value=${JSON.stringify(value)};n.dispatchEvent(new Event('input',{bubbles:true}));n.dispatchEvent(new Event('change',{bubbles:true}));})()`);};
  const submit=()=>evaluate('document.querySelector("#staff-dialog form").requestSubmit()');
  const saved=async()=>{try{await until('!document.querySelector("#staff-dialog").open');}catch{throw Error('Save failed: '+await evaluate('document.querySelector(".staff-dialog-error")?.textContent||document.body.textContent'));}};

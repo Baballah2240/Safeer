@@ -13,7 +13,7 @@ try{await identityFixture(async f=>{
  apiOrigin=f.api.origin;const s=await boardingSetup(f);browser=await chrome(mkdtempSync(join(tmpdir(),'safeer-driver-menu-')));
  const {send,evaluate,until}=browser;await send('Page.enable');await send('Network.enable');
  await send('Page.addScriptToEvaluateOnNewDocument',{source:'window.__errors=[];addEventListener("error",e=>__errors.push(e.message));addEventListener("unhandledrejection",e=>__errors.push(String(e.reason)));'});
- const click=s=>evaluate(`document.querySelector(${JSON.stringify(s)}).click()`);
+ const click=async s=>{await until(`Boolean(document.querySelector(${JSON.stringify(s)}))`);return evaluate(`document.querySelector(${JSON.stringify(s)}).click()`);};
  let layouts=0;
  for(const signedIn of [false,true]){
   await send('Network.clearBrowserCookies');if(signedIn){const value=s.driver.c.cookie,i=value.indexOf('=');await send('Network.setCookie',{name:value.slice(0,i),value:value.slice(i+1),url:web.origin,httpOnly:true,sameSite:'Strict'});}

@@ -12,7 +12,7 @@ try{await identityFixture(async f=>{
  apiOrigin=f.api.origin;browser=await chrome(mkdtempSync(join(tmpdir(),'safeer-menu-')));
  const {send,evaluate,until}=browser;await send('Page.enable');
  await send('Page.addScriptToEvaluateOnNewDocument',{source:'window.__errors=[];addEventListener("error",e=>__errors.push(e.message));addEventListener("unhandledrejection",e=>__errors.push(String(e.reason)));'});
- const click=s=>evaluate(`document.querySelector(${JSON.stringify(s)}).click()`);
+ const click=async s=>{await until(`Boolean(document.querySelector(${JSON.stringify(s)}))`);return evaluate(`document.querySelector(${JSON.stringify(s)}).click()`);};
  const key=async(key,code,n)=>{await send('Input.dispatchKeyEvent',{type:'keyDown',key,code,windowsVirtualKeyCode:n});await send('Input.dispatchKeyEvent',{type:'keyUp',key,code,windowsVirtualKeyCode:n});};
  let layouts=0;
  for(const path of ['/marketplace','/booking'])for(const lang of ['en','ar'])for(const theme of ['dark','light'])for(const [width,height] of [[1920,1080],[1366,768],[390,844],[320,740],[568,320]]){
