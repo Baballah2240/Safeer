@@ -49,7 +49,8 @@ Future<void> typePin(WidgetTester tester, String pin) async {
     await tester.tap(find.text(d).last);
   }
   await tester.pump();
-  await tester.tap(find.byKey(const ValueKey('pin-continue')));
+  final go = find.byKey(const ValueKey('pin-continue'));
+  if (go.evaluate().isNotEmpty) await tester.tap(go);
   await tester.pumpAndSettle();
 }
 

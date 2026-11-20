@@ -258,12 +258,13 @@ class SafeerStrings {
   String get biometricUnavailable => _t('No fingerprint or face is set up on this phone.', 'لا توجد بصمة أو وجه مسجل على هذا الهاتف.');
   String get changePin => _t('Change PIN', 'تغيير رمز PIN');
   String get createPin => _t('Choose a PIN', 'اختر رمز PIN');
-  String get createPinHint => _t('4 to 6 digits', 'من 4 إلى 6 أرقام');
+  String get createPinHint => _t('Choose how many digits, then type the PIN.', 'اختر عدد الأرقام ثم اكتب الرمز.');
+  String pinDigits(int n) => _t('$n digits', '$n أرقام');
   String get confirmPin => _t('Enter the PIN again', 'أدخل الرمز مرة أخرى');
   String get pinMismatch => _t('The PINs did not match. Try again.', 'الرمزان غير متطابقين. حاول مرة أخرى.');
   String get currentPin => _t('Enter your current PIN', 'أدخل رمزك الحالي');
   String get enterPin => _t('Enter your PIN', 'أدخل رمز PIN');
-  String get wrongPin => _t('Wrong PIN', 'رمز غير صحيح');
+  String get wrongPin => _t('The PIN is not correct. Try again.', 'الرمز غير صحيح. حاول مرة أخرى.');
   String unlockAccount(String email) => _t('Opens the account $email', 'يفتح الحساب $email');
   String get forgotAccountPin => _t('Forgot your PIN? After 10 wrong PINs you are signed out and can sign in again with your password.', 'نسيت الرمز؟ بعد 10 محاولات خاطئة يتم تسجيل خروجك ويمكنك الدخول مجددًا بكلمة المرور.');
   String get accountLockNote => _t('Turn on App lock in Settings to open your account with a PIN or fingerprint next time instead of your password.', 'فعّل قفل التطبيق في الإعدادات لفتح حسابك في المرة القادمة برمز PIN أو البصمة بدلًا من كلمة المرور.');

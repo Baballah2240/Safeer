@@ -19,7 +19,6 @@ class _DriverSettingsScreenState extends State<DriverSettingsScreen> {
       appBar: AppBar(title: Text(s.settings)),
       body: SettingsView(
         settings: scope.settings,
-        dataSource: repo.isDemo ? s.demoData : s.liveSite(scope.config.origin.host),
         version: driverVersion,
         children: [
           if (repo is DemoDriverRepository)

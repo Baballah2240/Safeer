@@ -1,5 +1,9 @@
 # Changelog
 
+## Cleaner Settings and a faster PIN keypad - D129, 2026-11-20
+
+Both apps: Settings hides the data source and the crash-reports switch; Language, Appearance and App lock are now clear option lists with the full label and a check mark. A new PIN is 4 or 6 digits; the lock screen shows exactly that many dots, opens the app the moment the last correct digit is typed, and says "The PIN is not correct. Try again." otherwise. The privacy page no longer says crash reports can be turned off in Settings. Released as Safeer Driver and Passenger 0.25.0.
+
 ## Crash reports, deploy safety check and uptime monitoring - D128, 2026-11-20
 
 - **Apps:** Safeer Driver and Safeer Passenger 0.24.0 send crash reports through Firebase Crashlytics (error, app version, phone model; no personal data). Settings has a switch to turn it off. The privacy page explains it.

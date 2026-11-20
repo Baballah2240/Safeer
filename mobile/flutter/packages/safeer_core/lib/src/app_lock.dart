@@ -49,7 +49,12 @@ class AppLock extends ChangeNotifier {
   final BiometricCheck biometrics;
   final DateTime Function() _now;
 
-  static const _modeKey = 'safeer.lock.mode', _pinKey = 'safeer.lock.pin', _afterKey = 'safeer.lock.after';
+  static const _modeKey = 'safeer.lock.mode', _pinKey = 'safeer.lock.pin', _afterKey = 'safeer.lock.after', _lengthKey = 'safeer.lock.length';
+
+  /// D129: how many digits the PIN has, so the keypad shows that many dots and opens the
+  /// app as soon as the last digit is typed. Null for a PIN saved before D129 until it is
+  /// typed correctly once.
+  int? pinLength;
 
   /// Choices for [after] (D124).
   static const delays = [Duration.zero, Duration(seconds: 30), Duration(minutes: 1), Duration(minutes: 5), Duration(minutes: 15)];
@@ -86,6 +91,8 @@ class AppLock extends ChangeNotifier {
     final saved = await _store.read(_modeKey);
     mode = LockMode.values.firstWhere((m) => m.name == saved, orElse: () => LockMode.off);
     if (_pinRecord == null) mode = LockMode.off;
+    pinLength = int.tryParse(await _store.read(_lengthKey) ?? '');
+    if (pinLength != null && (pinLength! < minDigits || pinLength! > maxDigits)) pinLength = null;
     final seconds = int.tryParse(await _store.read(_afterKey) ?? '');
     after = delays.firstWhere((d) => d.inSeconds == seconds, orElse: () => Duration.zero);
     locked = enabled;
@@ -109,6 +116,8 @@ class AppLock extends ChangeNotifier {
     final salt = base64Url.encode(List.generate(16, (_) => random.nextInt(256)));
     _pinRecord = '$salt:${_hash(salt, pin)}';
     await _store.write(_pinKey, _pinRecord!);
+    pinLength = pin.length;
+    await _store.write(_lengthKey, '${pin.length}');
     await setMode(newMode == LockMode.off ? LockMode.pin : newMode);
   }
 
@@ -140,8 +149,10 @@ class AppLock extends ChangeNotifier {
   Future<void> turnOff() async {
     mode = LockMode.off;
     _pinRecord = null;
+    pinLength = null;
     locked = false;
     await _store.delete(_pinKey);
+    await _store.delete(_lengthKey);
     await _store.delete(_modeKey);
     notifyListeners();
   }
@@ -155,6 +166,10 @@ class AppLock extends ChangeNotifier {
     if (ok) {
       _failures = 0;
       _waitUntil = null;
+      if (pinLength != pin.length) {
+        pinLength = pin.length;
+        _store.write(_lengthKey, '${pin.length}');
+      }
     } else {
       _failures++;
       if (_failures >= 5) _waitUntil = _now().add(Duration(seconds: 30 << min(_failures - 5, 6)));

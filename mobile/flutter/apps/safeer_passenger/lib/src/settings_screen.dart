@@ -21,7 +21,6 @@ class _PassengerSettingsScreenState extends State<PassengerSettingsScreen> {
         Expanded(
           child: SettingsView(
             settings: scope.settings,
-            dataSource: repo.isDemo ? s.demoData : s.liveSite(scope.config.origin.host),
             version: passengerVersion,
             children: [
               if (repo is DemoPassengerRepository)

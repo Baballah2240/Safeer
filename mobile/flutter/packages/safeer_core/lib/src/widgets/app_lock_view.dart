@@ -113,6 +113,7 @@ class _LockScreenState extends State<LockScreen> {
           subtitle: widget.account == null ? null : s.unlockAccount(widget.account!),
           footer: widget.account == null ? s.forgotPin : s.forgotAccountPin,
           wait: () => lock.wait,
+          length: lock.pinLength,
           onBiometric: lock.mode == LockMode.biometric ? () => lock.unlockWithBiometrics(s.unlockReason) : null,
           onSubmit: (pin) async => lock.unlockWithPin(pin) ? null : (lock.wait == null ? s.wrongPin : s.tryAgainIn(lock.wait!.inSeconds + 1)),
         ),
@@ -123,8 +124,15 @@ class _LockScreenState extends State<LockScreen> {
 
 /// Number pad for 4-6 digit PINs. [onSubmit] returns an error to show, or null when done.
 class PinPad extends StatefulWidget {
-  const PinPad({super.key, required this.title, required this.onSubmit, this.subtitle, this.header, this.footer, this.onBiometric, this.wait});
+  const PinPad({super.key, required this.title, required this.onSubmit, this.subtitle, this.header, this.footer, this.onBiometric, this.wait, this.length, this.top});
   final String title;
+
+  /// D129: the PIN's digit count. Shows exactly that many dots and checks the PIN as soon
+  /// as the last digit is typed (no Continue button). Null: 4-6 digits with Continue.
+  final int? length;
+
+  /// Extra control under the dots (the 4/6 digit choice when making a PIN).
+  final Widget? top;
   final String? subtitle, footer;
   final Widget? header;
   final FutureOr<String?> Function(String pin) onSubmit;
@@ -147,12 +155,19 @@ class _PinPadState extends State<PinPad> {
   }
 
   void _press(String digit) {
-    if (_busy || _pin.length >= AppLock.maxDigits) return;
+    if (_busy || _pin.length >= (widget.length ?? AppLock.maxDigits)) return;
     HapticFeedback.selectionClick();
     setState(() {
       _pin += digit;
       _error = null;
     });
+    if (_pin.length == widget.length) _submit();
+  }
+
+  @override
+  void didUpdateWidget(PinPad old) {
+    super.didUpdateWidget(old);
+    if (old.length != widget.length) _pin = '';
   }
 
   void _delete() {
@@ -161,7 +176,11 @@ class _PinPadState extends State<PinPad> {
   }
 
   Future<void> _submit() async {
-    if (_busy || _pin.length < AppLock.minDigits || widget.wait?.call() != null) return;
+    if (_busy || _pin.length < AppLock.minDigits) return;
+    if (widget.wait?.call() != null) {
+      setState(() => _pin = '');
+      return _watchWait();
+    }
     setState(() => _busy = true);
     final error = await widget.onSubmit(_pin);
     if (!mounted) return;
@@ -213,7 +232,7 @@ class _PinPadState extends State<PinPad> {
                     label: '${_pin.length}',
                     excludeSemantics: true,
                     child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                      for (var i = 0; i < AppLock.maxDigits; i++)
+                      for (var i = 0; i < (widget.length ?? AppLock.maxDigits); i++)
                         AnimatedContainer(
                           duration: const Duration(milliseconds: 120),
                           margin: const EdgeInsets.symmetric(horizontal: 7),
@@ -222,11 +241,12 @@ class _PinPadState extends State<PinPad> {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color: i < _pin.length ? theme.colorScheme.primary : Colors.transparent,
-                            border: Border.all(color: i < _pin.length ? theme.colorScheme.primary : (i < AppLock.minDigits ? p.muted : p.border), width: 1.5),
+                            border: Border.all(color: i < _pin.length ? theme.colorScheme.primary : (widget.length != null || i < AppLock.minDigits ? p.muted : p.border), width: 1.5),
                           ),
                         ),
                     ]),
                   ),
+                  if (widget.top != null) Padding(padding: const EdgeInsets.only(top: 14), child: widget.top),
                   SizedBox(
                     height: 44,
                     child: Center(
@@ -246,16 +266,18 @@ class _PinPadState extends State<PinPad> {
                       ]),
                     ]),
                   ),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton(
-                      key: const ValueKey('pin-continue'),
-                      onPressed: _pin.length >= AppLock.minDigits && !_busy && !waiting ? _submit : null,
-                      style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
-                      child: Text(s.continueLabel),
+                  if (widget.length == null) ...[
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton(
+                        key: const ValueKey('pin-continue'),
+                        onPressed: _pin.length >= AppLock.minDigits && !_busy && !waiting ? _submit : null,
+                        style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
+                        child: Text(s.continueLabel),
+                      ),
                     ),
-                  ),
+                  ],
                   if (widget.footer != null) Padding(padding: const EdgeInsets.only(top: 16), child: Text(widget.footer!, textAlign: TextAlign.center, style: theme.textTheme.bodySmall?.copyWith(color: p.muted))),
                 ]),
               ),
@@ -321,6 +343,7 @@ class _AppLockSettingsState extends State<AppLockSettings> {
       return PinPad(
         title: s.currentPin,
         wait: () => lock.wait,
+        length: lock.pinLength,
         onSubmit: (pin) {
           if (lock.checkPin(pin)) {
             finish('ok');
@@ -384,16 +407,15 @@ class _AppLockSettingsState extends State<AppLockSettings> {
         future: _biometrics,
         builder: (context, bio) => Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           SectionLabel(s.appLock),
-          SegmentedButton<LockMode>(
+          ChoiceList<LockMode>(
             key: const ValueKey('app-lock-mode'),
-            showSelectedIcon: false,
-            segments: [
-              ButtonSegment(value: LockMode.off, icon: const Icon(Icons.lock_open_outlined), label: Text(s.lockOff)),
-              ButtonSegment(value: LockMode.pin, icon: const Icon(Icons.pin_outlined), label: Text(s.lockPin)),
-              ButtonSegment(value: LockMode.biometric, icon: const Icon(Icons.fingerprint), label: Text(s.lockBiometric), enabled: bio.data != false),
+            choices: [
+              Choice(LockMode.off, s.lockOff, icon: Icons.lock_open_outlined),
+              Choice(LockMode.pin, s.lockPin, icon: Icons.pin_outlined),
+              Choice(LockMode.biometric, s.lockBiometric, icon: Icons.fingerprint, enabled: bio.data != false),
             ],
-            selected: {widget.lock.enabled ? widget.lock.mode : LockMode.off},
-            onSelectionChanged: (v) => _choose(v.first),
+            selected: widget.lock.enabled ? widget.lock.mode : LockMode.off,
+            onSelected: _choose,
           ),
           Padding(
             padding: const EdgeInsets.only(top: 6),
@@ -430,13 +452,24 @@ class _NewPin extends StatefulWidget {
 class _NewPinState extends State<_NewPin> {
   String? _first;
   bool _mismatch = false;
+  int _length = AppLock.minDigits;
   @override
   Widget build(BuildContext context) {
     final s = SafeerStrings.of(context);
     return PinPad(
       key: ValueKey(_first == null ? 'new-pin' : 'confirm-pin'),
       title: _first == null ? s.createPin : s.confirmPin,
-      subtitle: _mismatch && _first == null ? s.pinMismatch : s.createPinHint,
+      subtitle: _mismatch && _first == null ? s.pinMismatch : (_first == null ? s.createPinHint : null),
+      length: _length,
+      top: _first != null
+          ? null
+          : SegmentedButton<int>(
+              key: const ValueKey('pin-length'),
+              showSelectedIcon: true,
+              segments: [for (final n in const [AppLock.minDigits, AppLock.maxDigits]) ButtonSegment(value: n, label: Text(s.pinDigits(n)))],
+              selected: {_length},
+              onSelectionChanged: (v) => setState(() => _length = v.first),
+            ),
       onSubmit: (pin) {
         if (_first == null) {
           setState(() {

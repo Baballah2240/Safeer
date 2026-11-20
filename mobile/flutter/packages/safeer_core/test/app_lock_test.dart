@@ -28,7 +28,8 @@ Future<void> typePin(WidgetTester tester, String pin) async {
     await tester.tap(find.text(d).last);
   }
   await tester.pump();
-  await tester.tap(find.byKey(const ValueKey('pin-continue')));
+  final go = find.byKey(const ValueKey('pin-continue'));
+  if (go.evaluate().isNotEmpty) await tester.tap(go);
   await tester.pumpAndSettle();
 }
 
@@ -90,7 +91,7 @@ void main() {
     addTearDown(tester.view.reset);
     final settings = AppSettings(MemoryStore(), biometrics: FakeBiometrics()..has = false);
     await settings.load();
-    await tester.pumpWidget(host(settings, Scaffold(body: SettingsView(settings: settings, dataSource: 'Demo', version: '1'))));
+    await tester.pumpWidget(host(settings, Scaffold(body: SettingsView(settings: settings, version: '1'))));
     await tester.pumpAndSettle();
     expect(find.text('App lock'), findsOneWidget);
     await tester.tap(find.text('PIN'));
@@ -116,7 +117,7 @@ void main() {
     expect(find.text('Enter your PIN'), findsOneWidget);
     expect(find.text('Change PIN'), findsNothing, reason: 'the app is hidden behind the lock');
     await typePin(tester, '1111');
-    expect(find.text('Wrong PIN'), findsOneWidget);
+    expect(find.text('The PIN is not correct. Try again.'), findsOneWidget);
     await typePin(tester, '2468');
     expect(find.text('Enter your PIN'), findsNothing);
     expect(find.text('Change PIN'), findsOneWidget);
@@ -174,7 +175,7 @@ void main() {
     await settings.load();
     await settings.lock.setPin('2468');
     settings.lock.unlockWithPin('2468');
-    await tester.pumpWidget(host(settings, Scaffold(body: SettingsView(settings: settings, dataSource: 'Demo', version: '1'))));
+    await tester.pumpWidget(host(settings, Scaffold(body: SettingsView(settings: settings, version: '1'))));
     await tester.pumpAndSettle();
     await tester.ensureVisible(find.byKey(const ValueKey('app-lock-after')));
     await tester.pumpAndSettle();
@@ -192,5 +193,46 @@ void main() {
     expect(find.text('Enter your PIN'), findsOneWidget);
     await typePin(tester, '2468');
     expect(find.text('Enter your PIN'), findsNothing);
+  });
+
+  testWidgets("D129: a 6-digit PIN shows 6 dots and opens the app on the last digit; a wrong one says so", (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final settings = AppSettings(MemoryStore(), biometrics: FakeBiometrics()..has = false);
+    await settings.load();
+    await tester.pumpWidget(host(settings, Scaffold(body: SettingsView(settings: settings, version: "1"))));
+    await tester.pumpAndSettle();
+    expect(find.text("Send crash reports"), findsNothing);
+    await tester.tap(find.text("PIN"));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text("6 digits"));
+    await tester.pumpAndSettle();
+    await typePin(tester, "135790");
+    expect(find.text("Enter the PIN again"), findsOneWidget);
+    await typePin(tester, "135790");
+    expect(settings.lock.pinLength, 6);
+    settings.lock.lock();
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey("pin-continue")), findsNothing);
+    expect(find.descendant(of: find.byKey(const ValueKey("lock-pad")), matching: find.byType(AnimatedContainer)), findsNWidgets(6));
+    await typePin(tester, "111111");
+    expect(find.text("The PIN is not correct. Try again."), findsOneWidget);
+    await typePin(tester, "135790");
+    expect(find.text("Enter your PIN"), findsNothing);
+  });
+
+  test("D129: a PIN saved before D129 learns its length on the first correct unlock", () async {
+    final store = MemoryStore();
+    final lock = AppLock(store, biometrics: FakeBiometrics());
+    await lock.setPin("4821");
+    store.values.remove("safeer.lock.length");
+    final again = AppLock(store, biometrics: FakeBiometrics());
+    await again.load();
+    expect(again.pinLength, isNull);
+    expect(again.unlockWithPin("4821"), isTrue);
+    final third = AppLock(store, biometrics: FakeBiometrics());
+    await third.load();
+    expect(third.pinLength, 4);
   });
 }

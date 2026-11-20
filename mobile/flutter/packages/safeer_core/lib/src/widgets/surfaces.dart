@@ -91,3 +91,66 @@ class SectionLabel extends StatelessWidget {
         child: Semantics(header: true, child: Text(text, style: Theme.of(context).textTheme.titleSmall?.copyWith(color: SafeerPalette.of(context).muted))),
       );
 }
+
+/// One option in a [ChoiceList] (D129).
+class Choice<T> {
+  const Choice(this.value, this.label, {this.icon, this.subtitle, this.enabled = true});
+  final T value;
+  final String label;
+  final String? subtitle;
+  final IconData? icon;
+  final bool enabled;
+}
+
+/// Settings choice shown as a card of full-width rows: icon, the whole label (never cut
+/// off, also in Arabic), and a check on the selected row (D129).
+class ChoiceList<T> extends StatelessWidget {
+  const ChoiceList({super.key, required this.choices, required this.selected, required this.onSelected});
+  final List<Choice<T>> choices;
+  final T selected;
+  final ValueChanged<T> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = SafeerPalette.of(context);
+    final primary = Theme.of(context).colorScheme.primary;
+    return Material(
+      color: p.paper,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: BorderSide(color: p.border)),
+      clipBehavior: Clip.antiAlias,
+      child: Column(children: [
+        for (var i = 0; i < choices.length; i++) ...[
+          if (i > 0) Divider(height: 1, thickness: 1, color: p.border),
+          Builder(builder: (context) {
+            final c = choices[i];
+            final on = c.value == selected;
+            final color = !c.enabled ? p.muted : (on ? primary : null);
+            return Semantics(
+              selected: on,
+              inMutuallyExclusiveGroup: true,
+              child: InkWell(
+                key: ValueKey('choice-${c.value is Enum ? (c.value as Enum).name : c.value}'),
+                onTap: c.enabled && !on ? () => onSelected(c.value) : null,
+                child: Container(
+                  color: on ? primary.withValues(alpha: .12) : null,
+                  constraints: const BoxConstraints(minHeight: 56),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  child: Row(children: [
+                    if (c.icon != null) Padding(padding: const EdgeInsetsDirectional.only(end: 14), child: Icon(c.icon, color: color ?? p.muted)),
+                    Expanded(
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Text(c.label, style: TextStyle(fontWeight: on ? FontWeight.w600 : FontWeight.w400, color: color)),
+                        if (c.subtitle != null) Text(c.subtitle!, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: p.muted)),
+                      ]),
+                    ),
+                    Icon(on ? Icons.check_circle : Icons.radio_button_unchecked, color: on ? primary : p.border),
+                  ]),
+                ),
+              ),
+            );
+          }),
+        ],
+      ]),
+    );
+  }
+}

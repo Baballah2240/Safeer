@@ -1,5 +1,9 @@
 # Safeer mobile status
 
+## Safeer Driver and Passenger 0.25.0 - D129, 2026-11-20
+
+Settings: data source and crash-reports switch hidden; Language, Appearance and App lock shown as option lists with full labels. PIN: choose 4 or 6 digits; the lock screen shows that many dots and opens on the last correct digit, or says the PIN is not correct. Checked: flutter analyze (no issues), safeer_core (26, including 2 new), Safeer Driver (34) and Safeer Passenger (30). Real-phone check of 0.24.0 on a Huawei FRL-L22 (Android 10, no Google Play services): in-app update 0.23.0 to 0.24.0 worked, crash reports started, the app ran normally.
+
 ## Safeer Driver and Passenger 0.24.0 - D128, 2026-11-20
 
 Both apps send crash reports through Firebase Crashlytics when built with the private google-services.json (Settings > Send crash reports, on by default). Native: Google Services and Crashlytics Gradle plugins, applied only when that file is present. Released as 0.24.0 (24000) under tag v0.24.0; phones on 0.23.0 should be offered it by the in-app update. Real-phone check of 0.23.0 on an HONOR (Android 16): fingerprint lock, PIN, Lock after (30 s away and idle) all worked.

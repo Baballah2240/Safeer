@@ -7,11 +7,12 @@ import 'app_lock_view.dart';
 import 'app_update_view.dart';
 import 'surfaces.dart';
 
-/// Language and appearance controls shared by both apps.
+/// Language, appearance, app lock and update controls shared by both apps. D129: crash
+/// reports stay on (described on the privacy page) and the data source is not shown.
 class SettingsView extends StatelessWidget {
-  const SettingsView({super.key, required this.settings, required this.dataSource, required this.version, this.children = const []});
+  const SettingsView({super.key, required this.settings, required this.version, this.children = const []});
   final AppSettings settings;
-  final String dataSource, version;
+  final String version;
   final List<Widget> children;
 
   @override
@@ -22,47 +23,33 @@ class SettingsView extends StatelessWidget {
       listenable: settings,
       builder: (context, _) => ListView(padding: const EdgeInsets.all(16), children: [
         SectionLabel(s.language),
-        SegmentedButton<String>(
-          showSelectedIcon: false,
-          segments: [
-            ButtonSegment(value: 'phone', label: Text(s.phoneSetting, textAlign: TextAlign.center)),
-            ButtonSegment(value: 'en', label: Text(s.english)),
-            ButtonSegment(value: 'ar', label: Text(s.arabic)),
+        ChoiceList<String>(
+          key: const ValueKey('language'),
+          choices: [
+            Choice('phone', s.phoneSetting, icon: Icons.phone_android),
+            Choice('ar', s.arabic, icon: Icons.translate),
+            Choice('en', s.english, icon: Icons.language),
           ],
-          selected: {settings.locale?.languageCode ?? 'phone'},
-          onSelectionChanged: (v) => settings.setLocale(v.first == 'phone' ? null : Locale(v.first)),
+          selected: settings.locale?.languageCode ?? 'phone',
+          onSelected: (v) => settings.setLocale(v == 'phone' ? null : Locale(v)),
         ),
         const SizedBox(height: 16),
         SectionLabel(s.appearance),
-        SegmentedButton<ThemeMode>(
-          showSelectedIcon: false,
-          segments: [
-            ButtonSegment(value: ThemeMode.dark, icon: const Icon(Icons.dark_mode_outlined), label: Text(s.dark)),
-            ButtonSegment(value: ThemeMode.light, icon: const Icon(Icons.light_mode_outlined), label: Text(s.light)),
-            ButtonSegment(value: ThemeMode.system, icon: const Icon(Icons.phone_android), label: Text(s.phoneSetting, textAlign: TextAlign.center)),
+        ChoiceList<ThemeMode>(
+          key: const ValueKey('appearance'),
+          choices: [
+            Choice(ThemeMode.system, s.phoneSetting, icon: Icons.brightness_auto_outlined),
+            Choice(ThemeMode.dark, s.dark, icon: Icons.dark_mode_outlined),
+            Choice(ThemeMode.light, s.light, icon: Icons.light_mode_outlined),
           ],
-          selected: {settings.themeMode},
-          onSelectionChanged: (v) => settings.setThemeMode(v.first),
+          selected: settings.themeMode,
+          onSelected: settings.setThemeMode,
         ),
         const SizedBox(height: 16),
         AppLockSettings(lock: settings.lock),
         if (settings.updater != null) AppUpdateSettings(updater: settings.updater!),
-        if (settings.crashReports?.available ?? false)
-          ListenableBuilder(
-            listenable: settings.crashReports!,
-            builder: (context, _) => SwitchListTile(
-              key: const ValueKey('crash-reports'),
-              contentPadding: EdgeInsets.zero,
-              secondary: const Icon(Icons.bug_report_outlined),
-              title: Text(s.crashReports),
-              subtitle: Text(s.crashReportsHint, style: TextStyle(color: p.muted)),
-              value: settings.crashReports!.enabled,
-              onChanged: settings.crashReports!.setEnabled,
-            ),
-          ),
         ...children,
         const SizedBox(height: 8),
-        ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.cloud_outlined), title: Text(s.dataSource), subtitle: Text(dataSource, style: TextStyle(color: p.muted))),
         ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.info_outline), title: Text(s.version), subtitle: Text(version, textDirection: TextDirection.ltr, style: TextStyle(color: p.muted))),
       ]),
     );
