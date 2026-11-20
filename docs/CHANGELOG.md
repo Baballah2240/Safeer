@@ -1,5 +1,9 @@
 # Changelog
 
+## Trip card fills wide screens - D133, 2026-11-20
+
+On computers and wide tablets, each trip in My Trips shows the photo beside the trip details (route, date, status, seats, booking number and arrival time) instead of leaving half the card empty. Phones keep the same look.
+
 ## Load test and sign-in waiting line - D132, 2026-11-20
 
 Added a load test (npm run test:load) that simulates 50, 100 and 200 people at the same moment. No crashes or wrong results: one seat always has one winner, one ticket is boarded once. Sign-in no longer refuses people when more than two sign in at the same moment; they wait a few seconds in line instead.
