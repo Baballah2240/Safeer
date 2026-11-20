@@ -1,5 +1,9 @@
 # Safeer mobile status
 
+## Safeer Driver and Passenger 0.24.0 - D128, 2026-11-20
+
+Both apps send crash reports through Firebase Crashlytics when built with the private google-services.json (Settings > Send crash reports, on by default). Native: Google Services and Crashlytics Gradle plugins, applied only when that file is present. Released as 0.24.0 (24000) under tag v0.24.0; phones on 0.23.0 should be offered it by the in-app update. Real-phone check of 0.23.0 on an HONOR (Android 16): fingerprint lock, PIN, Lock after (30 s away and idle) all worked.
+
 ## Safeer Driver and Passenger 0.23.0 with in-app update - D126, 2026-11-19
 
 Both apps check https://safeer.mohbaba.online/mobile/releases on start and in Settings > App update, then download, verify (SHA-256 and size) and open the Android installer from inside the app. Native: REQUEST_INSTALL_PACKAGES, a FileProvider for cache updates/ and the safeer/update channel in MainActivity. Released as 0.23.0 (23000) under tag v0.23.0, including the D125 account lock. Checked: flutter analyze (no issues), safeer_core (24, including 4 new update tests), Safeer Driver (34) and Safeer Passenger (30). Not installed on a phone; the installer step can only be checked on a device.

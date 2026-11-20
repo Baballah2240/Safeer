@@ -40,7 +40,10 @@ try{await identityFixture(async f=>{
  await s.time('-1 minute');await click('[data-event=departed]');await until('Boolean(document.querySelector("[data-event=arrived]"))');
  // D89: boarding stays open after departure (passengers join at middle stops) and closes on arrival.
  assert.equal(await evaluate('Boolean(document.querySelector("#driver-scan"))'),true);
- await click('[data-event=arrived]');await until('document.querySelectorAll("[data-event]").length===0');
+ await click('[data-event=arrived]');
+ // D122: after the destination only Close trip is left; closing it ends the journey steps.
+ await until('document.querySelectorAll("[data-event]").length===1&&Boolean(document.querySelector("[data-event=closed]"))');
+ await click('[data-event=closed]');await until('document.querySelectorAll("[data-event]").length===0');
  assert.equal(await evaluate('Boolean(document.querySelector("#driver-scan"))'),false);
  // Disabling a membership removes stale passenger information on the next request.
  await f.migration.query('UPDATE safeer.company_users SET active=false WHERE id=$1',[s.member]);await click('[data-refresh]');await until('document.querySelectorAll("[data-trip]").length===0');

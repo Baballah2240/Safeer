@@ -8,6 +8,8 @@ services:
     buildCommand: npm ci --omit=optional && npm run build
     startCommand: node scripts/production.mjs
     healthCheckPath: /api/v1/health
+    # D128: deploy only after the GitHub checks for the commit pass (Safeer PostgreSQL 16 verification).
+    autoDeployTrigger: checksPass
     envVars:
       - key: NODE_VERSION
         value: "24"

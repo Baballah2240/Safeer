@@ -12,6 +12,14 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// D128: Firebase Crashlytics only when the private google-services.json (kept out of Git) is
+// present. It lists the release app IDs only, so the .dev debug builds skip it.
+if (file("google-services.json").exists()) {
+    apply(plugin = "com.google.gms.google-services")
+    apply(plugin = "com.google.firebase.crashlytics")
+    tasks.configureEach { if (name.contains("Debug") && name.contains("GoogleServices")) enabled = false }
+}
+
 android {
     namespace = "sd.safeer.driver"
     compileSdk = flutter.compileSdkVersion

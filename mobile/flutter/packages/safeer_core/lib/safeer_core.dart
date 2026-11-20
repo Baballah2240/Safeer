@@ -7,6 +7,7 @@ export 'src/api/api_client.dart';
 export 'src/app_lock.dart';
 export 'src/app_update.dart';
 export 'src/config.dart';
+export 'src/crash_reports.dart';
 export 'src/demo_qr.dart';
 export 'src/driver/demo.dart';
 export 'src/driver/pending_store.dart';

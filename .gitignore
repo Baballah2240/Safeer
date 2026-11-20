@@ -15,3 +15,6 @@ dist/
 *.key
 mobile/**/*.jks
 mobile/**/*.keystore
+# D128: Firebase app configuration stays on the build computer.
+mobile/**/google-services.json
+google-services*.json

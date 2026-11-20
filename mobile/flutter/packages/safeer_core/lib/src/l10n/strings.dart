@@ -268,6 +268,9 @@ class SafeerStrings {
   String get forgotAccountPin => _t('Forgot your PIN? After 10 wrong PINs you are signed out and can sign in again with your password.', 'نسيت الرمز؟ بعد 10 محاولات خاطئة يتم تسجيل خروجك ويمكنك الدخول مجددًا بكلمة المرور.');
   String get accountLockNote => _t('Turn on App lock in Settings to open your account with a PIN or fingerprint next time instead of your password.', 'فعّل قفل التطبيق في الإعدادات لفتح حسابك في المرة القادمة برمز PIN أو البصمة بدلًا من كلمة المرور.');
   String signingInAs(String email) => _t('Signing in as $email…', 'جارٍ تسجيل الدخول باسم $email…');
+  // D128: crash reports.
+  String get crashReports => _t('Send crash reports', 'إرسال تقارير الأعطال');
+  String get crashReportsHint => _t('When the app crashes, send the error, app version and phone model so it can be fixed. No names, phone numbers or tickets.', 'عند تعطل التطبيق يُرسل الخطأ وإصدار التطبيق وطراز الهاتف لإصلاحه. بدون أسماء أو أرقام هواتف أو تذاكر.');
   // D126: in-app update.
   String get appUpdate => _t('App update', 'تحديث التطبيق');
   String get checkForUpdates => _t('Check for updates', 'التحقق من وجود تحديث');

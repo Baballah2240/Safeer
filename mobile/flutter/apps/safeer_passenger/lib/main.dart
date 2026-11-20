@@ -12,6 +12,10 @@ Future<void> main() async {
   final store = DeviceStore();
   final settings = AppSettings(store);
   await settings.load();
+  // D128: crash reports, only in release builds made with the private Firebase file.
+  final crashes = CrashReports(store);
+  await crashes.start(app: 'passenger');
+  settings.crashReports = crashes;
   // D126: offered inside the app when the website publishes a newer version (release builds only).
   if (!config.demo) settings.updater = AppUpdater(flavor: 'booking', versionCode: passengerVersionCode, origin: config.origin);
   final trips = TripStore(store);

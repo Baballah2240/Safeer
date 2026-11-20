@@ -1,5 +1,12 @@
 # Changelog
 
+## Crash reports, deploy safety check and uptime monitoring - D128, 2026-11-20
+
+- **Apps:** Safeer Driver and Safeer Passenger 0.24.0 send crash reports through Firebase Crashlytics (error, app version, phone model; no personal data). Settings has a switch to turn it off. The privacy page explains it.
+- **Deploys:** the live site updates only after all GitHub tests pass. Two tests that had been failing since 18 November were fixed.
+- **Monitoring:** a GitHub check runs the live-site checks every 30 minutes and emails the owner when the site has a problem.
+- **Tested on a real phone:** the app lock, fingerprint unlock and the Lock after timer on an HONOR phone with Android 16.
+
 ## Steady backgrounds on phones - D127, 2026-11-19
 
 - **Website on phones:** the page background (the bus photo on the booking site, and the soft background on tracking, privacy and driver pages) no longer moves or rescales while scrolling. It stays pinned to the screen and keeps its size when the browser address bar hides or shows.

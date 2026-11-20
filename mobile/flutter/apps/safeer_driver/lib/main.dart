@@ -13,6 +13,10 @@ Future<void> main() async {
   final store = DeviceStore();
   final settings = AppSettings(store);
   await settings.load();
+  // D128: crash reports, only in release builds made with the private Firebase file.
+  final crashes = CrashReports(store);
+  await crashes.start(app: 'driver');
+  settings.crashReports = crashes;
   // D126: offered inside the app when the website publishes a newer version (release builds only).
   if (!config.demo) settings.updater = AppUpdater(flavor: 'driver', versionCode: driverVersionCode, origin: config.origin);
   final DriverRepository repository = config.demo ? DemoDriverRepository() : LiveDriverRepository(SafeerApi(origin: config.origin));

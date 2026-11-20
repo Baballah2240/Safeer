@@ -47,6 +47,19 @@ class SettingsView extends StatelessWidget {
         const SizedBox(height: 16),
         AppLockSettings(lock: settings.lock),
         if (settings.updater != null) AppUpdateSettings(updater: settings.updater!),
+        if (settings.crashReports?.available ?? false)
+          ListenableBuilder(
+            listenable: settings.crashReports!,
+            builder: (context, _) => SwitchListTile(
+              key: const ValueKey('crash-reports'),
+              contentPadding: EdgeInsets.zero,
+              secondary: const Icon(Icons.bug_report_outlined),
+              title: Text(s.crashReports),
+              subtitle: Text(s.crashReportsHint, style: TextStyle(color: p.muted)),
+              value: settings.crashReports!.enabled,
+              onChanged: settings.crashReports!.setEnabled,
+            ),
+          ),
         ...children,
         const SizedBox(height: 8),
         ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.cloud_outlined), title: Text(s.dataSource), subtitle: Text(dataSource, style: TextStyle(color: p.muted))),
