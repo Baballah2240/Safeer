@@ -1,5 +1,9 @@
 # Safeer mobile status
 
+## Safeer Driver and Passenger 0.27.0 - D131, 2026-11-20
+
+Logo with depth (SafeerLogo painter and ic_safeer.xml vector with gradients, shadow and gloss; no bitmap). Driver trip list shows only the signed-in person's assigned trips (server migration 0035; applies to every app version once the site is deployed). Checked: flutter analyze (no issues), safeer_core (26), Safeer Driver (34), Safeer Passenger (30); boarding, workflow and journey integration tests on PostgreSQL. Not yet seen on a phone.
+
 ## Safeer Driver 0.26.0 - D130, 2026-11-20
 
 Scan sounds: one beep valid, two beeps check, long tone not valid, through Android ToneGenerator (MainActivity channel safeer/sound); Settings > Scan sounds, on by default. Passenger stays 0.25.0. Checked: flutter analyze (no issues), safeer_core (26), Safeer Driver (34, the flow test now checks the sounds) and Safeer Passenger (30). Not yet heard on a phone.

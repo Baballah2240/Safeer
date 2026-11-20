@@ -3,7 +3,7 @@ description: Safeer Driver app (D74).
 publish_to: none
 # D78: the published app. 19000 is above the retired WebView apps (Booking 17004, Driver 18005), so it
 # installs over them as an update (same app ID and signing key).
-version: 0.26.0+26000
+version: 0.27.0+27000
 resolution: workspace
 environment:
   sdk: ^3.13.0

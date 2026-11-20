@@ -31,6 +31,8 @@ test('ticket QR is opaque, independently readable and identical on copy prints',
 test('drivers see only current assigned trips and a minimal manifest; revocations take effect immediately',()=>fixture(async(f,s)=>{
  assert.equal(ok(await s.driver.c.request('driver/trips'),200).items.length,1);
  const unrelated=await staff(f,{...s,base:s.companyBase},['company.driver.operate']);assert.deepEqual(ok(await unrelated.c.request('driver/trips'),200).items,[]);
+ // D131: a manager who may manage every journey still sees only trips assigned to them in the driver app, but can open this one.
+ const manager=await staff(f,{...s,base:s.companyBase},['company.journeys.manage']);assert.deepEqual(ok(await manager.c.request('driver/trips'),200).items,[]);assert.equal((await manager.c.request(s.base)).status,200);
  assert.equal((await unrelated.c.request(s.base)).status,403);
  const m=ok(await s.driver.c.request(s.base),200);assert.equal(m.passengers[0].name,'Fictional Traveler 1');
  assert.equal(JSON.stringify(m).includes('0912345678'),false);assert.equal(m.passengers[0].mobile,undefined);

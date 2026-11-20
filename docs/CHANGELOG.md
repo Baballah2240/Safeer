@@ -1,5 +1,9 @@
 # Changelog
 
+## Own trips only in the driver app, and a logo with depth - D131, 2026-11-20
+
+The driver app and the website driver page now list only trips assigned to the signed-in person, also for company managers. The Safeer logo in both apps and on the phone home screen is drawn with light, shadow and gloss; it is still drawn as vector shapes, so it stays sharp at every size. Released as Safeer Driver and Passenger 0.27.0.
+
 ## Scan sounds in Safeer Driver - D130, 2026-11-20
 
 After each scan the Driver app beeps: one short beep when the ticket is valid, two beeps when the driver should check it (already boarded, boarding closed, waiting for connection), and a long low tone when it is not valid. Settings > Scan sounds turns it off. Released as Safeer Driver 0.26.0.
