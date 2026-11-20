@@ -27,6 +27,7 @@
     "test:identity": "node --test tests/identity.integration.mjs",
     "test:identity:browser": "node tests/identity.browser.mjs",
     "local:backup": "node database/backup-local.mjs",
+    "backup:compare": "node database/compare-restore.mjs",
     "identity:recover": "node database/recover-owner.mjs",
     "identity:grant": "node database/grant-runtime.mjs",
     "test:companies": "node --test tests/companies.integration.mjs",

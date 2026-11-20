@@ -5,6 +5,8 @@
 - **Apps:** Safeer Driver and Safeer Passenger 0.24.0 send crash reports through Firebase Crashlytics (error, app version, phone model; no personal data). Settings has a switch to turn it off. The privacy page explains it.
 - **Deploys:** the live site updates only after all GitHub tests pass. Two tests that had been failing since 18 November were fixed.
 - **Monitoring:** a GitHub check runs the live-site checks every 30 minutes and emails the owner when the site has a problem.
+- **Backups:** `npm run backup:compare` and docs/BACKUP-RESTORE.md: restore a Render backup into a new database monthly and check, read-only, that every table and its data came back.
+- **Test reliability:** the browser test helper now waits for pages that are still loading and honours each test's time limit, which was making the GitHub check fail at random on slower machines.
 - **Tested on a real phone:** the app lock, fingerprint unlock and the Lock after timer on an HONOR phone with Android 16.
 
 ## Steady backgrounds on phones - D127, 2026-11-19

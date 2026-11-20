@@ -23,7 +23,7 @@ export async function chrome(directory,extraArgs=[]) {
     }
   });
   const send = (method, params = {}) => new Promise((resolve, reject) => {
-    const id = ++sequence, timer = setTimeout(() => { pending.delete(id); reject(Error('Chrome timeout: ' + method)); }, 10000);
+    const id = ++sequence, timer = setTimeout(() => { pending.delete(id); reject(Error('Chrome timeout: ' + method)); }, method === 'Target.createTarget' ? 30000 : 10000); // D128: opening the first tab on a cold CI machine can be slow
     pending.set(id, {resolve: value => { clearTimeout(timer); resolve(value); }, reject: error => { clearTimeout(timer); reject(error); }});
     processHandle.stdio[3].write(JSON.stringify({id, method, params, ...(sessionId ? {sessionId} : {})}) + '\0');
   });
@@ -44,9 +44,16 @@ export async function chrome(directory,extraArgs=[]) {
     if (result.exceptionDetails) throw Error(result.exceptionDetails.exception?.description || result.exceptionDetails.text);
     return result.result.value;
   };
-  const until = async expression => {
-    for (let index = 0; index < 100; index++) { if (await evaluate(expression)) return; await new Promise(resolve => setTimeout(resolve, 100)); }
-    throw Error('Browser condition timed out: ' + expression);
+  // D128: waits up to `timeout` ms (callers pass longer limits for slow steps). An error while the page is
+  // still loading (no body yet, context replaced by a navigation) counts as "not yet"; the last one is reported.
+  const until = async (expression, timeout = 10000) => {
+    const end = Date.now() + timeout;
+    let last;
+    do {
+      try { if (await evaluate(expression)) return; last = undefined; } catch (error) { last = error; }
+      await new Promise(resolve => setTimeout(resolve, 100));
+    } while (Date.now() < end);
+    throw Error('Browser condition timed out: ' + expression + (last ? ' (last error: ' + last.message + ')' : ''));
   };
   return {send, evaluate, until, close};
 }
