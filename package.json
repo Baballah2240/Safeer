@@ -27,6 +27,7 @@
     "test:identity": "node --test tests/identity.integration.mjs",
     "test:identity:browser": "node tests/identity.browser.mjs",
     "local:backup": "node database/backup-local.mjs",
+    "test:load": "npm run build:api && node tests/load-test.mjs",
     "backup:compare": "node database/compare-restore.mjs",
     "identity:recover": "node database/recover-owner.mjs",
     "identity:grant": "node database/grant-runtime.mjs",

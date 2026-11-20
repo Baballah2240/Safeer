@@ -1,5 +1,9 @@
 # Changelog
 
+## Load test and sign-in waiting line - D132, 2026-11-20
+
+Added a load test (npm run test:load) that simulates 50, 100 and 200 people at the same moment. No crashes or wrong results: one seat always has one winner, one ticket is boarded once. Sign-in no longer refuses people when more than two sign in at the same moment; they wait a few seconds in line instead.
+
 ## Own trips only in the driver app, and a logo with depth - D131, 2026-11-20
 
 The driver app and the website driver page now list only trips assigned to the signed-in person, also for company managers. The Safeer logo in both apps and on the phone home screen is drawn with light, shadow and gloss; it is still drawn as vector shapes, so it stays sharp at every size. Released as Safeer Driver and Passenger 0.27.0.

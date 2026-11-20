@@ -47,12 +47,24 @@ export function sessionToken(cookie: unknown): string {
   const token=parts[0]?.slice('safeer_session='.length);
   if(parts.length!==1||!token||!/^[A-Za-z0-9_-]{43}$/.test(token))fail('UNAUTHENTICATED',401,'Sign in to continue.');return token;
 }
+// Password hashing uses 32 MB each, so at most two run at once. D132: further sign-ins wait in a
+// short line (up to 64 people, 15 seconds) instead of being refused, so many staff can sign in together.
 let activeHashes=0;
+const hashLine:(()=>void)[]=[];
+async function hashSlot(){
+  if(activeHashes<2){activeHashes++;return;}
+  if(hashLine.length>=64)fail('BUSY',429,'Please wait and try again.');
+  await new Promise<void>((resolve,reject)=>{
+    const go=()=>{clearTimeout(timer);resolve();};
+    const timer=setTimeout(()=>{const i=hashLine.indexOf(go);if(i>=0)hashLine.splice(i,1);try{fail('BUSY',429,'Please wait and try again.');}catch(error){reject(error);}},15000);
+    hashLine.push(go);
+  });
+}
+function hashDone(){const next=hashLine.shift();if(next)next();else activeHashes--;}
 async function scrypt(value:string,salt:Buffer): Promise<Buffer> {
-  if(activeHashes>=2)fail('BUSY',429,'Please wait and try again.');
-  activeHashes++;
+  await hashSlot();
   try{return await new Promise((resolve,reject)=>derive(value,salt,64,{N:32768,r:8,p:3,maxmem:64*1024*1024},(error,key)=>error?reject(error):resolve(key)));}
-  finally{activeHashes--;}
+  finally{hashDone();}
 }
 export async function hashPassword(value:string):Promise<string>{
   password(value,true);const salt=randomBytes(16);return `scrypt$32768$8$3$${salt.toString('hex')}$${(await scrypt(value,salt)).toString('hex')}`;
