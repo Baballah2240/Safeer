@@ -36,7 +36,8 @@ export async function chrome(directory,extraArgs=[]) {
     });
   };
   try {
-    const target = await send('Target.createTarget', {url: 'about:blank'});
+    // D131: a cold CI machine sometimes misses the first tab; try once more before failing.
+    const target = await send('Target.createTarget', {url: 'about:blank'}).catch(() => send('Target.createTarget', {url: 'about:blank'}));
     sessionId = (await send('Target.attachToTarget', {targetId: target.targetId, flatten: true})).sessionId;
   } catch (error) { await close(); throw error; }
   const evaluate = async expression => {
