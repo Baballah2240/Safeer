@@ -544,7 +544,7 @@
     "safeer.my_closed_sessions(uuid)",
     "safeer.public_city_photo(text)",
     "safeer.driver_stop(uuid,uuid,integer)",
-    "safeer.driver_progress(uuid,uuid)",
+    "safeer.driver_progress(uuid,uuid)","safeer.company_currency(uuid)","safeer.company_country(uuid)","safeer.trip_country(uuid)","safeer.booking_country(text)",
     "safeer.public_trip_progress(text)"
   ]
 }

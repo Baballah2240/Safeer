@@ -3,6 +3,9 @@
 ## Super administrator in Safeer Driver - D135, 2026-11-22 (server only, no app update needed)
 
 Signing in to Safeer Driver as the super administrator lists every company's trips from two days ago onward, and every trip can be opened, scanned, departed and closed. Drivers still see only their own trips. The change is on the server (migration 0036), so the installed 0.27.0 apps get it once the site is deployed.
+## Global numbers - D135, 2026-11-20 (source only)
+
+Safeer Passenger accepts mobile numbers of 8 to 15 digits (was 9 to 15) so every supported country fits; the server completes local numbers with the company's calling code. Checked: flutter analyze and Passenger tests.
 
 ## Button sizes - D134, 2026-11-20 (source only, not yet released)
 

@@ -46,7 +46,8 @@ class _ReviewScreenState extends State<ReviewScreen> {
     super.dispose();
   }
 
-  static final _mobilePattern = RegExp(r'^(\+|00)?[0-9]{9,15}$');
+  // D135: any country's number; the server completes local numbers with the company's calling code.
+  static final _mobilePattern = RegExp(r'^(\+|00)?[0-9]{8,15}$');
 
   Future<void> _submit() async {
     if (_busy) return;

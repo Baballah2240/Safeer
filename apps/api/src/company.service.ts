@@ -4,6 +4,7 @@ import type {PoolClient} from 'pg';
 import {Database} from './database.js';
 import {IdentityService,type Principal} from './identity.service.js';
 import {body,text,login,uuid,version,list,secret,hashPassword,fail} from './security.js';
+import {countries,defaultCountry} from './countries.js';
 import {mobileNumber} from './reservation.service.js';
 
 const permissionCodes=['company.profile.read','company.profile.manage','company.resources.read','company.resources.manage','company.members.read','company.members.manage','company.roles.read','company.roles.manage','company.audit.read','company.routes.read','company.routes.manage','company.fleet.read','company.fleet.manage','company.drivers.read','company.drivers.manage','company.trips.read','company.trips.manage','company.bookings.read','company.bookings.manage','company.luggage.operate','company.luggage.resolve','company.shipments.operate','company.shipments.resolve','company.shipments.prices','company.ticketing.operate','company.payments.late','company.sessions.manage','company.driver.operate','company.journeys.manage','company.finance.read'];
@@ -20,7 +21,11 @@ async function knownZone(c:PoolClient,timezone:string){if(!(await c.query('SELEC
 function settings(data:Record<string,unknown>){
  const holdMinutes=data.holdMinutes;if(typeof holdMinutes!=='number'||!Number.isSafeInteger(holdMinutes)||holdMinutes<5||holdMinutes>180)fail('INVALID_INPUT');
  const timezone=text(data.timezone,1,80);if(!zonePattern.test(timezone))fail('INVALID_TIMEZONE');try{new Intl.DateTimeFormat('en',{timeZone:timezone});}catch{fail('INVALID_TIMEZONE');}
- if(typeof data.locale!=='string'||!['en','ar'].includes(data.locale))fail('INVALID_INPUT');return {holdMinutes,timezone,locale:String(data.locale)};
+ if(typeof data.locale!=='string'||!['en','ar'].includes(data.locale))fail('INVALID_INPUT');
+ // D135: country and currency are optional for older clients; a missing value keeps the current one (Sudan, SDG for new companies).
+ const countryCode=data.countryCode===undefined?undefined:String(data.countryCode);if(countryCode!==undefined&&!(countryCode in countries))fail('INVALID_COUNTRY');
+ const currency=data.currency===undefined?undefined:String(data.currency).toUpperCase();if(currency!==undefined&&!/^[A-Z]{3}$/.test(currency))fail('INVALID_INPUT');
+ return {holdMinutes,timezone,locale:String(data.locale),countryCode,currency};
 }
 function permissions(value:unknown){const result=list(value,x=>text(x,1,80));if(result.some(p=>!permissionCodes.includes(p)))fail('INVALID_PERMISSION');return result;}
 // D69: working permissions also open the company workspace; driver-only sets use the Driver app.
@@ -43,7 +48,7 @@ export class CompanyService {
  async companies(token:string){return this.run(token,async(c,p)=>({items:(await c.query('SELECT id,slug,name_en AS "nameEn",name_ar AS "nameAr",status,version FROM safeer.companies ORDER BY name_en,id')).rows,canCreate:p.superAdministrator}));}
  async workspace(token:string,cid:string){uuid(cid);return this.run(token,async(c,p)=>{
   await this.company(c,cid);
-  const company=(await c.query(`SELECT co.id,co.slug,co.name_en AS "nameEn",co.name_ar AS "nameAr",co.status,co.version,co.contact_email AS "contactEmail",co.phone,co.address,s.hold_minutes AS "holdMinutes",s.timezone,s.locale FROM safeer.companies co JOIN safeer.company_settings s ON s.company_id=co.id WHERE co.id=$1`,[cid])).rows[0];if(!company)fail('NOT_FOUND',404);
+  const company=(await c.query(`SELECT co.id,co.slug,co.name_en AS "nameEn",co.name_ar AS "nameAr",co.status,co.version,co.contact_email AS "contactEmail",co.phone,co.address,s.hold_minutes AS "holdMinutes",s.timezone,s.locale,s.country_code AS "countryCode",s.currency FROM safeer.companies co JOIN safeer.company_settings s ON s.company_id=co.id WHERE co.id=$1`,[cid])).rows[0];if(!company)fail('NOT_FOUND',404);
   const branches=(await c.query(`SELECT id,code,name_en AS "nameEn",name_ar AS "nameAr",active,version,safeer.company_can(company_id,'company.resources.manage',id) AS "canEdit" FROM safeer.branches WHERE company_id=$1 ORDER BY code`,[cid])).rows;
   const stations=(await c.query(`SELECT id,branch_id AS "branchId",code,name_en AS "nameEn",name_ar AS "nameAr",address,city_id AS "cityId",active,version,safeer.company_can(company_id,'company.resources.manage',branch_id,id) AS "canEdit" FROM safeer.stations WHERE company_id=$1 ORDER BY code`,[cid])).rows;
   const roles=await this.has(c,cid,'company.roles.read')?(await c.query(`SELECT r.id,r.code,r.display_name AS "displayName",r.scope,r.active,r.version,left(r.code,9)='personal_' AS personal,COALESCE(array_agg(p.permission_code ORDER BY p.permission_code) FILTER(WHERE p.permission_code IS NOT NULL),'{}') AS permissions FROM safeer.company_roles r LEFT JOIN safeer.company_role_permissions p ON (p.company_id,p.role_id)=(r.company_id,r.id) WHERE r.company_id=$1 GROUP BY r.id ORDER BY r.code`,[cid])).rows:[];
@@ -58,7 +63,7 @@ export class CompanyService {
   return {company,branches,stations,cities,roles,members,audit,grants,branding,permissions:permissionCodes,capabilities:{billing:p.superAdministrator||await this.can(c,cid,'company.profile.manage'),financeRead:await this.has(c,cid,'company.finance.read'),superAdministrator:p.superAdministrator,profile:await this.can(c,cid,'company.profile.manage'),branchCreate:await this.can(c,cid,'company.resources.manage'),managedBranches,memberBranches,memberStations,memberCompanyScope:await this.can(c,cid,'company.members.manage'),membersRead:await this.has(c,cid,'company.members.read'),rolesRead:await this.has(c,cid,'company.roles.read'),auditRead:await this.has(c,cid,'company.audit.read'),supportRead:await this.can(c,cid,'company.members.manage'),memberCreate:await this.has(c,cid,'company.members.manage')&&await this.has(c,cid,'company.roles.read'),roleManage:await this.can(c,cid,'company.roles.manage'),routesRead:await this.can(c,cid,'company.routes.read'),routesManage:Boolean((await c.query('SELECT safeer.route_manage($1) AS ok',[cid])).rows[0].ok),fleetRead:await this.can(c,cid,'company.fleet.read'),driversRead:await this.can(c,cid,'company.drivers.read'),bookingsRead:await this.has(c,cid,'company.bookings.read'),ticketing:await this.has(c,cid,'company.ticketing.operate'),luggage:await this.has(c,cid,'company.luggage.operate'),luggageResolve:await this.has(c,cid,'company.luggage.resolve'),tripsManage:await this.has(c,cid,'company.trips.manage'),operations:await this.has(c,cid,'company.trips.read'),shipments:await this.has(c,cid,'company.shipments.operate'),shipmentsResolve:await this.has(c,cid,'company.shipments.resolve'),shipmentPrices:await this.has(c,cid,'company.shipments.prices'),stationScreen:await this.has(c,cid,'company.ticketing.operate')||await this.has(c,cid,'company.sessions.manage')||await this.has(c,cid,'company.resources.manage')||await this.can(c,cid,'company.profile.manage'),tripsRead:await this.can(c,cid,'company.trips.read'),supportManage:p.superAdministrator}};
  });}
  async create(token:string,input:unknown){
-  const data=body(input,['nameEn','nameAr','slug','contactEmail','phone','address','holdMinutes','timezone','locale','currentPassword']);
+  const data=body(input,['nameEn','nameAr','slug','contactEmail','phone','address','holdMinutes','timezone','locale','countryCode','currency','currentPassword']);
   const nameEn=text(data.nameEn),nameAr=text(data.nameAr),slug=text(data.slug,1,60).toLowerCase();if(!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug))fail('INVALID_INPUT');
   const conf=settings(data),email=data.contactEmail===undefined||data.contactEmail===''?'':login(data.contactEmail),phone=optional(data.phone,40),address=optional(data.address,300);
   await this.identity.reauthenticate(token,data.currentPassword);
@@ -70,14 +75,14 @@ export class CompanyService {
    const adminPermissions=template?(await c.query('SELECT permission_code FROM safeer.role_permissions WHERE role_id=$1',[template.id])).rows.map(r=>r.permission_code):[];
    if(!['company.profile.read','company.members.read','company.members.manage','company.roles.read','company.roles.manage'].every(code=>adminPermissions.includes(code)))fail('COMPANY_ADMIN_TEMPLATE',409);
    const id=randomUUID();await c.query('INSERT INTO safeer.companies(id,slug,name_en,name_ar,contact_email,phone,address) VALUES($1,$2,$3,$4,$5,$6,$7)',[id,slug,nameEn,nameAr,email,phone,address]);
-   await c.query('INSERT INTO safeer.company_settings(company_id,hold_minutes,timezone,locale) VALUES($1,$2,$3,$4)',[id,conf.holdMinutes,conf.timezone,conf.locale]);
+   const country=conf.countryCode??defaultCountry;await c.query('INSERT INTO safeer.company_settings(company_id,hold_minutes,timezone,locale,country_code,currency) VALUES($1,$2,$3,$4,$5,$6)',[id,conf.holdMinutes,conf.timezone,conf.locale,country,conf.currency??countries[country].currency]);
    let adminRole='';for(const r of templates){const rid=randomUUID();if(r.code==='company_administrator')adminRole=rid;await c.query('INSERT INTO safeer.company_roles(id,company_id,code,display_name,scope) VALUES($1,$2,$3,$4,$5)',[rid,id,r.code,r.display_name,r.scope]);await c.query("INSERT INTO safeer.company_role_permissions(company_id,role_id,permission_code) SELECT $1,$2,permission_code FROM safeer.role_permissions WHERE role_id=$3 AND permission_code LIKE 'company.%'",[id,rid,r.id]);}
    const member=randomUUID();await c.query('INSERT INTO safeer.company_users(id,company_id,user_id,display_name) VALUES($1,$2,$3,$4)',[member,id,p.id,p.displayName]);await c.query("INSERT INTO safeer.company_user_roles(id,company_id,member_id,role_id,scope) VALUES($1,$2,$3,$4,'company')",[randomUUID(),id,member,adminRole]);
    await this.audit(c,p,id,'company.created',id);return {id};
   },true);
  }
  async update(token:string,cid:string,input:unknown){
-  uuid(cid);const data=body(input,['nameEn','nameAr','slug','status','contactEmail','phone','address','holdMinutes','timezone','locale','version','currentPassword']);
+  uuid(cid);const data=body(input,['nameEn','nameAr','slug','status','contactEmail','phone','address','holdMinutes','timezone','locale','countryCode','currency','version','currentPassword']);
   const nameEn=text(data.nameEn),nameAr=text(data.nameAr),conf=settings(data),v=version(data.version),email=data.contactEmail===undefined||data.contactEmail===''?'':login(data.contactEmail),phone=optional(data.phone,40),address=optional(data.address,300);
   await this.identity.reauthenticate(token,data.currentPassword);
   return this.run(token,async(c,p)=>{
@@ -86,7 +91,7 @@ export class CompanyService {
    const status=data.status===undefined?old.status:text(data.status,1,20),slug=data.slug===undefined?old.slug:text(data.slug,1,60).toLowerCase();
    if(!['pending','approved','suspended','archived'].includes(status)||!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug))fail('INVALID_INPUT');
    const result=await c.query('UPDATE safeer.companies SET name_en=$1,name_ar=$2,slug=$3,status=$4,contact_email=$5,phone=$6,address=$7,version=version+1 WHERE id=$8 AND version=$9 RETURNING id',[nameEn,nameAr,slug,status,email,phone,address,cid,v]);if(!result.rowCount)fail('STALE_VERSION',409);
-   await c.query('UPDATE safeer.company_settings SET hold_minutes=$1,timezone=$2,locale=$3 WHERE company_id=$4',[conf.holdMinutes,conf.timezone,conf.locale,cid]);await this.audit(c,p,cid,'company.updated',cid);return {id:cid};
+   await c.query('UPDATE safeer.company_settings SET hold_minutes=$1,timezone=$2,locale=$3,country_code=COALESCE($5,country_code),currency=COALESCE($6,currency) WHERE company_id=$4',[conf.holdMinutes,conf.timezone,conf.locale,cid,conf.countryCode??null,conf.currency??null]);await this.audit(c,p,cid,'company.updated',cid);return {id:cid};
   },true);
  }
  async resource(token:string,cid:string,kind:'branches'|'stations',id:string|undefined,input:unknown){

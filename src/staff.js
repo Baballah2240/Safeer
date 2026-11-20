@@ -25,7 +25,7 @@ function screenUrl(){const url=new URL(location.href);for(const k of ['tab','com
 function syncHistory(){if(!me||loading||me.mustChangePassword)return;const url=screenUrl();if(url.href===location.href)return;const depth=history.state?.staffDepth||0;if(historyReady)history.pushState({staffDepth:depth+1},'',url);else history.replaceState({staffDepth:0},'',url);historyReady=true;}
 addEventListener('popstate',()=>{const url=new URL(location.href),next=url.searchParams.get('tab')||'profile',company=url.searchParams.get('company')||'',section=url.searchParams.get('section');if(!me)return;const sameData=next===tab&&(next!=='companies'||company===companyState.id);tab=next;cursor=null;message='';if(next==='companies'){if(company!==companyState.id){resetCompanies();companyState.id=company;}if(section)companyState.section=section;}if(sameData)render();else void refresh();});
 const signIn=loginFormState();
-const t=key=>staffText(key,language),can=code=>me?.permissions.includes(code),date=value=>new Intl.DateTimeFormat(language==='ar'?'ar-SD-u-nu-latn':'en-GB',{dateStyle:'medium',timeStyle:'short',timeZone:'Africa/Khartoum'}).format(new Date(value));
+const t=key=>staffText(key,language),can=code=>me?.permissions.includes(code),date=value=>new Intl.DateTimeFormat(language==='ar'?'ar-SD-u-nu-latn':'en-GB',{dateStyle:'medium',timeStyle:'short'}).format(new Date(value));
 const alerts=createStaffAlerts({api:(...a)=>api(...a),t:key=>t(key),e,language:()=>language,dialogOpen:()=>dialog.open});
 // D100: an old link to the Notifications page opens the panel instead.
 let openNotifications=new URL(location.href).searchParams.get('tab')==='notifications';

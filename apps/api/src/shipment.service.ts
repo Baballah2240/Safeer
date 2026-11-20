@@ -58,10 +58,10 @@ export class ShipmentService {
   const data=body(input,['token']),value=text(data.token,2,40).toUpperCase();if(!tokenPattern.test(value))fail('TAG_UNKNOWN');
   return this.staff(token,cid,async(c,actor)=>{this.searches.take(actor);return this.one(c,'SELECT safeer.shipment_find($1,NULL,$2,NULL) AS row',[cid,tokenHash(value)]);});
  }
- create(token:string,cid:string,input:unknown){
+ async create(token:string,cid:string,input:unknown){
   const data=body(input,['tripId','destinationId','senderName','senderMobile','receiverName','receiverMobile','items','method','reference','declared','key']);
   const trip=uuid(data.tripId),destination=uuid(data.destinationId),senderName=personName(data.senderName),receiverName=personName(data.receiverName);
-  const senderMobile=mobileNumber(data.senderMobile),receiverMobile=mobileNumber(data.receiverMobile),method=oneOf(data.method,methods),reference=method==='cash'?null:text(data.reference,2,100);
+  const country=(await this.db.pool.query('SELECT safeer.trip_country($1) AS c',[trip])).rows[0]?.c,senderMobile=mobileNumber(data.senderMobile,undefined,country),receiverMobile=mobileNumber(data.receiverMobile,undefined,country),method=oneOf(data.method,methods),reference=method==='cash'?null:text(data.reference,2,100);
   if(data.declared!==true)fail('CONTENTS_NOT_DECLARED');
   if(!Array.isArray(data.items)||data.items.length<1||data.items.length>20)fail('INVALID_ITEMS');
   const items=data.items.map(raw=>{const item=body(raw,['category','description','weightGrams']);return {category:oneOf(item.category,categories),description:optional(item.description,200),grams:whole(item.weightGrams,1,500000)};});

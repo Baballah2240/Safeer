@@ -3,6 +3,7 @@ import {Injectable,OnModuleDestroy,OnModuleInit} from '@nestjs/common';
 import {randomBytes,randomUUID} from 'node:crypto';
 import type {PoolClient} from 'pg';
 import {Database} from './database.js';
+import {countries,countryOf,defaultCountry} from './countries.js';
 import {IdentityService} from './identity.service.js';
 import {body,digest,text,uuid,version,fail,stopIndex} from './security.js';
 
@@ -17,13 +18,15 @@ const seatLabels=(value:unknown)=>{
 // The passenger's browser creates the key and is the only holder of it. Only its hash is stored, so the reference alone cannot open or release a hold.
 const accessHash=(value:unknown)=>digest('safeer-hold-v1:'+uuid(value));
 const arabicDigits=(value:string)=>value.replace(/[\u0660-\u0669\u06f0-\u06f9]/g,c=>String(c.charCodeAt(0)%16));
-// Local Sudanese numbers and Arabic digits are accepted, and everything is stored in international form.
-export function mobileNumber(value:unknown,code='INVALID_MOBILE'){
+// Local numbers of the company's country (D135; Sudan by default) and Arabic digits are accepted, and
+// everything is stored in international form.
+export function mobileNumber(value:unknown,code='INVALID_MOBILE',country:unknown=defaultCountry){
  if(typeof value!=='string'||value.length>30)fail(code);
+ const place=countryOf(country);
  let digits=arabicDigits(value).replace(/[\s()\-.\u200e\u200f]/g,'');
  if(digits.startsWith('00'))digits='+'+digits.slice(2);
- else if(/^0[0-9]{9}$/.test(digits))digits='+249'+digits.slice(1);
- else if(/^[19][0-9]{8}$/.test(digits))digits='+249'+digits;
+ else if(/^0[0-9]+$/.test(digits)&&place.nsn.includes(digits.length-1))digits='+'+place.calling+digits.slice(1);
+ else if(place===countries.SD&&/^[19][0-9]{8}$/.test(digits))digits='+249'+digits;
  if(!/^\+[1-9][0-9]{7,14}$/.test(digits)||(digits.startsWith('+249')&&digits.length!==13))fail(code);
  return digits;
 }
@@ -95,7 +98,7 @@ export class ReservationService implements OnModuleInit,OnModuleDestroy {
  private static reference(value:unknown){const code=typeof value==='string'?value.trim().toUpperCase():'';if(!referencePattern.test(code))fail('NOT_FOUND',404);return code;}
  // Holds use the shared service lock so different trips never wait on each other. Each trip is serialized by its own row lock.
  async hold(input:unknown,client:string){
-  const data=body(input,['tripId','seats','key','mobile','travelers','fromIndex','toIndex']),tripId=uuid(data.tripId),labels=seatLabels(data.seats),access=accessHash(data.key),mobile=mobileNumber(data.mobile),people=travelers(data.travelers,labels),from=stopIndex(data.fromIndex),to=stopIndex(data.toIndex);
+  const data=body(input,['tripId','seats','key','mobile','travelers','fromIndex','toIndex']),tripId=uuid(data.tripId),labels=seatLabels(data.seats),access=accessHash(data.key),mobile=mobileNumber(data.mobile,undefined,await this.one('SELECT safeer.trip_country($1) AS row',[tripId])),people=travelers(data.travelers,labels),from=stopIndex(data.fromIndex),to=stopIndex(data.toIndex);
   // The journey is part of the request, so a retry with other stops is refused instead of returning the first hold.
   const request=digest('safeer-request-v1:'+data.key+JSON.stringify([tripId,[...labels].sort(),mobile,people,...(from===null&&to===null?[]:[[from,to]])]));
   // A retry of a hold that already exists costs nothing, so a lost reply can always be recovered.
@@ -109,14 +112,14 @@ export class ReservationService implements OnModuleInit,OnModuleDestroy {
  }
  async current(key:unknown){const row=await this.one('SELECT safeer.public_booking_by_key($1) AS row',[accessHash(key)]);if(!row)fail('NOT_FOUND',404);return this.presentation(row.reference,accessHash(key),null);}
  async lookup(input:unknown,client:string){
-  const data=body(input,['reference','mobile']),code=ReservationService.reference(data.reference),mobile=mobileNumber(data.mobile,'INVALID_INPUT');
+  const data=body(input,['reference','mobile']),code=ReservationService.reference(data.reference),mobile=mobileNumber(data.mobile,'INVALID_INPUT',await this.one('SELECT safeer.booking_country($1) AS row',[code]));
   return this.guarded(code,client,()=>this.presentation(code,null,mobile));
  }
  async release(code:string,input:unknown,client:string){
   if(!referencePattern.test(code))fail('NOT_FOUND',404);
   const data=body(input,['key','mobile']);
   if(data.mobile!==undefined){
-   if(data.key!==undefined)fail('INVALID_INPUT');const mobile=mobileNumber(data.mobile,'INVALID_INPUT');
+   if(data.key!==undefined)fail('INVALID_INPUT');const mobile=mobileNumber(data.mobile,'INVALID_INPUT',await this.one('SELECT safeer.booking_country($1) AS row',[code]));
    return this.guarded(code,client,()=>this.db.transaction(async c=>(await c.query('SELECT safeer.public_release_by_mobile($1,$2) AS row',[code,mobile])).rows[0].row,false));
   }
   const access=accessHash(data.key);
@@ -138,7 +141,7 @@ export class ReservationService implements OnModuleInit,OnModuleDestroy {
   uuid(cid);const q=query===undefined||query===''?null:text(query,2,100);
   const upper=q?.toUpperCase()??'',isReference=referencePattern.test(upper),isNumber=Boolean(q)&&!isReference&&/^[+\s()\-.0-9\u0660-\u0669\u06f0-\u06f9\u200e\u200f]+$/.test(q as string);
   return this.staff(token,cid,async(c,actor)=>{
-   const row=(await c.query('SELECT safeer.staff_bookings($1,$2,$3,$4) AS row',[cid,isReference?upper:null,isNumber?mobileNumber(q,'INVALID_INPUT'):null,q&&!isReference&&!isNumber?q:null])).rows[0].row;
+   const row=(await c.query('SELECT safeer.staff_bookings($1,$2,$3,$4) AS row',[cid,isReference?upper:null,isNumber?mobileNumber(q,'INVALID_INPUT',await this.one('SELECT safeer.company_country($1) AS row',[cid])):null,q&&!isReference&&!isNumber?q:null])).rows[0].row;
    await this.audit(c,cid,actor,q?'booking.searched':'booking.listed',cid);return row;
   });
  }
@@ -147,7 +150,7 @@ export class ReservationService implements OnModuleInit,OnModuleDestroy {
   await this.audit(c,cid,actor,'booking.viewed',bid);return row;
  });}
  async correct(token:string,cid:string,bid:string,input:unknown){
-  uuid(cid);uuid(bid);const data=body(input,['mobile','travelers','seats','reason','version','currentPassword']),labels=seatLabels(data.seats),reason=text(data.reason,1,300),expected=version(data.version),mobile=mobileNumber(data.mobile),people=travelers(data.travelers,labels);
+  uuid(cid);uuid(bid);const data=body(input,['mobile','travelers','seats','reason','version','currentPassword']),labels=seatLabels(data.seats),reason=text(data.reason,1,300),expected=version(data.version),mobile=mobileNumber(data.mobile,undefined,await this.one('SELECT safeer.company_country($1) AS row',[cid])),people=travelers(data.travelers,labels);
   await this.identity.reauthenticate(token,data.currentPassword);
   return this.staff(token,cid,async(c,actor)=>{
    if(!(await c.query('SELECT safeer.staff_update_travelers($1,$2,$3,$4,$5,$6,$7) AS ok',[cid,bid,actor,expected,mobile,JSON.stringify(people),reason])).rows[0].ok)fail('NOT_FOUND',404);

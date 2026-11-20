@@ -46,7 +46,7 @@ export class TripService {
  // Repeating dates save together or not at all.
  async create(token:string,cid:string,input:unknown){
   uuid(cid);const data=body(input,['routeId','dates','time','offsets','fareMinor','currency','holdHours','currentPassword']);
-  const hold=holdHours(data.holdHours),routeId=uuid(data.routeId),time=clock(data.time),minutes=offsets(data.offsets),amount=fare(data.fareMinor),currency=text(data.currency??'SDG',3,3).toUpperCase();
+  const hold=holdHours(data.holdHours),routeId=uuid(data.routeId),time=clock(data.time),minutes=offsets(data.offsets),amount=fare(data.fareMinor),currency=text(data.currency??(await this.db.pool.query('SELECT safeer.company_currency($1) AS c',[cid])).rows[0]?.c??'SDG',3,3).toUpperCase();
   if(!/^[A-Z]{3}$/.test(currency)||!Array.isArray(data.dates)||data.dates.length<1||data.dates.length>31)fail('INVALID_INPUT');
   const dates=data.dates.map(day);if(new Set(dates).size!==dates.length)fail('INVALID_INPUT');
   await this.identity.reauthenticate(token,data.currentPassword);

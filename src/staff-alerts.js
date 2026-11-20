@@ -35,7 +35,7 @@ export function createStaffAlerts({api,t,e,language,dialogOpen}){
  const ar=()=>language()==='ar';
  const value=(x,zone)=>{
   if(x.minor!==undefined&&x.minor!==null)return new Intl.NumberFormat(ar()?'ar-SD-u-nu-latn':'en-GB',{style:'currency',currency:x.currency||'SDG',maximumFractionDigits:2}).format(Number(x.minor)/100);
-  if(x.at)return new Intl.DateTimeFormat(ar()?'ar-SD-u-nu-latn':'en-GB',{dateStyle:'medium',timeStyle:'short',timeZone:zone||'Africa/Khartoum'}).format(new Date(x.at));
+  if(x.at)return new Intl.DateTimeFormat(ar()?'ar-SD-u-nu-latn':'en-GB',{dateStyle:'medium',timeStyle:'short',timeZone:zone||undefined}).format(new Date(x.at));
   if(x.code)return t(codeText[x.code]||x.code);
   if(x.textEn!==undefined)return ar()?x.textAr:x.textEn;
   return x.text??'';

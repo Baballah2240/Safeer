@@ -20,7 +20,7 @@ const t = value => translate(value, language);
 
 const e = value => String(value).replace(/[&<>"']/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]));
 const number = value => new Intl.NumberFormat(language === 'ar' ? 'ar-SD' : 'en-GB').format(value);
-const date = value => new Intl.DateTimeFormat(language === 'ar' ? 'ar-SD' : 'en-GB', {timeZone:'Africa/Khartoum', day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'}).format(value);
+const date = value => new Intl.DateTimeFormat(language === 'ar' ? 'ar-SD' : 'en-GB', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'}).format(value);
 const companyName = company => language === 'ar' ? company.nameAr : company.name;
 const route = trip => `${t(trip.from)} <span class="route-arrow" aria-hidden="true">↗</span> ${t(trip.to)}`;
 const nav = [['overview','Overview','◫'],['passengers','Passenger reservations','▦'],['settings','Company policy','⚙']];

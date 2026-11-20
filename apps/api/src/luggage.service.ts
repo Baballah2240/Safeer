@@ -55,9 +55,9 @@ export class LuggageService {
   uuid(lid);const data=body(input,['to','reason','version']),to=oneOf(data.to,['tagged','loaded','in_transit','unloaded']),reason=optional(data.reason,300),version=whole(data.version,1,2147483647);
   return this.staff(token,cid,async(c,actor)=>this.found((await c.query('SELECT safeer.luggage_move($1,$2,$3,$4,$5,$6) AS row',[cid,actor,lid,to,reason,version])).rows[0].row));
  }
- collect(token:string,cid:string,lid:string,input:unknown){
+ async collect(token:string,cid:string,lid:string,input:unknown){
   uuid(lid);const data=body(input,['proof','reason','version']),proof=text(data.proof,2,40).toUpperCase(),reason=optional(data.reason,300),version=whole(data.version,1,2147483647);
-  const ticket=proof.startsWith('TKT-')?proof:null,mobile=ticket?null:mobileNumber(proof,'COLLECTION_NOT_VERIFIED');
+  const ticket=proof.startsWith('TKT-')?proof:null,mobile=ticket?null:mobileNumber(proof,'COLLECTION_NOT_VERIFIED',(await this.db.pool.query('SELECT safeer.company_country($1) AS c',[cid])).rows[0]?.c);
   return this.staff(token,cid,async(c,actor)=>this.found((await c.query('SELECT safeer.luggage_collect($1,$2,$3,$4,$5,$6,$7) AS row',[cid,actor,lid,ticket,mobile,reason,version])).rows[0].row));
  }
  report(token:string,cid:string,lid:string,input:unknown){

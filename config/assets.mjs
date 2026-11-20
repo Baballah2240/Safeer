@@ -56,6 +56,7 @@ export const publicAssets = {
   '/booking': ['marketplace.html', 'text/html'],
   '/src/fleet.js': ['src/fleet.js', 'text/javascript'],
   '/src/companies.js': ['src/companies.js', 'text/javascript'],
+  '/src/countries.js': ['src/countries.js', 'text/javascript'],
   '/src/theme.js': ['src/theme.js', 'text/javascript'],
   '/src/app-release.js': ['src/app-release.js', 'text/javascript'],
   // D78: what the retired WebView apps show instead of Safeer.
