@@ -1,7 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:safeer_core/safeer_core.dart';
 
 import 'app.dart';
+
+/// D130: the sound after a scan. Valid, needs a look, or not valid.
+enum ScanSound { ok, check, bad }
+
+ScanSound scanSound(ScanStatus status) => switch (status) {
+      ScanStatus.boarded || ScanStatus.verified => ScanSound.ok,
+      ScanStatus.alreadyBoarded || ScanStatus.boardingClosed || ScanStatus.pending => ScanSound.check,
+      _ => ScanSound.bad,
+    };
+
+/// Plays [scanSound] through Android's tone generator (MainActivity "safeer/sound"); silent
+/// where there is no such channel (tests, other platforms).
+class ScanBeeper {
+  static const _channel = MethodChannel('safeer/sound');
+
+  /// Replaced in tests to record what would play.
+  static Future<void> Function(ScanSound sound) play = (sound) async {
+    try {
+      await _channel.invokeMethod('play', sound.name);
+    } catch (_) {}
+  };
+}
 
 /// Every outcome has its own icon, title and explanation, never colour alone.
 (IconData, String, String?, StatusTone) describeScan(SafeerStrings s, SafeerFormat f, ScanResult r, String timezone) {

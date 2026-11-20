@@ -20,6 +20,9 @@ class AppSettings extends ChangeNotifier {
   CrashReports? crashReports;
   ThemeMode themeMode = ThemeMode.dark;
 
+  /// D130: Safeer Driver beeps after each ticket scan (on by default).
+  bool scanSounds = true;
+
   /// null follows the phone language (Arabic phones get Arabic, others English).
   Locale? locale;
 
@@ -31,6 +34,7 @@ class AppSettings extends ChangeNotifier {
     };
     final lang = await _store.read('safeer.language');
     locale = lang == 'ar' || lang == 'en' ? Locale(lang!) : null;
+    scanSounds = await _store.read('safeer.scan.sounds') != 'off';
     await lock.load();
     notifyListeners();
   }
@@ -39,6 +43,12 @@ class AppSettings extends ChangeNotifier {
     themeMode = mode;
     notifyListeners();
     await _store.write('safeer.theme', mode.name);
+  }
+
+  Future<void> setScanSounds(bool on) async {
+    scanSounds = on;
+    notifyListeners();
+    await _store.write('safeer.scan.sounds', on ? 'on' : 'off');
   }
 
   Future<void> setLocale(Locale? value) async {

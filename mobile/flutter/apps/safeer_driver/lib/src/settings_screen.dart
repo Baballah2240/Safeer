@@ -21,6 +21,18 @@ class _DriverSettingsScreenState extends State<DriverSettingsScreen> {
         settings: scope.settings,
         version: driverVersion,
         children: [
+          ListenableBuilder(
+            listenable: scope.settings,
+            builder: (context, _) => SwitchListTile(
+              key: const ValueKey('scan-sounds'),
+              contentPadding: EdgeInsets.zero,
+              secondary: const Icon(Icons.volume_up_outlined),
+              title: Text(s.scanSounds),
+              subtitle: Text(s.scanSoundsHint),
+              value: scope.settings.scanSounds,
+              onChanged: scope.settings.setScanSounds,
+            ),
+          ),
           if (repo is DemoDriverRepository)
             SwitchListTile(
               contentPadding: EdgeInsets.zero,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:safeer_core/safeer_core.dart';
 import 'package:safeer_driver/src/app.dart';
+import 'package:safeer_driver/src/scan_feedback.dart';
 import 'package:safeer_driver/src/session.dart';
 
 const demo = Credential.demoPrefix;
@@ -26,6 +27,8 @@ void main() {
         final settings = AppSettings(disk)..locale = Locale(lang);
         final session = DriverSession(repository: DemoDriverRepository(latency: Duration.zero), pending: PendingScans(disk), syncEvery: Duration.zero);
         ValueChanged<String>? camera;
+        final sounds = <ScanSound>[];
+        ScanBeeper.play = (s) async => sounds.add(s);
         await tester.pumpWidget(DriverApp(
           session: session,
           settings: settings,
@@ -85,6 +88,12 @@ void main() {
         await next();
         await scan('$demo${DemoDriverRepository.sampleRefunded}');
         expect(find.text(s.resInvalid), findsOneWidget);
+        expect(sounds, [ScanSound.ok, ScanSound.check, ScanSound.bad, ScanSound.bad], reason: 'D130: one sound per result, none for ignored repeat reads');
+        await settings.setScanSounds(false);
+        await next();
+        await scan('$demo${DemoDriverRepository.sampleRefunded}');
+        expect(sounds, hasLength(4), reason: 'silent when Scan sounds is off');
+        await settings.setScanSounds(true);
 
         // Offline: pending verification, not counted.
         (session.repository as DemoDriverRepository).offline = true;

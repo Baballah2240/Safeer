@@ -1,6 +1,8 @@
 package sd.safeer.driver
 
 import android.content.Intent
+import android.media.AudioManager
+import android.media.ToneGenerator
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
@@ -13,9 +15,30 @@ import java.io.File
 // FlutterFragmentActivity: the fingerprint and face prompt (local_auth) needs a FragmentActivity (D113).
 // D126: "safeer/update" gives the in-app updater a private download folder and opens Android's
 // installer for a downloaded, checksum-verified APK (installed over this app, same signing key).
+// D130: "safeer/sound" plays the scan result tone: ok = one short beep, check = two beeps, bad = long low alert.
 class MainActivity : FlutterFragmentActivity() {
+    private var tones: ToneGenerator? = null
+
+    override fun onDestroy() {
+        tones?.release()
+        tones = null
+        super.onDestroy()
+    }
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "safeer/sound").setMethodCallHandler { call, result ->
+            try {
+                val gen = tones ?: ToneGenerator(AudioManager.STREAM_MUSIC, 100).also { tones = it }
+                when (call.arguments as? String) {
+                    "ok" -> gen.startTone(ToneGenerator.TONE_PROP_BEEP, 150)
+                    "check" -> gen.startTone(ToneGenerator.TONE_PROP_BEEP2, 400)
+                    else -> gen.startTone(ToneGenerator.TONE_CDMA_ABBR_ALERT, 600)
+                }
+            } catch (e: RuntimeException) {
+            }
+            result.success(null)
+        }
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "safeer/update").setMethodCallHandler { call, result ->
             val folder = File(cacheDir, "updates")
             when (call.method) {

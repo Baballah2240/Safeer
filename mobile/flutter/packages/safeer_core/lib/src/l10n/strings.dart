@@ -243,6 +243,8 @@ class SafeerStrings {
   String get pendingSection => _t('Pending verification', 'بانتظار التحقق');
   String scannedAt(String time) => _t('Scanned $time, waiting for connection', 'مُسحت $time، بانتظار الاتصال');
   String get checkedLater => _t('Checked after reconnecting', 'تم التحقق بعد عودة الاتصال');
+  String get scanSounds => _t('Scan sounds', 'أصوات المسح');
+  String get scanSoundsHint => _t('One beep: valid. Two beeps: check the ticket. Long tone: not valid.', 'نغمة واحدة: صالحة. نغمتان: راجع التذكرة. نغمة طويلة: غير صالحة.');
   String get simulateOffline => _t('Simulate no connection (demo)', 'محاكاة انقطاع الاتصال (تجريبي)');
   String get demoCodes => _t('Demo ticket numbers', 'أرقام تذاكر تجريبية');
   String get demoValid => _t('valid for the active trip', 'صالحة للرحلة الحالية');

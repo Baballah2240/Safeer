@@ -1,5 +1,9 @@
 # Safeer mobile status
 
+## Safeer Driver 0.26.0 - D130, 2026-11-20
+
+Scan sounds: one beep valid, two beeps check, long tone not valid, through Android ToneGenerator (MainActivity channel safeer/sound); Settings > Scan sounds, on by default. Passenger stays 0.25.0. Checked: flutter analyze (no issues), safeer_core (26), Safeer Driver (34, the flow test now checks the sounds) and Safeer Passenger (30). Not yet heard on a phone.
+
 ## Safeer Driver and Passenger 0.25.0 - D129, 2026-11-20
 
 Settings: data source and crash-reports switch hidden; Language, Appearance and App lock shown as option lists with full labels. PIN: choose 4 or 6 digits; the lock screen shows that many dots and opens on the last correct digit, or says the PIN is not correct. Checked: flutter analyze (no issues), safeer_core (26, including 2 new), Safeer Driver (34) and Safeer Passenger (30). Real-phone check of 0.24.0 on a Huawei FRL-L22 (Android 10, no Google Play services): in-app update 0.23.0 to 0.24.0 worked, crash reports started, the app ran normally.

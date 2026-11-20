@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:safeer_core/safeer_core.dart';
 
+import 'app.dart';
 import 'boarding_controller.dart';
 import 'scan_feedback.dart';
 
@@ -42,13 +43,20 @@ class _ScannerScreenState extends State<ScannerScreen> {
 
   Future<void> _onCode(String raw) async {
     if (_showingResult) return;
-    final r = await c.scan(raw);
-    if (r != null && mounted) HapticFeedback.mediumImpact();
+    _feedback(await c.scan(raw));
+  }
+
+  // D130: a beep (when Scan sounds is on) and a vibration for every result.
+  void _feedback(ScanResult? r) {
+    if (r == null || !mounted) return;
+    final sound = scanSound(r.status);
+    sound == ScanSound.bad ? HapticFeedback.heavyImpact() : HapticFeedback.mediumImpact();
+    if (DriverScope.of(context).settings.scanSounds) ScanBeeper.play(sound);
   }
 
   Future<void> _typeNumber() async {
     final number = await showModalBottomSheet<String>(context: context, isScrollControlled: true, useSafeArea: true, builder: (_) => const _NumberSheet());
-    if (number != null && mounted) await c.check(number);
+    if (number != null && mounted) _feedback(await c.check(number));
   }
 
   void _next() => c.resetCooldown();
