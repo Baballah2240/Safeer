@@ -1,5 +1,9 @@
 # Safeer mobile status
 
+## Button sizes - D134, 2026-11-20 (source only, not yet released)
+
+safeer_core theme: filled and outlined buttons 48px tall with 12px corners (were 52px/16px); text fields 12px corners (were 14px), matching the website design system. Fonts stay Inter/Noto Sans Arabic (SF Pro cannot be bundled in an Android app). Checked: safeer_core (26), Driver (34), Passenger (30) tests. Ships with the next app release.
+
 ## Safeer Driver and Passenger 0.27.0 - D131, 2026-11-20
 
 Logo with depth (SafeerLogo painter and ic_safeer.xml vector with gradients, shadow and gloss; no bitmap). Driver trip list shows only the signed-in person's assigned trips (server migration 0035; applies to every app version once the site is deployed). Checked: flutter analyze (no issues), safeer_core (26), Safeer Driver (34), Safeer Passenger (30); boarding, workflow and journey integration tests on PostgreSQL. Not yet seen on a phone.

@@ -1,5 +1,9 @@
 # Changelog
 
+## San Francisco font and consistent controls - D134, 2026-11-20
+
+The site uses San Francisco on Apple devices and the matching open font Inter elsewhere. Every button, tab and field now follows one size system (48px buttons with 12px corners, 44px round icon buttons, 48px fields), and the main action is Safeer orange everywhere. Details: docs/archive/DESIGN_SYSTEM_2026-11-20.md.
+
 ## Trip card fills wide screens - D133, 2026-11-20
 
 On computers and wide tablets, each trip in My Trips shows the photo beside the trip details (route, date, status, seats, booking number and arrival time) instead of leaving half the card empty. Phones keep the same look.

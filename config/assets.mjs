@@ -6,6 +6,7 @@ export const publicAssets = {
   '/src/payment-proof.js': ['src/payment-proof.js', 'text/javascript'],
   '/src/loading.js': ['src/loading.js', 'text/javascript'],
   '/src/typography.css': ['src/typography.css', 'text/css'],
+  '/src/ui-system.css': ['src/ui-system.css', 'text/css'],
   '/src/fonts/inter-latin.woff2': ['src/fonts/inter-latin.woff2', 'font/woff2'],
   '/src/fonts/inter-latin-ext.woff2': ['src/fonts/inter-latin-ext.woff2', 'font/woff2'],
   '/src/fonts/noto-sans-arabic.woff2': ['src/fonts/noto-sans-arabic.woff2', 'font/woff2'],

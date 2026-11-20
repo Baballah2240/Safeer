@@ -23,8 +23,10 @@ test('opaque cookies and CSRF tokens reject duplicates, guesses and mismatched s
   assert.throws(()=>sessionToken('safeer_session='+token+';safeer_session='+other));assert.throws(()=>sessionToken('safeer_session=invalid'));
   assert.equal(validCsrf(token,csrf(token)),true);assert.equal(validCsrf(token,csrf(other)),false);assert.equal(validCsrf(token,'x'),false);assert.equal(digest(token).length,64);
 });
-test('password work is bounded instead of admitting an unbounded hashing queue',async()=>{
-  const running=[hashPassword(secret()),hashPassword(secret())];
+test('password work is bounded: two run, up to 64 wait in line (D132), the next is refused',async()=>{
+  const queued=Array.from({length:66},()=>hashPassword(secret()));
   await assert.rejects(hashPassword(secret()),error=>error.getStatus()===429);
-  await Promise.all(running);
+  const settled=await Promise.allSettled(queued);
+  assert.ok(settled.filter(s=>s.status==='fulfilled').length>=3,'people waiting in line are served, not refused');
+  assert.ok(settled.every(s=>s.status==='fulfilled'||s.reason.getStatus()===429),'a slow machine may time out the end of the line, never crash');
 });

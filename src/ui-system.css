@@ -1,0 +1,38 @@
+/* D134: one size system for every control in the project, loaded last on every page.
+   It sets geometry and type only (height, corners, padding, text), so the existing colours, the light and
+   dark themes and each company's own brand colour stay as they are. Rules:
+   - Action buttons: 48px tall, 12px corners, 15px semibold text. Compact (tables, toolbars, .btn-sm): 36px.
+     Large hero buttons (.btn-lg): 52px.
+   - Icon-only buttons: 44x44 circles.
+   - Pills (fully round) only for tabs, segmented choices and chips.
+   - Text fields and menus: 48px tall, 12px corners, 16px text (16px also stops iPhone zooming in).
+   - One focus ring, one disabled look. Seat maps keep their own shapes. Print is unaffected. */
+:root{--ui-radius:12px;--ui-h:48px;--ui-h-compact:36px;--ui-h-large:52px;--ui-icon:44px;--ui-text:15px;--ui-focus:#e8772a}
+@media screen{
+ /* Action buttons */
+ html body :is(button,a):is(.primary,.staff-primary,.secondary,.market-find,.auth-submit,.track-submit,.journey-ticket-button,.auth-reveal,.drawer-nav-action,.btn,.text-button):where(:not(.seat,.market-seat,.trip-seat,.header-icon,.sidebar-toggle,.app-menu-trigger,.app-drawer-close,.ops-icon-button,.theme-toggle,.app-bell,.header-lang,.menu-toggle,.lang-toggle)){
+  min-height:var(--ui-h)!important;border-radius:var(--ui-radius)!important;padding-inline:20px!important;padding-block:0!important;font-size:var(--ui-text)!important;font-weight:600!important;line-height:1.2!important;letter-spacing:0!important;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+ html body :is(button,a).journey-ticket-button,html body :is(button,a).market-find,html body :is(button,a).auth-submit,html body :is(button,a).track-submit{display:flex}
+ html body .text-button{min-height:40px!important;padding-inline:12px!important}
+ /* Compact: inside tables and toolbars, and .btn-sm */
+ html body :is(table,.staff-table,.ops-toolbar,.staff-section-head .row-actions) :is(button,a):is(.primary,.staff-primary,.secondary):where(:not(.seat,.market-seat,.trip-seat)),html body .btn-sm{
+  min-height:var(--ui-h-compact)!important;padding-inline:14px!important;font-size:14px!important}
+ html body .btn-lg{min-height:var(--ui-h-large)!important;padding-inline:26px!important;font-size:16px!important}
+ /* Icon-only buttons */
+ html body :is(button,a):is(.header-icon,.sidebar-toggle,.app-menu-trigger,.app-drawer-close,.ops-icon-button,.theme-toggle,.app-bell,.menu-toggle){
+  min-width:var(--ui-icon)!important;min-height:var(--ui-icon)!important;border-radius:50%!important;padding:0!important;display:inline-grid;place-items:center}
+ html body :is(button,a):is(.header-lang,.lang-toggle){min-height:var(--ui-icon)!important;border-radius:999px!important;padding-inline:14px!important;font-size:14px!important;font-weight:600!important}
+ /* Pills: tabs and segmented choices */
+ html body :is([role=tab],.tab-travel,.tab-ship,.trips-tab-upcoming,.trips-tab-past){min-height:44px!important;border-radius:999px!important;font-size:var(--ui-text)!important;font-weight:600!important}
+ /* Text fields and menus */
+ html body :is(input:not([type=checkbox],[type=radio],[type=range],[type=color],[type=file],[type=hidden],[type=submit],[type=button]),select){
+  min-height:var(--ui-h)!important;border-radius:var(--ui-radius)!important;font-size:16px!important}
+ html body textarea{border-radius:var(--ui-radius)!important;font-size:16px!important}
+ html body :is(table,.staff-table) :is(input:not([type=checkbox],[type=radio]),select){min-height:40px!important}
+ /* One main-action colour: Safeer orange, except where a company has set its own brand colour */
+ html body :is(button,a).staff-primary:where(:not(.seat,.market-seat,.trip-seat,.has-company-brand *)){background:var(--app-primary,#b9530f)!important;border-color:var(--app-primary,#b9530f)!important;color:#fff!important}
+ html body :is(button,a).staff-primary:where(:not(.seat,.market-seat,.trip-seat,.has-company-brand *)):hover:not(:disabled){background:#a0470c!important}
+ /* One focus ring and one disabled look */
+ html body :is(button,a,input,select,textarea,[role=tab]):focus-visible{outline:3px solid var(--ui-focus)!important;outline-offset:2px!important}
+ html body :is(button,input,select,textarea):disabled{opacity:.5;cursor:not-allowed}
+}

@@ -53,8 +53,8 @@ ThemeData safeerTheme(Brightness brightness, {required bool arabic}) {
     labelMedium: style(14, FontWeight.w500),
     labelSmall: style(13, FontWeight.w500, p.muted),
   );
-  final shape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(16));
-  final field = OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: p.border));
+  final shape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)); // D134: same 12px corners as the website
+  final field = OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: p.border));
   return ThemeData(
     useMaterial3: true,
     brightness: brightness,
@@ -93,7 +93,7 @@ ThemeData safeerTheme(Brightness brightness, {required bool arabic}) {
     ),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
-        minimumSize: const Size(64, 52),
+        minimumSize: const Size(64, 48),
         backgroundColor: SafeerBrand.skyDeep,
         foregroundColor: Colors.white,
         textStyle: text.labelLarge?.copyWith(fontWeight: FontWeight.w600),
@@ -102,7 +102,7 @@ ThemeData safeerTheme(Brightness brightness, {required bool arabic}) {
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        minimumSize: const Size(64, 52),
+        minimumSize: const Size(64, 48),
         foregroundColor: dark ? p.accent : SafeerBrand.navy,
         side: BorderSide(color: dark ? p.accent.withValues(alpha: 0.55) : SafeerBrand.navy.withValues(alpha: 0.4)),
         textStyle: text.labelLarge?.copyWith(fontWeight: FontWeight.w600),

@@ -29,7 +29,9 @@
 }
 
 /* One type system for Booking, Driver, Tracking, Staff and legal pages. */
-:root{--font-en:"Inter","Noto Sans Arabic",system-ui,sans-serif;--font-ar:"Noto Sans Arabic","Inter",Tahoma,Arial,sans-serif;--font-ui:var(--font-en);--type-body-leading:1.65;--type-heading-leading:1.4}
+/* D134: San Francisco (SF Pro / SF Arabic) on Apple devices, which have it built in; Apple's licence does not allow
+   serving it as a web font, so every other device gets the bundled Inter and Noto Sans Arabic, the closest open designs. */
+:root{--font-en:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Inter","Noto Sans Arabic",sans-serif;--font-ar:"SF Arabic",-apple-system,BlinkMacSystemFont,"Noto Sans Arabic","Inter",Tahoma,Arial,sans-serif;--font-ui:var(--font-en);--type-body-leading:1.65;--type-heading-leading:1.4}
 html:lang(ar){--font-ui:var(--font-ar);--type-body-leading:1.85;--type-heading-leading:1.7}
 html,html[data-app-surface],html body{font-family:var(--font-ui);font-synthesis:none}
 html body :is(button,input,select,textarea){font-family:var(--font-ui)}
