@@ -1,4 +1,5 @@
-import {supported} from './locales/index.js';
+import arCommon from './locales/ar/common.js';
+import {supported,lookup} from './locales/index.js';
 // D91: a Back button in the top bar of every inner screen of the passenger, tracking and
 // driver apps. D112: the booking and parcel pages have no Back button; their header tabs cover navigation.
 // Pages re-render their whole root, so the button is re-added after each render.
@@ -27,8 +28,8 @@ function place(){
  const ar=document.documentElement.lang==='ar';
  const a=document.createElement('a');
  a.className='app-back';a.dataset.appBack='';a.href=fallback();
- a.setAttribute('aria-label',ar?'رجوع':'Back');
- a.innerHTML=`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${ar?'M9 6l6 6-6 6':'M15 6l-6 6 6 6'}"/></svg><span>${ar?'رجوع':'Back'}</span>`;
+ a.setAttribute('aria-label',lookup({ar:arCommon},ar?'ar':(document.documentElement.lang||'en'),'Back'));
+ a.innerHTML=`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${ar?'M9 6l6 6-6 6':'M15 6l-6 6 6 6'}"/></svg><span>${lookup({ar:arCommon},ar?'ar':(document.documentElement.lang||'en'),'Back')}</span>`;
  a.addEventListener('click',event=>{if(canGoBack()){event.preventDefault();history.back();}});
  bar.append(a);
 }

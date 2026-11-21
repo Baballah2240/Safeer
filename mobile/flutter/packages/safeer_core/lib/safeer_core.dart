@@ -13,6 +13,7 @@ export 'src/driver/demo.dart';
 export 'src/driver/pending_store.dart';
 export 'src/driver/repository.dart';
 export 'src/format.dart';
+export 'src/l10n/languages.dart';
 export 'src/l10n/strings.dart';
 export 'src/models/driver.dart';
 export 'src/models/passenger.dart';

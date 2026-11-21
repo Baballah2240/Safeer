@@ -1,6 +1,9 @@
 // English text: privacy policy and account deletion pages (moved from src/legal.js).
 // contact is the support e-mail link (HTML) or a placeholder.
-export default contact=>({
+// contact is null until a support address is configured.
+export default contact=>{
+ contact=contact??"(contact address is added before publishing)";
+ const T=({
   privacy:'Privacy policy',deletion:'Delete your account and data',updated:'Last updated 12 November 2026',
   back:'Back',other:'العربية',
   privacyBody:[
@@ -21,3 +24,6 @@ export default contact=>({
    ['Passenger bookings',`Booking details are erased automatically 90 days after the trip, with or without an account. To have them erased sooner, send your booking reference and mobile number to ${contact} or ask the bus company at its station.`],
    ['What is kept','Financial records that the law or accounting requires (amounts, ticket and receipt numbers) are kept without your name and mobile number. Audit entries keep the action but not your personal details after deletion.'],
   ]});
+ T.privacyBody.push(['Driver camera','Camera access in the Driver app is optional for scanning ticket QR codes. Frames are processed on your device and are never uploaded or saved. Only the ticket code is sent over the encrypted connection for validation and boarding. We do not request microphone permission or record audio. You can enter a printed ticket number instead.']);
+ return T;
+};

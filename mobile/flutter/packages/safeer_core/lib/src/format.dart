@@ -5,6 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:timezone/data/latest_10y.dart' as tzdata;
 import 'package:timezone/timezone.dart' as tz;
 
+import 'l10n/languages.dart';
+
 /// Arabic and Persian digits become Latin digits, as on the website (ar-SD-u-nu-latn).
 String latinDigits(String value) => value.replaceAllMapped(RegExp('[\u0660-\u0669\u06F0-\u06F9]'), (m) {
       final c = m[0]!.codeUnitAt(0);
@@ -31,7 +33,7 @@ class SafeerFormat {
   factory SafeerFormat.of(BuildContext context) => SafeerFormat(Localizations.localeOf(context));
   final Locale locale;
   bool get _ar => locale.languageCode == 'ar';
-  String get _tag => _ar ? 'ar' : 'en_GB';
+  String get _tag => safeerLanguage(locale.languageCode)?.dateTag ?? 'en_GB';
 
   /// Integer minor units, like the API. SDG shows without decimals when whole.
   String money(int minor, String currency) {

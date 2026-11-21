@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/languages.dart';
 import '../l10n/strings.dart';
 import '../settings.dart';
 import '../theme/palette.dart';
@@ -29,6 +30,8 @@ class SettingsView extends StatelessWidget {
             Choice('phone', s.phoneSetting, icon: Icons.phone_android),
             Choice('ar', s.arabic, icon: Icons.translate),
             Choice('en', s.english, icon: Icons.language),
+            // D138: any further language from the list, under its own name.
+            for (final l in safeerLanguages.where((l) => l.code != 'ar' && l.code != 'en')) Choice(l.code, l.name, icon: Icons.translate),
           ],
           selected: settings.locale?.languageCode ?? 'phone',
           onSelected: (v) => settings.setLocale(v == 'phone' ? null : Locale(v)),

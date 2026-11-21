@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'l10n/languages.dart';
+
 import 'app_lock.dart';
 import 'app_update.dart';
 import 'crash_reports.dart';
@@ -33,7 +35,7 @@ class AppSettings extends ChangeNotifier {
       _ => ThemeMode.dark,
     };
     final lang = await _store.read('safeer.language');
-    locale = lang == 'ar' || lang == 'en' ? Locale(lang!) : null;
+    locale = isSafeerLanguage(lang) ? Locale(lang!) : null;
     scanSounds = await _store.read('safeer.scan.sounds') != 'off';
     await lock.load();
     notifyListeners();
@@ -64,6 +66,6 @@ class AppSettings extends ChangeNotifier {
   static Locale resolve(Locale? chosen, List<Locale>? phone) {
     if (chosen != null) return chosen;
     final first = phone == null || phone.isEmpty ? null : phone.first;
-    return first?.languageCode == 'ar' ? const Locale('ar') : const Locale('en');
+    return isSafeerLanguage(first?.languageCode) ? Locale(first!.languageCode) : const Locale('en');
   }
 }

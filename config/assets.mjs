@@ -56,6 +56,8 @@ export const publicAssets = {
   '/booking': ['marketplace.html', 'text/html'],
   '/src/fleet.js': ['src/fleet.js', 'text/javascript'],
   '/src/companies.js': ['src/companies.js', 'text/javascript'],
+  '/src/locales/ar/plurals.js': ['src/locales/ar/plurals.js', 'text/javascript'],
+  '/src/locales/en/plurals.js': ['src/locales/en/plurals.js', 'text/javascript'],
   '/src/locales/ar/home.js': ['src/locales/ar/home.js', 'text/javascript'],
   '/src/locales/en/home.js': ['src/locales/en/home.js', 'text/javascript'],
   '/src/locales/ar/theme.js': ['src/locales/ar/theme.js', 'text/javascript'],

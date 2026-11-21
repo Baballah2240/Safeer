@@ -19,7 +19,7 @@
     "test:keyboard:browser": "node tests/keyboard.browser.mjs",
     "test:background:browser": "node tests/background.browser.mjs",
     "check:docs": "node scripts/check-docs.mjs",
-    "check": "npm test && npm run build && npm run check:docs",
+    "check": "npm test && npm run build && npm run check:docs && npm run check:translations",
     "build:api": "tsc -p apps/api/tsconfig.json",
     "identity:start": "node dist/api/main.js",
     "identity:bootstrap": "node dist/api/admin.js bootstrap",
@@ -39,7 +39,7 @@
     "test:trips:browser": "node tests/trips.browser.mjs",
     "test:marketplace": "node --test tests/marketplace.integration.mjs",
     "test:city-photos": "node --test tests/city-photos.integration.mjs",
-    "test:journey": "node --test tests/journey.integration.mjs",
+    "test:journey": "node --test tests/connected.integration.mjs",
     "test:marketplace:browser": "node tests/marketplace.browser.mjs",
     "test:reservations": "node --test tests/reservations.integration.mjs",
     "test:reservations:browser": "node tests/reservations.browser.mjs",
@@ -56,7 +56,6 @@
     "test:finance": "node --test tests/finance.integration.mjs",
     "test:finance:browser": "node tests/finance.browser.mjs",
     "test:security": "node --test tests/security.integration.mjs",
-    "test:journey": "node --test tests/connected.integration.mjs",
     "verify:release": "node scripts/verify-release.mjs",
     "mobile:build": "node mobile/flutter/tool/build-release.mjs",
     "mobile:save": "node mobile/save.mjs",
@@ -88,7 +87,8 @@
     "test:app-retired:browser": "node tests/app-retired.browser.mjs",
     "test:booking-hero:browser": "node tests/booking-hero.browser.mjs",
     "check:live": "node scripts/check-live.mjs",
-    "test:flutter:live": "npm run build:api && node mobile/flutter/tool/run-live-tests.mjs"
+    "test:flutter:live": "npm run build:api && node mobile/flutter/tool/run-live-tests.mjs",
+    "check:translations": "node scripts/check-translations.mjs"
   },
   "license": "UNLICENSED",
   "dependencies": {

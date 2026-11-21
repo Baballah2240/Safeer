@@ -1,6 +1,9 @@
 // Arabic text: privacy policy and account deletion pages (moved from src/legal.js).
 // contact is the support e-mail link (HTML) or a placeholder.
-export default contact=>({
+// contact is null until a support address is configured.
+export default contact=>{
+ contact=contact??"(يُضاف عنوان التواصل قبل النشر)";
+ const T=({
   privacy:'سياسة الخصوصية',deletion:'حذف حسابك وبياناتك',updated:'آخر تحديث ١٢ نوفمبر ٢٠٢٦',
   back:'رجوع',other:'English',
   privacyBody:[
@@ -21,3 +24,6 @@ export default contact=>({
    ['حجوزات الركاب',`تُحذف بيانات الحجز تلقائياً بعد ٩٠ يوماً من الرحلة، بحساب أو دونه. لحذفها قبل ذلك أرسل رقم الحجز ورقم الجوال إلى ${contact} أو اطلب ذلك من شركة الحافلات في محطتها.`],
    ['ما يُحتفظ به','تُحفظ السجلات المالية التي يتطلبها القانون أو المحاسبة (المبالغ وأرقام التذاكر والإيصالات) دون اسمك ورقم جوالك. تحتفظ سجلات التدقيق بالإجراء دون بياناتك الشخصية بعد الحذف.'],
   ]});
+ T.privacyBody.push(["كاميرا السائق","إذن الكاميرا في تطبيق السائق اختياري لمسح رموز التذاكر. تُعالج إطارات الكاميرا على جهازك ولا تُرفع أو تُحفظ. يُرسل رمز التذكرة فقط عبر اتصال مشفّر للتحقق وتسجيل الصعود. لا نطلب إذن الميكروفون أو نسجّل الصوت. يمكنك إدخال رقم التذكرة المطبوع بدلاً من الكاميرا."]);
+ return T;
+};

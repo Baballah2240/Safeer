@@ -7,6 +7,10 @@ In Users, every account now has an Access button for the super administrator. It
 ## Full access for the super administrator - D135, 2026-11-22
 
 The super administrator can open and change every part of Safeer: all companies, the staff site, the platform pages and the Safeer Driver app. In the Driver app the super administrator now sees every company's trips (from two days ago onward) and can board passengers and run any journey; drivers still see only their own trips. A new automatic test signs in as the super administrator and checks every page and permission, so new features cannot leave the super administrator out.
+## Translation files - D138, 2026-11-21
+
+All website text is now in translation files, one folder per language (src/locales), and a single language list decides direction, date formats and the language switch. The phone apps read the same kind of list. Adding a language means adding its files and one line; an automatic check fails if any text is missing. Nothing visible changed: the site and apps still offer English and Arabic. See docs/TRANSLATIONS.md.
+
 ## Card sales in finance reports - D137, 2026-11-21
 
 Online card payments appear in the company-wide finance report as "Online card payments", count in sales, daily and method totals, and Card can be chosen as a payment method filter. Station reports still show only that station's counter payments.

@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
 
+import 'languages.dart';
+
 /// English and Arabic text for both apps. Each entry keeps both languages side by side so
 /// a missing translation is visible in review. Codes (references, seats, ticket numbers)
 /// are never translated and are shown in left-to-right isolates.
@@ -7,11 +9,12 @@ class SafeerStrings {
   SafeerStrings(this.locale);
   final Locale locale;
   bool get isArabic => locale.languageCode == 'ar';
-  String _t(String en, String ar) => isArabic ? ar : en;
+  // D138: English and Arabic are side by side below; other languages come from their translation file.
+  String _t(String en, String ar) => isArabic ? ar : (extraTranslations[locale.languageCode]?[en] ?? en);
 
   static SafeerStrings of(BuildContext context) => Localizations.of<SafeerStrings>(context, SafeerStrings)!;
   static const LocalizationsDelegate<SafeerStrings> delegate = _Delegate();
-  static const supportedLocales = [Locale('en'), Locale('ar')];
+  static final supportedLocales = [for (final l in safeerLanguages) Locale(l.code)];
 
   // Shared
   String get brand => _t('Safeer', 'سفير');
@@ -308,7 +311,7 @@ class SafeerStrings {
 class _Delegate extends LocalizationsDelegate<SafeerStrings> {
   const _Delegate();
   @override
-  bool isSupported(Locale locale) => ['en', 'ar'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => isSafeerLanguage(locale.languageCode);
   @override
   Future<SafeerStrings> load(Locale locale) async => SafeerStrings(locale);
   @override

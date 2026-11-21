@@ -193,10 +193,10 @@ export default {
  "Some bookings could not be loaded. Check your connection and refresh.": "تعذّر تحميل بعض الحجوزات. تحقق من الاتصال ثم حدّث الرحلات.",
  "Showing up to 50 saved bookings. Use your reference to find another booking.": "تظهر حتى 50 حجزاً محفوظاً. استخدم المرجع للعثور على حجز آخر.",
  "Refresh trips": "تحديث الرحلات",
- "Only bookings saved on this device are listed. Times are published by the company.": "تظهر الحجوزات المحفوظة على هذا الجهاز فقط. تبقى رحلات اليوم ضمن القادمة.",
+ "Only bookings saved on this device are listed. Times are published by the company.": "تظهر الحجوزات المحفوظة على هذا الجهاز فقط. المواعيد كما تنشرها الشركة.",
  "Your travel space, on this device.": "مساحتك للسفر على هذا الجهاز.",
  "Guest traveller": "مسافر ضيف",
- "Book without an account. Keep your reference to find a booking on another device.": "لا تحتاج إلى حساب للحجز. تبقى مفاتيح حجوزاتك على هذا الجهاز؛ هذه مساحة ضيف وليست حساب مسافر مسجّلاً.",
+ "Book without an account. Keep your reference to find a booking on another device.": "احجز دون حساب. احتفظ بمرجع الحجز للعثور عليه من جهاز آخر.",
  "Preferences": "التفضيلات",
  "Passengers": "المسافرون",
  "View ticket": "عرض التذكرة",
@@ -227,5 +227,7 @@ export default {
  "Board at": "الصعود من",
  "Get off at": "النزول في",
  "This journey has no price yet. Choose other stops.": "لا يوجد سعر لهذه الرحلة بعد. اختر محطات أخرى.",
- "Part of the route": "جزء من المسار"
+ "Part of the route": "جزء من المسار",
+ "This booking is too large. Shorten the descriptions and try again.": "بيانات الحجز كبيرة جداً. اختصر الأوصاف وحاول مجدداً.",
+ "Only bookings saved on this device are listed. Journeys scheduled today are in Upcoming.": "تظهر هنا الحجوزات المحفوظة على هذا الجهاز فقط. رحلات اليوم ضمن القادمة."
 };

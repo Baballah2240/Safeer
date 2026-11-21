@@ -3,6 +3,10 @@
 ## Super administrator in Safeer Driver - D135, 2026-11-22 (server only, no app update needed)
 
 Signing in to Safeer Driver as the super administrator lists every company's trips from two days ago onward, and every trip can be opened, scanned, departed and closed. Drivers still see only their own trips. The change is on the server (migration 0036), so the installed 0.27.0 apps get it once the site is deployed.
+## Translation list - D138, 2026-11-21 (source only)
+
+safeer_core: l10n/languages.dart lists the languages (English, Arabic); supported locales, Settings > Language, the phone-language default and date formats read it, and other languages can be added through translations/<code>.dart. No visible change. Checked: flutter analyze, safeer_core (29, including 3 new translation tests), Driver (34), Passenger (30).
+
 ## Global numbers - D135, 2026-11-20 (source only)
 
 Safeer Passenger accepts mobile numbers of 8 to 15 digits (was 9 to 15) so every supported country fits; the server completes local numbers with the company's calling code. Checked: flutter analyze and Passenger tests.

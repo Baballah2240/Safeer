@@ -128,5 +128,6 @@ export default {
  "Show sidebar": "إظهار القائمة الجانبية",
  "Show password": "إظهار كلمة المرور",
  "Download Driver app": "تنزيل تطبيق السائق",
- "Loading…": "جارٍ التحميل…"
+ "Loading…": "جارٍ التحميل…",
+ "Back": "رجوع"
 };

@@ -1,3 +1,5 @@
+import enPlurals from './locales/en/plurals.js';
+import arPlurals from './locales/ar/plurals.js';
 import arCommon from './locales/ar/common.js';
 import {intlLocale,nextLanguage,textDir,isRtl,lookup as fromLocale,languageName,languageOr} from './locales/index.js';
 import arBooking from './locales/ar/booking.js';
@@ -15,8 +17,6 @@ let language=languageOr(params.get('lang')),cities=[],companies=[],trips=[],comp
 let tripId=/^\/trip\/([0-9a-f-]{36})$/.exec(location.pathname)?.[1]||null,holdRef=/^\/hold\/(SF-[2-9A-HJ-NP-Z]{8})$/.exec(location.pathname)?.[1]||null,seatTrip=null,selected=[],holdKey=null,holdError='',holding=false,booking=null,bookingKey=null,clockOffset=0,confirming=false,releaseError='',releasing=false,checking=false,unresolved=false,summaryHtml='',myHold=null,lookupMode=location.pathname==='/booking',lookupReference='',lookupMobile='',lookupError='',lookingUp=false,retrievedMobile=null;
 const names={},bags={};let contactMobile='';
 let query={from:params.get('from')||'',to:params.get('to')||'',date:params.get('date')||''};
-arabic['Only bookings saved on this device are listed. Times are published by the company.']="تظهر الحجوزات المحفوظة على هذا الجهاز فقط. المواعيد كما تنشرها الشركة.";
-arabic['Book without an account. Keep your reference to find a booking on another device.']="احجز دون حساب. احتفظ بمرجع الحجز للعثور عليه من جهاز آخر.";
 Object.assign(arabic,accountArabic);
 // D89: the passenger's own stops on a trip page (?from=&to= are stop indexes; missing means the whole trip).
 const stopParam=name=>{const v=new URLSearchParams(location.search).get(name);return /^\d{1,2}$/.test(v||'')?Number(v):null;};
@@ -25,14 +25,13 @@ const journeyQuery=()=>journey.from!==null&&journey.to!==null?`?from=${journey.f
 const t=key=>fromLocale({ar:arabic},language,key),e=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pick=(row,key)=>language==='ar'?row[key+'Ar']:row[key+'En'],locale=()=>intlLocale(language);
 // Arabic counts change their wording with the number, so each phrase is chosen by plural category.
-const phrases={trips:{en:{one:n=>`${n} trip found`,other:n=>`${n} trips found`},ar:{zero:()=>'لا توجد رحلات',one:()=>'رحلة واحدة',two:()=>'رحلتان',few:n=>`${n} رحلات`,many:n=>`${n} رحلة`,other:n=>`${n} رحلة`}},seatsLeft:{en:{one:n=>`${n} seat left`,other:n=>`${n} seats left`},ar:{zero:()=>'لا توجد مقاعد متبقية',one:()=>'مقعد واحد متبقٍ',two:()=>'مقعدان متبقيان',few:n=>`${n} مقاعد متبقية`,many:n=>`${n} مقعداً متبقياً`,other:n=>`${n} مقعد متبقٍ`}},upcoming:{en:{one:n=>`${n} upcoming trip`,other:n=>`${n} upcoming trips`},ar:{zero:()=>'لا توجد رحلات قادمة',one:()=>'رحلة قادمة واحدة',two:()=>'رحلتان قادمتان',few:n=>`${n} رحلات قادمة`,many:n=>`${n} رحلة قادمة`,other:n=>`${n} رحلة قادمة`}}};
+const phrases=Object.fromEntries(Object.keys(enPlurals).map(k=>[k,{en:enPlurals[k],ar:arPlurals[k]}]));
 const count=(n,key)=>{const forms=phrases[key][language];return (forms[new Intl.PluralRules(locale()).select(n)]||forms.other)(n);};
 const money=row=>{const digits=row.fareMinor%100?2:0;return new Intl.NumberFormat(locale(),{style:'currency',currency:row.currency,minimumFractionDigits:digits,maximumFractionDigits:digits}).format(row.fareMinor/100);};
 const day=value=>new Intl.DateTimeFormat(locale(),{weekday:'short',day:'numeric',month:'short',timeZone:'UTC'}).format(new Date(value+'T12:00:00Z'));
 const length=minutes=>{const h=Math.floor(minutes/60),m=minutes%60;return [h?`${h} ${t('h')}`:'',m?`${m} ${t('min')}`:''].filter(Boolean).join(' ');};
 let searchVersion=0,searchDraft={...query};
 const bookingTooLarge='This booking is too large. Shorten the descriptions and try again.';
-arabic[bookingTooLarge]='بيانات الحجز كبيرة جداً. اختصر الأوصاف وحاول مجدداً.';
 const link=path=>{const u=new URL(path,location.origin);if(language==='ar')u.searchParams.set('lang','ar');if(path.startsWith('/trip/')&&passengerCount>1)u.searchParams.set('passengers',String(passengerCount));return u.pathname+u.search+u.hash;};
 async function get(path,headers={}){const response=await fetch('/api/v1/public/'+path,{credentials:'omit',cache:'no-store',headers});if(response.status===400||response.status===404)throw Object.assign(Error(),{status:response.status});if(!response.ok)throw Error();return (await response.json()).data;}
 async function post(path,data){const response=await fetch('/api/v1/public/'+path,{method:'POST',credentials:'omit',cache:'no-store',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});const reply=await response.json().catch(()=>({}));if(!response.ok)throw Object.assign(Error(),{status:response.status,code:reply.error?.code});return reply.data;}
