@@ -6,6 +6,7 @@ import {IdentityService} from './identity.service.js';
 import {body,digest,text,uuid,fail,stopIndex} from './security.js';
 import {mobileNumber,saleTravelers,seatList} from './reservation.service.js';
 import {ticketQr} from './ticket-qr.js';
+import {paymobConfig} from './paymob.js';
 
 const minor=(value:unknown,max:number)=>{if(!Number.isSafeInteger(value)||Number(value)<0||Number(value)>max)fail('INVALID_INPUT');return Number(value);};
 // D93: a bank transfer needs a photo of the transfer, sent as a data URL (JPEG, PNG or WebP, at most 384 KB).
@@ -33,7 +34,7 @@ export class TicketingService {
   if(!(await c.query('SELECT 1 FROM safeer.companies WHERE id=$1',[cid])).rowCount)fail('NOT_FOUND',404);
   return action(c,p.id);
  },false);}
- overview(token:string,cid:string){return this.staff(token,cid,async c=>{const row=(await c.query('SELECT safeer.counter_overview($1) AS row',[cid])).rows[0].row;row.recentClosed=(await c.query('SELECT safeer.my_closed_sessions($1) AS row',[cid])).rows[0].row;return row;});}
+ overview(token:string,cid:string){return this.staff(token,cid,async c=>{const row=(await c.query('SELECT safeer.counter_overview($1) AS row',[cid])).rows[0].row;row.recentClosed=(await c.query('SELECT safeer.my_closed_sessions($1) AS row',[cid])).rows[0].row;if(row.settings){row.settings.card=(await c.query('SELECT safeer.company_card($1) AS on',[cid])).rows[0].on;}row.cardAvailable=paymobConfig()!==null;return row;});}
  trip(token:string,cid:string,tid:string,from?:unknown,to?:unknown){uuid(tid);const f=stopIndex(from),l=stopIndex(to);return this.staff(token,cid,async c=>{const row=(await c.query('SELECT safeer.counter_trip($1,$2,$3::integer,$4::integer) AS row',[cid,tid,f,l])).rows[0].row;if(!row)fail('NOT_FOUND',404);return row;});}
  // D72: departures on one company-local day, for walk-in sales beyond the overview's next 100.
  trips(token:string,cid:string,day:unknown){
@@ -42,10 +43,10 @@ export class TicketingService {
   return this.staff(token,cid,async c=>(await c.query('SELECT safeer.counter_trips($1,$2::date) AS row',[cid,day])).rows[0].row);
  }
  async settings(token:string,cid:string,input:unknown){
-  const data=body(input,['bankTransfer','mobileWallet','version','currentPassword']);
+  const data=body(input,['bankTransfer','mobileWallet','card','version','currentPassword']);if(data.card!==undefined&&typeof data.card!=='boolean')fail('INVALID_INPUT');
   if(typeof data.bankTransfer!=='boolean'||typeof data.mobileWallet!=='boolean'||!Number.isSafeInteger(data.version)||Number(data.version)<0)fail('INVALID_INPUT');
   await this.identity.reauthenticate(token,data.currentPassword);
-  return this.staff(token,cid,async(c,actor)=>{await c.query('SELECT safeer.save_payment_settings($1,$2,$3,$4,$5)',[cid,actor,data.bankTransfer,data.mobileWallet,data.version]);return {id:cid};});
+  return this.staff(token,cid,async(c,actor)=>{await c.query('SELECT safeer.save_payment_settings($1,$2,$3,$4,$5)',[cid,actor,data.bankTransfer,data.mobileWallet,data.version]);if(typeof data.card==='boolean')await c.query('SELECT safeer.save_card_payments($1,$2,$3)',[cid,actor,data.card]);return {id:cid};});
  }
  async counter(token:string,cid:string,id:string|undefined,input:unknown){
   if(id)uuid(id);const data=body(input,id?['code','name','active','version','currentPassword']:['stationId','code','name','currentPassword']);

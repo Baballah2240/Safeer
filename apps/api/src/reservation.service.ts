@@ -4,6 +4,7 @@ import {randomBytes,randomUUID} from 'node:crypto';
 import type {PoolClient} from 'pg';
 import {Database} from './database.js';
 import {countries,countryOf,defaultCountry} from './countries.js';
+import {paymobCheckout,paymobConfig,paymobVerify} from './paymob.js';
 import {IdentityService} from './identity.service.js';
 import {body,digest,text,uuid,version,fail,stopIndex} from './security.js';
 
@@ -75,7 +76,9 @@ export class ReservationService implements OnModuleInit,OnModuleDestroy {
  private async presentation(code:string,access:string|null,mobile:string|null){
   const row=await this.one('SELECT safeer.passenger_booking($1,$2,$3) AS row',[code,access,mobile]);
   if(!row)fail('NOT_FOUND',404);
-  return {...row,tickets:(row.tickets as Array<Record<string,unknown>>).map(({qrToken,...ticket})=>({...ticket,...(typeof qrToken==='string'?{qr:ticketQr(qrToken)}:{})}))};
+  // D136: offer card payment only to the holder (access key), on a held booking, when the company takes cards.
+  const card=access!==null&&row.status==='held'&&paymobConfig()!==null&&await this.one('SELECT safeer.booking_card($1) AS row',[code])===true;
+  return {...row,cardPayment:card,tickets:(row.tickets as Array<Record<string,unknown>>).map(({qrToken,...ticket})=>({...ticket,...(typeof qrToken==='string'?{qr:ticketQr(qrToken)}:{})}))};
  }
  // D89: the trip page for one journey (from and to are stop indexes; missing means the whole trip).
  async trip(id:string,from?:unknown,to?:unknown){uuid(id);const row=await this.one('SELECT safeer.public_trip($1,$2::integer,$3::integer) AS row',[id,stopIndex(from),stopIndex(to)]);if(!row)fail('NOT_FOUND',404);return row;}
@@ -114,6 +117,26 @@ export class ReservationService implements OnModuleInit,OnModuleDestroy {
  async lookup(input:unknown,client:string){
   const data=body(input,['reference','mobile']),code=ReservationService.reference(data.reference),mobile=mobileNumber(data.mobile,'INVALID_INPUT',await this.one('SELECT safeer.booking_country($1) AS row',[code]));
   return this.guarded(code,client,()=>this.presentation(code,null,mobile));
+ }
+ // D136: pay a held booking by card. The passenger proves the booking with its access key, as for release.
+ cardAvailable(){return paymobConfig()!==null;}
+ async cardCheckout(code:string,input:unknown){
+  if(!referencePattern.test(code))fail('NOT_FOUND',404);
+  const config=paymobConfig();if(!config)fail('METHOD_DISABLED');
+  const data=body(input,['key']),access=accessHash(data.key),id=randomUUID();
+  const started=await this.db.transaction(async c=>(await c.query('SELECT safeer.card_checkout_start($1,$2,$3) AS row',[code,access,id])).rows[0].row,false);
+  if(!started)fail('NOT_FOUND',404);
+  let checkout;
+  try{checkout=await paymobCheckout(config,{amountMinor:started.amountMinor,currency:started.currency,merchantOrderId:id,reference:started.reference});}
+  catch{fail('PAYMENT_PROVIDER_UNAVAILABLE',503,'Card payment is not available right now. Try again or pay at the station.');}
+  await this.db.pool.query('SELECT safeer.card_checkout_order($1,$2)',[id,checkout.orderId]);
+  return {url:checkout.url};
+ }
+ /** Paymob's signed result (server callback body or return redirect query). Null when not genuine or unknown. */
+ async cardResult(fields:Record<string,unknown>,hmac:unknown,flat:boolean){
+  const config=paymobConfig();if(!config)return null;
+  const facts=paymobVerify(config,fields,hmac,flat);if(!facts)return null;
+  return this.db.transaction(async c=>(await c.query('SELECT safeer.card_checkout_finish($1,$2,$3,$4,$5) AS row',[facts.order,facts.transaction,facts.success,facts.amount,facts.currency])).rows[0].row,false);
  }
  async release(code:string,input:unknown,client:string){
   if(!referencePattern.test(code))fail('NOT_FOUND',404);

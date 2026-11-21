@@ -441,6 +441,10 @@
         "INSERT",
         "UPDATE"
       ]
+    },
+    "card_checkouts": {
+      "rls": true,
+      "privileges": []
     }
   },
   "functions": [
@@ -544,7 +548,17 @@
     "safeer.my_closed_sessions(uuid)",
     "safeer.public_city_photo(text)",
     "safeer.driver_stop(uuid,uuid,integer)",
-    "safeer.driver_progress(uuid,uuid)","safeer.company_currency(uuid)","safeer.company_country(uuid)","safeer.trip_country(uuid)","safeer.booking_country(text)",
-    "safeer.public_trip_progress(text)"
+    "safeer.driver_progress(uuid,uuid)",
+    "safeer.company_currency(uuid)",
+    "safeer.company_country(uuid)",
+    "safeer.trip_country(uuid)",
+    "safeer.booking_country(text)",
+    "safeer.public_trip_progress(text)",
+    "safeer.card_checkout_start(text,text,uuid)",
+    "safeer.card_checkout_order(uuid,text)",
+    "safeer.card_checkout_finish(text,text,boolean,integer,text)",
+    "safeer.company_card(uuid)",
+    "safeer.booking_card(text)",
+    "safeer.save_card_payments(uuid,uuid,boolean)"
   ]
 }
