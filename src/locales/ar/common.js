@@ -117,5 +117,16 @@ export default {
  "Luggage description": "وصف الأمتعة",
  "Describe the bags, colour and any identifying details. Maximum 300 characters.": "صف الحقائب ولونها وأي علامات مميزة، بحد أقصى ٣٠٠ حرف.",
  "Choose whether the passenger has luggage.": "حدد ما إذا كان لدى الراكب أمتعة.",
- "Describe the luggage using 1 to 300 characters.": "أدخل وصفاً للأمتعة من حرف واحد إلى ٣٠٠ حرف."
+ "Describe the luggage using 1 to 300 characters.": "أدخل وصفاً للأمتعة من حرف واحد إلى ٣٠٠ حرف.",
+ "Safeer": "سفير",
+ "Version": "الإصدار",
+ "App updates": "تحديثات التطبيق",
+ "Travel update": "تحديث السفر",
+ "Close menu": "إغلاق القائمة",
+ "Open menu": "فتح القائمة",
+ "Hide sidebar": "إخفاء القائمة الجانبية",
+ "Show sidebar": "إظهار القائمة الجانبية",
+ "Show password": "إظهار كلمة المرور",
+ "Download Driver app": "تنزيل تطبيق السائق",
+ "Loading…": "جارٍ التحميل…"
 };

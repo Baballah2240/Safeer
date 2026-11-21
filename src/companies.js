@@ -1,3 +1,4 @@
+import {intlLocale} from './locales/index.js';
 import {financeView,bindFinance,resetFinance} from './finance.js';
 import {countries,countryOptions,bindCountryDefaults} from './countries.js';
 bindCountryDefaults();
@@ -37,7 +38,7 @@ export function companyView(data,{t,e,language}){
   const button=(attr,label)=>`<button type="button" ${attr}>${t(label)}</button>`;
   if(!data.company)return `<section class="staff-panel"><header class="staff-section-head"><div><h1>${t('Companies')}</h1><p>${t('Only companies you are authorized to access appear here.')}</p></div>${data.canCreate?button('data-company-create class="staff-primary"','Create company'):''}</header><div class="staff-grid">${data.items.map(c=>`<article class="staff-record"><strong>${name(c)}</strong><p><bdi>${e(c.slug)}</bdi></p>${badge(c.status)}<div class="staff-actions">${button(`data-company-open="${c.id}"`,'Open company')}</div></article>`).join('')||`<p>${t('No company access assigned.')}</p>`}</div></section>`;
   const c=data.company,cap=data.capabilities;
-  const when=value=>new Intl.DateTimeFormat(language==='ar'?'ar-SD-u-nu-latn':'en-GB',{dateStyle:'medium',timeStyle:'short',timeZone:c.timezone}).format(new Date(value));
+  const when=value=>new Intl.DateTimeFormat(intlLocale(language),{dateStyle:'medium',timeStyle:'short',timeZone:c.timezone}).format(new Date(value));
   const sections=companySections(cap);
   if(!sections.some(([id])=>id===companyState.section))companyState.section=cap.stationScreen&&!cap.operations?'sessions':sections[0][0];
   // D81: until a Super Administrator approves the company its trips cannot be published or booked; say so on every page.

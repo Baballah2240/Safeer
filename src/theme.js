@@ -1,3 +1,5 @@
+import arCommon from './locales/ar/common.js';
+import {languageOr,lookup} from './locales/index.js';
 import './app-retired.js';
 import {validateAppRelease} from './app-update-data.js';
 import {appRelease} from './app-release.js';
@@ -43,8 +45,8 @@ let sidebarOpen=false;
 const sidebarShown=()=>phoneQuery.matches?sidebarOpen:!sidebarHidden;
 const sidebarLabel=language=>{
   const shown=sidebarShown();
-  if(phoneQuery.matches)return language==='ar'?(shown?'إغلاق القائمة':'فتح القائمة'):(shown?'Close menu':'Open menu');
-  return language==='ar'?(shown?'إخفاء القائمة الجانبية':'إظهار القائمة الجانبية'):(shown?'Hide sidebar':'Show sidebar');
+  if(phoneQuery.matches)return lookup({ar:arCommon},language,shown?'Close menu':'Open menu');
+  return lookup({ar:arCommon},language,shown?'Hide sidebar':'Show sidebar');
 };
 export const sidebarButton=(language,id)=>`<button type="button" class="secondary sidebar-toggle" data-sidebar-toggle aria-controls="${id}" aria-expanded="${sidebarShown()}" aria-label="${sidebarLabel(language)}" title="${sidebarLabel(language)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path class="toggle-open" d="M6 9h12M6 15h12"/><path class="toggle-close" d="m7 7 10 10M17 7 7 17"/></svg><span>${sidebarLabel(language)}</span></button>`;
 function applySidebar(){
@@ -123,7 +125,7 @@ document.addEventListener('click',event=>{
   reveal.setAttribute('aria-label',show?(ar?'إخفاء كلمة المرور':'Hide password'):(ar?'إظهار كلمة المرور':'Show password'));
 });
 const eye='M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6';
-export const passwordField=(language,label)=>`<label>${label}<span class="auth-input-wrap"><input name="password" type="password" required autocomplete="current-password" maxlength="128"><button type="button" class="auth-reveal" data-reveal aria-pressed="false" aria-label="${language==='ar'?'إظهار كلمة المرور':'Show password'}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${eye}"/></svg></button></span></label>`;
+export const passwordField=(language,label)=>`<label>${label}<span class="auth-input-wrap"><input name="password" type="password" required autocomplete="current-password" maxlength="128"><button type="button" class="auth-reveal" data-reveal aria-pressed="false" aria-label="${lookup({ar:arCommon},language,'Show password')}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${eye}"/></svg></button></span></label>`;
 addEventListener('storage',event=>{
   if(event.key!==sidebarKey&&event.key!==null)return;
   sidebarHidden=event.newValue==='1';applySidebar();
@@ -234,19 +236,19 @@ export function appBanner(language,flavor){
 export function appDrawerLink(language,flavor){
   const file=releaseFor(flavor),w=appWords(language,flavor);
   if(!file||(flavor!=='driver'&&installed&&installed[2]===flavor&&!appOutdated(flavor)))return '';
-  return `<a class="drawer-download" ${flavor==='driver'?'data-driver-download':''} href="${file.url}" rel="noopener">${downloadIcon}<span>${appOutdated(flavor)?w.updateLink:flavor==='driver'?(language==='ar'?'\u062a\u0646\u0632\u064a\u0644 \u062a\u0637\u0628\u064a\u0642 \u0627\u0644\u0633\u0627\u0626\u0642':'Download Driver app'):w.download}<small>${w.version} <bdi>${file.versionName}</bdi></small></span></a>`;
+  return `<a class="drawer-download" ${flavor==='driver'?'data-driver-download':''} href="${file.url}" rel="noopener">${downloadIcon}<span>${appOutdated(flavor)?w.updateLink:flavor==='driver'?lookup({ar:arCommon},language,'Download Driver app'):w.download}<small>${w.version} <bdi>${file.versionName}</bdi></small></span></a>`;
 }
 
 const updateWords={"en":{"check":"Check for updates","checking":"Checking for updates…","latest":"Latest Driver version","failed":"Could not check for updates. Try again or use Download Driver app."},"ar":{"check":"التحقق من التحديثات","checking":"جارٍ التحقق من التحديثات…","latest":"أحدث إصدار للسائق","failed":"تعذر التحقق من التحديثات. أعد المحاولة أو استخدم تنزيل تطبيق السائق."}};
 let updateRequest=null,updateState='',lastUpdateAttempt=0;
 const driverPage=()=>document.documentElement.dataset.appSurface==='driver';
-const updateStatus=language=>{const w=updateWords[language==='ar'?'ar':'en'];return updateState==='checking'?w.checking:updateState==='failed'?w.failed:updateState==='ok'?w.latest+' · '+releaseFor('driver').versionName:'';};
+const updateStatus=language=>{const w=updateWords[languageOr(language)];return updateState==='checking'?w.checking:updateState==='failed'?w.failed:updateState==='ok'?w.latest+' · '+releaseFor('driver').versionName:'';};
 export function driverUpdateControls(language){
- const w=updateWords[language==='ar'?'ar':'en'];
+ const w=updateWords[languageOr(language)];
  return '<button type="button" class="drawer-nav-action" data-check-app-update '+(updateRequest?'disabled':'')+'>'+downloadIcon+'<span>'+w.check+'</span></button><p class="driver-update-status" data-app-update-status role="status" aria-live="polite">'+updateStatus(language)+'</p>';
 }
 function refreshDriverUpdateUi(){
- if(!driverPage())return;const language=document.documentElement.lang==='ar'?'ar':'en';
+ if(!driverPage())return;const language=languageOr(document.documentElement.lang);
  const banner=document.querySelector('[data-driver-update-banner]'),markup=appBanner(language,'driver');if(banner&&banner.innerHTML!==markup)banner.innerHTML=markup;
  document.querySelectorAll('[data-driver-download]').forEach(link=>{const holder=document.createElement('template');holder.innerHTML=appDrawerLink(language,'driver');const next=holder.content.firstElementChild;if(next){link.href=next.href;if(link.innerHTML!==next.innerHTML)link.innerHTML=next.innerHTML;}});
  document.querySelectorAll('[data-app-update-status]').forEach(n=>n.textContent=updateStatus(language));

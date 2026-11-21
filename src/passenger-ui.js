@@ -1,4 +1,5 @@
-﻿// Passenger presentation only. Booking authority and ticket validity remain server-owned.
+﻿import {intlLocale} from './locales/index.js';
+// Passenger presentation only. Booking authority and ticket validity remain server-owned.
 export const icon=(name)=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${({book:'M5 4h14v13H5zM5 10h14M8 21v-4M16 21v-4M8 7h1M15 7h1',trips:'M4 5h16v5a2 2 0 0 0 0 4v5H4v-5a2 2 0 0 0 0-4zM15 8v2M15 14v2',profile:'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8M4 21v-2a8 8 0 0 1 16 0v2',calendar:'M5 5h14v15H5zM8 3v4M16 3v4M5 10h14',arrow:'M5 12h14M14 7l5 5-5 5',check:'m5 12 4 4L19 6',close:'m6 6 12 12M18 6 6 18',parcels:'M3 7l9-4 9 4v10l-9 4-9-4zM3 7l9 4 9-4M12 11v10',location:'M12 21s7-7 7-12a7 7 0 1 0-14 0c0 5 7 12 7 12zM12 6a3 3 0 1 0 0 6 3 3 0 0 0 0-6'})[name]||'M5 12h14'}"/></svg>`;
 export const isPastBooking=(b,today=new Date().toISOString().slice(0,10))=>b.tripCanceled||['released','expired','refunded'].includes(b.status)||(b.departureAt?Date.parse(b.departureAt)<Date.parse(b.serverNow||new Date().toISOString()):b.date<today);
 export const bookingStatus=b=>b.tripCanceled?'Cancelled':({confirmed:'Confirmed',held:'Awaiting payment',released:'Released',expired:'Expired',refunded:'Refunded'})[b.status]||'Booking';
@@ -6,7 +7,7 @@ export function bottomNavigation(active,{t,link}){
  return `<nav class="passenger-bottom-nav" aria-label="${t('Passenger navigation')}">${[['book','Book','/marketplace'],['trips','Trips','/booking'],['parcels','Parcels','/track'],['profile','Profile','/marketplace?view=profile']].map(([id,label,path])=>`<a href="${link(path)}" title="${t(label)}" ${id===active?'aria-current="page"':''}>${icon(id)}<span>${t(label)}</span></a>`).join('')}</nav>`;
 }
 const local=(row,key,language)=>row?.[key+(language==='ar'?'Ar':'En')]||row?.[key+'En']||'';
-const journeyDate=(value,language)=>{const date=new Date(value+'T12:00:00Z');return Number.isNaN(date.getTime())?value:new Intl.DateTimeFormat(language==='ar'?'ar-SD-u-nu-latn':'en-GB',{day:'numeric',month:'short',timeZone:'UTC'}).format(date);};
+const journeyDate=(value,language)=>{const date=new Date(value+'T12:00:00Z');return Number.isNaN(date.getTime())?value:new Intl.DateTimeFormat(intlLocale(language),{day:'numeric',month:'short',timeZone:'UTC'}).format(date);};
 export function journeyCard(b,schedule,{t,e,language,link,large=true,ticketPage=false}){
  const from=local(schedule,'fromName',language)||local(b,'fromName',language),to=local(schedule,'toName',language)||local(b,'toName',language),route=local(b,'routeName',language),valid=b.status==='confirmed'&&!b.tripCanceled&&b.tickets?.some(t=>t.status==='valid'),button=valid?'View ticket':b.status==='held'?'View reservation':'Booking details';
  const href=ticketPage?'#passenger-ticket':link('/hold/'+b.reference)+'#passenger-ticket';

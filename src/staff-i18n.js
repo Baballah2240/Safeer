@@ -123,7 +123,7 @@ import enStaffLabels from './locales/en/staff-labels.js';
 const ar=arStaff;
 const errors=enStaffErrors;
 const labels=enStaffLabels;
-export const staffText=(key,language)=>language==='ar'?(ar[key]||ar[labels[key]]||ar[errors[key]]||key):(labels[key]||errors[key]||key);
+export const staffText=(key,language)=>({ar}[language]?.[key]||{ar}[language]?.[labels[key]]||{ar}[language]?.[errors[key]])||labels[key]||errors[key]||key;
 
 // D114: session manifest and walk-in sale. Only fills words not translated yet, so existing wording stays.
 for(const [k,v] of Object.entries({"Print manifest":"طباعة كشف الركاب","Session manifest":"كشف ركاب الجلسة","Your closed sessions":"جلساتك المغلقة","Sell a seat and take payment directly from a customer under Walk-in sale, or find a booking to pay below.":"بع مقعدًا واستلم الدفع مباشرة من العميل في قسم البيع المباشر، أو ابحث عن حجز لدفعه أدناه.","Tickets sold":"التذاكر المباعة","Bookings":"الحجوزات","Ticket":"التذكرة","Seat":"المقعد","Passenger":"المسافر","Mobile":"الجوال","Journey":"الرحلة","Luggage":"الأمتعة","Booking reference":"رقم الحجز","Receipt":"الإيصال","Payment":"الدفع","Paid":"المدفوع","Status":"الحالة","Valid":"صالحة","Refunded":"مستردة","Bus":"الحافلة","Driver":"السائق","Refunds made in this session":"المبالغ المستردة في هذه الجلسة","Refund":"الاسترداد","Amount":"المبلغ","Time":"الوقت","Reason":"السبب","Printed":"طُبع في","Counter employee signature":"توقيع موظف الشباك","Manager signature":"توقيع المدير","No tickets were sold in this session.":"لم تُبع أي تذاكر في هذه الجلسة.","Details erased":"تم مسح البيانات","Print":"طباعة","Note":"ملاحظة","Closed":"مغلقة","Opened":"فُتحت","Counter":"الشباك","Payments":"المدفوعات"}))if(!(k in ar))ar[k]=v;

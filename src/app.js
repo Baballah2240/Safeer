@@ -1,3 +1,4 @@
+import {intlLocale,nextLanguage,textDir,languageName,languageOr} from './locales/index.js';
 import {themeButton,sidebarButton} from './theme.js';
 import {translate} from './i18n.js';
 import {createDemo} from './demo.mjs';
@@ -8,7 +9,7 @@ const root = document.querySelector('#app');
 const dialog = document.querySelector('#reference-dialog');
 let companyId = state.companies[0].id;
 let tab = 'overview';
-let language = new URL(location.href).searchParams.get('lang') === 'ar' ? 'ar' : 'en';
+let language = languageOr(new URL(location.href).searchParams.get('lang'));
 let tripId = state.trips[0].id;
 let selectedSeat = null;
 let passengerName = 'Demo passenger';
@@ -19,8 +20,8 @@ let toastTimer;
 const t = value => translate(value, language);
 
 const e = value => String(value).replace(/[&<>"']/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]));
-const number = value => new Intl.NumberFormat(language === 'ar' ? 'ar-SD' : 'en-GB').format(value);
-const date = value => new Intl.DateTimeFormat(language === 'ar' ? 'ar-SD' : 'en-GB', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'}).format(value);
+const number = value => new Intl.NumberFormat(intlLocale(language)).format(value);
+const date = value => new Intl.DateTimeFormat(intlLocale(language), {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'}).format(value);
 const companyName = company => language === 'ar' ? company.nameAr : company.name;
 const route = trip => `${t(trip.from)} <span class="route-arrow" aria-hidden="true">↗</span> ${t(trip.to)}`;
 const nav = [['overview','Overview','◫'],['passengers','Passenger reservations','▦'],['settings','Company policy','⚙']];
@@ -67,8 +68,8 @@ function render() {
   expireReservations(state);
   const workspace = workspaceFor(state,companyId);
   document.documentElement.lang = language;
-  document.documentElement.dir = language==='ar'?'rtl':'ltr';
-  root.innerHTML = `<div class="shell"><div class="sidebar-column"><div class="sidebar-toolbar">${sidebarButton(language,"preview-sidebar")}</div><aside class="sidebar" id="preview-sidebar"><a class="brand" href="/demo?lang=${language}"><img src="/src/brand.svg" alt=""><span>Safeer <small>سفير</small></span></a><p class="sidebar-label">${t('Transport workspace')}</p><nav aria-label="${t('Transport workspace')}">${nav.map(([id,label,icon])=>`<button type="button" class="nav-item ${tab===id?'active':''}" data-nav="${id}" ${tab===id?'aria-current="page"':''}><span aria-hidden="true">${icon}</span>${t(label)}</button>`).join('')}<a class="nav-item" href="/staff?lang=${language}"><span aria-hidden="true">↗</span>${t('Staff access')}</a></nav><div class="sidebar-footer"><span class="live-dot"></span>${t('Local prototype')}<small>${t("Staff and permissions")} \u00b7 ${t("Sudan")}</small></div></aside></div><div class="workspace"><header class="topbar"><label class="company-control"><span>${t('Demo company')}</span><select id="company-select">${state.companies.map(company=>`<option value="${company.id}" ${company.id===companyId?'selected':''}>${e(companyName(company))}</option>`).join('')}</select></label><div class="header-actions">${themeButton(language)}<span class="demo-badge">${t('Local prototype')}</span><button type="button" id="language-button" class="secondary" lang="${language==='en'?'ar':'en'}">${language==='en'?'العربية':'English'}</button></div></header><main><div class="notice"><span aria-hidden="true">◉</span>${t('Fictional reservations reset on refresh. Staff accounts are managed separately in Staff access.')}</div><header class="page-heading"><div><p class="eyebrow">SAFEER / ${e(companyName(workspace.company))}</p><h1>${t(tab==='overview'?'Passenger transport workspace':nav.find(row=>row[0]===tab)[1])}</h1><p>${t('Browse sample trips, choose a seat and review the reservation.')}</p></div>${tab==='overview'?`<button type="button" class="primary" data-nav="passengers">${t('Passenger preview')} ↗</button>`:''}</header>${tab==='overview'?overview(workspace):tab==='passengers'?passengers(workspace):settings(workspace)}<footer class="footer"><strong>Safeer / سفير</strong><span>${t('All prices, routes and availability shown are illustrative. No actual travel is booked.')}</span></footer></main></div></div>`;
+  document.documentElement.dir = textDir(language);
+  root.innerHTML = `<div class="shell"><div class="sidebar-column"><div class="sidebar-toolbar">${sidebarButton(language,"preview-sidebar")}</div><aside class="sidebar" id="preview-sidebar"><a class="brand" href="/demo?lang=${language}"><img src="/src/brand.svg" alt=""><span>Safeer <small>سفير</small></span></a><p class="sidebar-label">${t('Transport workspace')}</p><nav aria-label="${t('Transport workspace')}">${nav.map(([id,label,icon])=>`<button type="button" class="nav-item ${tab===id?'active':''}" data-nav="${id}" ${tab===id?'aria-current="page"':''}><span aria-hidden="true">${icon}</span>${t(label)}</button>`).join('')}<a class="nav-item" href="/staff?lang=${language}"><span aria-hidden="true">↗</span>${t('Staff access')}</a></nav><div class="sidebar-footer"><span class="live-dot"></span>${t('Local prototype')}<small>${t("Staff and permissions")} \u00b7 ${t("Sudan")}</small></div></aside></div><div class="workspace"><header class="topbar"><label class="company-control"><span>${t('Demo company')}</span><select id="company-select">${state.companies.map(company=>`<option value="${company.id}" ${company.id===companyId?'selected':''}>${e(companyName(company))}</option>`).join('')}</select></label><div class="header-actions">${themeButton(language)}<span class="demo-badge">${t('Local prototype')}</span><button type="button" id="language-button" class="secondary" lang="${nextLanguage(language)}">${languageName(nextLanguage(language))}</button></div></header><main><div class="notice"><span aria-hidden="true">◉</span>${t('Fictional reservations reset on refresh. Staff accounts are managed separately in Staff access.')}</div><header class="page-heading"><div><p class="eyebrow">SAFEER / ${e(companyName(workspace.company))}</p><h1>${t(tab==='overview'?'Passenger transport workspace':nav.find(row=>row[0]===tab)[1])}</h1><p>${t('Browse sample trips, choose a seat and review the reservation.')}</p></div>${tab==='overview'?`<button type="button" class="primary" data-nav="passengers">${t('Passenger preview')} ↗</button>`:''}</header>${tab==='overview'?overview(workspace):tab==='passengers'?passengers(workspace):settings(workspace)}<footer class="footer"><strong>Safeer / سفير</strong><span>${t('All prices, routes and availability shown are illustrative. No actual travel is booked.')}</span></footer></main></div></div>`;
   bind();
 }
 
@@ -76,7 +77,7 @@ function showReference(id) {
   const workspace = workspaceFor(state,companyId), row=workspace.reservations.find(item=>item.id===id);
   if (!row) return;
   const trip = workspace.trips.find(item=>item.id===row.tripId);
-  dialog.dir = language==='ar'?'rtl':'ltr';
+  dialog.dir = textDir(language);
   dialog.innerHTML = `<div class="reference-sheet"><header class="reference-heading"><img src="/src/brand.svg" alt=""><span>Safeer / سفير</span><button type="button" class="secondary no-print" data-close>${t('Close')}</button></header><p class="eyebrow">${t('UNPAID · DEMONSTRATION')}</p><h2 id="reference-title">${t('Reservation reference')}</h2><bdi class="reference reference-large">${e(row.reference)}</bdi><dl>${[['Company',companyName(workspace.company)],['Passenger',row.passengerName],['Luggage',t(row.hasLuggage?'Has luggage':'No luggage')],...(row.hasLuggage?[['Luggage description',row.luggageDescription]]:[]),['Route',t(trip.from)+' → '+t(trip.to)],['Departure',date(trip.departureAt)],['Seat',number(row.seat)],['Example fare',number(trip.fare)+' '+trip.currency],['Status',t(row.status)],['Payment deadline',date(row.expiresAt)]].map(([key,value])=>`<div><dt>${t(key)}</dt><dd>${e(value)}</dd></div>`).join('')}</dl><p class="callout">${t('This reference is not proof of payment or permission to board. All details and prices are fictional.')}</p><button type="button" class="primary no-print" data-print>${t('Print reference')}</button></div>`;
   dialog.querySelector('[data-close]').onclick = () => dialog.close();
   dialog.querySelector('[data-print]').onclick = () => window.print();
@@ -87,7 +88,7 @@ function safely(action) { try { action(); } catch(error) { toast(error.message,t
 
 function bind() {
   root.querySelectorAll('[data-nav]').forEach(button=>button.onclick=()=>{tab=button.dataset.nav;selectedSeat=null;render();});
-  root.querySelector('#language-button').onclick=()=>{language=language==='en'?'ar':'en';const url=new URL(location.href);url.searchParams.set('lang',language);history.replaceState(null,'',url);render();};
+  root.querySelector('#language-button').onclick=()=>{language=nextLanguage(language);const url=new URL(location.href);url.searchParams.set('lang',language);history.replaceState(null,'',url);render();};
   root.querySelector('#company-select').onchange=event=>{companyId=event.target.value;tripId=workspaceFor(state,companyId).trips[0].id;selectedSeat=null;passengerName='Demo passenger';hasLuggage=false;luggageDescription='';render();};
   root.querySelectorAll('[data-open-trip]').forEach(button=>button.onclick=()=>{tripId=button.dataset.openTrip;selectedSeat=null;tab='passengers';render();});
   const tripSelect=root.querySelector('#trip-select'); if(tripSelect)tripSelect.onchange=event=>{tripId=event.target.value;selectedSeat=null;render();};

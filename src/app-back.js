@@ -1,3 +1,4 @@
+import {supported} from './locales/index.js';
 // D91: a Back button in the top bar of every inner screen of the passenger, tracking and
 // driver apps. D112: the booking and parcel pages have no Back button; their header tabs cover navigation.
 // Pages re-render their whole root, so the button is re-added after each render.
@@ -10,7 +11,7 @@ function inner(){
  return false;
 }
 function fallback(){
- const url=here(),lang=url.searchParams.get('lang')==='ar'?'?lang=ar':'';
+ const url=here(),lang=(l=>l&&l!=='en'&&supported(l)?'?lang='+l:'')(url.searchParams.get('lang'));
  if(surface==='staff')return '/staff'+lang;
  if(surface==='driver'){url.searchParams.delete('view');return url.pathname+url.search;}
  return '/marketplace'+lang;

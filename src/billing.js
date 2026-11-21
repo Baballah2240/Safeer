@@ -1,3 +1,4 @@
+import {intlLocale,languageOr} from './locales/index.js';
 // D82: Plan & contract (Safeer bills each company a monthly fee plus a commission) and Brand & theme (each
 // company's own colors and logo). Only a Super Administrator sets a plan; every plan issues a numbered
 // contract that the company's managers and the Safeer owner receive as a PDF in their notifications.
@@ -12,7 +13,7 @@ function toMinor(value){
 }
 const fromMinor=minor=>{const v=BigInt(minor||0);return `${v/100n}.${String(v%100n).padStart(2,'0')}`;};
 // D83: the PDF follows the reader's language (Arabic is laid out right to left with the Arabic company name).
-const contractPdfUrl=(companyId,id,language)=>`/api/v1/companies/${encodeURIComponent(companyId)}/contracts/${encodeURIComponent(id)}/pdf?lang=${language==='ar'?'ar':'en'}`;
+const contractPdfUrl=(companyId,id,language)=>`/api/v1/companies/${encodeURIComponent(companyId)}/contracts/${encodeURIComponent(id)}/pdf?lang=${languageOr(language)}`;
 export const companyLogoUrl=(companyId,branding)=>branding?.logoVersion?`/api/v1/companies/${encodeURIComponent(companyId)}/branding/logo?v=${encodeURIComponent(branding.logoVersion)}`:'';
 
 // D115: dates as YYYY-MM-DD in UTC. A term of n months ends the day before the same date n months later.
@@ -27,7 +28,7 @@ export function contractState(contracts,today){
 
 export function billingView(data,{t,e,language}){
   const b=data.billing,c=data.company,plan=b?.plan,money=(minor,currency)=>formatMinor(minor,'en',currency);
-  const day=value=>new Intl.DateTimeFormat(language==='ar'?'ar-SD-u-nu-latn':'en-GB',{dateStyle:'medium',timeZone:'UTC'}).format(new Date(value.length===10?value+'T00:00:00Z':value));
+  const day=value=>new Intl.DateTimeFormat(intlLocale(language),{dateStyle:'medium',timeZone:'UTC'}).format(new Date(value.length===10?value+'T00:00:00Z':value));
   if(!b)return '';
   const today=b.today||new Date().toISOString().slice(0,10)
   const state=contractState(b.contracts,today)
@@ -46,10 +47,10 @@ return `<span class="staff-badge billing-status ${tone}">${t(label)}</span>`}
 }
 
 // D87: monthly invoices (fee + commission on the month's net collections), issued by the Safeer owner.
-const invoicePdfUrl=(companyId,id,language)=>`/api/v1/companies/${encodeURIComponent(companyId)}/invoices/${encodeURIComponent(id)}/pdf?lang=${language==='ar'?'ar':'en'}`;
+const invoicePdfUrl=(companyId,id,language)=>`/api/v1/companies/${encodeURIComponent(companyId)}/invoices/${encodeURIComponent(id)}/pdf?lang=${languageOr(language)}`;
 const invoiceTone={issued:'is-wait',overdue:'is-late',paid:'is-ok',void:'is-old'},invoiceLabel={issued:'Awaiting payment',overdue:'Overdue',paid:'Paid',void:'Void'};
 function invoicesView(b,c,{t,e,language,money,day}){
-  const month=m=>new Intl.DateTimeFormat(language==='ar'?'ar-SD-u-nu-latn':'en-GB',{month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(m+'-01T00:00:00Z'));
+  const month=m=>new Intl.DateTimeFormat(intlLocale(language),{month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(m+'-01T00:00:00Z'));
   const list=b.invoices||[],open=list.filter(i=>i.status==='issued'||i.status==='overdue');
   const owed=open.length?`<p class="billing-owed"><strong>${t('Outstanding')}:</strong> ${[...new Set(open.map(i=>i.currency))].map(cur=>`<bdi>${e(money(open.filter(i=>i.currency===cur).reduce((s,i)=>s+BigInt(i.totalMinor),0n).toString(),cur))}</bdi>`).join(' · ')}${open.some(i=>i.status==='overdue')?` <span class="staff-badge billing-status is-late">${t('Overdue')}</span>`:''}</p>`:'';
   const rows=list.map(i=>`<tr><td><bdi>${e(i.number)}</bdi></td><td>${e(month(i.month))}</td><td><bdi>${e(money(i.feeMinor,i.currency))}</bdi></td><td><bdi>${e(money(i.commissionMinor,i.currency))}</bdi><small class="staff-muted billing-by">${e(percent(i.commissionBps))} × <bdi>${e(money((BigInt(i.paymentsMinor)-BigInt(i.refundsMinor)).toString(),i.currency))}</bdi></small></td><td><strong><bdi>${e(money(i.totalMinor,i.currency))}</bdi></strong></td><td><bdi>${e(day(i.dueOn))}</bdi></td><td><span class="staff-badge billing-status ${invoiceTone[i.status]}">${t(invoiceLabel[i.status])}</span>${i.paidReference?`<small class="staff-muted billing-by"><bdi>${e(i.paidReference)}</bdi></small>`:''}${i.voidReason?`<small class="staff-muted billing-by">${e(i.voidReason)}</small>`:''}</td><td><div class="staff-actions billing-row-actions"><a class="staff-link" href="${invoicePdfUrl(c.id,i.id,language)}" download>${t('Download PDF')}</a>${b.canEdit&&(i.status==='issued'||i.status==='overdue')?`<button type="button" data-invoice-paid="${e(i.id)}">${t('Mark paid')}</button><button type="button" data-invoice-void="${e(i.id)}">${t('Void')}</button>`:''}</div></td></tr>`).join('');

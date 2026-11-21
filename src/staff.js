@@ -1,3 +1,4 @@
+import {intlLocale,nextLanguage,textDir,languageOr} from './locales/index.js';
 import './app-back.js';
 import {shimmer} from './loading.js';
 import {loginFormState} from './login-form.js';
@@ -14,7 +15,7 @@ import {presetBookingSearch} from './bookings.js';
 import {presetShipmentSearch} from './shipments.js';
 const root=document.querySelector('#staff-app'),dialog=document.querySelector('#staff-dialog');
 const e=value=>String(value??'').replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));
-let language=new URL(location.href).searchParams.get('lang')==='ar'?'ar':'en',me=null,tab='profile',data=null,loading=false,message='',bad=false,csrfToken='',cursor=null;
+let language=languageOr(new URL(location.href).searchParams.get('lang')),me=null,tab='profile',data=null,loading=false,message='',bad=false,csrfToken='',cursor=null;
 let refreshVersion=0,authEpoch=0,forcedAccount=false,navOpen=false,closeNav=()=>{};
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&navOpen){event.stopPropagation();closeNav(true);}},true);
 // D92: each screen (tab, company, section) is a history entry, so Back and the phone's back gesture return to the previous screen.
@@ -25,7 +26,7 @@ function screenUrl(){const url=new URL(location.href);for(const k of ['tab','com
 function syncHistory(){if(!me||loading||me.mustChangePassword)return;const url=screenUrl();if(url.href===location.href)return;const depth=history.state?.staffDepth||0;if(historyReady)history.pushState({staffDepth:depth+1},'',url);else history.replaceState({staffDepth:0},'',url);historyReady=true;}
 addEventListener('popstate',()=>{const url=new URL(location.href),next=url.searchParams.get('tab')||'profile',company=url.searchParams.get('company')||'',section=url.searchParams.get('section');if(!me)return;const sameData=next===tab&&(next!=='companies'||company===companyState.id);tab=next;cursor=null;message='';if(next==='companies'){if(company!==companyState.id){resetCompanies();companyState.id=company;}if(section)companyState.section=section;}if(sameData)render();else void refresh();});
 const signIn=loginFormState();
-const t=key=>staffText(key,language),can=code=>me?.permissions.includes(code),date=value=>new Intl.DateTimeFormat(language==='ar'?'ar-SD-u-nu-latn':'en-GB',{dateStyle:'medium',timeStyle:'short'}).format(new Date(value));
+const t=key=>staffText(key,language),can=code=>me?.permissions.includes(code),date=value=>new Intl.DateTimeFormat(intlLocale(language),{dateStyle:'medium',timeStyle:'short'}).format(new Date(value));
 const alerts=createStaffAlerts({api:(...a)=>api(...a),t:key=>t(key),e,language:()=>language,dialogOpen:()=>dialog.open});
 // D100: an old link to the Notifications page opens the panel instead.
 let openNotifications=new URL(location.href).searchParams.get('tab')==='notifications';
@@ -64,7 +65,7 @@ function audit(){return `<section class="staff-panel"><h2>${t('Audit history')}<
 function render(){
   queueMicrotask(syncHistory);
   if(me)signIn.clear();else signIn.capture(root.querySelector('#staff-login'));
-  document.documentElement.lang=language;document.documentElement.dir=language==='ar'?'rtl':'ltr';
+  document.documentElement.lang=language;document.documentElement.dir=textDir(language);
   const wide=me&&!me.mustChangePassword;
   const short={profile:'Home',platform:'Platform',companies:'Companies',cities:'Cities',users:'Users',roles:'Roles',sessions:'Sessions',audit:'Audit'};
   const rail=wide?`<nav class="ws-rail" aria-label="${t('Workspace')}">${tabs().map(([id,label])=>`<button type="button" data-tab="${id}" ${id===tab?'aria-current="page"':''} title="${e(t(id==='profile'?'Overview':label))}">${icon(id)}<span>${t(short[id]||label)}</span></button>`).join('')}</nav>`:'';
@@ -140,7 +141,7 @@ function bind(){
   if(tab==='cities'&&data&&!loading&&me)bindCities(root,data,{api,openForm,input,currentPassword,t,e,language});
   const filter=()=>{const query=(root.querySelector('#staff-search')?.value||'').trim().toLocaleLowerCase(language),scope=root.querySelector('#staff-scope')?.value||'all';const rows=[...root.querySelectorAll('[data-search]')];for(const row of rows)row.hidden=!(row.dataset.search.toLocaleLowerCase(language).includes(query)&&(scope==='all'||row.dataset.scope===scope));const count=root.querySelector('.staff-result-count');if(count)count.textContent=rows.filter(row=>!row.hidden).length+' / '+rows.length+' '+t('shown');};
   root.querySelector('#staff-search')?.addEventListener('input',filter);root.querySelector('#staff-scope')?.addEventListener('change',filter);filter();
-  root.querySelector('#staff-language').onclick=()=>{language=language==='en'?'ar':'en';const url=new URL(location.href);url.searchParams.set('lang',language);history.replaceState(history.state,'',url);render();};
+  root.querySelector('#staff-language').onclick=()=>{language=nextLanguage(language);const url=new URL(location.href);url.searchParams.set('lang',language);history.replaceState(history.state,'',url);render();};
   const loginForm=root.querySelector('#staff-login');if(loginForm)loginForm.onsubmit=async event=>{event.preventDefault();const values=signIn.begin(loginForm);if(!values)return;try{await api('auth/login','POST',values);tab='profile';cursor=null;message='';bad=false;await refresh();}catch(error){message=error.message;bad=true;}finally{signIn.finish(root.querySelector('#staff-login'),!me);render();if(!me)root.querySelector('#staff-login [name=password]')?.focus();}};
   root.querySelector('#staff-logout')?.addEventListener('click',logout);
   root.querySelector('#staff-refresh')?.addEventListener('click',()=>{message='';void refresh();});

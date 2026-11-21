@@ -1,3 +1,4 @@
+import {intlLocale} from './locales/index.js';
 // D59 shipments at the office: price list, new shipment with payment, tag, journey steps,
 // hand-over to the recorded receiver, returns and problems. Rules live on the server.
 import {moneyText} from './station.js';
@@ -25,7 +26,7 @@ export function bindShipments(root,data,ctx){
  const {api,openForm,input,currentPassword,dialog,t,e,language}=ctx,cid=data.company.id,base=`companies/${cid}/shipments`,cap=data.capabilities;
  const box=root.querySelector('#shipment-results'),form=root.querySelector('#shipment-search'),noticeBox=root.querySelector('#shipment-notice');
  const name=row=>language==='ar'?row.nameAr:row.nameEn,place=(row,key)=>language==='ar'?row[key+'Ar']:row[key+'En'];
- const when=(row,value)=>new Intl.DateTimeFormat(language==='ar'?'ar-SD-u-nu-latn':'en-GB',{dateStyle:'medium',timeStyle:'short',timeZone:row.timezone||data.company.timezone}).format(new Date(value));
+ const when=(row,value)=>new Intl.DateTimeFormat(intlLocale(language),{dateStyle:'medium',timeStyle:'short',timeZone:row.timezone||data.company.timezone}).format(new Date(value));
  const money=(minor,currency)=>moneyText(minor,currency||'SDG',language);
  const noNames=`<p class="staff-muted">${t('Do not include names or numbers.')}</p>`;
  if(remembered.company!==cid)remembered={company:cid,query:null,list:listState()};

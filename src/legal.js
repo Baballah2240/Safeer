@@ -1,10 +1,11 @@
+import {languageOr} from './locales/index.js';
 import {themeButton} from './theme.js';
 
 // Fill before store submission: a monitored email or web form for privacy and deletion requests.
 // Store listings need this to be filled in.
 export const SUPPORT_CONTACT='mohammedbaballah142@gmail.com';
 
-const params=new URLSearchParams(location.search),language=params.get('lang')==='ar'?'ar':'en',ar=language==='ar';
+const params=new URLSearchParams(location.search),language=languageOr(params.get('lang')),ar=language==='ar';
 const page=location.pathname==='/account-deletion'?'deletion':'privacy';
 const e=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const contact=SUPPORT_CONTACT?`<a href="mailto:${e(SUPPORT_CONTACT)}">${e(SUPPORT_CONTACT)}</a>`:(ar?'(يُضاف عنوان التواصل قبل النشر)':'(contact address is added before publishing)');
