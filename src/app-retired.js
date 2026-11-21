@@ -1,5 +1,7 @@
+import enRetired from './locales/en/retired.js';
+import arRetired from './locales/ar/retired.js';
 import arCommon from './locales/ar/common.js';
-import {nextLanguage,textDir,lookup,supported} from './locales/index.js';
+import {nextLanguage,textDir,lookup,supported,languageName} from './locales/index.js';
 // D78: the Android WebView apps (Safeer Booking 0.17 and Safeer Driver 0.18) are retired. The Flutter apps that
 // replaced them never load the website, so a "SafeerApp/<versionCode> (<flavor>)" user agent is always one of the
 // old WebView apps. Every page then shows only the download of the new app, which installs over the old one
@@ -18,26 +20,9 @@ if(flavor){
 }
 
 function words(language,app){
- const ar=language==='ar',passenger=app==='booking';
- return ar?{
-  old:passenger?'تطبيق سفير للحجز':'تطبيق سفير للسائق',
-  title:'تم استبدال هذا التطبيق',
-  lead:passenger?'لدى سفير تطبيق جديد للمسافرين هو سفير المسافر. لم يعد هذا الإصدار يفتح سفير.':'لدى سفير تطبيق جديد للسائقين هو سفير السائق. لم يعد هذا الإصدار يفتح سفير.',
-  download:passenger?'تنزيل سفير المسافر':'تنزيل سفير السائق',
-  meta:(version,size)=>`أندرويد 8 أو أحدث · الإصدار <bdi>${version}</bdi>${size?` · <bdi>${size}</bdi>&nbsp;ميغابايت`:''}`,
-  steps:['اضغط زر التنزيل.','افتح الملف الذي تم تنزيله واضغط تحديث. يُثبَّت التطبيق الجديد فوق هذا التطبيق.',passenger?'افتح سفير المسافر.':'افتح سفير السائق وسجّل الدخول بحساب السائق.'],
-  note:passenger?'حجزت بهذا التطبيق من قبل؟ افتح <bdi dir="ltr">safeer.mohbaba.online/booking</bdi> في متصفح هاتفك واستخدم «ابحث عن حجزك» بمرجع الحجز ورقم الجوال.':'رحلاتك وسجلات الصعود محفوظة على سفير ولن تتغير.',
-  other:'English',otherLang:'en',otherLabel:'Switch to English'
- }:{
-  old:passenger?'Safeer Booking app':'Safeer Driver app',
-  title:'This app has been replaced',
-  lead:passenger?'Safeer has a new app for passengers, Safeer Passenger. This version no longer opens Safeer.':'Safeer has a new app for drivers, Safeer Driver. This version no longer opens Safeer.',
-  download:passenger?'Download Safeer Passenger':'Download Safeer Driver',
-  meta:(version,size)=>`Android 8 or later · version <bdi>${version}</bdi>${size?` · <bdi>${size}</bdi>&nbsp;MB`:''}`,
-  steps:['Tap Download.','Open the downloaded file and tap Update. The new app installs over this one.',passenger?'Open Safeer Passenger.':'Open Safeer Driver and sign in with your driver account.'],
-  note:passenger?'Booked with this app before? In your phone’s browser, open <bdi dir="ltr">safeer.mohbaba.online/booking</bdi> and use Find your booking with the booking reference and mobile number.':'Your trips and boarding records stay on Safeer.',
-  other:'العربية',otherLang:'ar',otherLabel:'التبديل إلى العربية'
- };
+ const passenger=app==='booking',text=({en:enRetired,ar:arRetired}[language]||enRetired)(passenger),next=nextLanguage(language);
+ // The switch offers the next language in the list (src/locales/index.js).
+ return {...text,other:languageName(next),otherLang:next};
 }
 
 function mount(app,file,hideOthers){

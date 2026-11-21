@@ -1,3 +1,5 @@
+import enTrack from './locales/en/track.js';
+import arTrack from './locales/ar/track.js';
 import arCommon from './locales/ar/common.js';
 import {intlLocale,nextLanguage,textDir,lookup as fromLocale,languageOr} from './locales/index.js';
 import './app-back.js';
@@ -10,24 +12,14 @@ const root=document.querySelector('#track-app'),params=new URLSearchParams(locat
 let language=languageOr(params.get('lang')),code=(params.get('code')||'').trim().toUpperCase(),result=null,problem='',busy=false;
 const pattern=/^S[HF]-[2-9A-HJ-NP-Z]{8}$/,isTrip=value=>value.startsWith('SF-');
 const e=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const words={
- en:{title:'Track a shipment',lead:'Enter the tracking code printed on the shipment receipt, for example',code:'Tracking code',track:'Track',back:'Find a bus trip',other:'العربية',
-  invalid:'Enter a code in the form SH- followed by 8 letters and numbers.',missing:'We could not find that tracking code. Check it on the receipt.',busy:'Too many attempts. Try again later.',failed:'Tracking is unavailable right now. Try again shortly.',
-  from:'From',to:'To',company:'Bus company',trip:'Trip',updated:'Last update',items:'Items',loading:'Checking…',
-  collect:'The receiver collects it at the destination office with their phone number and full name.',
-  received:'Received',loaded:'Loaded',in_transit:'In transit',arrived:'Arrived',delivered:'Delivered',returned:'Returned to sender',lost:'Lost',delayed:'Delayed — the company is checking it',canceled:'The trip was canceled. Contact the bus company.'},
- ar:{title:'تتبع شحنة',lead:'أدخل رمز التتبع المطبوع على إيصال الشحنة، مثل',code:'رمز التتبع',track:'تتبع',back:'ابحث عن رحلة حافلة',other:'English',
-  invalid:'أدخل رمزاً يبدأ بـ SH- يليه ٨ أحرف وأرقام.',missing:'لم نعثر على رمز التتبع هذا. تحقق منه في الإيصال.',busy:'محاولات كثيرة. حاول لاحقاً.',failed:'التتبع غير متاح الآن. حاول بعد قليل.',
-  from:'من',to:'إلى',company:'شركة الحافلات',trip:'الرحلة',updated:'آخر تحديث',items:'القطع',loading:'جارٍ التحقق…',
-  collect:'يستلمها المستلم من مكتب الوجهة برقم هاتفه واسمه الكامل.',
-  received:'مستلمة',loaded:'محمّلة',in_transit:'في الطريق',arrived:'وصلت',delivered:'سُلّمت',returned:'أُرجعت للمرسل',lost:'مفقودة',delayed:'متأخرة — تتحقق الشركة منها',canceled:'أُلغيت الرحلة. تواصل مع شركة الحافلات.'}};
+const words={en:enTrack,ar:arTrack};
 Object.assign(words.en,{title:'Track a trip or shipment',lead:'Enter your booking reference to follow your bus, or the tracking code on a shipment receipt, for example',code:'Booking reference or tracking code',
  invalid:'Enter a booking reference (SF- followed by 8 letters and numbers) or a tracking code (SH-…).',missing:'We could not find that reference. Check it on your ticket or receipt.',
  tripTitle:'Your trip',notStarted:'Not started yet',onTheWay:'On the way',reachedDest:'Arrived at the destination',tripClosed:'Trip completed',planned:'Planned',reachedAt:'Reached',startedAt:'Started',nextStop:'Next stop',refreshNote:'This page shows the latest update recorded by the driver.'});
 Object.assign(words.ar,{title:'تتبع رحلة أو شحنة',lead:'أدخل رقم الحجز لتتبع حافلتك، أو رمز التتبع المطبوع على إيصال الشحنة، مثل',code:'رقم الحجز أو رمز التتبع',
  invalid:'أدخل رقم حجز (SF- يليه ٨ أحرف وأرقام) أو رمز تتبع (SH-…).',missing:'لم نعثر على هذا الرقم. تحقق منه في تذكرتك أو الإيصال.',
  tripTitle:'رحلتك',notStarted:'لم تبدأ بعد',onTheWay:'في الطريق',reachedDest:'وصلت إلى الوجهة',tripClosed:'اكتملت الرحلة',planned:'المخطط',reachedAt:'الوصول',startedAt:'الانطلاق',nextStop:'المحطة التالية',refreshNote:'تعرض هذه الصفحة آخر تحديث سجله السائق.'});
-const w=key=>words[language][key];
+const w=key=>words[language]?.[key]??words.en[key];
 Object.assign(words.en,{menu:'Menu',close:'Close menu',settings:'Settings',appearance:'Appearance',language:'Language',book:'Book',trips:'Trips',profile:'Profile',navigation:'Passenger navigation',parcels:'Parcels',staff:'Staff sign in',staffNote:'For company and station employees',howTitle:'How to send a parcel',how1:'Hand it in at a bus company office on your route and pay there.',how2:'Keep the receipt: its tracking code shows here where the parcel is.',how3:'The receiver collects it at the destination office with their phone number and full name.',companies:'Choose a bus company',again:'Track another code',next:'What next'});
 Object.assign(words.ar,{menu:'القائمة',close:'إغلاق القائمة',settings:'الإعدادات',appearance:'المظهر',language:'اللغة',book:'احجز',trips:'الرحلات',profile:'الملف الشخصي',navigation:'تنقل المسافرين',parcels:'الطرود',staff:'دخول الموظفين',staffNote:'لموظفي الشركات والمحطات',howTitle:'كيف ترسل طرداً',how1:'سلّمه في مكتب شركة حافلات على طريقك وادفع هناك.',how2:'احتفظ بالإيصال: رمز التتبع عليه يُظهر هنا مكان الطرد.',how3:'يستلمه المستلم من مكتب الوجهة برقم هاتفه واسمه الكامل.',companies:'اختر شركة حافلات',again:'تتبع رمزاً آخر',next:'الخطوة التالية'});
 const link=path=>{const url=new URL(path,location.origin);url.searchParams.set('lang',language);return url.pathname+url.search;};

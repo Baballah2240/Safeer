@@ -12,7 +12,8 @@ const shots=resolve('.qa/home-browser-'+(built?'built':'source'));mkdirSync(shot
 // Every translation key on the page exists in the Arabic dictionary.
 const html=readFileSync('home.html','utf8'),script=readFileSync('src/home.js','utf8');
 const keys=new Set([...html.matchAll(/data-i18n="([^"]+)"/g)].map(m=>m[1]).concat([...html.matchAll(/data-i18n-attr="([^"]+)"/g)].flatMap(m=>m[1].split(';').map(p=>p.split(':')[1]))));
-const arabic=new Set([...script.matchAll(/'([a-z]+(?:\.[a-z0-9]+)+|skip)':\s*'/g)].map(m=>m[1]));
+// D138: the Arabic home texts live in src/locales/ar/home.js.
+const arabic=new Set(Object.keys((await import('../src/locales/ar/home.js')).default.text));
 assert.deepEqual([...keys].filter(k=>!arabic.has(k)),[],'every key has Arabic');
 assert.ok(!/ style="/.test(html),'no inline styles (blocked by the CSP)');
 let browser;
@@ -47,7 +48,7 @@ try{
  await evaluate('document.getElementById("tab-ship").click()');assert.equal(await evaluate('document.getElementById("panel-ship").hidden'),false);
  await evaluate('document.getElementById("tab-ship").dispatchEvent(new KeyboardEvent("keydown",{key:"ArrowRight",bubbles:true}))');assert.equal(await evaluate('document.activeElement.id'),'tab-travel');
  // Arabic via the button: direction, title, Arabic live links.
- await evaluate('document.querySelector("[data-lang-toggle]").click()');
+ await evaluate('document.querySelector("[data-lang-toggle]").click()');await until('document.documentElement.lang==="ar"');
  assert.equal(await evaluate('document.documentElement.dir'),'rtl');assert.match(await evaluate('document.title'),/سفير/);
  assert.ok(await evaluate('[...document.querySelectorAll("a[data-safeer]")].every(a=>a.href.endsWith("lang=ar"))'));
  for(const [w,h] of [[1440,900],[390,844]]){

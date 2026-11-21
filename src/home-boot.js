@@ -10,8 +10,9 @@
     font.rel = 'preload'; font.as = 'font'; font.type = 'font/woff2'; font.href = '/src/fonts/inter-latin.woff2'; font.crossOrigin = 'anonymous';
     document.head.appendChild(font);
   }
-  if (lang === 'ar') {
-    root.lang = 'ar'; root.dir = 'rtl'; root.className += ' i18n-pending';
+  // D138: any language other than English is applied by home.js from its file; Arabic is right-to-left at once.
+  if (lang && lang !== 'en' && /^[a-z]{2,3}$/.test(lang)) {
+    root.lang = lang; if (lang === 'ar') root.dir = 'rtl'; root.className += ' i18n-pending';
     // If the main script fails, never leave the page hidden.
     setTimeout(function () { root.classList.remove('i18n-pending'); }, 1500);
   }

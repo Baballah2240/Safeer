@@ -1,3 +1,6 @@
+import enTheme from './locales/en/theme.js';
+import arTheme from './locales/ar/theme.js';
+const themeWords=language=>({en:enTheme,ar:arTheme}[language]||enTheme);
 import arCommon from './locales/ar/common.js';
 import {languageOr,lookup} from './locales/index.js';
 import './app-retired.js';
@@ -8,9 +11,7 @@ const valid=value=>value==='light'||value==='dark';
 let theme=document.documentElement.dataset.appSurface?'light':'dark';
 try{const saved=localStorage.getItem(storageKey);if(valid(saved))theme=saved;}catch{/* Storage restrictions must not prevent access. */}
 
-const label=language=>language==='ar'
-  ?(theme==='dark'?'الوضع الفاتح':'الوضع الداكن')
-  :(theme==='dark'?'Light mode':'Dark mode');
+const label=language=>{const w=themeWords(language);return theme==='dark'?w.lightMode:w.darkMode;};
 
 function apply(){
   document.documentElement.dataset.theme=theme;
@@ -122,7 +123,7 @@ document.addEventListener('click',event=>{
   const show=field.type==='password',ar=document.documentElement.lang==='ar';
   field.type=show?'text':'password';
   reveal.setAttribute('aria-pressed',String(show));
-  reveal.setAttribute('aria-label',show?(ar?'إخفاء كلمة المرور':'Hide password'):(ar?'إظهار كلمة المرور':'Show password'));
+  reveal.setAttribute('aria-label',show?themeWords(document.documentElement.lang).hidePassword:themeWords(document.documentElement.lang).showPassword);
 });
 const eye='M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6';
 export const passwordField=(language,label)=>`<label>${label}<span class="auth-input-wrap"><input name="password" type="password" required autocomplete="current-password" maxlength="128"><button type="button" class="auth-reveal" data-reveal aria-pressed="false" aria-label="${lookup({ar:arCommon},language,'Show password')}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${eye}"/></svg></button></span></label>`;
@@ -208,8 +209,8 @@ document.addEventListener('pointerdown',event=>{
 
 // Store-required notices shown wherever someone signs in or gives personal details.
 export const legalLinks=language=>{
-  const ar=language==='ar',q='?lang='+(ar?'ar':'en');
-  return `<p class="legal-links"><a href="/privacy${q}">${ar?'سياسة الخصوصية':'Privacy policy'}</a><span aria-hidden="true"> · </span><a href="/account-deletion${q}">${ar?'حذف الحساب والبيانات':'Delete account and data'}</a></p>`;
+  const w=themeWords(language),q='?lang='+languageOr(language);
+  return `<p class="legal-links"><a href="/privacy${q}">${w.privacy}</a><span aria-hidden="true"> · </span><a href="/account-deletion${q}">${w.deletion}</a></p>`;
 };
 
 // D60: download and update notices for the Android apps. The installed app adds
@@ -220,9 +221,7 @@ let releases=validateAppRelease(appRelease);
 const installed=/SafeerApp\/(\d+) \((driver|booking)\)/.exec(navigator.userAgent);
 const androidBrowser=!installed&&/Android/i.test(navigator.userAgent);
 const downloadIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>';
-const appWords=(language,flavor)=>language==='ar'
-  ?{name:flavor==='driver'?'تطبيق سفير السائق':'تطبيق سفير المسافر',update:'يتوفر تحديث جديد',updateLink:'تنزيل التحديث',get:'احصل على التطبيق',getLink:'تنزيل',download:'تنزيل تطبيق أندرويد',version:'الإصدار'}
-  :{name:flavor==='driver'?'Safeer Driver app':'Safeer Passenger app',update:'A new version is available',updateLink:'Download update',get:'Get the app',getLink:'Download',download:'Download Android app',version:'Version'};
+const appWords=(language,flavor)=>{const {nameDriver,namePassenger,...w}=themeWords(language).app;return {...w,name:flavor==='driver'?nameDriver:namePassenger};};
 const releaseFor=flavor=>releases.apps[flavor]||null;
 export const appOutdated=(flavor=installed?.[2])=>{const file=releaseFor(flavor);return Boolean(installed&&installed[2]===flavor&&file&&Number(installed[1])<file.versionCode);};
 export const appVersionLabel=(flavor=installed?.[2])=>{const file=releaseFor(flavor)||releases;return file?'v'+file.versionName:'';};
@@ -239,7 +238,7 @@ export function appDrawerLink(language,flavor){
   return `<a class="drawer-download" ${flavor==='driver'?'data-driver-download':''} href="${file.url}" rel="noopener">${downloadIcon}<span>${appOutdated(flavor)?w.updateLink:flavor==='driver'?lookup({ar:arCommon},language,'Download Driver app'):w.download}<small>${w.version} <bdi>${file.versionName}</bdi></small></span></a>`;
 }
 
-const updateWords={"en":{"check":"Check for updates","checking":"Checking for updates…","latest":"Latest Driver version","failed":"Could not check for updates. Try again or use Download Driver app."},"ar":{"check":"التحقق من التحديثات","checking":"جارٍ التحقق من التحديثات…","latest":"أحدث إصدار للسائق","failed":"تعذر التحقق من التحديثات. أعد المحاولة أو استخدم تنزيل تطبيق السائق."}};
+const updateWords=new Proxy({},{get:(_,language)=>themeWords(language).updates});
 let updateRequest=null,updateState='',lastUpdateAttempt=0;
 const driverPage=()=>document.documentElement.dataset.appSurface==='driver';
 const updateStatus=language=>{const w=updateWords[languageOr(language)];return updateState==='checking'?w.checking:updateState==='failed'?w.failed:updateState==='ok'?w.latest+' · '+releaseFor('driver').versionName:'';};
