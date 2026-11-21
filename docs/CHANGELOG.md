@@ -7,6 +7,10 @@ In Users, every account now has an Access button for the super administrator. It
 ## Full access for the super administrator - D135, 2026-11-22
 
 The super administrator can open and change every part of Safeer: all companies, the staff site, the platform pages and the Safeer Driver app. In the Driver app the super administrator now sees every company's trips (from two days ago onward) and can board passengers and run any journey; drivers still see only their own trips. A new automatic test signs in as the super administrator and checks every page and permission, so new features cannot leave the super administrator out.
+## Card sales in finance reports - D137, 2026-11-21
+
+Online card payments appear in the company-wide finance report as "Online card payments", count in sales, daily and method totals, and Card can be chosen as a payment method filter. Station reports still show only that station's counter payments.
+
 ## Card payments for Egypt (Paymob) - D136, 2026-11-21
 
 Passengers can pay a held booking by card on Paymob's secure page when the bus company turns on Card in Payment methods. Only a payment Paymob has signed confirms the booking and issues the tickets; declined cards leave the booking held, and money that arrives after the seats were released is marked for refund. Safeer never sees card details; the privacy page says so. Card payments are off until Paymob keys are configured.

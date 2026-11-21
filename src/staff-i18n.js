@@ -37,7 +37,7 @@ const ar={
   'Your access is limited to your assigned company and resources.':'يقتصر وصولك على الشركة والموارد المعينة لك.',
   'All companies':'كل الشركات','Visible branches':'الفروع المتاحة','Visible stations':'المحطات المتاحة','Visible staff':'الموظفون المتاحون',
   'Company profile':'ملف الشركة','Edit company':'تعديل الشركة','Company slug':'معرف رابط الشركة','Contact email':'البريد للتواصل','Phone':'الهاتف','Address':'العنوان',
-  'Hold duration (minutes)':'مدة الحجز غير المدفوع (دقائق)','Timezone':'المنطقة الزمنية','Country':'الدولة','Card (passengers pay online)':'البطاقة (يدفع المسافرون عبر الإنترنت)','Currency':'العملة','Fare':'الأجرة','INVALID_COUNTRY':'هذه الدولة غير مدعومة بعد.','Default language':'اللغة الافتراضية','Arabic':'العربية','English':'الإنجليزية',
+  'Hold duration (minutes)':'مدة الحجز غير المدفوع (دقائق)','Timezone':'المنطقة الزمنية','Country':'الدولة','Card':'بطاقة','Card (passengers pay online)':'البطاقة (يدفع المسافرون عبر الإنترنت)','Currency':'العملة','Fare':'الأجرة','INVALID_COUNTRY':'هذه الدولة غير مدعومة بعد.','Default language':'اللغة الافتراضية','Arabic':'العربية','English':'الإنجليزية',
   'Company settings are saved. Real bookings and payments come in later sections.':'تحفظ إعدادات الشركة. الحجوزات والمدفوعات الفعلية في المراحل القادمة.',
   'Branches':'الفروع','Stations':'المحطات','Add branch':'إضافة فرع','Add station':'إضافة محطة','Edit':'تعديل','Code':'الرمز','Branch':'الفرع','Station':'المحطة',
   'Membership changes affect this company only.':'تؤثر تعديلات العضوية في هذه الشركة فقط.',

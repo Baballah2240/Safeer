@@ -69,6 +69,12 @@ test('Paymob card payment confirms a held booking only on a genuine signed resul
   const view=ok(await f.client().request(`public/holds/${first.reference}`,'GET',undefined,{'x-booking-key':first.key}),200);
   assert.equal(view.status,'confirmed');assert.equal(view.cardPayment,false);assert.ok(view.tickets[0].qr,'ticket with QR');
 
+  // D137: the card sale is in the whole-company finance report as Online card payments, and as its own method.
+  const today=new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Cairo'}).format(new Date());
+  const finance=ok(await f.admin.request(s.base+'/finance?'+new URLSearchParams({from:today,to:today})),200);
+  const card=finance.movements.find(m=>m.method==='card');
+  assert.ok(card,'card payment listed');assert.equal(card.stationEn,'Online card payments');assert.equal(finance.totals[0].salesMinor,'150000');
+  assert.equal(ok(await f.admin.request(s.base+'/finance?'+new URLSearchParams({from:today,to:today,method:'card'})),200).movements.length,1);
   // Paymob returns the passenger to the booking (signed query, flat keys).
   const flat={};for(const p of signed){const v=pick(paid,p);flat[p==='order.id'?'order':p]=String(v);}
   const back=await fetch(f.api.origin+'/api/v1/payments/paymob/return?'+new URLSearchParams({...flat,hmac:sign(paid)}),{redirect:'manual',headers:{host:new URL(f.api.origin).host}});

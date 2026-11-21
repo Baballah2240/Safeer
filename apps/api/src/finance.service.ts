@@ -25,7 +25,7 @@ export class FinanceService {
  report(token:string,cid:string,input:unknown,exporting=false){
   const d=body(input,['from','to','stationId','employeeId','method','page','sessionPage','asOf']),from=date(d.from),to=date(d.to);
   const days=(Date.parse(to)-Date.parse(from))/86400000;if(days<0||days>30)fail('INVALID_REPORT');
-  const method=d.method===undefined||d.method===''?null:text(d.method,1,20);if(method&&!['cash','bank_transfer','mobile_wallet'].includes(method))fail('INVALID_REPORT');
+  const method=d.method===undefined||d.method===''?null:text(d.method,1,20);if(method&&!['cash','bank_transfer','mobile_wallet','card'].includes(method))fail('INVALID_REPORT');
   const values=[cid,from,to,optionalId(d.stationId),optionalId(d.employeeId),method,page(d.page),page(d.sessionPage),snapshot(d.asOf),exporting];
   return this.run(token,cid,async c=>{
    const result=(await c.query('SELECT safeer.finance_report($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) AS row',values)).rows[0].row;
