@@ -1,3 +1,4 @@
+import {moneyFormat} from './money.mjs';
 import enPlurals from './locales/en/plurals.js';
 import arPlurals from './locales/ar/plurals.js';
 import arCommon from './locales/ar/common.js';
@@ -27,7 +28,7 @@ const pick=(row,key)=>language==='ar'?row[key+'Ar']:row[key+'En'],locale=()=>int
 // Arabic counts change their wording with the number, so each phrase is chosen by plural category.
 const phrases=Object.fromEntries(Object.keys(enPlurals).map(k=>[k,{en:enPlurals[k],ar:arPlurals[k]}]));
 const count=(n,key)=>{const forms=phrases[key][language];return (forms[new Intl.PluralRules(locale()).select(n)]||forms.other)(n);};
-const money=row=>{const digits=row.fareMinor%100?2:0;return new Intl.NumberFormat(locale(),{style:'currency',currency:row.currency,minimumFractionDigits:digits,maximumFractionDigits:digits}).format(row.fareMinor/100);};
+const money=row=>moneyFormat(row.fareMinor,row.currency,locale(),{dropWholeDecimals:true});
 const day=value=>new Intl.DateTimeFormat(locale(),{weekday:'short',day:'numeric',month:'short',timeZone:'UTC'}).format(new Date(value+'T12:00:00Z'));
 const length=minutes=>{const h=Math.floor(minutes/60),m=minutes%60;return [h?`${h} ${t('h')}`:'',m?`${m} ${t('min')}`:''].filter(Boolean).join(' ');};
 let searchVersion=0,searchDraft={...query};

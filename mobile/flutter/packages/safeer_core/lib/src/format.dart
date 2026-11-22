@@ -28,6 +28,13 @@ void _zones() {
   }
 }
 
+/// D143: decimals per currency (ISO 4217), same table as src/money.mjs.
+const _currencyExponent = <String, int>{
+  'KWD': 3, 'LYD': 3, 'BHD': 3, 'OMR': 3, 'JOD': 3, 'TND': 3, 'IQD': 3,
+  'XAF': 0, 'XOF': 0, 'JPY': 0, 'KRW': 0, 'UGX': 0, 'RWF': 0, 'DJF': 0, 'GNF': 0, 'KMF': 0, 'VND': 0,
+};
+int currencyDigits(String currency) => _currencyExponent[currency] ?? 2;
+
 class SafeerFormat {
   SafeerFormat(this.locale);
   factory SafeerFormat.of(BuildContext context) => SafeerFormat(Localizations.localeOf(context));
@@ -35,10 +42,16 @@ class SafeerFormat {
   bool get _ar => locale.languageCode == 'ar';
   String get _tag => safeerLanguage(locale.languageCode)?.dateTag ?? 'en_GB';
 
-  /// Integer minor units, like the API. SDG shows without decimals when whole.
+  /// Integer minor units, like the API. Shows without decimals when whole.
+  /// D143: decimals follow the currency (KWD and LYD 3, XAF 0, others 2), as on the website.
   String money(int minor, String currency) {
-    final whole = minor % 100 == 0;
-    final number = NumberFormat(whole ? '#,##0' : '#,##0.00', 'en').format(minor / 100);
+    final digits = currencyDigits(currency);
+    var unit = 1;
+    for (var i = 0; i < digits; i++) {
+      unit *= 10;
+    }
+    final whole = minor % unit == 0;
+    final number = NumberFormat(whole || digits == 0 ? '#,##0' : '#,##0.${'0' * digits}', 'en').format(minor / unit);
     if (currency == 'SDG') return _ar ? '$number ج.س.' : 'SDG $number';
     return _ar ? '$number $currency' : '$currency $number';
   }

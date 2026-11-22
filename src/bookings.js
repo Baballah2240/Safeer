@@ -1,3 +1,4 @@
+import {moneyFormat} from './money.mjs';
 import {intlLocale} from './locales/index.js';
 import {proofField,bindProof} from './payment-proof.js';
 // Company bookings: passenger details stay behind this section's own request, so opening a company workspace reads none of them.
@@ -9,7 +10,7 @@ export const openBookingNext=id=>{nextBooking=id;};
 let presetQuery=null;export const presetBookingSearch=q=>{presetQuery=q;};
 const statusLabel={held:'Held',expired:'Expired',released:'Released',confirmed:'Paid',refunded:'Refunded'},eventLabel={held:'Seats held',expired:'Hold ended',released:'Seats released',changed:'Details corrected',erased:'Personal details erased',paid:'Paid',refunded:'Refunded'},actorLabel={passenger:'by the passenger',staff:'by staff',trip_canceled:'when the trip was canceled',system:'automatically'};
 const bagStatus={registered:'Registered',tagged:'Tagged',loaded:'Loaded',in_transit:'In transit',unloaded:'Unloaded',collected:'Collected',lost:'Lost',exception_reported:'Problem reported'};
-const money=(row,language)=>new Intl.NumberFormat(intlLocale(language),{style:'currency',currency:row.currency,maximumFractionDigits:2}).format(row.amountMinor/100);
+const money=(row,language)=>moneyFormat(row.amountMinor,row.currency,intlLocale(language));
 // D89: a booking for part of the route names the passenger's own stops (printed tickets and receipts included).
 const route=(row,language)=>{const name=language==='ar'?row.routeNameAr:row.routeNameEn;return row.partial?name+' · '+(language==='ar'?row.fromNameAr+' ← '+row.toNameAr:row.fromNameEn+' → '+row.toNameEn):name;};
 export function bookingsView(data,{t}){

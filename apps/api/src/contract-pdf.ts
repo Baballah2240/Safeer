@@ -12,7 +12,10 @@ const measure=(s:string,size:number,bold:boolean)=>[...s].reduce((sum,ch)=>sum+w
 const latin=(s:string)=>s.replace(/[^\x20-\x7e]/g,'?');
 const esc=(s:string)=>latin(s).replace(/([\\()])/g,'\\$1');
 const dayIn=(lang:'en'|'ar')=>(iso:string)=>new Date(iso).toLocaleDateString(lang==='ar'?'ar-u-nu-latn':'en-GB',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'});
-export const money=(minor:number|string,currency:string)=>{const v=BigInt(minor),whole=v/100n,cents=(v%100n).toString().padStart(2,'0');return `${currency} ${whole.toString().replace(/\B(?=(\d{3})+(?!\d))/g,',')}.${cents}`;};
+// D143: decimals follow the currency (KWD and LYD 3, XAF 0, others 2), as in src/money.mjs.
+const EXPONENT:Record<string,number>={KWD:3,LYD:3,BHD:3,OMR:3,JOD:3,TND:3,IQD:3,XAF:0,XOF:0,JPY:0,KRW:0,UGX:0,RWF:0,DJF:0,GNF:0,KMF:0,VND:0};
+export const currencyDigits=(currency:string)=>EXPONENT[currency]??2;
+export const money=(minor:number|string,currency:string)=>{const d=currencyDigits(currency),u=10n**BigInt(d),raw=BigInt(minor),neg=raw<0n,v=neg?-raw:raw,whole=(v/u).toString().replace(/\B(?=(\d{3})+(?!\d))/g,',');return `${currency} ${neg?'-':''}${whole}${d?'.'+(v%u).toString().padStart(d,'0'):''}`;};
 export const percent=(bps:number)=>(bps/100).toFixed(2).replace(/\.?0+$/,'')+'%';
 
 // How text is measured and drawn: Helvetica left to right, or embedded Arabic right to left. Positions are written

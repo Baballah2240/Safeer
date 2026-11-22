@@ -1,3 +1,4 @@
+import {minorFromText,textFromMinor,amountStep} from './money.mjs';
 import {intlLocale} from './locales/index.js';
 // D59 shipments at the office: price list, new shipment with payment, tag, journey steps,
 // hand-over to the recorded receiver, returns and problems. Rules live on the server.
@@ -146,13 +147,15 @@ export function bindShipments(root,data,ctx){
   method.onchange=()=>{reference.hidden=method.value==='cash';reference.querySelector('input').required=method.value!=='cash';};
   recount();
  };
+ // D143: parcel prices are in the company currency, with its decimals.
+ const cur=data.company?.currency||'SDG';
  const priceList=async()=>{
   try{await loadOptions();}catch(error){notice=error.message;return load();}
-  const rows=Object.keys(categoryLabel).map(c=>{const p=options.prices.find(x=>x.category===c);return `<fieldset><legend>${t(categoryLabel[c])}</legend>${input('price_'+c,'Price','number',`min="0.01" max="1000000" step="0.01" value="${p?p.priceMinor/100:''}"`)}<label><input type="checkbox" name="active_${c}" value="yes" ${!p||p.active?'checked':''}> ${t('Available')}</label></fieldset>`;}).join('');
+  const rows=Object.keys(categoryLabel).map(c=>{const p=options.prices.find(x=>x.category===c);return `<fieldset><legend>${t(categoryLabel[c])}</legend>${input('price_'+c,'Price','number',`min="${amountStep(cur)}" max="1000000" step="${amountStep(cur)}" value="${p?textFromMinor(p.priceMinor,cur):''}"`)}<label><input type="checkbox" name="active_${c}" value="yes" ${!p||p.active?'checked':''}> ${t('Available')}</label></fieldset>`;}).join('');
   openForm('Price list',`<p>${t('One fixed price per item type. Leave a price empty to keep it unset.')}</p>${rows}`,async f=>{
    for(const c of Object.keys(categoryLabel)){
     const raw=f.get('price_'+c);if(raw===''||raw===null)continue;
-    const p=options.prices.find(x=>x.category===c),priceMinor=Math.round(Number(raw)*100),active=f.get('active_'+c)==='yes';
+    const p=options.prices.find(x=>x.category===c),priceMinor=Number(minorFromText(raw,cur,{maxWhole:9})),active=f.get('active_'+c)==='yes';
     if(p&&p.priceMinor===priceMinor&&p.active===active)continue;
     await api(base+'/prices','POST',{category:c,priceMinor,active,version:p?p.version:null});
    }

@@ -98,6 +98,11 @@ void main() {
       expect(d.seatsLeft, 3);
       expect(SafeerFormat(const Locale('en')).money(d.fareMinor, d.currency), 'SDG 45,500');
       expect(SafeerFormat(const Locale('ar')).money(d.fareMinor, d.currency), '45,500 ج.س.');
+      // D143: decimals follow the currency.
+      expect(SafeerFormat(const Locale('en')).money(12345, 'KWD'), 'KWD 12.345');
+      expect(SafeerFormat(const Locale('en')).money(500, 'XAF'), 'XAF 500');
+      expect(SafeerFormat(const Locale('en')).money(150050, 'EGP'), 'EGP 1,500.50');
+      expect(SafeerFormat(const Locale('en')).money(10000, 'KWD'), 'KWD 10');
     });
 
     test('the manifest counts each boarded ticket once', () {
