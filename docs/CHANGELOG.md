@@ -3,6 +3,9 @@
 ## One place to give and remove any access - D136, 2026-11-22
 
 In Users, every account now has an Access button for the super administrator. It shows everything that person can reach: platform roles, their own platform permissions and every company they belong to, with their role or custom permissions. From the same place the super administrator can tick individual platform permissions for that person (no role needed), add them to any company, change their company access or remove it. Removing company access leaves the account and other companies as they are.
+## Legal pages per country - D139, 2026-11-22 (global-ready branch, not published)
+
+The privacy policy, the account deletion page and a new Terms of use page now have a country choice. Each country shows its own personal data law and where to complain, its consumer law where there is one, and card payment details only where cards are accepted. Countries where Safeer has not launched yet show a clear note that the text will be checked by a local lawyer before launch. Sudan reads as before, plus a short section on your rights in Sudan. The site footers link to the new Terms of use page.
 
 ## Full access for the super administrator - D135, 2026-11-22
 

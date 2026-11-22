@@ -5,6 +5,7 @@ export default {
  "hidePassword": "Hide password",
  "showPassword": "Show password",
  "privacy": "Privacy policy",
+ "terms": "Terms of use",
  "deletion": "Delete account and data",
  "app": {
   "nameDriver": "Safeer Driver app",

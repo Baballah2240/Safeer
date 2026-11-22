@@ -98,6 +98,8 @@ export const publicAssets = {
   '/src/driver.css': ['src/driver.css', 'text/css'],
   '/privacy': ['legal.html', 'text/html'],
   '/account-deletion': ['legal.html', 'text/html'],
+  '/terms': ['legal.html', 'text/html'],
+  '/src/legal-countries.js': ['src/legal-countries.js', 'text/javascript'],
   '/src/legal.js': ['src/legal.js', 'text/javascript'],
   '/staff': ['staff.html', 'text/html'],
   '/src/staff.js': ['src/staff.js', 'text/javascript'],

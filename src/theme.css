@@ -338,6 +338,10 @@
   html body .legal-top .staff-topbar-title.legal-title{flex-direction:row;justify-content:space-between;width:100%}
   html body .legal-back{display:inline-flex;align-items:center;gap:6px;min-height:40px;white-space:nowrap}
   html body .legal-body h2{margin:26px 0 8px;font-size:17px}
+  /* D139: country choice and the not-yet-launched note on the legal pages */
+  html body .legal-country{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0;font-weight:600}
+  html body .legal-country select{min-height:44px;max-width:100%;border-radius:12px}
+  html body .legal-draft{margin:12px 0;padding:12px 14px;border-radius:12px;border:1px solid var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
 }
 
 @media screen{

@@ -210,7 +210,7 @@ document.addEventListener('pointerdown',event=>{
 // Store-required notices shown wherever someone signs in or gives personal details.
 export const legalLinks=language=>{
   const w=themeWords(language),q='?lang='+languageOr(language);
-  return `<p class="legal-links"><a href="/privacy${q}">${w.privacy}</a><span aria-hidden="true"> · </span><a href="/account-deletion${q}">${w.deletion}</a></p>`;
+  return `<p class="legal-links"><a href="/privacy${q}">${w.privacy}</a><span aria-hidden="true"> · </span><a href="/terms${q}">${w.terms}</a><span aria-hidden="true"> · </span><a href="/account-deletion${q}">${w.deletion}</a></p>`;
 };
 
 // D60: download and update notices for the Android apps. The installed app adds

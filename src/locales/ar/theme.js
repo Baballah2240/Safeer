@@ -5,6 +5,7 @@ export default {
  "hidePassword": "إخفاء كلمة المرور",
  "showPassword": "إظهار كلمة المرور",
  "privacy": "سياسة الخصوصية",
+ "terms": "شروط الاستخدام",
  "deletion": "حذف الحساب والبيانات",
  "app": {
   "nameDriver": "تطبيق سفير السائق",

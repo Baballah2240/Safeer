@@ -156,6 +156,7 @@ export default {
   "footer.companies": "لشركات الحافلات",
   "footer.help": "المساعدة",
   "footer.privacy": "سياسة الخصوصية",
+  "footer.terms": "شروط الاستخدام",
   "footer.delete": "حذف الحساب والبيانات",
   "footer.rights": "سفير. جميع الحقوق محفوظة."
  }
