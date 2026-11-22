@@ -140,3 +140,7 @@ html body .staff-shell.has-company-brand .staff-primary:hover:not(:disabled),htm
 /* D115: the contract term reads as one line of dates. */
 html body .billing-summary .billing-term{display:block;font-size:1.05rem;line-height:1.5;font-weight:650}
 html body .billing-expiry{margin-block:12px}
+
+/* D145: Countries panel - keep column titles and the price button on one line. */
+.platform-countries th,.platform-countries td:last-child button{white-space:nowrap}
+.platform-countries td:nth-child(2) small{display:block;white-space:nowrap}

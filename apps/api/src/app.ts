@@ -348,6 +348,7 @@ class PlatformController {
  @Get('platform/dashboard') dashboard(@Req() req:Request,@Query() query:Record<string,unknown>){return this.platform.dashboard(token(req),query).then(reply);}
  @Get('platform/settings') settings(@Req() req:Request){return this.platform.settings(token(req)).then(reply);}
  @Put('platform/settings') save(@Req() req:Request,@Body() data:unknown){return this.platform.save(token(req),data).then(reply);}
+ @Get('platform/countries') countries(@Req() req:Request){return this.platform.countries(token(req)).then(reply);}
  @Get('platform/country-prices') prices(@Req() req:Request){return this.platform.prices(token(req)).then(reply);}
  @Put('platform/country-prices/:code') savePrice(@Req() req:Request,@Param('code') code:string,@Body() data:unknown){return this.platform.savePrice(token(req),code,data).then(reply);}
  @Get('notifications') notifications(@Req() req:Request,@Query('before') before:string|undefined){return this.platform.notifications(token(req),before).then(reply);}

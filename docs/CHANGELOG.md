@@ -1,5 +1,9 @@
 # Changelog
 
+## Countries panel for the super administrator - D145, 2026-11-22
+
+Platform overview now shows every country Safeer serves in one table: its currency and decimals, phone code, time zone, how many companies are set to it, whether online card payment is ready there (Paymob or MyFatoorah, and whether the keys are set), whether its legal pages are live or still a draft, and its standard price, which can be set or edited from the same row.
+
 ## Card payments in Kuwait, Saudi Arabia and Qatar (MyFatoorah) - D144, 2026-11-22
 
 Bus companies in Kuwait, Saudi Arabia and Qatar can let passengers pay online through MyFatoorah's secure page (local cards such as KNET and mada, Visa/Mastercard and Apple Pay, as enabled on the account). A booking is confirmed only when MyFatoorah itself reports it paid, also if the passenger closes the page early. Egypt keeps Paymob; companies in other countries are not offered online cards. Kuwaiti and Qatari mobile numbers typed without a leading 0 are now accepted. The privacy and terms pages name each country's payment provider.

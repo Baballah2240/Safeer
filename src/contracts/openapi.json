@@ -15235,6 +15235,58 @@
           }
         ]
       }
+    },
+    "/api/v1/platform/countries": {
+      "get": {
+        "operationId": "platformCountries",
+        "tags": [
+          "Platform"
+        ],
+        "description": "Super Administrator only (D145): every served country with currency, decimals, phone code, time zone, company counts, card provider and readiness, and standard price.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "items"
+                      ],
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "type": "object"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sign in required"
+          },
+          "403": {
+            "description": "Current authority required"
+          }
+        },
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ]
+      }
     }
   },
   "components": {
