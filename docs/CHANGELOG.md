@@ -1,5 +1,9 @@
 # Changelog
 
+## Egypt readiness check - D142, 2026-11-22 (global-ready branch, not published)
+
+A full run-through of an Egyptian bus company (Egyptian pounds, Cairo time, Egyptian phone numbers) found and fixed two problems: station counters opened every cash session in Sudanese pounds, so an Egyptian station could not take cash, and parcel prices could be set in Sudanese pounds. Both now use the company's own currency. The new plan form also starts in the company's currency.
+
 ## One place to give and remove any access - D136, 2026-11-22
 
 In Users, every account now has an Access button for the super administrator. It shows everything that person can reach: platform roles, their own platform permissions and every company they belong to, with their role or custom permissions. From the same place the super administrator can tick individual platform permissions for that person (no role needed), add them to any company, change their company access or remove it. Removing company access leaves the account and other companies as they are.
