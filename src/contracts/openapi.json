@@ -14928,6 +14928,120 @@
         }
       }
     },
+    "/api/v1/platform/country-prices": {
+      "get": {
+        "operationId": "countryPrices",
+        "tags": [
+          "Platform"
+        ],
+        "description": "Super Administrator only. Standard price per served country (D141).",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/CountryPrices"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sign in required"
+          },
+          "403": {
+            "description": "Current authority required"
+          }
+        },
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ]
+      }
+    },
+    "/api/v1/platform/country-prices/{code}": {
+      "put": {
+        "operationId": "saveCountryPrice",
+        "tags": [
+          "Platform"
+        ],
+        "description": "Super Administrator, reauthentication, CSRF and optimistic version required. Only served countries (D140).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "code",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Z]{2}$"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/CountryPrices"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or country"
+          },
+          "403": {
+            "description": "Current Super Administrator required"
+          },
+          "409": {
+            "description": "Stale version"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CountryPriceWrite"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ]
+      }
+    },
     "/api/v1/identity/users/{id}/access": {
       "get": {
         "operationId": "userAccess",
@@ -14946,14 +15060,6 @@
             }
           }
         ],
-    "/api/v1/platform/country-prices": {
-      "get": {
-        "operationId": "countryPrices",
-        "tags": [
-          "Platform"
-        ],
-        "description": "Super Administrator only. Standard price per served country (D141).",
-        "parameters": [],
         "responses": {
           "200": {
             "description": "Success",
@@ -15012,7 +15118,6 @@
                           }
                         }
                       }
-                      "$ref": "#/components/schemas/CountryPrices"
                     }
                   }
                 }
@@ -15027,7 +15132,6 @@
           },
           "404": {
             "description": "Not found"
-            "description": "Current authority required"
           }
         },
         "security": [
@@ -15052,21 +15156,6 @@
             "schema": {
               "type": "string",
               "format": "uuid"
-    "/api/v1/platform/country-prices/{code}": {
-      "put": {
-        "operationId": "saveCountryPrice",
-        "tags": [
-          "Platform"
-        ],
-        "description": "Super Administrator, reauthentication, CSRF and optimistic version required. Only served countries (D140).",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "code",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "pattern": "^[A-Z]{2}$"
             }
           },
           {
@@ -15124,7 +15213,6 @@
                   "properties": {
                     "data": {
                       "type": "object"
-                      "$ref": "#/components/schemas/CountryPrices"
                     }
                   }
                 }
@@ -15133,23 +15221,12 @@
           },
           "400": {
             "description": "Invalid permission"
-            "description": "Invalid input or country"
           },
           "403": {
             "description": "Current Super Administrator required"
           },
           "409": {
             "description": "Stale version"
-          }
-        },
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CountryPriceWrite"
-              }
-            }
           }
         },
         "security": [
