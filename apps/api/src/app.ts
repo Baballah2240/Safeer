@@ -67,6 +67,8 @@ class IdentityController {
   @Patch('identity/users/:id') async updateUser(@Param('id') id:string,@Body() data:unknown,@Req() req:Request){return reply(await this.identity.updateUser(token(req),id,data));}
   @Post('identity/users/:id/password') async reset(@Param('id') id:string,@Body() data:unknown,@Req() req:Request){return reply(await this.identity.resetPassword(token(req),id,data));}
   @Put('identity/users/:id/roles') async assign(@Param('id') id:string,@Body() data:unknown,@Req() req:Request){return reply(await this.identity.assignRoles(token(req),id,data));}
+  @Get('identity/users/:id/access') async access(@Param('id') id:string,@Req() req:Request){return reply(await this.identity.userAccess(token(req),id));}
+  @Put('identity/users/:id/permissions') async userPermissions(@Param('id') id:string,@Body() data:unknown,@Req() req:Request){return reply(await this.identity.userPermissions(token(req),id,data));}
   @Get('identity/roles') async roles(@Req() req:Request){return reply(await this.identity.roles(token(req)));}
   @Post('identity/roles') async createRole(@Body() data:unknown,@Req() req:Request){return reply(await this.identity.saveRole(token(req),undefined,data));}
   @Patch('identity/roles/:id') async updateRole(@Param('id') id:string,@Body() data:unknown,@Req() req:Request){return reply(await this.identity.saveRole(token(req),id,data));}

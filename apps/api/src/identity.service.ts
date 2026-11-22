@@ -169,14 +169,54 @@ export class IdentityService implements OnModuleInit {
       if(!p.superAdministrator){const codes=(await c.query('SELECT DISTINCT permission_code FROM safeer.role_permissions WHERE role_id=ANY($1::uuid[])',[ids])).rows.map(r=>r.permission_code);if(codes.some(code=>!p.permissions.includes(code)))fail('PRIVILEGE_ESCALATION',403);}
       const result=await c.query<UserRow>('UPDATE safeer.users SET version=version+1,updated_at=clock_timestamp() WHERE id=$1 AND version=$2 RETURNING *',[id,v]);
       if(!result.rows[0])fail('STALE_VERSION',409,'This record changed. Refresh and try again.');
-      await c.query('DELETE FROM safeer.platform_user_roles WHERE user_id=$1',[id]);
+      await c.query("DELETE FROM safeer.platform_user_roles a USING safeer.roles r WHERE a.user_id=$1 AND r.id=a.role_id AND left(r.code,9)<>'personal_'",[id]);
       for(const role of roles)await c.query('INSERT INTO safeer.platform_user_roles(user_id,role_id,assigned_by) VALUES($1,$2,$3)',[id,role.id,p.id]);
       await this.lastOwner(c);await this.audit(c,p.id,'user.roles_changed',id);return {user:userView(result.rows[0])};
     });
   }
+  // D136: the Super Administrator sees everything one person can reach: platform roles, their own platform
+  // permissions and every company membership (role or custom permissions, active or removed).
+  async userAccess(token:string,id:string){uuid(id);return this.db.transaction(async c=>{
+    const p=await this.principal(c,token);if(!p.superAdministrator)fail('FORBIDDEN',403);
+    await c.query("SELECT set_config('safeer.session_token',$1,true)",[token]);
+    const u=(await c.query('SELECT id,normalized_login AS login,display_name AS "displayName",active,version FROM safeer.users WHERE id=$1',[id])).rows[0];if(!u)fail('NOT_FOUND',404);
+    const roles=(await c.query(`SELECT r.id,r.code,r.display_name AS "displayName",COALESCE(array_agg(rp.permission_code ORDER BY rp.permission_code) FILTER(WHERE rp.permission_code IS NOT NULL),'{}') AS permissions FROM safeer.platform_user_roles a JOIN safeer.roles r ON r.id=a.role_id LEFT JOIN safeer.role_permissions rp ON rp.role_id=r.id WHERE a.user_id=$1 GROUP BY r.id ORDER BY r.code`,[id])).rows;
+    const personal=roles.find(r=>r.code==='personal_'+id.replaceAll('-',''));
+    const choices=(await c.query("SELECT code FROM safeer.permissions WHERE code NOT LIKE 'company.%' ORDER BY code")).rows.map(r=>r.code as string);
+    const companies=(await c.query(`SELECT co.id AS "companyId",co.name_en AS "nameEn",co.name_ar AS "nameAr",co.status,m.id AS "memberId",m.active,
+      COALESCE((SELECT json_agg(json_build_object('role',r.display_name,'personal',left(r.code,9)='personal_','scope',a.scope,'branchEn',b.name_en,'branchAr',b.name_ar,'stationEn',s.name_en,'stationAr',s.name_ar,
+        'permissions',(SELECT COALESCE(json_agg(rp.permission_code ORDER BY rp.permission_code),'[]'::json) FROM safeer.company_role_permissions rp WHERE rp.company_id=a.company_id AND rp.role_id=a.role_id)) ORDER BY r.display_name)
+       FROM safeer.company_user_roles a JOIN safeer.company_roles r ON (r.company_id,r.id)=(a.company_id,a.role_id)
+       LEFT JOIN safeer.branches b ON (b.company_id,b.id)=(a.company_id,a.branch_id) LEFT JOIN safeer.stations s ON (s.company_id,s.id)=(a.company_id,a.station_id)
+       WHERE a.company_id=m.company_id AND a.member_id=m.id),'[]'::json) AS assignments
+      FROM safeer.company_users m JOIN safeer.companies co ON co.id=m.company_id WHERE m.user_id=$1 ORDER BY co.name_en,co.id`,[id])).rows;
+    return {user:u,superAdministrator:roles.some(r=>r.code===OWNER),roleIds:roles.filter(r=>r!==personal).map(r=>r.id),roles:roles.filter(r=>r!==personal).map(r=>({id:r.id,displayName:r.displayName,permissions:r.permissions})),permissions:personal?.permissions||[],choices,companies};
+  },false);}
+  // D136: platform permissions for one person, without making a role. Stored as that user's personal platform
+  // role (code personal_<user id>), hidden from the role list; only the Super Administrator sets it.
+  async userPermissions(token:string,id:string,input:unknown){
+    uuid(id);const data=body(input,['permissions','version','currentPassword']),permissions=list(data.permissions,x=>text(x,1,80)),v=version(data.version);
+    await this.reauthenticate(token,data.currentPassword);
+    return this.db.transaction(async c=>{
+      const p=await this.principal(c,token);if(!p.superAdministrator)fail('FORBIDDEN',403);await this.protectOwner(c,p,id);
+      const valid=(await c.query("SELECT code FROM safeer.permissions WHERE code=ANY($1::text[]) AND code NOT LIKE 'company.%'",[permissions])).rows;
+      if(valid.length!==permissions.length)fail('INVALID_PERMISSION');
+      const result=await c.query<UserRow>('UPDATE safeer.users SET version=version+1,updated_at=clock_timestamp() WHERE id=$1 AND version=$2 RETURNING *',[id,v]);
+      if(!result.rows[0])fail('STALE_VERSION',409,'This record changed. Refresh and try again.');
+      const code='personal_'+id.replaceAll('-','');let rid=(await c.query('SELECT id FROM safeer.roles WHERE code=$1',[code])).rows[0]?.id as string|undefined;
+      if(!rid&&permissions.length){rid=randomUUID();await c.query("INSERT INTO safeer.roles(id,code,display_name,scope) VALUES($1,$2,$3,'platform')",[rid,code,('Personal: '+result.rows[0].normalized_login).slice(0,100)]);}
+      if(rid){
+        await c.query('DELETE FROM safeer.role_permissions WHERE role_id=$1',[rid]);
+        for(const perm of permissions)await c.query('INSERT INTO safeer.role_permissions(role_id,permission_code) VALUES($1,$2)',[rid,perm]);
+        if(permissions.length)await c.query('INSERT INTO safeer.platform_user_roles(user_id,role_id,assigned_by) VALUES($1,$2,$3) ON CONFLICT DO NOTHING',[id,rid,p.id]);
+        else await c.query('DELETE FROM safeer.platform_user_roles WHERE user_id=$1 AND role_id=$2',[id,rid]);
+      }
+      await this.audit(c,p.id,'user.permissions_changed',id);return {user:userView(result.rows[0])};
+    });
+  }
   async roles(token:string){return this.db.transaction(async c=>{
     await this.principal(c,token,'identity.roles.read');
-    const items=(await c.query(`SELECT r.id,r.code,r.display_name AS "displayName",r.scope,r.builtin,r.active,r.version,COALESCE(array_agg(p.permission_code ORDER BY p.permission_code) FILTER(WHERE p.permission_code IS NOT NULL),'{}') AS permissions FROM safeer.roles r LEFT JOIN safeer.role_permissions p ON p.role_id=r.id GROUP BY r.id ORDER BY r.builtin DESC,r.code LIMIT 200`)).rows;
+    const items=(await c.query(`SELECT r.id,r.code,r.display_name AS "displayName",r.scope,r.builtin,r.active,r.version,COALESCE(array_agg(p.permission_code ORDER BY p.permission_code) FILTER(WHERE p.permission_code IS NOT NULL),'{}') AS permissions FROM safeer.roles r LEFT JOIN safeer.role_permissions p ON p.role_id=r.id WHERE left(r.code,9)<>'personal_' GROUP BY r.id ORDER BY r.builtin DESC,r.code LIMIT 200`)).rows;
     return {items};
   },false);}
   async permissions(token:string){return this.db.transaction(async c=>{await this.principal(c,token,'identity.roles.read');return {items:(await c.query('SELECT code,module FROM safeer.permissions ORDER BY code')).rows};},false);}

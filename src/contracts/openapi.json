@@ -14927,6 +14927,200 @@
           }
         }
       }
+    },
+    "/api/v1/identity/users/{id}/access": {
+      "get": {
+        "operationId": "userAccess",
+        "tags": [
+          "Identity"
+        ],
+        "description": "Super Administrator only (D136): platform roles, own platform permissions, permission choices and every company membership of one user.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "user",
+                        "roles",
+                        "permissions",
+                        "choices",
+                        "companies"
+                      ],
+                      "properties": {
+                        "user": {
+                          "type": "object"
+                        },
+                        "superAdministrator": {
+                          "type": "boolean"
+                        },
+                        "roleIds": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "roles": {
+                          "type": "array",
+                          "items": {
+                            "type": "object"
+                          }
+                        },
+                        "permissions": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "choices": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "companies": {
+                          "type": "array",
+                          "items": {
+                            "type": "object"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sign in required"
+          },
+          "403": {
+            "description": "Current Super Administrator required"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ]
+      }
+    },
+    "/api/v1/identity/users/{id}/permissions": {
+      "put": {
+        "operationId": "userPermissions",
+        "tags": [
+          "Identity"
+        ],
+        "description": "Super Administrator, reauthentication, CSRF and optimistic version required (D136). Platform permissions for one person (not company.*), stored as a hidden personal role.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "permissions",
+                  "version",
+                  "currentPassword"
+                ],
+                "properties": {
+                  "permissions": {
+                    "type": "array",
+                    "maxItems": 30,
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "currentPassword": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid permission"
+          },
+          "403": {
+            "description": "Current Super Administrator required"
+          },
+          "409": {
+            "description": "Stale version"
+          }
+        },
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ]
+      }
     }
   },
   "components": {

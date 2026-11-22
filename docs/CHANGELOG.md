@@ -1,5 +1,9 @@
 # Changelog
 
+## One place to give and remove any access - D136, 2026-11-22
+
+In Users, every account now has an Access button for the super administrator. It shows everything that person can reach: platform roles, their own platform permissions and every company they belong to, with their role or custom permissions. From the same place the super administrator can tick individual platform permissions for that person (no role needed), add them to any company, change their company access or remove it. Removing company access leaves the account and other companies as they are.
+
 ## Full access for the super administrator - D135, 2026-11-22
 
 The super administrator can open and change every part of Safeer: all companies, the staff site, the platform pages and the Safeer Driver app. In the Driver app the super administrator now sees every company's trips (from two days ago onward) and can board passengers and run any journey; drivers still see only their own trips. A new automatic test signs in as the super administrator and checks every page and permission, so new features cannot leave the super administrator out.
