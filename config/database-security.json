@@ -569,6 +569,7 @@
     "safeer.company_country_price(uuid)",
     "safeer.card_checkout_peek(text)",
     "safeer.card_provider(text)",
-    "safeer.platform_countries()"
+    "safeer.platform_countries()",
+    "safeer.platform_country_companies(text)"
   ]
 }

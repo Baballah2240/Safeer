@@ -6,7 +6,8 @@ import {chrome} from './support/chrome.mjs';
 import {identityFixture} from './support/identity-db.mjs';
 import {startServer} from '../server.mjs';
 
-// D145: the Super Administrator's Countries panel on Platform overview shows every served country and its setup.
+// D145/D146: the Super Administrator's Countries page (sidebar) shows every served country and its setup; a country
+// shows its companies, and a company opens its full workspace.
 let apiOrigin='',browser;const built=process.env.SAFEER_BROWSER_BUILT==='1',web=await startServer({port:0,built,identityApiUrl:()=>apiOrigin});
 const shots=resolve('.qa/platform-countries-browser-'+(built?'built':'source'));mkdirSync(shots,{recursive:true});
 try{await identityFixture(async f=>{
@@ -20,17 +21,25 @@ try{await identityFixture(async f=>{
  const signIn=async(email,pass)=>{await until('Boolean(document.querySelector("#staff-login"))');await fill('[name=login]',email);await fill('[name=password]',pass);await evaluate('document.querySelector("#staff-login").requestSubmit()');await until('Boolean(document.querySelector(".staff-welcome"))');};
  const pw={currentPassword:f.password};
  assert.equal((await f.admin.request('platform/country-prices/KW','PUT',{monthlyFeeMinor:'50000',commissionBps:250,currency:'KWD',version:0,...pw})).status,200);
- const panel=async()=>{await click('[data-tab=platform]');await until('Boolean(document.querySelector("#country-prices tr[data-country=KW]"))');await evaluate('document.querySelector("#country-prices").scrollIntoView()');};
+ const cid=(await f.admin.request('companies','POST',{nameEn:'Fictional Kuwait Bus',nameAr:'حافلات الكويت التجريبية',slug:'kw-bus',holdMinutes:30,timezone:'Asia/Kuwait',locale:'en',...pw})).data.id;
+ const w=(await f.admin.request('companies/'+cid)).data;assert.equal((await f.admin.request('companies/'+cid,'PATCH',{...w.company,id:undefined,status:'approved',countryCode:'KW',currency:'KWD',timezone:'Asia/Kuwait',...pw})).status,200);
+ const panel=async()=>{await click('[data-tab=countries]');await until('Boolean(document.querySelector("#country-prices tr[data-country=KW]"))');};
  await send('Emulation.setDeviceMetricsOverride',{width:1366,height:900,deviceScaleFactor:1,mobile:false});await send('Page.navigate',{url:web.origin+'/staff'});await signIn('owner@safeer.local',f.password);
+ // The sidebar has Countries; Platform overview links to it instead of showing the table.
+ assert.ok(await evaluate('Boolean(document.querySelector(".ws-nav [data-tab=countries], [data-tab=countries]"))'),'Countries in the sidebar');
  await panel();assert.equal(await evaluate('document.querySelectorAll("#country-prices tbody tr").length'),11);
  const kw=await evaluate('document.querySelector("#country-prices tr[data-country=KW]").textContent');
- for(const part of ['KWD','3','+965','Asia/Kuwait','MyFatoorah','Keys not set','Draft','50.000'])assert.ok(kw.includes(part),'Kuwait row shows '+part+': '+kw);
- assert.ok((await evaluate('document.querySelector("#country-prices tr[data-country=SD]").textContent')).includes('Station only'));
+ for(const part of ['KWD','3','+965','Asia/Kuwait','MyFatoorah','Keys not set','Draft','50.000','1 / 1'])assert.ok(kw.includes(part),'Kuwait row shows '+part+': '+kw);
  await shot('countries-1366-en');
+ // Open Kuwait: details and its company; open the company's full workspace.
+ await click('[data-country-open=KW]');await until('Boolean(document.querySelector("#country-companies [data-country-company]"))');
+ assert.ok(await evaluate('document.querySelector("#country-companies").textContent.includes("Fictional Kuwait Bus")'));await shot('country-kw-1366-en');
+ await click(`[data-country-company="${cid}"]`);await until('Boolean(document.querySelector("[data-company-section]"))&&document.body.textContent.includes("Fictional Kuwait Bus")');
+ assert.ok(await evaluate('document.querySelectorAll("[data-company-section]").length>=5'),'the full company workspace with its sections');await shot('company-from-country-1366-en');
  await send('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});
- await evaluate('localStorage.setItem("safeer.language","ar")');await send('Page.navigate',{url:web.origin+'/staff?lang=ar'});await until('Boolean(document.querySelector(".staff-welcome"))');
- await panel();assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth+2'),'fits a phone');assert.ok(await evaluate('document.querySelector("#country-prices h2").textContent==="الدول"'));
+ await evaluate('localStorage.setItem("safeer.language","ar")');await send('Page.navigate',{url:web.origin+'/staff?lang=ar&tab=countries'});await until('Boolean(document.querySelector(".staff-welcome"))');
+ await until('Boolean(document.querySelector("#country-prices"))');assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth+2'),'fits a phone');
  await shot('countries-390-ar');
  assert.deepEqual(await evaluate('window.__errors'),[]);
- console.log(`D145 ${built?'built':'source'} browser passed: Platform overview Countries panel with 11 countries, Kuwait setup and price, desktop and Arabic phone.`);
+ console.log(`D145 ${built?'built':'source'} browser passed: Countries page in the sidebar with 11 countries, Kuwait details and its company opening the full workspace, desktop and Arabic phone.`);
 },{webOrigin:web.origin});}finally{await browser?.close();await web.close();}

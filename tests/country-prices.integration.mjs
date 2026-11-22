@@ -23,10 +23,15 @@ test('country prices: super administrator only, served countries, versioned, off
  const list=ok(await f.admin.request('platform/countries'),200).items,sd=list.find(x=>x.countryCode==='SD'),kw=list.find(x=>x.countryCode==='KW'),eg=list.find(x=>x.countryCode==='EG'),td=list.find(x=>x.countryCode==='TD');
  assert.equal(list.length,11);assert.deepEqual([sd.currency,sd.calling,sd.timezone,sd.digits],['SDG','249','Africa/Khartoum',2]);assert.equal(sd.companies,1);assert.equal(sd.approved,1);assert.equal(sd.price.monthlyFeeMinor,'3000000');
  assert.deepEqual([kw.currency,kw.digits,kw.cardProvider,kw.cardReady,kw.companies,kw.price],['KWD',3,'myfatoorah',false,0,null]);assert.deepEqual([eg.cardProvider,td.cardProvider,td.digits],['paymob',null,0]);
+ // D146: one country's companies.
+ const sdCompanies=ok(await f.admin.request('platform/countries/SD/companies'),200).items;assert.equal(sdCompanies.length,1);assert.equal(sdCompanies[0].id,s.cid);
+ assert.deepEqual([sdCompanies[0].status,sdCompanies[0].currency,sdCompanies[0].branches>=1,sdCompanies[0].staff>=0],['approved','SDG',true,true]);
+ assert.deepEqual(ok(await f.admin.request('platform/countries/KW/companies'),200).items,[]);
+ assert.equal((await f.admin.request('platform/countries/AE/companies')).error.code,'INVALID_COUNTRY');
  // Company staff never see Safeer's price list, even with every company permission.
  const all=(await f.migration.query("SELECT code FROM safeer.permissions WHERE code LIKE 'company.%'")).rows.map(x=>x.code);
  const {c:manager}=await staff(f,s,all);
- assert.equal((await manager.request('platform/country-prices')).status,403);assert.equal((await manager.request('platform/countries')).status,403);
+ assert.equal((await manager.request('platform/country-prices')).status,403);assert.equal((await manager.request('platform/countries')).status,403);assert.equal((await manager.request('platform/countries/SD/companies')).status,403);
  assert.equal((await manager.request('platform/country-prices/SD','PUT',{monthlyFeeMinor:'1',commissionBps:1,currency:'SDG',version:2,currentPassword:'x'})).status>=400,true);
  b=ok(await manager.request(s.base+'/billing'),200);assert.equal(b.countryPrice,null);
  assert.equal((await f.client().request('platform/country-prices')).status,401);

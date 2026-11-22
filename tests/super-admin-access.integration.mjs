@@ -12,7 +12,7 @@ test('super administrator reaches every staff, platform and driver-app endpoint'
  const b=s.companyBase,paths=['auth/sessions','identity/users','identity/roles','identity/audit','companies',b,'cities',b+'/routes',`${b}/routes/${route}`,`${b}/routes/${route}/fares`,
   b+'/fleet',b+'/drivers',b+'/trips',`${b}/trips/${s.id}`,`${b}/trips/${s.id}/seats`,b+'/operations',`${b}/operations/trips/${s.id}`,b+'/shipments',b+'/shipments/options',b+'/luggage',
   b+'/counter',b+'/counter/trips',`${b}/counter/trips/${s.id}`,b+'/bookings',`${b}/bookings/${s.p.bid}`,b+'/billing',b+'/public-profile',b+'/finance',b+'/finance/options',
-  'platform/dashboard','platform/settings','platform/country-prices','platform/countries','notifications','notifications/unread','driver/trips',`driver/companies/${s.cid}/trips/${s.id}`];
+  'platform/dashboard','platform/settings','platform/country-prices','platform/countries','platform/countries/SD/companies','notifications','notifications/unread','driver/trips',`driver/companies/${s.cid}/trips/${s.id}`];
  const denied=[];for(const p of paths){const r=await f.admin.request(p);if(r.status===401||r.status===403)denied.push(p+' '+r.status+' '+r.raw?.slice(0,120));}
  assert.deepEqual(denied,[]);
  const capabilities=ok(await f.admin.request(b),200).capabilities;

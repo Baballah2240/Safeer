@@ -43,6 +43,8 @@ export class PlatformService {
   return {items:Object.entries(countries).map(([code,x])=>{const n=counts.find(r=>r.countryCode===code);return {countryCode:code,calling:x.calling,currency:x.currency,digits:currencyDigits(x.currency),timezone:x.zone,
    companies:n?.companies??0,approved:n?.approved??0,cardProvider:provider(code),cardReady:provider(code)?cardReady(code):false,price:prices.find(p=>p.countryCode===code)||null};})};
  });}
+ // D146: the companies set to one served country.
+ countryCompanies(token:string,code:string){if(!(code in countries))fail('INVALID_COUNTRY');return this.run(token,true,async c=>(await c.query('SELECT safeer.platform_country_companies($1) AS row',[code])).rows[0].row);}
  dashboard(token:string,query:unknown){
   const d=body(query,['from','to','page']),from=day(d.from),to=day(d.to),p=d.page===undefined?'0':String(d.page);
   if(!/^\d{1,7}$/.test(p)||Number(p)>1000000||Date.parse(to)<Date.parse(from)||Date.parse(to)-Date.parse(from)>30*86400000)fail('INVALID_REPORT');

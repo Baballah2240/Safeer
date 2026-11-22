@@ -15287,6 +15287,71 @@
           }
         ]
       }
+    },
+    "/api/v1/platform/countries/{code}/companies": {
+      "get": {
+        "operationId": "platformCountryCompanies",
+        "tags": [
+          "Platform"
+        ],
+        "description": "Super Administrator only (D146): the companies set to one served country, with status, listing, currency, time zone and counts.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "code",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Z]{2}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "items"
+                      ],
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "type": "object"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Not a served country"
+          },
+          "401": {
+            "description": "Sign in required"
+          },
+          "403": {
+            "description": "Current authority required"
+          }
+        },
+        "security": [
+          {
+            "cookieSession": []
+          }
+        ]
+      }
     }
   },
   "components": {

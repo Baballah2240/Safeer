@@ -1,5 +1,9 @@
 # Changelog
 
+## Countries page in the menu - D146, 2026-11-22
+
+The super administrator has a new Countries page in the side menu. It lists every country Safeer serves with its setup. Opening a country shows its currency, phone code, time zone, online payment, legal pages and standard price, and every bus company in that country with a short summary. Open company goes straight to that company's full workspace, where everything can be seen and changed.
+
 ## Countries panel for the super administrator - D145, 2026-11-22
 
 Platform overview now shows every country Safeer serves in one table: its currency and decimals, phone code, time zone, how many companies are set to it, whether online card payment is ready there (Paymob or MyFatoorah, and whether the keys are set), whether its legal pages are live or still a draft, and its standard price, which can be set or edited from the same row.

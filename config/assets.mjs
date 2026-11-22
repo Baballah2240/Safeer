@@ -47,6 +47,7 @@ export const publicAssets = {
   '/src/billing.js': ['src/billing.js', 'text/javascript'],
   '/src/trips.js': ['src/trips.js', 'text/javascript'],
   '/src/platform.js': ['src/platform.js', 'text/javascript'],
+  '/src/countries-admin.js': ['src/countries-admin.js', 'text/javascript'],
   '/src/finance.js': ['src/finance.js', 'text/javascript'],
   '/src/finance-format.mjs': ['src/finance-format.mjs', 'text/javascript'],
   '/src/money.mjs': ['src/money.mjs', 'text/javascript'],
