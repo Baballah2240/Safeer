@@ -41,7 +41,9 @@ export class BillingService {
   const plan=(await c.query(`SELECT monthly_fee_minor::text AS "monthlyFeeMinor",commission_bps AS "commissionBps",currency,to_char(starts_on,'YYYY-MM-DD') AS "startsOn",to_char(ends_on,'YYYY-MM-DD') AS "endsOn",notes,version,updated_at AS "updatedAt" FROM safeer.company_billing_plans WHERE company_id=$1`,[cid])).rows[0]||null;
   const contracts=(await c.query(`SELECT ${contractView} FROM safeer.company_contracts WHERE company_id=$1 ORDER BY issued_at DESC,id LIMIT 50`,[cid])).rows;
   const invoices=(await c.query(`SELECT ${invoiceView} FROM safeer.company_invoices i WHERE i.company_id=$1 ORDER BY i.period_month DESC,i.issued_at DESC LIMIT 36`,[cid])).rows;
-  return {plan,contracts,invoices,today:new Date().toISOString().slice(0,10),canEdit:p.superAdministrator,canAccept:!p.superAdministrator&&await this.can(c,cid,'company.profile.manage')&&await this.member(c,cid,p)};
+  // D141: the Super Administrator's form starts from the company's country price when there is no plan yet.
+  const countryPrice=p.superAdministrator?(await c.query('SELECT safeer.company_country_price($1) AS row',[cid])).rows[0].row:null;
+  return {plan,countryPrice,contracts,invoices,today:new Date().toISOString().slice(0,10),canEdit:p.superAdministrator,canAccept:!p.superAdministrator&&await this.can(c,cid,'company.profile.manage')&&await this.member(c,cid,p)};
  });}
  async saveBilling(token:string,cid:string,input:unknown){
   uuid(cid);const data=body(input,['monthlyFeeMinor','commissionBps','currency','startsOn','endsOn','notes','version','currentPassword']);

@@ -3,6 +3,7 @@ import type {PoolClient} from 'pg';
 import {Database} from './database.js';
 import {IdentityService} from './identity.service.js';
 import {body,text,version,fail} from './security.js';
+import {countries} from './countries.js';
 
 const day=(value:unknown)=>{const s=text(value,10,10);if(!/^\d{4}-\d{2}-\d{2}$/.test(s)||s.startsWith('0000')||!Number.isFinite(Date.parse(s))||new Date(s).toISOString().slice(0,10)!==s)fail('INVALID_REPORT');return s;};
 const eventId=(value:unknown)=>{if(typeof value!=='string'||!/^[1-9]\d{0,18}$/.test(value)||BigInt(value)>9223372036854775807n)fail('INVALID_INPUT');return value;};
@@ -20,6 +21,16 @@ export class PlatformService {
   const en=text(d.textEn,0,500),ar=text(d.textAr,0,500),v=version(d.version);if(d.enabled&&(!en||!ar))fail('INVALID_INPUT');
   await this.identity.reauthenticate(token,d.currentPassword);
   return this.run(token,true,async c=>(await c.query('SELECT safeer.platform_settings_save($1,$2,$3,$4) AS row',[d.enabled,en,ar,v])).rows[0].row);
+ }
+ // D141: one standard price per country (monthly fee, commission, currency), Super Administrator only.
+ prices(token:string){return this.run(token,true,async c=>({...(await c.query('SELECT safeer.country_prices_read() AS row')).rows[0].row,countries:Object.keys(countries)}));}
+ async savePrice(token:string,code:string,input:unknown){
+  const d=body(input,['monthlyFeeMinor','commissionBps','currency','version','currentPassword']);
+  if(!(code in countries))fail('INVALID_COUNTRY');
+  const fee=String(d.monthlyFeeMinor??''),bps=d.commissionBps,cur=text(d.currency,3,3).toUpperCase(),v=d.version===0?0:version(d.version);
+  if(!/^\d{1,12}$/.test(fee)||Number(fee)>100000000000||!Number.isInteger(bps)||(bps as number)<0||(bps as number)>5000||!/^[A-Z]{3}$/.test(cur))fail('INVALID_INPUT');
+  await this.identity.reauthenticate(token,d.currentPassword);
+  return this.run(token,true,async c=>({...(await c.query('SELECT safeer.country_price_save($1,$2,$3,$4,$5) AS row',[code,fee,bps,cur,v])).rows[0].row,countries:Object.keys(countries)}));
  }
  dashboard(token:string,query:unknown){
   const d=body(query,['from','to','page']),from=day(d.from),to=day(d.to),p=d.page===undefined?'0':String(d.page);

@@ -46,6 +46,10 @@
         "UPDATE"
       ]
     },
+    "card_checkouts": {
+      "rls": true,
+      "privileges": []
+    },
     "cash_sessions": {
       "rls": true,
       "privileges": []
@@ -163,6 +167,10 @@
         "INSERT",
         "UPDATE"
       ]
+    },
+    "country_prices": {
+      "rls": true,
+      "privileges": []
     },
     "document_prints": {
       "rls": true,
@@ -441,10 +449,6 @@
         "INSERT",
         "UPDATE"
       ]
-    },
-    "card_checkouts": {
-      "rls": true,
-      "privileges": []
     }
   },
   "functions": [
@@ -559,6 +563,9 @@
     "safeer.card_checkout_finish(text,text,boolean,integer,text)",
     "safeer.company_card(uuid)",
     "safeer.booking_card(text)",
-    "safeer.save_card_payments(uuid,uuid,boolean)"
+    "safeer.save_card_payments(uuid,uuid,boolean)",
+    "safeer.country_prices_read()",
+    "safeer.country_price_save(text,bigint,integer,text,integer)",
+    "safeer.company_country_price(uuid)"
   ]
 }

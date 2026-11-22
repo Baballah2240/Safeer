@@ -14946,6 +14946,14 @@
             }
           }
         ],
+    "/api/v1/platform/country-prices": {
+      "get": {
+        "operationId": "countryPrices",
+        "tags": [
+          "Platform"
+        ],
+        "description": "Super Administrator only. Standard price per served country (D141).",
+        "parameters": [],
         "responses": {
           "200": {
             "description": "Success",
@@ -15004,6 +15012,7 @@
                           }
                         }
                       }
+                      "$ref": "#/components/schemas/CountryPrices"
                     }
                   }
                 }
@@ -15018,6 +15027,7 @@
           },
           "404": {
             "description": "Not found"
+            "description": "Current authority required"
           }
         },
         "security": [
@@ -15042,6 +15052,21 @@
             "schema": {
               "type": "string",
               "format": "uuid"
+    "/api/v1/platform/country-prices/{code}": {
+      "put": {
+        "operationId": "saveCountryPrice",
+        "tags": [
+          "Platform"
+        ],
+        "description": "Super Administrator, reauthentication, CSRF and optimistic version required. Only served countries (D140).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "code",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Z]{2}$"
             }
           },
           {
@@ -15099,6 +15124,7 @@
                   "properties": {
                     "data": {
                       "type": "object"
+                      "$ref": "#/components/schemas/CountryPrices"
                     }
                   }
                 }
@@ -15107,12 +15133,23 @@
           },
           "400": {
             "description": "Invalid permission"
+            "description": "Invalid input or country"
           },
           "403": {
             "description": "Current Super Administrator required"
           },
           "409": {
             "description": "Stale version"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CountryPriceWrite"
+              }
+            }
           }
         },
         "security": [
@@ -17661,6 +17698,96 @@
               "paid",
               "void"
             ]
+          }
+        }
+      },
+      "CountryPrices": {
+        "type": "object",
+        "required": [
+          "items",
+          "countries"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "countryCode",
+                "monthlyFeeMinor",
+                "commissionBps",
+                "currency",
+                "version"
+              ],
+              "properties": {
+                "countryCode": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{2}$"
+                },
+                "monthlyFeeMinor": {
+                  "type": "string",
+                  "pattern": "^[0-9]{1,12}$"
+                },
+                "commissionBps": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 5000
+                },
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "version": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
+          },
+          "countries": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Z]{2}$"
+            }
+          }
+        }
+      },
+      "CountryPriceWrite": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "monthlyFeeMinor",
+          "commissionBps",
+          "currency",
+          "version",
+          "currentPassword"
+        ],
+        "properties": {
+          "monthlyFeeMinor": {
+            "type": "string",
+            "pattern": "^[0-9]{1,12}$"
+          },
+          "commissionBps": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5000
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "0 creates the price; otherwise the current version."
+          },
+          "currentPassword": {
+            "type": "string"
           }
         }
       }

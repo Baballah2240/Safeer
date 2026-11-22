@@ -40,6 +40,7 @@ export async function grantIdentityRuntime(client,role){
     GRANT SELECT,INSERT,UPDATE,DELETE ON safeer.city_photos TO "${role}";
     GRANT EXECUTE ON FUNCTION safeer.public_city_photo(text) TO "${role}";
     GRANT EXECUTE ON FUNCTION safeer.company_card(uuid),safeer.booking_card(text),safeer.save_card_payments(uuid,uuid,boolean),safeer.card_checkout_start(text,text,uuid),safeer.card_checkout_order(uuid,text),safeer.card_checkout_finish(text,text,boolean,integer,text) TO "${role}";
+    GRANT EXECUTE ON FUNCTION safeer.country_prices_read(),safeer.country_price_save(text,bigint,integer,text,integer),safeer.company_country_price(uuid) TO "${role}";
     GRANT EXECUTE ON FUNCTION safeer.company_currency(uuid),safeer.company_country(uuid),safeer.trip_country(uuid),safeer.booking_country(text) TO "${role}";
     GRANT EXECUTE ON FUNCTION safeer.driver_stop(uuid,uuid,integer),safeer.driver_progress(uuid,uuid),safeer.public_trip_progress(text) TO "${role}";
     GRANT SELECT ON safeer.company_invoices TO "${role}";

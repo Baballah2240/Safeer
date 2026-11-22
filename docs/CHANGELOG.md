@@ -3,6 +3,10 @@
 ## One place to give and remove any access - D136, 2026-11-22
 
 In Users, every account now has an Access button for the super administrator. It shows everything that person can reach: platform roles, their own platform permissions and every company they belong to, with their role or custom permissions. From the same place the super administrator can tick individual platform permissions for that person (no role needed), add them to any company, change their company access or remove it. Removing company access leaves the account and other companies as they are.
+## Prices by country - D141, 2026-11-22 (global-ready branch, not published)
+
+The super administrator can set a standard monthly fee and commission, in the local currency, for each country Safeer serves (Platform overview, Prices by country). When a company has no plan yet, the Set plan form starts from its country's price, which can still be changed for that company. Company staff never see the price list.
+
 ## Countries for now: Sudan, its neighbours, Saudi Arabia, Qatar and Kuwait - D140, 2026-11-22 (global-ready branch, not published)
 
 A company can be set up in Sudan, Egypt, Libya, Chad, the Central African Republic, South Sudan, Ethiopia, Eritrea, Saudi Arabia, Qatar or Kuwait. The UAE, Oman, Bahrain, Jordan, Kenya and Uganda were removed from the list, and the Central African Republic was added.
