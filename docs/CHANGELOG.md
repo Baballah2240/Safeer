@@ -1,29 +1,29 @@
 # Changelog
 
-## Card payments in Kuwait, Saudi Arabia and Qatar (MyFatoorah) - D144, 2026-11-22 (global-ready branch, not published)
+## Card payments in Kuwait, Saudi Arabia and Qatar (MyFatoorah) - D144, 2026-11-22
 
 Bus companies in Kuwait, Saudi Arabia and Qatar can let passengers pay online through MyFatoorah's secure page (local cards such as KNET and mada, Visa/Mastercard and Apple Pay, as enabled on the account). A booking is confirmed only when MyFatoorah itself reports it paid, also if the passenger closes the page early. Egypt keeps Paymob; companies in other countries are not offered online cards. Kuwaiti and Qatari mobile numbers typed without a leading 0 are now accepted. The privacy and terms pages name each country's payment provider.
 
-## Correct decimals for every currency - D143, 2026-11-22 (global-ready branch, not published)
+## Correct decimals for every currency - D143, 2026-11-22
 
 Amounts now use each currency's own decimals: the Kuwaiti and Libyan dinars have 3 (12.345 KWD), the CFA franc used in Chad and the Central African Republic has none (500 XAF), and the others 2. Before, every amount assumed 2 decimals, so a Kuwaiti fare or a CFA price would have been stored and shown wrongly. This covers fares, prices between stops, parcel prices, the station counter, finance, bookings, the booking site, contracts and invoices (PDF), and the passenger app.
 
-## Egypt readiness check - D142, 2026-11-22 (global-ready branch, not published)
+## Egypt readiness check - D142, 2026-11-22
 
 A full run-through of an Egyptian bus company (Egyptian pounds, Cairo time, Egyptian phone numbers) found and fixed two problems: station counters opened every cash session in Sudanese pounds, so an Egyptian station could not take cash, and parcel prices could be set in Sudanese pounds. Both now use the company's own currency. The new plan form also starts in the company's currency.
 
 ## One place to give and remove any access - D136, 2026-11-22
 
 In Users, every account now has an Access button for the super administrator. It shows everything that person can reach: platform roles, their own platform permissions and every company they belong to, with their role or custom permissions. From the same place the super administrator can tick individual platform permissions for that person (no role needed), add them to any company, change their company access or remove it. Removing company access leaves the account and other companies as they are.
-## Prices by country - D141, 2026-11-22 (global-ready branch, not published)
+## Prices by country - D141, 2026-11-22
 
 The super administrator can set a standard monthly fee and commission, in the local currency, for each country Safeer serves (Platform overview, Prices by country). When a company has no plan yet, the Set plan form starts from its country's price, which can still be changed for that company. Company staff never see the price list.
 
-## Countries for now: Sudan, its neighbours, Saudi Arabia, Qatar and Kuwait - D140, 2026-11-22 (global-ready branch, not published)
+## Countries for now: Sudan, its neighbours, Saudi Arabia, Qatar and Kuwait - D140, 2026-11-22
 
 A company can be set up in Sudan, Egypt, Libya, Chad, the Central African Republic, South Sudan, Ethiopia, Eritrea, Saudi Arabia, Qatar or Kuwait. The UAE, Oman, Bahrain, Jordan, Kenya and Uganda were removed from the list, and the Central African Republic was added.
 
-## Legal pages per country - D139, 2026-11-22 (global-ready branch, not published)
+## Legal pages per country - D139, 2026-11-22
 
 The privacy policy, the account deletion page and a new Terms of use page now have a country choice. Each country shows its own personal data law and where to complain, its consumer law where there is one, and card payment details only where cards are accepted. Countries where Safeer has not launched yet show a clear note that the text will be checked by a local lawyer before launch. Sudan reads as before, plus a short section on your rights in Sudan. The site footers link to the new Terms of use page.
 

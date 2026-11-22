@@ -1,5 +1,9 @@
 # Safeer mobile status
 
+## Global work in the apps - D135-D144, 2026-11-22 (source only, not yet released)
+
+safeer_core SafeerFormat.money shows each currency with its own decimals (KWD and LYD 3, XAF 0, others 2; same table as the website, D143), and the passenger app's translation files and language list came with D138. Trips already carry their company's currency and time zone. Online card payment (Paymob in Egypt, MyFatoorah in Kuwait, Saudi Arabia and Qatar) is on the booking website; the apps do not take cards. A new app release is needed for the money format to reach phones.
+
 ## Super administrator in Safeer Driver - D135, 2026-11-22 (server only, no app update needed)
 
 Signing in to Safeer Driver as the super administrator lists every company's trips from two days ago onward, and every trip can be opened, scanned, departed and closed. Drivers still see only their own trips. The change is on the server (migration 0036), so the installed 0.27.0 apps get it once the site is deployed.
