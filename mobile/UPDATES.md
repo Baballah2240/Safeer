@@ -1,5 +1,9 @@
 # Safeer mobile status
 
+## Super administrator in Safeer Driver - D135, 2026-11-22 (server only, no app update needed)
+
+Signing in to Safeer Driver as the super administrator lists every company's trips from two days ago onward, and every trip can be opened, scanned, departed and closed. Drivers still see only their own trips. The change is on the server (migration 0036), so the installed 0.27.0 apps get it once the site is deployed.
+
 ## Button sizes - D134, 2026-11-20 (source only, not yet released)
 
 safeer_core theme: filled and outlined buttons 48px tall with 12px corners (were 52px/16px); text fields 12px corners (were 14px), matching the website design system. Fonts stay Inter/Noto Sans Arabic (SF Pro cannot be bundled in an Android app). Checked: safeer_core (26), Driver (34), Passenger (30) tests. Ships with the next app release.

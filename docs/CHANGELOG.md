@@ -1,5 +1,9 @@
 # Changelog
 
+## Full access for the super administrator - D135, 2026-11-22
+
+The super administrator can open and change every part of Safeer: all companies, the staff site, the platform pages and the Safeer Driver app. In the Driver app the super administrator now sees every company's trips (from two days ago onward) and can board passengers and run any journey; drivers still see only their own trips. A new automatic test signs in as the super administrator and checks every page and permission, so new features cannot leave the super administrator out.
+
 ## San Francisco font and consistent controls - D134, 2026-11-20
 
 The site uses San Francisco on Apple devices and the matching open font Inter elsewhere. Every button, tab and field now follows one size system (48px buttons with 12px corners, 44px round icon buttons, 48px fields), and the main action is Safeer orange everywhere. Details: docs/archive/DESIGN_SYSTEM_2026-11-20.md.
