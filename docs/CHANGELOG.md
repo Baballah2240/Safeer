@@ -3,6 +3,10 @@
 ## One place to give and remove any access - D136, 2026-11-22
 
 In Users, every account now has an Access button for the super administrator. It shows everything that person can reach: platform roles, their own platform permissions and every company they belong to, with their role or custom permissions. From the same place the super administrator can tick individual platform permissions for that person (no role needed), add them to any company, change their company access or remove it. Removing company access leaves the account and other companies as they are.
+## Countries for now: Sudan, its neighbours, Saudi Arabia, Qatar and Kuwait - D140, 2026-11-22 (global-ready branch, not published)
+
+A company can be set up in Sudan, Egypt, Libya, Chad, the Central African Republic, South Sudan, Ethiopia, Eritrea, Saudi Arabia, Qatar or Kuwait. The UAE, Oman, Bahrain, Jordan, Kenya and Uganda were removed from the list, and the Central African Republic was added.
+
 ## Legal pages per country - D139, 2026-11-22 (global-ready branch, not published)
 
 The privacy policy, the account deletion page and a new Terms of use page now have a country choice. Each country shows its own personal data law and where to complain, its consumer law where there is one, and card payment details only where cards are accepted. Countries where Safeer has not launched yet show a clear note that the text will be checked by a local lawyer before launch. Sudan reads as before, plus a short section on your rights in Sudan. The site footers link to the new Terms of use page.

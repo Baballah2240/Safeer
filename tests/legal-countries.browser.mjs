@@ -22,12 +22,13 @@ try{
  p=await open(browser,'/privacy?lang=en');assert.equal(p.country,'EG','the last chosen country is remembered');
  p=await open(browser,'/terms?lang=ar&country=EG');assert.equal(p.title,'Safeer | شروط الاستخدام');assert.ok(p.text.includes('قانون حماية المستهلك رقم ١٨١'));assert.ok(p.text.includes('Paymob'));
  p=await open(browser,'/terms?lang=en&country=SD');assert.equal(p.text.includes('Paymob'),false);assert.ok(p.text.includes('The law in'));
+ assert.deepEqual(Object.keys(countries).sort(),['CF','EG','ER','ET','KW','LY','QA','SA','SD','SS','TD'],'D140: Sudan, its neighbours, SA, QA and KW');
  for(const code of Object.keys(countries))for(const lang of ['en','ar'])for(const page of ['privacy','terms','account-deletion']){
   const r=await open(browser,`/${page}?lang=${lang}&country=${code}`);assert.equal(r.country,code);assert.ok(r.fits,`${page} ${lang} ${code} fits`);
   assert.equal(/undefined|null|\$\{/.test(r.text),false,`${page} ${lang} ${code} has no placeholder`);
  }
- await browser.evaluate('document.getElementById("legal-country").value="KE";document.getElementById("legal-country").dispatchEvent(new Event("change",{bubbles:true}))');
- await browser.until('location.search.includes("country=KE")&&Boolean(document.getElementById("legal-country"))');
- writeFileSync(join(shots,'terms-en-KE-390.png'),Buffer.from((await browser.send('Page.captureScreenshot',{format:'png'})).data,'base64'));
+ await browser.evaluate('document.getElementById("legal-country").value="TD";document.getElementById("legal-country").dispatchEvent(new Event("change",{bubbles:true}))');
+ await browser.until('location.search.includes("country=TD")&&Boolean(document.getElementById("legal-country"))');
+ writeFileSync(join(shots,'legal-TD-390.png'),Buffer.from((await browser.send('Page.captureScreenshot',{format:'png'})).data,'base64'));
  console.log('legal countries ok');
 }finally{await browser?.close();await web.close();}

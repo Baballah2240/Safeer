@@ -12,7 +12,7 @@ test('company country decides phone numbers and the default trip currency',()=>i
  const sd=await setup(f,'global-sd'),eg=await setup(f,'global-eg');
  const company=ok(await f.admin.request(eg.base),200).company;
  assert.equal(company.countryCode,'SD','existing and new companies default to Sudan');assert.equal(company.currency,'SDG');
- const bad=await f.admin.request(eg.base,'PATCH',{...company,id:undefined,countryCode:'ZZ',...eg.pw});assert.equal(bad.error.code,'INVALID_COUNTRY');
+ const bad=await f.admin.request(eg.base,'PATCH',{...company,id:undefined,countryCode:'ZZ',...eg.pw});assert.equal(bad.error.code,'INVALID_COUNTRY'); for(const code of ['AE','OM','BH','JO','KE','UG'])assert.equal((await f.admin.request(eg.base,'PATCH',{...company,id:undefined,countryCode:code,...eg.pw})).error?.code,'INVALID_COUNTRY','D140: '+code+' is not served yet');
  ok(await f.admin.request(eg.base,'PATCH',{...company,id:undefined,countryCode:'EG',currency:'EGP',timezone:'Africa/Cairo',...eg.pw}),200);
  const saved=ok(await f.admin.request(eg.base),200).company;
  assert.deepEqual([saved.countryCode,saved.currency,saved.timezone],['EG','EGP','Africa/Cairo']);
