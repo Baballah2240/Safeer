@@ -1,5 +1,9 @@
 # Changelog
 
+## Card payments in Kuwait, Saudi Arabia and Qatar (MyFatoorah) - D144, 2026-11-22 (global-ready branch, not published)
+
+Bus companies in Kuwait, Saudi Arabia and Qatar can let passengers pay online through MyFatoorah's secure page (local cards such as KNET and mada, Visa/Mastercard and Apple Pay, as enabled on the account). A booking is confirmed only when MyFatoorah itself reports it paid, also if the passenger closes the page early. Egypt keeps Paymob; companies in other countries are not offered online cards. Kuwaiti and Qatari mobile numbers typed without a leading 0 are now accepted. The privacy and terms pages name each country's payment provider.
+
 ## Correct decimals for every currency - D143, 2026-11-22 (global-ready branch, not published)
 
 Amounts now use each currency's own decimals: the Kuwaiti and Libyan dinars have 3 (12.345 KWD), the CFA franc used in Chad and the Central African Republic has none (500 XAF), and the others 2. Before, every amount assumed 2 decimals, so a Kuwaiti fare or a CFA price would have been stored and shown wrongly. This covers fares, prices between stops, parcel prices, the station counter, finance, bookings, the booking site, contracts and invoices (PDF), and the passenger app.

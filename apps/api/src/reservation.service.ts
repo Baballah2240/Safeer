@@ -5,6 +5,9 @@ import type {PoolClient} from 'pg';
 import {Database} from './database.js';
 import {countries,countryOf,defaultCountry} from './countries.js';
 import {paymobCheckout,paymobConfig,paymobVerify} from './paymob.js';
+import {myfatoorahCheckout,myfatoorahConfig,myfatoorahStatus} from './myfatoorah.js';
+// D144: which card provider serves a country, and whether it is configured on this server.
+export const cardReady=(country:unknown)=>country==='EG'?paymobConfig()!==null:myfatoorahConfig(country)!==null;
 import {IdentityService} from './identity.service.js';
 import {body,digest,text,uuid,version,fail,stopIndex} from './security.js';
 
@@ -28,6 +31,8 @@ export function mobileNumber(value:unknown,code='INVALID_MOBILE',country:unknown
  if(digits.startsWith('00'))digits='+'+digits.slice(2);
  else if(/^0[0-9]+$/.test(digits)&&place.nsn.includes(digits.length-1))digits='+'+place.calling+digits.slice(1);
  else if(place===countries.SD&&/^[19][0-9]{8}$/.test(digits))digits='+249'+digits;
+ // D144: countries whose local numbers have no leading 0 (Kuwait 5xxxxxxx, Qatar 3/5/6/7xxxxxxx) or typed without it.
+ else if(place!==countries.SD&&/^[1-9][0-9]+$/.test(digits)&&place.nsn.includes(digits.length))digits='+'+place.calling+digits;
  if(!/^\+[1-9][0-9]{7,14}$/.test(digits)||(digits.startsWith('+249')&&digits.length!==13))fail(code);
  return digits;
 }
@@ -77,7 +82,7 @@ export class ReservationService implements OnModuleInit,OnModuleDestroy {
   const row=await this.one('SELECT safeer.passenger_booking($1,$2,$3) AS row',[code,access,mobile]);
   if(!row)fail('NOT_FOUND',404);
   // D136: offer card payment only to the holder (access key), on a held booking, when the company takes cards.
-  const card=access!==null&&row.status==='held'&&paymobConfig()!==null&&await this.one('SELECT safeer.booking_card($1) AS row',[code])===true;
+  const card=access!==null&&row.status==='held'&&cardReady(await this.one('SELECT safeer.booking_country($1) AS row',[code]))&&await this.one('SELECT safeer.booking_card($1) AS row',[code])===true;
   return {...row,cardPayment:card,tickets:(row.tickets as Array<Record<string,unknown>>).map(({qrToken,...ticket})=>({...ticket,...(typeof qrToken==='string'?{qr:ticketQr(qrToken)}:{})}))};
  }
  // D89: the trip page for one journey (from and to are stop indexes; missing means the whole trip).
@@ -119,17 +124,21 @@ export class ReservationService implements OnModuleInit,OnModuleDestroy {
   return this.guarded(code,client,()=>this.presentation(code,null,mobile));
  }
  // D136: pay a held booking by card. The passenger proves the booking with its access key, as for release.
- cardAvailable(){return paymobConfig()!==null;}
- async cardCheckout(code:string,input:unknown){
+ cardAvailable(country:unknown){return cardReady(country);}
+ async cardCheckout(code:string,input:unknown,origin=''){
   if(!referencePattern.test(code))fail('NOT_FOUND',404);
-  const config=paymobConfig();if(!config)fail('METHOD_DISABLED');
-  const data=body(input,['key']),access=accessHash(data.key),id=randomUUID();
+  const data=body(input,['key','language']),access=accessHash(data.key),id=randomUUID(),language=data.language==='ar'?'ar':'en';
+  const country=await this.one('SELECT safeer.booking_country($1) AS row',[code]);if(!cardReady(country))fail('METHOD_DISABLED');
   const started=await this.db.transaction(async c=>(await c.query('SELECT safeer.card_checkout_start($1,$2,$3) AS row',[code,access,id])).rows[0].row,false);
   if(!started)fail('NOT_FOUND',404);
-  let checkout;
-  try{checkout=await paymobCheckout(config,{amountMinor:started.amountMinor,currency:started.currency,merchantOrderId:id,reference:started.reference});}
+  let checkout:{order:string,url:string};
+  try{
+   if(started.provider==='myfatoorah'){const mf=myfatoorahConfig(started.countryCode);if(!mf)throw Error('not configured');
+    checkout=await myfatoorahCheckout(mf,{amountMinor:started.amountMinor,currency:started.currency,checkoutId:id,reference:started.reference,returnUrl:`${origin}/api/v1/payments/myfatoorah/return?c=${mf.country}`,language});}
+   else{const config=paymobConfig();if(!config)throw Error('not configured');const p=await paymobCheckout(config,{amountMinor:started.amountMinor,currency:started.currency,merchantOrderId:id,reference:started.reference});checkout={order:p.orderId,url:p.url};}
+  }
   catch{fail('PAYMENT_PROVIDER_UNAVAILABLE',503,'Card payment is not available right now. Try again or pay at the station.');}
-  await this.db.pool.query('SELECT safeer.card_checkout_order($1,$2)',[id,checkout.orderId]);
+  await this.db.pool.query('SELECT safeer.card_checkout_order($1,$2)',[id,checkout.order]);
   return {url:checkout.url};
  }
  /** Paymob's signed result (server callback body or return redirect query). Null when not genuine or unknown. */
@@ -137,6 +146,20 @@ export class ReservationService implements OnModuleInit,OnModuleDestroy {
   const config=paymobConfig();if(!config)return null;
   const facts=paymobVerify(config,fields,hmac,flat);if(!facts)return null;
   return this.db.transaction(async c=>(await c.query('SELECT safeer.card_checkout_finish($1,$2,$3,$4,$5) AS row',[facts.order,facts.transaction,facts.success,facts.amount,facts.currency])).rows[0].row,false);
+ }
+/** D144: MyFatoorah. key is the PaymentId of the return redirect (country from the return URL) or the InvoiceId of a
+  * webhook (country from Safeer's own checkout). Only MyFatoorah's own answer, fetched with the private token, counts.
+  * An unpaid invoice is left open: the passenger may still pay it on the same page. */
+ async myfatoorahResult(key:unknown,kind:'PaymentId'|'InvoiceId',country?:unknown){
+  if(typeof key!=='string'||!/^[0-9A-Za-z-]{1,64}$/.test(key))return null;
+  let place=country;
+  if(kind==='InvoiceId'){const seen=await this.one('SELECT safeer.card_checkout_peek($1) AS row',['mf:'+key]) as {countryCode?:string,provider?:string}|null;if(!seen||seen.provider!=='myfatoorah')return null;place=seen.countryCode;}
+  const config=myfatoorahConfig(place);if(!config)return null;
+  const facts=await myfatoorahStatus(config,key,kind).catch(()=>null);if(!facts)return null;
+  const seen=await this.one('SELECT safeer.card_checkout_peek($1) AS row',[facts.order]) as {reference:string,status:string,provider:string,checkoutId:string,countryCode:string}|null;
+  if(!seen||seen.provider!=='myfatoorah'||seen.checkoutId!==facts.checkoutId||seen.countryCode!==config.country)return null;
+  if(!facts.paid)return {status:seen.status==='pending'?'failed':seen.status,reference:seen.reference};
+  return this.db.transaction(async c=>(await c.query('SELECT safeer.card_checkout_finish($1,$2,$3,$4,$5) AS row',[facts.order,facts.transaction,true,facts.amount,facts.currency])).rows[0].row,false);
  }
  async release(code:string,input:unknown,client:string){
   if(!referencePattern.test(code))fail('NOT_FOUND',404);

@@ -172,6 +172,22 @@ class PaymobController {
   res.redirect(303,reference?'/hold/'+reference+'?card='+encodeURIComponent(String(result.status))+'#passenger-ticket':'/booking?card=unknown');
  }
 }
+// D144: MyFatoorah (Kuwait, Saudi Arabia, Qatar). Neither request is trusted: Safeer asks MyFatoorah for the
+// invoice state with its private token and records only that answer.
+@Controller('api/v1/payments/myfatoorah')
+class MyFatoorahController {
+ constructor(private readonly reservations:ReservationService){}
+ @Post('webhook') async webhook(@Body() data:unknown){
+  const d=data&&typeof data==='object'?(data as Record<string,unknown>).Data:null,invoice=d&&typeof d==='object'?String((d as Record<string,unknown>).InvoiceId??''):'';
+  const result=/^[0-9]{1,20}$/.test(invoice)?await this.reservations.myfatoorahResult(invoice,'InvoiceId').catch(()=>null):null;
+  return {data:{received:Boolean(result)}};
+ }
+ @Get('return') async back(@Query('paymentId') paymentId:unknown,@Query('c') country:unknown,@Res() res:Response){
+  const result=await this.reservations.myfatoorahResult(paymentId,'PaymentId',country).catch(()=>null) as {reference?:unknown,status?:unknown}|null;
+  const reference=typeof result?.reference==='string'&&/^SF-[2-9A-HJ-NP-Z]{8}$/.test(result.reference)?result.reference:null;
+  res.redirect(303,reference?'/hold/'+reference+'?card='+encodeURIComponent(String(result?.status))+'#passenger-ticket':'/booking?card=unknown');
+ }
+}
 @Controller('api/v1/public')
 class PublicController {
  constructor(private readonly market:PublicService){}
@@ -191,7 +207,7 @@ class ReservationController {
  @Post('holds/lookup') lookup(@Req() req:Request,@Body() data:unknown){return this.reservations.lookup(data,client(req)).then(reply);}
  @Get('holds/:reference') booking(@Req() req:Request,@Param('reference') reference:string){return this.reservations.booking(reference,req.headers['x-booking-key']).then(reply);}
  @Post('holds/:reference/release') release(@Req() req:Request,@Param('reference') reference:string,@Body() data:unknown){return this.reservations.release(reference,data,client(req)).then(reply);}
- @Post('holds/:reference/card') card(@Param('reference') reference:string,@Body() data:unknown){return this.reservations.cardCheckout(reference,data).then(reply);}
+ @Post('holds/:reference/card') card(@Param('reference') reference:string,@Body() data:unknown){return this.reservations.cardCheckout(reference,data,webBase).then(reply);}
 }
 @Controller('api/v1/companies/:id/operations')
 class OperationsController {
@@ -339,7 +355,7 @@ class PlatformController {
  @Post('notifications/read-all') readAll(@Req() req:Request,@Body() data:unknown){return this.platform.readAll(token(req),data).then(reply);}
  @Post('notifications/:event/read') read(@Req() req:Request,@Param('event') id:string,@Body() data:unknown){return this.platform.read(token(req),id,data).then(reply);}
 }
-@Module({controllers:[PaymobController,BillingController,PublicBrandController,PublicCityController,TripTrackingController,PassengerController,PlatformController,FinanceController,IdentityController,CompanyController,LuggageController,ShipmentController,ShipmentTrackingController,OperationsController,TicketingController,BookingController,RouteController,FleetController,TripSeatController,TripController,ReservationController,PublicController,PublicProfileController,BoardingController],providers:[BillingService,PassengerService,Database,ShipmentService,OperationsService,IdentityService,CompanyService,RouteService,FleetService,TripService,PublicService,ReservationService,TicketingService,LuggageService,BoardingService,FinanceService,PlatformService]})
+@Module({controllers:[PaymobController,MyFatoorahController,BillingController,PublicBrandController,PublicCityController,TripTrackingController,PassengerController,PlatformController,FinanceController,IdentityController,CompanyController,LuggageController,ShipmentController,ShipmentTrackingController,OperationsController,TicketingController,BookingController,RouteController,FleetController,TripSeatController,TripController,ReservationController,PublicController,PublicProfileController,BoardingController],providers:[BillingService,PassengerService,Database,ShipmentService,OperationsService,IdentityService,CompanyService,RouteService,FleetService,TripService,PublicService,ReservationService,TicketingService,LuggageService,BoardingService,FinanceService,PlatformService]})
 export class IdentityModule {}
 
 export async function createIdentityApi({port=4321,webOrigin='http://127.0.0.1:4320'}:{port?:number;webOrigin?:string}={}){
@@ -356,10 +372,10 @@ export async function createIdentityApi({port=4321,webOrigin='http://127.0.0.1:4
     res.setHeader('Permissions-Policy','camera=(), microphone=(), geolocation=(), payment=(), usb=()');
     res.setHeader('Content-Security-Policy',"default-src 'none'; frame-ancestors 'none'");
     const address=app.getHttpServer().address();
-    if(req.headers.host!==`127.0.0.1:${address?.port}`||req.headers.authorization||req.headers['sec-fetch-site']==='cross-site'&&!(req.method==='GET'&&(req.path==='/api/v1/passenger/google/callback'||req.path==='/api/v1/payments/paymob/return')))return res.status(403).json({error:{code:'FORBIDDEN',message:'Request not permitted.'}});
+    if(req.headers.host!==`127.0.0.1:${address?.port}`||req.headers.authorization||req.headers['sec-fetch-site']==='cross-site'&&!(req.method==='GET'&&(req.path==='/api/v1/passenger/google/callback'||req.path==='/api/v1/payments/paymob/return'||req.path==='/api/v1/payments/myfatoorah/return')))return res.status(403).json({error:{code:'FORBIDDEN',message:'Request not permitted.'}});
     if(!['GET','POST','PATCH','PUT','DELETE'].includes(req.method))return res.status(405).json({error:{code:'METHOD_NOT_ALLOWED',message:'Method not permitted.'}});
     // D136: Paymob's server-to-server callback has no browser Origin or session; its HMAC is checked instead.
-    if(req.method==='POST'&&req.path==='/api/v1/payments/paymob/callback'){if(!req.is('application/json'))return res.status(415).json({error:{code:'JSON_REQUIRED',message:'Send a JSON request.'}});return next();}
+    if(req.method==='POST'&&(req.path==='/api/v1/payments/paymob/callback'||req.path==='/api/v1/payments/myfatoorah/webhook')){if(!req.is('application/json'))return res.status(415).json({error:{code:'JSON_REQUIRED',message:'Send a JSON request.'}});return next();}
     if(req.method!=='GET'){
       if(req.headers.origin!==origin.origin)return res.status(403).json({error:{code:'INVALID_ORIGIN',message:'Use the local Safeer staff page.'}});
       if(req.path.startsWith('/api/v1/passenger/')){

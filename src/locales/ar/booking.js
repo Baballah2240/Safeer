@@ -3,7 +3,7 @@ export default {
  "Pay by card below, or at a company station with this reference, before the time runs out. If you do not, the seats are released automatically.": "ادفع بالبطاقة أدناه، أو في إحدى محطات الشركة بهذا المرجع، قبل انتهاء الوقت، وإلا سيتم إلغاء الحجز تلقائياً.",
  "This hold has ended. Choose your seats again.": "انتهى حجز المقاعد. اختر مقاعدك مرة أخرى.",
  "Pay by card": "ادفع بالبطاقة",
- "You will pay on the secure Paymob card page. Your tickets appear here as soon as the payment is confirmed.": "ستدفع في صفحة البطاقات الآمنة من Paymob. تظهر تذاكرك هنا فور تأكيد الدفع.",
+ "You will pay on the secure page of our licensed payment provider. Your tickets appear here as soon as the payment is confirmed.": "ستدفع في الصفحة الآمنة لمزوّد الدفع المرخّص. تظهر تذاكرك هنا فور تأكيد الدفع.",
  "Your card payment is being confirmed. This page will update.": "جارٍ تأكيد الدفع بالبطاقة. ستتحدث هذه الصفحة.",
  "The card payment did not go through. You can try again or pay at the station.": "لم يتم الدفع بالبطاقة. يمكنك المحاولة مرة أخرى أو الدفع في المحطة.",
  "Your payment arrived after the seats were released. The company will refund it.": "وصل الدفع بعد انتهاء حجز المقاعد. ستعيد الشركة المبلغ.",

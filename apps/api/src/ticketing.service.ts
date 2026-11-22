@@ -1,4 +1,5 @@
 import {Injectable} from '@nestjs/common';
+import {cardReady} from './reservation.service.js';
 import {randomBytes,randomUUID} from 'node:crypto';
 import type {PoolClient} from 'pg';
 import {Database} from './database.js';
@@ -6,7 +7,6 @@ import {IdentityService} from './identity.service.js';
 import {body,digest,text,uuid,fail,stopIndex} from './security.js';
 import {mobileNumber,saleTravelers,seatList} from './reservation.service.js';
 import {ticketQr} from './ticket-qr.js';
-import {paymobConfig} from './paymob.js';
 
 const minor=(value:unknown,max:number)=>{if(!Number.isSafeInteger(value)||Number(value)<0||Number(value)>max)fail('INVALID_INPUT');return Number(value);};
 // D93: a bank transfer needs a photo of the transfer, sent as a data URL (JPEG, PNG or WebP, at most 384 KB).
@@ -34,7 +34,7 @@ export class TicketingService {
   if(!(await c.query('SELECT 1 FROM safeer.companies WHERE id=$1',[cid])).rowCount)fail('NOT_FOUND',404);
   return action(c,p.id);
  },false);}
- overview(token:string,cid:string){return this.staff(token,cid,async c=>{const row=(await c.query('SELECT safeer.counter_overview($1) AS row',[cid])).rows[0].row;row.recentClosed=(await c.query('SELECT safeer.my_closed_sessions($1) AS row',[cid])).rows[0].row;if(row.settings){row.settings.card=(await c.query('SELECT safeer.company_card($1) AS on',[cid])).rows[0].on;}row.cardAvailable=paymobConfig()!==null;return row;});}
+ overview(token:string,cid:string){return this.staff(token,cid,async c=>{const row=(await c.query('SELECT safeer.counter_overview($1) AS row',[cid])).rows[0].row;row.recentClosed=(await c.query('SELECT safeer.my_closed_sessions($1) AS row',[cid])).rows[0].row;if(row.settings){row.settings.card=(await c.query('SELECT safeer.company_card($1) AS on',[cid])).rows[0].on;}row.cardAvailable=cardReady((await c.query('SELECT safeer.company_country($1) AS row',[cid])).rows[0].row);return row;});}
  trip(token:string,cid:string,tid:string,from?:unknown,to?:unknown){uuid(tid);const f=stopIndex(from),l=stopIndex(to);return this.staff(token,cid,async c=>{const row=(await c.query('SELECT safeer.counter_trip($1,$2,$3::integer,$4::integer) AS row',[cid,tid,f,l])).rows[0].row;if(!row)fail('NOT_FOUND',404);return row;});}
  // D72: departures on one company-local day, for walk-in sales beyond the overview's next 100.
  trips(token:string,cid:string,day:unknown){

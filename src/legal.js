@@ -19,7 +19,7 @@ const T=({en:enLegal,ar:arLegal}[language]||enLegal)(contact);
 const country=legalCountry(params),place=legalCountries[country],C=({en:enCountry,ar:arCountry}[language]||enCountry)(countryName(country,language),place,contact);
 const query=(lang=language)=>`?lang=${lang}&country=${country}`;
 const titles={privacy:T.privacy,deletion:T.deletion,terms:T.terms};
-const sections={privacy:[...T.privacyBody.filter(([h])=>place.cards||h!==T.cardsHeading),C.privacy],deletion:[...T.deletionBody,C.deletion],terms:C.terms}[page];
+const sections={privacy:[...T.privacyBody.filter(([h])=>place.cards||h!==T.cardsHeading).map(([h,b])=>h===T.cardsHeading?[h,b.replaceAll('Paymob',place.provider)]:[h,b]),C.privacy],deletion:[...T.deletionBody,C.deletion],terms:C.terms}[page];
 const links=['privacy','terms','deletion'].filter(x=>x!==page).map(x=>`<a href="${{privacy:'/privacy',terms:'/terms',deletion:'/account-deletion'}[x]}${query()}">${titles[x]}</a>`).join(' · ');
 document.documentElement.lang=language;document.documentElement.dir=ar?'rtl':'ltr';
 document.title='Safeer | '+titles[page];
