@@ -1,5 +1,9 @@
 # Changelog
 
+## Security and bug check - 2026-11-22
+
+A review of today's changes (super administrator access, user access, the global work and the Countries page) with a new automatic security test. Two fixes: online payment return links can no longer be used to flood the payment provider with lookups, and the super administrator's trip list in the Driver app is limited to the next 30 days so it stays fast. No vulnerable dependencies were found.
+
 ## Countries page in the menu - D146, 2026-11-22
 
 The super administrator has a new Countries page in the side menu. It lists every country Safeer serves with its setup. Opening a country shows its currency, phone code, time zone, online payment, legal pages and standard price, and every bus company in that country with a short summary. Open company goes straight to that company's full workspace, where everything can be seen and changed.

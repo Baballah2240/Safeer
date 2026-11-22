@@ -25,7 +25,9 @@ test('super administrator reaches every staff, platform and driver-app endpoint'
  // Drivers still see only their own assignments.
  const other=await s.trip([new Date(Date.now()+40*86400000).toISOString().slice(0,10)]);
  const driverList=ok(await s.driver.c.request('driver/trips'),200).items;assert.equal(driverList.some(t=>t.id===s.id),true);
- assert.ok(ok(await f.admin.request('driver/trips'),200).items.some(t=>t.id===other));
+ // The Super Administrator's list covers two days back to 30 days ahead (2026-11-22 review).
+ const soon=await s.trip([new Date(Date.now()+20*86400000).toISOString().slice(0,10)]),listed=ok(await f.admin.request('driver/trips'),200).items;
+ assert.ok(listed.some(t=>t.id===soon),'a trip in 20 days is listed');assert.equal(listed.some(t=>t.id===other),false,'a trip in 40 days is not');
  const own=(await f.migration.query('SELECT a.trip_id::text id FROM safeer.trip_assignments a JOIN safeer.drivers d ON (d.company_id,d.id)=(a.company_id,a.driver_id) WHERE d.member_id=$1 AND a.replaced_at IS NULL',[s.member])).rows.map(r=>r.id);
  assert.ok(driverList.every(t=>own.includes(t.id)),'a driver sees a trip that is not assigned to them');
  assert.equal((await f.client().request('driver/trips')).status,401);

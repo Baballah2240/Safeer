@@ -182,8 +182,8 @@ class MyFatoorahController {
   const result=/^[0-9]{1,20}$/.test(invoice)?await this.reservations.myfatoorahResult(invoice,'InvoiceId').catch(()=>null):null;
   return {data:{received:Boolean(result)}};
  }
- @Get('return') async back(@Query('paymentId') paymentId:unknown,@Query('c') country:unknown,@Res() res:Response){
-  const result=await this.reservations.myfatoorahResult(paymentId,'PaymentId',country).catch(()=>null) as {reference?:unknown,status?:unknown}|null;
+ @Get('return') async back(@Query('paymentId') paymentId:unknown,@Query('c') country:unknown,@Req() req:Request,@Res() res:Response){
+  const result=await this.reservations.myfatoorahResult(paymentId,'PaymentId',country,client(req)).catch(()=>null) as {reference?:unknown,status?:unknown}|null;
   const reference=typeof result?.reference==='string'&&/^SF-[2-9A-HJ-NP-Z]{8}$/.test(result.reference)?result.reference:null;
   res.redirect(303,reference?'/hold/'+reference+'?card='+encodeURIComponent(String(result?.status))+'#passenger-ticket':'/booking?card=unknown');
  }

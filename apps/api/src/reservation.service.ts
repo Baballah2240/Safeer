@@ -150,10 +150,13 @@ export class ReservationService implements OnModuleInit,OnModuleDestroy {
 /** D144: MyFatoorah. key is the PaymentId of the return redirect (country from the return URL) or the InvoiceId of a
   * webhook (country from Safeer's own checkout). Only MyFatoorah's own answer, fetched with the private token, counts.
   * An unpaid invoice is left open: the passenger may still pay it on the same page. */
- async myfatoorahResult(key:unknown,kind:'PaymentId'|'InvoiceId',country?:unknown){
+ async myfatoorahResult(key:unknown,kind:'PaymentId'|'InvoiceId',country?:unknown,client?:string){
   if(typeof key!=='string'||!/^[0-9A-Za-z-]{1,64}$/.test(key))return null;
+  // A return link asks MyFatoorah with Safeer's token, so one visitor may trigger at most 30 lookups per 15 minutes.
+  // Webhooks (MyFatoorah's own servers) are not limited per sender; they only call out for a checkout still pending.
+  if(client!==undefined&&await this.spend('myfatoorah:'+client,1)>30)return null;
   let place=country;
-  if(kind==='InvoiceId'){const seen=await this.one('SELECT safeer.card_checkout_peek($1) AS row',['mf:'+key]) as {countryCode?:string,provider?:string}|null;if(!seen||seen.provider!=='myfatoorah')return null;place=seen.countryCode;}
+  if(kind==='InvoiceId'){const seen=await this.one('SELECT safeer.card_checkout_peek($1) AS row',['mf:'+key]) as {countryCode?:string,provider?:string}|null;if(!seen||seen.provider!=='myfatoorah')return null;if((seen as {status?:string}).status!=='pending')return {status:(seen as {status?:string}).status,reference:(seen as {reference?:string}).reference};place=seen.countryCode;}
   const config=myfatoorahConfig(place);if(!config)return null;
   const facts=await myfatoorahStatus(config,key,kind).catch(()=>null);if(!facts)return null;
   const seen=await this.one('SELECT safeer.card_checkout_peek($1) AS row',[facts.order]) as {reference:string,status:string,provider:string,checkoutId:string,countryCode:string}|null;
